@@ -59,9 +59,12 @@
    !
    REAL(dbl)                 :: ecutwfc          ! energy cutoff for wfc (Ry)
    REAL(dbl)                 :: ecutrho          ! energy cutoff for the density (Ry)
+   !
    INTEGER,      ALLOCATABLE :: igv(:,:)         ! G vect cry comp (density), DIM: 3*npw_rho
    REAL(dbl),    ALLOCATABLE :: g(:,:)           ! G vect cart comp (density) (tpiba)
    REAL(dbl),    ALLOCATABLE :: gg(:)            ! moduli of the above vectors (tpiba**2)
+   !
+   LOGICAL                   :: gamma_only       ! only half of the G vectors are stored and read
 
    LOGICAL :: alloc = .FALSE.
 
@@ -72,7 +75,7 @@
    PUBLIC :: npw_rho,  nfft
    PUBLIC :: npws_rho, nffts, have_smooth_rhogrid
    PUBLIC :: ecutwfc, ecutrho
-   PUBLIC :: igv, g, gg
+   PUBLIC :: igv, g, gg, gamma_only
    PUBLIC :: alloc
 
    PUBLIC :: ggrids_allocate, ggrids_deallocate, ggrids_memusage
@@ -195,9 +198,10 @@ CONTAINS
        CASE ( 'qexml' )
             !
             IF ( ionode ) &
-            CALL qexml_read_planewaves( ECUTWFC=ecutwfc, ECUTRHO=ecutrho, CUTOFF_UNITS=units, &
-                                        NR1=nfft(1),   NR2=nfft(2),   NR3=nfft(3),          &
-                                        NR1S=nffts(1), NR2S=nffts(2), NR3S=nffts(3),        &
+            CALL qexml_read_planewaves( ECUTWFC=ecutwfc, ECUTRHO=ecutrho,             &
+                                        CUTOFF_UNITS=units, GAMMA_ONLY=gamma_only,    &
+                                        NR1=nfft(1),   NR2=nfft(2),   NR3=nfft(3),    &
+                                        NR1S=nffts(1), NR2S=nffts(2), NR3S=nffts(3),  &
                                         NGM=npw_rho,   NGMS=npws_rho, IERR=ierr )
             !
             CALL mp_bcast( ecutwfc,    ionode_id )
@@ -392,6 +396,10 @@ CONTAINS
        ENDDO
        !
        !
+       ! In the gamma_only case, check that G=0 is the first vector
+       IF ( gamma_only .AND. gg(1) > ZERO ) &
+           CALL errore(subname,'G=0 misplaced when using Gamma_only',10)
+       !
        CALL timing ( subname,OPR='stop')
        CALL log_pop ( subname )
        !
@@ -512,6 +520,9 @@ END SUBROUTINE ggrids_gv_indexes
        !
        IF ( have_smooth_rhogrid ) &
           WRITE(iunit, "(6x,'              (smooth grid) =  ( ', 3i5,' )' )") nffts(:)
+       !
+       IF ( gamma_only ) &
+          WRITE(iunit, "(6x,'       Use Gamma-only trick ' )") 
        !
    ENDIF
    !

@@ -85,7 +85,8 @@
 !
 
    PUBLIC :: nkpts_g, nbnd, nspin, ispin, spin_component, dimwinx
-   PUBLIC :: win_min, win_max, froz_min, froz_max
+   PUBLIC :: win_min,  win_max,  froz_min,  froz_max
+   PUBLIC :: iwin_min, iwin_max, ifroz_min, ifroz_max
    PUBLIC :: dimwin, imin, imax, eig, efermi, nelec
    PUBLIC :: dimfroz, indxfroz, indxnfroz, lfrozen, frozen
    PUBLIC :: alloc
@@ -502,7 +503,7 @@ CONTAINS
        CALL mp_bcast( ierr,     ionode_id )       
        !
        IF (.NOT. found) RETURN
-       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(tag),ierr)
+       IF (ierr>0)  CALL errore(subname,'wrong format in tag '//TRIM(tag),ierr)
        found = .TRUE.
        !
        IF ( ionode ) THEN
@@ -847,7 +848,7 @@ CONTAINS
            ! do nothing
            !
        CASE DEFAULT
-           CALL errore(subname,'Wrong units in Energies',5)
+           CALL errore(subname,'wrong units in Energies',5)
        END SELECT
  
        !

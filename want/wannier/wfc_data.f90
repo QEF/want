@@ -20,7 +20,7 @@
    USE timing_module,     ONLY : timing
    USE log_module,        ONLY : log_push, log_pop
    USE io_global_module,  ONLY : ionode, ionode_id
-   USE ggrids_module,     ONLY : ggrids_alloc => alloc, ecutwfc, ecutrho
+   USE ggrids_module,     ONLY : ggrids_alloc => alloc, ecutwfc, ecutrho, gamma_only
    USE mp,                ONLY : mp_bcast
    USE wfc_info_module
    !
@@ -260,7 +260,7 @@ CONTAINS
                 basisdata%reduced_coordinates_of_plane_waves%data3d => null()
 
                 !
-                ! we have to feel igksort with the map between the PWs of each
+                ! we have to fill igksort with the map between the PWs of each
                 ! kpt and the G-grid of the density.
                 ! To do this, we regenerate locally the main G-grid use the map
                 ! given by gglobal
@@ -315,6 +315,12 @@ CONTAINS
        ENDIF
        !
        CALL mp_bcast( igsort,    ionode_id )
+       !
+       ! for compatibility, we check that in the gamma only case
+       ! G=0 must be the first vector
+       !
+       IF ( gamma_only .AND. ANY( igsort(1,:) /= 1) ) &
+           CALL errore(subname,'G=0 misplaced when using Gamma_only',10)
        !
        alloc = .TRUE.
        !

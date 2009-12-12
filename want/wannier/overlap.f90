@@ -15,7 +15,7 @@
    USE constants,      ONLY : CZERO
    USE timing_module,  ONLY : timing
    USE log_module,     ONLY : log_push, log_pop
-   USE ggrids_module,  ONLY : nfft
+   USE ggrids_module,  ONLY : nfft, gamma_only
    USE wfc_info_module 
    !
    IMPLICIT NONE
@@ -37,14 +37,16 @@
       !
       INTEGER :: ierr
       INTEGER :: ig
-      INTEGER :: npwkx, npwx_g
+      INTEGER :: npwkx, npwx_g, itmp(3)
       INTEGER :: j1, npwk1, ind1
       INTEGER :: j2, npwk2, ind2
-
-      INTEGER, ALLOCATABLE      :: map(:)
+      !
+      INTEGER,      ALLOCATABLE :: map(:),  map_aux(:)
       COMPLEX(dbl), ALLOCATABLE :: aux1(:), aux2(:)
-
+      !
       COMPLEX(dbl),    EXTERNAL :: ZDOTC
+      !
+      CHARACTER(7)              :: subname='overlap'
       !
       ! ... end declarations
       !
@@ -54,8 +56,8 @@
 ! main body
 !------------------------------
 !
-      CALL timing('overlap',OPR='start')
-      CALL log_push('overlap')
+      CALL timing(subname,OPR='start')
+      CALL log_push(subname)
 
       !
       ! the maximun number of PW for wfcs
@@ -67,17 +69,22 @@
       !
       npwx_g = MAX( MAXVAL(igsort(:,ik1)), MAXVAL(igsort(:,ik2)) ) +1
 
-      IF ( dimw1 > dimwinx ) CALL errore('overlap', 'Invalid dimw1', dimw1)
-      IF ( dimw2 > dimwinx ) CALL errore('overlap', 'Invalid dimw2', dimw2)
+      IF ( dimw1 > dimwinx ) CALL errore(subname, 'Invalid dimw1', dimw1)
+      IF ( dimw2 > dimwinx ) CALL errore(subname, 'Invalid dimw2', dimw2)
 
       ALLOCATE( map(npwkx), STAT=ierr )
-      IF (ierr/=0) CALL errore('overlap','allocating map',npwkx)
+      IF (ierr/=0) CALL errore(subname,'allocating map',npwkx)
+      !
+      IF ( gamma_only ) THEN
+          ALLOCATE( map_aux(npwkx), STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'allocating map_aux',npwkx)
+      ENDIF
       !
       ALLOCATE( aux1(npwx_g), STAT=ierr )
-      IF (ierr/=0) CALL errore('overlap','allocating aux1',npwx_g)
+      IF (ierr/=0) CALL errore(subname,'allocating aux1',npwx_g)
       !
       ALLOCATE( aux2(npwx_g), STAT=ierr )
-      IF (ierr/=0) CALL errore('overlap','allocating aux2',npwx_g)
+      IF (ierr/=0) CALL errore(subname,'allocating aux2',npwx_g)
 
       !
       ! Calculate cm(i,j)=<u_i k|u_j k+dk> (keeping into account
@@ -113,10 +120,36 @@
       ! this mapping takes into account the e^{iGr} factor when k1 and k2 are 
       ! in different Brillouin zones.
       !
-      CALL overlap_setmap( npwk2, npwx_g, nfft(1), nfft(2), nfft(3), igsort(1,ik2), &
-                           lnncell(1), map)
-      map( npwk2+1: npwkx ) = 0
 
+      CALL overlap_setmap( npwk2, npwx_g, nfft(1), nfft(2), nfft(3), igsort(:,ik2), &
+                           lnncell, 1, map)
+      map( npwk2+1: npwkx ) = 0
+      !
+      IF ( gamma_only ) THEN
+          !
+          CALL overlap_setmap( npwk2, npwx_g, nfft(1), nfft(2), nfft(3), igsort(:,ik2), &
+                               lnncell, -1, map_aux)
+          map_aux( npwk2+1: npwkx ) = 0
+          !
+      ENDIF
+
+      !
+      ! checks about the maps
+      !
+      IF ( .NOT. gamma_only ) THEN
+          !
+          IF ( ANY( map(:) < 0 ) ) CALL errore(subname,'invalid inxed in map', 10)
+          !
+      ELSE
+          !
+          DO ig = 1, npwk2
+             IF ( map(ig) < 0 ) map(ig)     = -npwx_g
+             IF ( map(ig) < 0 .AND. map_aux(ig) <= 0) CALL errore(subname,'mismatch in maps',10)
+          ENDDO
+          !
+      ENDIF
+              
+          
 
       !
       ! loops over bands
@@ -127,8 +160,17 @@
           ind2 = wfc_info_getindex(imin2 +j2 -1, ik2, "IKB", evc_info)
           !
           DO ig=1, npwk2
-             aux2( map( ig ) ) = evc( ig, ind2) 
+              aux2( ABS(map( ig )) ) = evc( ig, ind2) 
           ENDDO
+          !
+          IF ( gamma_only ) THEN
+              !
+              DO ig = 1, npwk2
+                  IF ( map(ig) < 0 )  aux2( map_aux(ig) ) = CONJG( evc( ig, ind2) )
+              ENDDO
+              !
+          ENDIF
+
 
           DO j1 = 1, dimw1
               !
@@ -145,19 +187,85 @@
               Mkb( j1, j2)= ZDOTC ( npwx_g -1, aux1, 1, aux2, 1) 
               !
           ENDDO
+          !
       ENDDO
 
+      !
+      ! add the missing term (G<0) in the gamma only case
+      !
+      IF ( gamma_only ) THEN
+          !
+          itmp(:) = -lnncell(:)
+          !
+          CALL overlap_setmap( npwk2, npwx_g, nfft(1), nfft(2), nfft(3), igsort(:,ik2), &
+                               itmp, 1, map)
+          map( npwk2+1: npwkx ) = 0
+          !
+          CALL overlap_setmap( npwk2, npwx_g, nfft(1), nfft(2), nfft(3), igsort(:,ik2), &
+                               itmp, -1, map_aux)
+          map_aux( npwk2+1: npwkx ) = 0
+          !
+          DO ig = 1, npwk2
+             IF ( map(ig) < 0 ) map(ig)     = -npwx_g
+             IF ( map(ig) < 0 .AND. map_aux(ig) <= 0) CALL errore(subname,'mismatch in maps II',10)
+          ENDDO
+      
+
+          DO j2 = 1, dimw2
+              !
+              aux2(:) = CZERO
+              ind2 = wfc_info_getindex(imin2 +j2 -1, ik2, "IKB", evc_info)
+              !
+              DO ig=1, npwk2
+                  aux2( ABS(map( ig )) ) = CONJG( evc( ig, ind2) )
+              ENDDO
+              !
+              DO ig = 1, npwk2
+                  IF ( map(ig) < 0 )  aux2( map_aux(ig) ) = evc( ig, ind2)
+              ENDDO
+             
+
+              DO j1 = 1, dimw1
+                  !
+                  aux1(:) = CZERO
+                  ind1 = wfc_info_getindex(imin1 +j1 -1, ik1, "IK", evc_info)
+                  !
+                  DO ig=1, npwk1
+                     aux1( igsort( ig, ik1 ) ) = CONJG( evc( ig, ind1) )
+                  ENDDO
+    
+                  !
+                  ! last position for ig is dummy
+                  !
+                  Mkb(j1,j2) = Mkb( j1, j2) + ZDOTC ( npwx_g -2, aux1(2), 1, aux2(2), 1) 
+                  !
+              ENDDO
+              !
+          ENDDO
+          !
+      ENDIF
+
+
+
+
+
+
       DEALLOCATE( aux1, STAT=ierr)
-      IF (ierr/=0) CALL errore('overlap','deallocating aux1',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'deallocating aux1',ABS(ierr))
       !
       DEALLOCATE( aux2, STAT=ierr)
-      IF (ierr/=0) CALL errore('overlap','deallocating aux2',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'deallocating aux2',ABS(ierr))
       !
       DEALLOCATE( map, STAT=ierr)
-      IF (ierr/=0) CALL errore('overlap','deallocating map',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'deallocating map',ABS(ierr))
+      !
+      IF ( gamma_only ) THEN
+          DEALLOCATE( map_aux, STAT=ierr)
+          IF (ierr/=0) CALL errore(subname,'deallocating map_aux',ABS(ierr))
+      ENDIF
 
-      CALL timing('overlap',OPR='stop')
-      CALL log_pop('overlap')
+      CALL timing(subname,OPR='stop')
+      CALL log_pop(subname)
       !
    END SUBROUTINE overlap
 
