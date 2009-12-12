@@ -1,0 +1,8 @@
+&inputpp
+  prefix='benzene_gamma'
+  outdir='./SCRATCH'
+  pseudo_dir = '../pseudo/'
+  psfile(1) = 'C.blyp-mt.UPF'
+  psfile(2) = 'H.blyp-vbc.UPF'
+/
+
