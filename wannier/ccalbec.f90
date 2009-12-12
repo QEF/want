@@ -37,7 +37,6 @@ SUBROUTINE ccalbec( nkbx, nkb, npwx, npw, nbnd, bec, vkb, psi )
   CALL timing( 'ccalbec', OPR='start' )
   CALL log_push( 'ccalbec' )
   !
-! Also GAMMA_ONLY is avoided
 !  IF ( gamma_only ) THEN
 !     !
 !     CALL pw_gemm( 'Y', nkb, nbnd, npw, vkb, npwx, psi, npwx, bec, nkb )

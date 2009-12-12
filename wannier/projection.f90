@@ -19,7 +19,7 @@
    !      analytical form for the FT of the gaussian orbitals.
    !
    USE kinds,                ONLY : dbl
-   USE constants,            ONLY : CONE, CZERO
+   USE constants,            ONLY : CONE, CZERO, TWO
    USE log_module,           ONLY : log_push, log_pop
    USE timing_module,        ONLY : timing
    USE sph_har_module,       ONLY : sph_har_index 
@@ -28,7 +28,7 @@
    USE lattice_module,       ONLY : tpiba
    USE kpoints_module,       ONLY : vkpt_g
    USE wfc_data_module,      ONLY : igsort
-   USE ggrids_module,        ONLY : g
+   USE ggrids_module,        ONLY : g, gamma_only
    USE wfc_info_module
 
    IMPLICIT NONE
@@ -166,6 +166,13 @@
 
 #endif
                  
+          !
+          IF ( gamma_only ) THEN
+              !
+              ca(:,iwann) = ca(:,iwann) + CONJG( ca(:,iwann) ) &
+                          - CONJG(evc(1, ind:ind+dimw-1 )) * trial_vect(1)
+              !
+          ENDIF
           !
       ENDDO    
 

@@ -65,7 +65,8 @@ CONTAINS
                                  nk, s, bshells_alloc, nb, vb, wb, wbtot
    USE windows_module,    ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, &
                                  imin, imax, dimfroz, lfrozen, dimwinx, nspin, &
-                                 spin_component, win_min, win_max, froz_min, froz_max
+                                 spin_component, win_min, win_max, froz_min, froz_max, &
+                                 iwin_min, iwin_max, ifroz_min, ifroz_max
    USE subspace_module,   ONLY : dimwann, disentangle_thr, alpha_dis, maxiter_dis
    USE localization_module, ONLY : alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan, ncg, &
                                  wannier_thr, a_condmin, niter_condmin, dump_condmin, xcell
@@ -437,7 +438,8 @@ CONTAINS
        IF ( ionode ) THEN
            !
            WRITE(iunit, " (  ' <WINDOWS>')" )
-           WRITE(iunit," (2x, 'Definition of energy windows: (energies in eV)' ) " )
+           WRITE(iunit," (2x, 'Definition of energy windows: [eV]',/ ) " )
+           !
            IF ( win_min < -10000.0 .AND. win_max > 10000.0 ) THEN
                WRITE(iunit, " (4x, 'outer window: E  = (  -inf ,  inf  )' )" ) 
            ELSEIF ( win_min < -10000.0 ) THEN
@@ -451,7 +453,7 @@ CONTAINS
               WRITE(iunit, " (4x, 'outer window: E  = ( ', f9.4, ' , ',f9.4, ' )' )" ) &
                                    win_min, win_max
            ENDIF
-           WRITE(iunit,"(4x,'Max number of bands within the energy window = ',i5)") dimwinx
+           WRITE(iunit,"(4x,'Max number of bands in the outer window (dimwinx) = ',i5)") dimwinx
            WRITE(iunit,"(/,2x,'Electronic Structure from DFT calculation:')")
            WRITE(iunit,"(  4x,'nkpts =',i4,',     ','nbnd =',i4,',')") nkpts_g, nbnd
            WRITE(iunit,"(  4x,'nspin =',i4 ) " ) nspin
@@ -479,7 +481,7 @@ CONTAINS
                    WRITE(iunit," (  7x,'froz_min = -inf')") 
                ENDIF
                !
-               IF ( froz_max <  10000.0 ) THEN
+               IF ( froz_max > -10000.0 ) THEN
                    WRITE(iunit," (  7x,'froz_max = ', f8.4)") froz_max
                ELSE
                    WRITE(iunit," (  7x,'froz_max = +inf')") 
