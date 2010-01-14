@@ -9,9 +9,11 @@
 ! <INFO>
 !*********************************************
   MODULE util_module
-!*********************************************
+  !*********************************************
+  !
   USE kinds
   USE constants, ONLY : ZERO, ONE, CZERO, CONE, CI
+  !
   IMPLICIT NONE
   PRIVATE
 
@@ -20,22 +22,31 @@
 ! routines in this module:
 ! SUBROUTINE  zmat_pack( zp, z, n)
 ! SUBROUTINE  zmat_unpack( z, zp, n)
+! SUBROUTINE  zmat_bnd_pack( zb, z, n, kl, ku)
+! SUBROUTINE  zmat_bnd_unpack( z, zb, n, kl, ku)
+! SUBROUTINE   mat_bnd_getdims( z, n, kl, ku)
 ! SUBROUTINE  zmat_herm( z, n)
 ! SUBROUTINE  zmat_antiherm( z, n)
 ! SUBROUTINE   mat_svd( m, n, a, s, u, vt)
 ! SUBROUTINE   mat_sv ( n, nrhs, a, b [,ierr])
 ! SUBROUTINE   mat_mul( c, a, opa, b, opb, m, n, k)
 ! SUBROUTINE   mat_hdiag( z, w, a, n, uplo)
-! SUBROUTINE   mat_inv( n, a, z [,det_a] [,ierr] )
+! SUBROUTINE   mat_inv( n, a, z [, kl, ku, ldab] [,det_a] [,ierr] )
 ! SUBROUTINE  zmat_diag( z, w, a, n, side)
-! COMPLEX FUNCTION  zmat_dotp( m, n, a, b)
-! COMPLEX FUNCTION  zmat_hdotp( m, a, b)
+! COMPLEX/REAL FUNCTION   mat_dotp( m, n, a, b)
+! COMPLEX/REAL FUNCTION   mat_hdotp( m, a, b)
 ! LOGICAL FUNCTION  zmat_unitary( m, n, z [,side] [,toll])
 ! INTEGER FUNCTION   mat_rank( m, n, a, toll)
 ! 
 ! </INFO>
 !
 
+!
+! banded matrix tools
+INTERFACE mat_bnd_getdims
+   MODULE PROCEDURE zmat_bnd_getdims
+   MODULE PROCEDURE dmat_bnd_getdims
+END INTERFACE
 !
 ! matrix multiplication
 INTERFACE mat_mul
@@ -74,23 +85,27 @@ END INTERFACE
 ! matrix inversion
 INTERFACE mat_inv
    MODULE PROCEDURE zmat_inv
+   MODULE PROCEDURE zmat_bnd_inv
    MODULE PROCEDURE dmat_inv
 END INTERFACE
 !
 ! matrix dot product
-INTERFACE zmat_dotp
+INTERFACE  mat_dotp
    MODULE PROCEDURE zmat_ge_dotp
+   MODULE PROCEDURE dmat_ge_dotp
 END INTERFACE
 !
 ! matrix herm dot product
-INTERFACE zmat_hdotp
+INTERFACE  mat_hdotp
    MODULE PROCEDURE zmat_hp_dotp
    MODULE PROCEDURE zmat_he_dotp
+   MODULE PROCEDURE dmat_sy_dotp
 END INTERFACE
 
 
-PUBLIC :: zmat_pack
-PUBLIC :: zmat_unpack
+PUBLIC :: zmat_pack, zmat_unpack
+PUBLIC :: zmat_bnd_pack, zmat_bnd_unpack
+PUBLIC ::  mat_bnd_getdims
 PUBLIC :: zmat_herm
 PUBLIC :: zmat_antiherm
 PUBLIC ::  mat_svd
@@ -101,8 +116,8 @@ PUBLIC ::  mat_inv
 PUBLIC :: zmat_diag
 PUBLIC :: zmat_unitary
 PUBLIC ::  mat_rank
-PUBLIC :: zmat_hdotp
-PUBLIC :: zmat_dotp
+PUBLIC ::  mat_hdotp
+PUBLIC ::  mat_dotp
 
 CONTAINS
 
@@ -151,6 +166,136 @@ CONTAINS
 
    RETURN
 END SUBROUTINE
+
+
+!**********************************************************
+   SUBROUTINE zmat_bnd_pack( zb, z, n, kl, ku )
+   !**********************************************************
+    IMPLICIT NONE
+    COMPLEX(dbl), INTENT(OUT)  :: zb(:,:)
+    COMPLEX(dbl), INTENT(IN)   :: z(:,:)
+    INTEGER,      INTENT(IN)   :: n
+    INTEGER,      INTENT(IN)   :: kl, ku
+    !
+    ! kl :   # of subdiagonals
+    ! ku :   # of supradiagonals
+    ! ldzb must be >= 2*kl + ku +1
+    !
+    INTEGER :: i, j, ind
+
+    IF ( SIZE(zb,1) < 2 *kl + ku + 1 ) CALL errore('zmat_bnd_pack','invalid ldzb',10) 
+    !
+    zb(:,:) = CZERO
+    !
+    DO j = 1, n
+    DO i = MAX(1,j-ku),MIN(n,j+kl)
+        ind = kl+ku+1+i-j
+        zb(ind,j) = z(i,j)
+    ENDDO
+    ENDDO
+
+    RETURN
+  END SUBROUTINE zmat_bnd_pack
+
+    
+!**********************************************************
+   SUBROUTINE zmat_bnd_unpack( z, zb, n, kl, ku )
+   !**********************************************************
+    IMPLICIT NONE
+    COMPLEX(dbl), INTENT(OUT) :: z(:,:)
+    COMPLEX(dbl), INTENT(IN)  :: zb(:,:)
+    INTEGER,      INTENT(IN)  :: n
+    INTEGER,      INTENT(IN)  :: kl, ku
+    !
+    ! kl :   # of subdiagonals
+    ! ku :   # of supradiagonals
+    ! ldzb must be >= 2*kl + ku +1
+    !
+    INTEGER :: i, j, ind
+
+    IF ( SIZE(zb,1) < 2 *kl + ku + 1 ) CALL errore('zmat_bnd_unpack','invalid ldzb',10) 
+    !
+    z(:,:) = CZERO
+    !
+    DO j = 1, n
+    DO i = MAX(1,j-ku),MIN(n,j+kl)
+        ind = kl+ku+1+i-j
+        z(i,j) = zb(ind,j)
+    ENDDO
+    ENDDO
+
+    RETURN
+  END SUBROUTINE zmat_bnd_unpack
+
+
+!**********************************************************
+   SUBROUTINE zmat_bnd_getdims( a, thr, n, kl, ku )
+   !**********************************************************
+    IMPLICIT NONE
+    COMPLEX(dbl), INTENT(IN)   :: a(:,:)
+    REAL(dbl),    INTENT(IN)   :: thr
+    INTEGER,      INTENT(IN)   :: n
+    INTEGER,      INTENT(OUT)  :: kl, ku
+    !
+    ! kl :   # of subdiagonals
+    ! ku :   # of supradiagonals
+    !
+    INTEGER :: i, j
+    !
+    kl = 0
+    ku = 0
+    !
+    DO j = 1, n
+    DO i = 1, j-1
+        IF ( REAL( a(i,j)*CONJG(a(i,j) ) ) > thr .AND. &
+             j-i > kl ) kl = j-i  
+    ENDDO
+    ENDDO
+
+    DO j = 1, n
+    DO i = j+1, n
+        IF ( REAL( a(i,j)*CONJG(a(i,j) ) ) > thr .AND. &
+             i-j > ku ) ku = i-j
+    ENDDO
+    ENDDO
+
+    RETURN
+  END SUBROUTINE zmat_bnd_getdims
+
+
+!**********************************************************
+   SUBROUTINE dmat_bnd_getdims( a, thr, n, kl, ku )
+   !**********************************************************
+    IMPLICIT NONE
+    REAL(dbl),    INTENT(IN)   :: a(:,:)
+    REAL(dbl),    INTENT(IN)   :: thr
+    INTEGER,      INTENT(IN)   :: n
+    INTEGER,      INTENT(OUT)  :: kl, ku
+    !
+    ! kl :   # of subdiagonals
+    ! ku :   # of supradiagonals
+    !
+    INTEGER :: i, j
+    !
+    kl = 0
+    ku = 0
+    !
+    DO j = 1, n
+    DO i = 1, j-1
+        IF ( a(i,j)*a(i,j)  > thr .AND. &
+             j-i > kl ) kl = j-i  
+    ENDDO
+    ENDDO
+
+    DO j = 1, n
+    DO i = j+1, n
+        IF ( a(i,j)*a(i,j) > thr .AND. &
+             i-j > ku ) ku = i-j
+    ENDDO
+    ENDDO
+
+    RETURN
+  END SUBROUTINE dmat_bnd_getdims
 
 
 !**********************************************************
@@ -220,7 +365,7 @@ END SUBROUTINE
    REAL(dbl), INTENT(OUT) :: u(:,:), vt(:,:)
 
    INTEGER   :: ierr, info, lwork
-   REAL(dbl) :: raux 
+   !REAL(dbl) :: raux 
    REAL(dbl), ALLOCATABLE :: atmp(:,:), work(:)
 
    IF ( m <= 0 .OR. n<=0 ) CALL errore('dmat_svd','Invalid DIMs',1)
@@ -291,7 +436,7 @@ END SUBROUTINE dmat_svd
    COMPLEX(dbl), INTENT(OUT) :: u(:,:), vt(:,:)
 
    INTEGER    :: ierr, info, lwork
-   REAL(dbl)  :: raux
+   !REAL(dbl)  :: raux
    REAL(dbl),    ALLOCATABLE :: rwork(:)
    COMPLEX(dbl), ALLOCATABLE :: atmp(:,:), work(:)
 
@@ -771,7 +916,7 @@ END SUBROUTINE zmat_hdiag
    INTEGER,      INTENT(IN)  :: n
    CHARACTER,    INTENT(IN)  :: uplo
 
-   INTEGER :: i, j, ierr, info
+   INTEGER :: i, ierr, info
    COMPLEX(dbl), ALLOCATABLE :: work(:)
    REAL(dbl), ALLOCATABLE :: rwork(:)
    INTEGER, ALLOCATABLE :: ifail(:)
@@ -1020,12 +1165,14 @@ END SUBROUTINE zmat_diag
    !
    ldz = n
    z(1:n,1:n) = a(1:n,1:n)
+
    !
    ! perform matrix inversion according to LAPACK
    !
    ! First get the optimum LWORK
    !
    nb = ILAENV( 1, 'ZGETRI', ' ', n, -1, -1, -1 )
+   !
    lwork = n * nb
    !
    ALLOCATE( work( lwork ), STAT=ierr_ )
@@ -1070,6 +1217,99 @@ END SUBROUTINE zmat_diag
    IF ( ierr_/=0 ) CALL errore ('zmat_inv', 'deallocating work', ABS (ierr_) )
    !
 END SUBROUTINE zmat_inv 
+
+
+!**********************************************************
+   SUBROUTINE zmat_bnd_inv( n, kl, ku, ab, ldab, z, ierr )
+   !**********************************************************
+   !
+   ! compute Z = inv( AB ) for a banded matrix AB 
+   ! AB should be entry in a band matrix format
+   !
+   IMPLICIT NONE
+   INTEGER,                INTENT(IN)  :: n
+   INTEGER,                INTENT(IN)  :: kl, ku, ldab
+   COMPLEX(dbl),           INTENT(IN)  :: ab(ldab,n)
+   COMPLEX(dbl),           INTENT(OUT) :: z(n,n)
+   INTEGER,      OPTIONAL, INTENT(OUT) :: ierr
+   !
+   INTEGER           :: i, info, ldz, ipiv (n)
+   !INTEGER           :: ierr_, lwork
+   INTEGER, EXTERNAL :: ILAENV
+   ! info=0: inversion was successful
+   ! ldz   : leading dimension (the same as n)
+   ! ipiv  : work space for pivoting 
+   !
+   !
+   IF ( PRESENT( ierr ) ) ierr=0
+   !
+   ldz = n
+   !
+   ! perform matrix inversion according to LAPACK
+   !
+   ! First get the optimum LWORK
+   !
+!   nb = ILAENV( 1, 'ZGETRI', ' ', n, -1, -1, -1 )
+!   !
+!   z(1:ldab,1:n) = ab(1:ldab,1:n)
+!   !
+!   lwork = n * nb
+!   !
+!   ALLOCATE( work( lwork ), STAT=ierr_ )
+!   IF ( ierr_/=0 ) CALL errore ('zmat_bnd_inv', 'allocating work', ABS (ierr_) )
+!   ! 
+!   !
+!   CALL ZGETRF (n, n, kl, ku, zb, ldz, ipiv, info)
+   !
+   IF ( ldab < 2 * kl + ku + 1) CALL errore ('zmat_bnd_inv', 'invalid ldab', 10 )
+   !
+   z = CZERO
+   DO i = 1, n
+       z(i,i) = CONE
+   ENDDO
+   !
+   CALL ZGBSV (n, kl, ku, n, ab, ldab, ipiv, z, ldz, info)
+
+
+   IF ( PRESENT(ierr) ) THEN
+       ! 
+       IF ( info/=0 ) THEN
+           ierr = info
+           RETURN
+       ENDIF
+       ! 
+   ELSE
+       IF ( info/=0 ) CALL errore ('zmat_bnd_inv', 'error in ZGBTRF', ABS (info) )
+   ENDIF
+
+   
+!   !
+!   ! compute the determinan if required
+!   !
+!   IF ( PRESENT( det_a ) ) THEN
+!      !
+!      det_a = ONE
+!      DO i = 1, n
+!         det_a = det_a * z(i,i)
+!      ENDDO
+!      !
+!   ENDIF
+!   !
+!   CALL ZGETRI (n, z, ldz, ipiv, work, lwork, info)
+!   !
+!   IF ( PRESENT(ierr) ) THEN
+!       IF ( info/=0 ) ierr = info
+!   ELSE
+!       IF ( info/=0 ) CALL errore ('zmat_inv', 'error in ZGETRI', ABS (info) )
+!   ENDIF
+!   !
+!   ! 
+!   DEALLOCATE( work, STAT=ierr_ )
+!   IF ( ierr_/=0 ) CALL errore ('zmat_inv', 'deallocating work', ABS (ierr_) )
+   !
+
+   !
+END SUBROUTINE zmat_bnd_inv 
 
 
 !**********************************************************
@@ -1359,6 +1599,36 @@ END FUNCTION dmat_rank
    !
 END FUNCTION zmat_ge_dotp
 
+
+!**********************************************************
+   FUNCTION  dmat_ge_dotp( m, n, a, b)
+   !**********************************************************
+   IMPLICIT NONE
+   REAL(dbl)       :: dmat_ge_dotp
+   INTEGER         :: m, n
+   REAL(dbl)       :: a(:,:), b(:,:)
+   !
+   REAL(dbl)    :: dotp
+   INTEGER      :: i, j
+
+   IF ( m > SIZE(a,1) ) CALL errore('dmat_ge_dotp','Invalid m I',ABS(m)+1)
+   IF ( n > SIZE(a,2) ) CALL errore('dmat_ge_dotp','Invalid n I',ABS(n)+1)
+   IF ( m > SIZE(b,1) ) CALL errore('dmat_ge_dotp','Invalid m II',ABS(m)+1)
+   IF ( n > SIZE(b,2) ) CALL errore('dmat_ge_dotp','Invalid n II',ABS(n)+1)
+
+   dotp = ZERO
+   !
+   DO j = 1, n
+   DO i = 1, m
+      dotp = dotp + a(i,j) * b(i,j)
+   ENDDO
+   ENDDO
+   !
+   dmat_ge_dotp = dotp
+   RETURN
+END FUNCTION dmat_ge_dotp
+
+
 !**********************************************************
    FUNCTION  zmat_he_dotp( m, a, b)
    !**********************************************************
@@ -1391,6 +1661,41 @@ END FUNCTION zmat_ge_dotp
    RETURN
    !
 END FUNCTION zmat_he_dotp
+
+
+!**********************************************************
+   FUNCTION  dmat_sy_dotp( m, a, b)
+   !**********************************************************
+   IMPLICIT NONE
+   REAL(dbl)          :: dmat_sy_dotp
+   INTEGER            :: m
+   REAL(dbl)          :: a(:,:), b(:,:)
+   !
+   REAL(dbl) :: dotp
+   INTEGER   :: i, j
+
+   IF ( m > SIZE(a,1) ) CALL errore('dmat_sy_dotp','Invalid m1',ABS(m)+1)
+   IF ( m > SIZE(a,2) ) CALL errore('dmat_sy_dotp','Invalid m2',ABS(m)+1)
+   IF ( m > SIZE(b,1) ) CALL errore('dmat_sy_dotp','Invalid m3',ABS(m)+1)
+   IF ( m > SIZE(b,2) ) CALL errore('dmat_sy_dotp','Invalid m4',ABS(m)+1)
+
+   dotp = ZERO
+   !
+   DO j = 1, m
+   DO i = 1, j-1
+      dotp = dotp + 2.0_dbl * a(i,j) * b(i,j)
+   ENDDO
+   ENDDO
+   !
+   DO i = 1, m
+      dotp = dotp + 1.0_dbl * a(i,i) * b(i,i)
+   ENDDO
+   !
+   dmat_sy_dotp = dotp
+   RETURN
+   !
+END FUNCTION dmat_sy_dotp
+
 
 !**********************************************************
    FUNCTION  zmat_hp_dotp( m, uplo, ap, bp)
