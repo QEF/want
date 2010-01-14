@@ -37,10 +37,11 @@ SUBROUTINE errore( calling_routine, message, ierr )
     ! the output messagee
   INTEGER,          INTENT(IN) :: ierr
     ! the error flag
+#if defined (__PARA) && defined (__MPI)
   INTEGER                      :: mpime, mpierr
+#endif
     ! the task id  
     !
-  LOGICAL                      :: exists
   !
   !
   IF ( ierr <= 0 ) RETURN

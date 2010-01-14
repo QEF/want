@@ -401,7 +401,6 @@
     INTEGER,          INTENT(out)   :: major, minor, patch, ierr
     !
     INTEGER       :: i1, i2, length
-    INTEGER       :: ierrtot
     CHARACTER(10) :: num(3)
 
     !
@@ -431,8 +430,6 @@
     num(1) = str(    1 : i1-1 )
     num(2) = str( i1+1 : i2-1 )
     num(3) = str( i2+1 : )
-    !
-    ierrtot = 0
     !
     READ( num(1), *, IOSTAT=ierr ) major
     IF (ierr/=0) RETURN
