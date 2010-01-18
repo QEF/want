@@ -27,7 +27,8 @@ smearing.o \
 summary.o \
 transfer.o \
 transmittance.o \
-workspace.o
+workspace.o \
+write_data.o
 
 WANNIER_OBJS= \
 ../wannier/compute_kham.o \

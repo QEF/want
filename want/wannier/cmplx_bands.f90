@@ -862,6 +862,7 @@ END PROGRAM cmplx_bands
 
       !
       beta(:,:,:)= ZERO
+      nrsx=0
       !
       energy_loop: &
       DO ie = iomg_s, iomg_e

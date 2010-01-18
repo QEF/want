@@ -92,6 +92,9 @@ CONTAINS
                                            debug_level,       &
                                            use_debug_mode,    &
                                            do_eigenchannels,  &
+                                           do_eigplot,        &
+                                           ie_eigplot,        &
+                                           ik_eigplot,        &
                                            nfailx
                                             
       USE T_input_parameters_module,ONLY : calculation_type_  => calculation_type, &
@@ -108,6 +111,9 @@ CONTAINS
                                            write_lead_sgm_    => write_lead_sgm, &
                                            debug_level_       => debug_level, &
                                            do_eigenchannels_  => do_eigenchannels, &
+                                           do_eigplot_        => do_eigplot, &
+                                           ie_eigplot_        => ie_eigplot, &
+                                           ik_eigplot_        => ik_eigplot, &
                                            nfailx_            => nfailx
 
       IMPLICIT NONE
@@ -126,6 +132,9 @@ CONTAINS
       write_lead_sgm      = write_lead_sgm_
       debug_level         = debug_level_
       do_eigenchannels    = do_eigenchannels_
+      do_eigplot          = do_eigplot_
+      ie_eigplot          = ie_eigplot_
+      ik_eigplot          = ik_eigplot_
       nfailx              = nfailx_
 
       use_debug_mode = .FALSE.

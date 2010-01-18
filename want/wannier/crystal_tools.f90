@@ -66,7 +66,7 @@ CONTAINS
    CHARACTER(nstrx)            :: filetype_
    INTEGER                     :: dimwann, nkpts, nk(3), shift(3), nrtot, nr(3), nspin 
    INTEGER                     :: auxdim1, auxdim2, auxdim3
-   INTEGER                     :: ierr, ir, ik, isp
+   INTEGER                     :: ierr, ir, isp
    !
    LOGICAL                     :: write_ham, write_space
    !
@@ -76,7 +76,6 @@ CONTAINS
    REAL(dbl),      ALLOCATABLE :: vkpt_cry(:,:), vkpt(:,:), wk(:), wr(:), vr(:,:)
    REAL(dbl),      ALLOCATABLE :: eig(:,:,:)
    REAL(dbl),      ALLOCATABLE :: rham(:,:,:,:), rovp(:,:,:)
-   COMPLEX(dbl),   ALLOCATABLE :: caux(:,:,:)
 
 !
 !------------------------------

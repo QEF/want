@@ -1,68 +1,39 @@
 !
-!      Copyright (C) 2004 WanT Group
-!      Copyright (C) 1999 Marco Buongiorno Nardelli
+! Copyright (C) 2004 WanT Group
 !
-!      This file is distributed under the terms of the
-!      GNU General Public License. See the file `License'
-!      in the root directory of the present distribution,
-!      or http://www.gnu.org/copyleft/gpl.txt .
+! This file is distributed under the terms of the
+! GNU General Public License. See the file `License'
+! in the root directory of the present distribution,
+! or http://www.gnu.org/copyleft/gpl.txt .
+!
+! Based on a previous version by Marco Buongiorno Nardelli
+! See the CREDITS file in the ~want directory for a full description
 !
 !***********************************************
    PROGRAM conductor
    !***********************************************
    !
-   USE iotk_module
-   USE kinds,                ONLY : dbl
-   USE constants,            ONLY : PI, ZERO, CZERO, CONE, CI, EPS_m5
-   USE parameters,           ONLY : nstrx 
+   ! Computes the quantum transmittance across a junction.
+   !
    USE version_module,       ONLY : version_number
-   USE parser_module,        ONLY : change_case, int2char
-   USE files_module,         ONLY : file_open, file_close
-   USE timing_module,        ONLY : timing, timing_upto_now
-   USE util_module,          ONLY : mat_mul, mat_inv
-   USE mp_global,            ONLY : mpime, nproc
-   USE mp,                   ONLY : mp_sum
-   USE io_module,            ONLY : io_name, ionode, stdout, stdin, sgm_unit, &
-                                    dos_unit => aux1_unit, cond_unit => aux2_unit, &
-                                    sgmL_unit => aux3_unit, sgmR_unit => aux4_unit, &
-                                    work_dir, prefix, postfix, aux_unit
-   USE operator_module,      ONLY : operator_write_init, operator_write_close, &
-                                    operator_write_aux, operator_write_data
+   USE io_module,            ONLY : stdout, sgm_unit
+   USE timing_module,        ONLY : timing
+   USE log_module,           ONLY : log_push, log_pop
    USE T_input_module,       ONLY : input_manager
-   USE T_control_module,     ONLY : conduct_formula, nprint, datafile_sgm,  &
-                                    write_kdata, write_lead_sgm, do_eigenchannels, &
-                                    datafile_C, transport_dir
-   USE T_egrid_module,       ONLY : egrid_init, ne, egrid, egrid_alloc => alloc
+   USE T_control_module,     ONLY : datafile_C, transport_dir
    USE T_smearing_module,    ONLY : smearing_init
-   USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, vkpt_par3D, wk_par, ivr_par3D, vr_par3D, nrtot_par
-   USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,             &
-                                    blc_00L, blc_01L, blc_00R, blc_01R, &
-                                    blc_00C, blc_LC,  blc_CR
-                                    
-   USE T_workspace_module,   ONLY : totL, tottL, totR, tottR, &
-                                    gR, gL, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
-                                    rsgm_L, rsgm_R, workspace_allocate
+   USE T_egrid_module,       ONLY : egrid_init, egrid_alloc => alloc
+   USE T_kpoints_module,     ONLY : kpoints_init
+   USE T_datafiles_module,   ONLY : datafiles_init
    USE T_correlation_module, ONLY : lhave_corr, ldynam_corr, correlation_init, &
                                     correlation_read
-   USE T_datafiles_module,   ONLY : datafiles_init
-   USE T_operator_blc_module
    !
    IMPLICIT NONE
 
    !
    ! local variables
    !
-   CHARACTER(9)     :: subname='conductor'
-   !
-   CHARACTER(nstrx) :: filename
-   INTEGER          :: i, ie, ir, ik, ierr, niter
-   INTEGER          :: iomg_s, iomg_e
-   REAL(dbl)        :: avg_iter
-   CHARACTER(4)     :: ctmp, str
-   !   
-   REAL(dbl),    ALLOCATABLE :: conduct_k(:,:), conduct(:,:)
-   REAL(dbl),    ALLOCATABLE :: dos_k(:,:), dos(:), cond_aux(:)
-   COMPLEX(dbl), ALLOCATABLE :: work(:,:)
+   CHARACTER(9)    :: subname="conductor"
 
 !
 !------------------------------
@@ -78,31 +49,21 @@
       
 
    !
-   ! check whether data files should be internally converted
+   ! Init main data
+   !
+   CALL write_header( stdout, "Conductor Init" )
    !
    CALL datafiles_init()
-
-   !
-   ! smearing functions
    !
    CALL smearing_init()
-
-   !
-   ! initialize kpoints and R vectors
    !
    CALL kpoints_init( datafile_C, transport_dir )
-
-   !
-   ! Set up the layer hamiltonians
    !
    CALL hamiltonian_init( )
 
-
    !
-   ! Setup correlation data and energy grids
+   ! Init correlation data and energy grid
    !
-
-
    ! If correlation is used, the energy grid is read
    ! from datafile_sgm and input parameters are overwirtten
    !
@@ -111,30 +72,103 @@
    IF ( lhave_corr ) THEN 
        !
        CALL correlation_init( sgm_unit )
-
        !
-       ! Read correlation data if not dynamical
-       !
-       IF ( .NOT. ldynam_corr ) THEN
-           !
-           CALL correlation_read( )
-           !
-       ENDIF
+       IF ( .NOT. ldynam_corr ) CALL correlation_read( )
        !
    ENDIF   
    !
-   !
-   IF ( .NOT. egrid_alloc ) THEN
-       !
-       CALL egrid_init( )
-       !
-   ENDIF
+   IF ( .NOT. egrid_alloc ) CALL egrid_init( )
 
    !
-   ! write input data on the output file
+   ! print data to output
    !
-   IF (ionode) CALL summary( stdout )
+   CALL summary( stdout )
 
+
+   !
+   ! do the main task
+   !
+   CALL do_conductor() 
+
+   !
+   ! clean global memory
+   !
+   CALL cleanup()
+
+   !
+   ! finalize
+   !
+   CALL shutdown ( subname ) 
+
+END PROGRAM conductor
+  
+
+!********************************************************
+   SUBROUTINE do_conductor()
+   !********************************************************
+   !
+   ! perform the main task of the calculation
+   !
+   USE kinds,                ONLY : dbl
+   USE constants,            ONLY : PI, ZERO, CI
+   USE parameters,           ONLY : nstrx 
+   USE files_module,         ONLY : file_open, file_close
+   USE timing_module,        ONLY : timing, timing_upto_now
+   USE log_module,           ONLY : log_push, log_pop
+   USE util_module,          ONLY : mat_mul, mat_inv
+   USE mp_global,            ONLY : mpime, nproc
+   USE mp,                   ONLY : mp_sum
+   USE io_module,            ONLY : io_name, ionode, stdout, stdin, sgm_unit, &
+                                    sgmL_unit => aux3_unit, sgmR_unit => aux4_unit, &
+                                    work_dir, prefix, postfix, aux_unit
+   USE operator_module,      ONLY : operator_write_init, operator_write_close, &
+                                    operator_write_aux, operator_write_data
+   USE T_control_module,     ONLY : conduct_formula, nprint, datafile_sgm,  &
+                                    write_kdata, write_lead_sgm, &
+                                    do_eigenchannels, do_eigplot, ie_eigplot, ik_eigplot
+   USE T_egrid_module,       ONLY : ne, egrid
+   USE T_kpoints_module,     ONLY : nkpts_par, vkpt_par3D, wk_par, ivr_par3D, &
+                                    vr_par3D, nrtot_par
+   USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,             &
+                                    blc_00L, blc_01L, blc_00R, blc_01R, &
+                                    blc_00C, blc_LC,  blc_CR
+   USE T_workspace_module,   ONLY : totL, tottL, totR, tottR, &
+                                    gR, gL, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
+                                    rsgm_L, rsgm_R, workspace_allocate
+   USE T_correlation_module, ONLY : lhave_corr, ldynam_corr, correlation_read
+   USE T_write_data_module,  ONLY : wd_write_data, wd_write_eigplot
+   USE T_operator_blc_module
+   !
+   IMPLICIT NONE
+
+   !
+   ! local variables
+   !
+   CHARACTER(12)    :: subname="do_conductor"
+   !
+   INTEGER          :: i, ie, ir, ik, ierr, niter
+   INTEGER          :: iomg_s, iomg_e
+   LOGICAL          :: write_eigchn
+   REAL(dbl)        :: avg_iter
+   CHARACTER(4)     :: ctmp
+   CHARACTER(nstrx) :: filename
+   !   
+   REAL(dbl),    ALLOCATABLE :: conduct_k(:,:), conduct(:,:)
+   REAL(dbl),    ALLOCATABLE :: dos_k(:,:), dos(:), cond_aux(:)
+   COMPLEX(dbl), ALLOCATABLE :: z_eigplot(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: work(:,:)
+   !
+   ! end of declarations
+   !
+
+!
+!------------------------------
+! main body 
+!------------------------------
+!
+
+   CALL timing(subname,OPR='start')
+   CALL log_push(subname)
 
 
    !
@@ -151,11 +185,18 @@
    IF( ierr /=0 ) CALL errore(subname,'allocating conduct_k', ABS(ierr) )
    !
    IF ( do_eigenchannels ) THEN
-       ALLOCATE ( conduct(ne,1+dimC), STAT=ierr )
+       ALLOCATE ( conduct(ne,1+MIN(dimC,dimR,dimL)), STAT=ierr )
    ELSE
        ALLOCATE ( conduct(ne,1), STAT=ierr )
    ENDIF
    IF( ierr /=0 ) CALL errore(subname,'allocating conduct', ABS(ierr) )
+   !
+   IF ( do_eigenchannels .AND. do_eigplot ) THEN
+       !
+       ALLOCATE ( z_eigplot(dimC, MIN(dimC,dimR,dimL) ), STAT=ierr )
+       IF( ierr /=0 ) CALL errore(subname,'allocating z_eigplot', ABS(ierr) )
+       !
+   ENDIF
    !
    !
    ALLOCATE ( cond_aux(dimC), STAT=ierr )
@@ -313,8 +354,8 @@
           ! or (in the correlated case) to the generalized expression as 
           ! from PRL 94, 116802 (2005)
           !
-          CALL transmittance( cond_aux, dimC, gamma_L, gamma_R, gC, blc_00C, &
-                              TRIM(conduct_formula), do_eigenchannels )
+          CALL transmittance( dimC, gamma_L, gamma_R, gC, blc_00C, conduct_formula, &
+                              cond_aux, do_eigenchannels, do_eigplot, work(1:dimC,1:dimC) )
           !
           ! get the total trace
           DO i=1,dimC
@@ -325,11 +366,23 @@
           ENDDO
           !
           ! resolve over eigenchannels
+          ! NOTE: the # of non-null eigenchannels is lower than MIN( dimC, dimR, dimL )
+          !
           IF ( do_eigenchannels ) THEN
               !
-              conduct(ie,2:dimC+1) = conduct(ie,2:dimC+1) + wk_par(ik) * cond_aux(1:dimC)
+              conduct( ie, 2:MIN(dimC,dimR,dimL)+1 ) = conduct( ie, 2:MIN(dimC,dimR,dimL)+1 ) &
+                                                     + wk_par(ik) * cond_aux( 1:MIN(dimC,dimR,dimL) )
               !
           ENDIF
+          !
+          IF ( do_eigenchannels .AND. do_eigplot .AND. &
+               ik == ik_eigplot .AND. ie == ie_eigplot ) THEN
+              !
+              z_eigplot = work( 1:dimC, 1:MIN(dimC,dimR,dimL) )
+              write_eigchn = .TRUE.
+              !
+          ENDIF
+          ! 
           ! 
       ENDDO kpt_loop 
 
@@ -396,53 +449,29 @@
        !
    ENDIF
 
-
-
-
-!
-! write DOS and CONDUCT data on files
-!
-
-   IF ( ionode ) THEN
+   !
+   ! write auxiliary data for eigenchannel analysis
+   !
+   IF ( write_eigchn ) THEN
        !
-       CALL write_header( stdout, "Writing data" )
-       CALL flush_unit( stdout )
-   
-
-       CALL io_name( "conductance", filename )
+       CALL wd_write_eigplot( aux_unit, ie_eigplot, ik_eigplot, &
+                              dimC, MIN(dimC,dimR,dimL), z_eigplot)
        !
-       OPEN ( cond_unit, FILE=TRIM(filename), FORM='formatted' )
-       !
-       str = TRIM( int2char(dimC+2))
-       DO ie = 1, ne
-           WRITE ( cond_unit, '('//TRIM(str)//'(f15.9))' ) egrid(ie), conduct(ie,:)
-       ENDDO
-       !
-       CLOSE( cond_unit )
-       !
-       CALL io_name( "conductance", filename, LPATH=.FALSE. )
-       WRITE(stdout,"(/,2x,'Conductance written on file: ',3x,a)") TRIM(filename)
-                            
-
-       CALL io_name( "doscond", filename )
-       !
-       OPEN ( dos_unit, FILE=TRIM(filename), FORM='formatted' )
-       !
-       DO ie = 1, ne
-           WRITE ( dos_unit, '(2(f15.9))' ) egrid(ie), dos(ie)
-       ENDDO
-       !
-       CLOSE( dos_unit )
-       !
-       CALL io_name( "doscond", filename, LPATH=.FALSE. )
-       WRITE(stdout,"(  2x,'        DOS written on file: ',3x,a)") TRIM(filename)
-       ! 
    ENDIF
 
-
-!
-!  write kpoint-resolved dos and transmittance data on files
-!
+   !
+   ! write DOS and CONDUCT data on files
+   !
+   CALL write_header( stdout, "Writing data" )
+   CALL flush_unit( stdout )
+   ! 
+   CALL wd_write_data(aux_unit, ne, egrid, SIZE(conduct,2), conduct, 'conductance' ) 
+   !
+   CALL wd_write_data(aux_unit, ne, egrid, 1, dos, 'doscond' ) 
+                            
+   !
+   !  write kpoint-resolved dos and transmittance data on files
+   !
    IF ( write_kdata .AND. ionode ) THEN
       !
       DO ik = 1, nkpts_par
@@ -490,7 +519,7 @@
    
 
 !
-!...  shutdown
+! ... shutdown
 !
 
    !
@@ -507,16 +536,18 @@
    !
    DEALLOCATE ( work, STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'deallocating work', ABS(ierr) )
+   !
+   IF ( do_eigenchannels .AND. do_eigplot ) THEN
+       !
+       DEALLOCATE ( z_eigplot, STAT=ierr )
+       IF( ierr /=0 ) CALL errore(subname,'deallocating z_eigplot', ABS(ierr) )
+       !
+   ENDIF
 
-   !
-   ! clean global memory
-   !
-   CALL cleanup()
 
-   !
-   ! finalize
-   !
-   CALL shutdown ( subname ) 
+   CALL timing(subname,OPR='stop')
+   CALL log_pop(subname)
+      !
+END SUBROUTINE do_conductor
+   
 
-END PROGRAM conductor
-  

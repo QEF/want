@@ -22,7 +22,7 @@
 !=----------------------------------------------------------------------------=!
 !
 !---------------------------------------------------------------------
-subroutine set_pseudo_upf (is, upf, grid)
+subroutine set_pseudo_upf (upf, grid)
   !---------------------------------------------------------------------
   !
   !   set "is"-th pseudopotential using the Unified Pseudopotential Format
@@ -34,14 +34,13 @@ subroutine set_pseudo_upf (is, upf, grid)
   !
   implicit none
   !
-  integer :: is
-  !
   !     Local variables
   !
-  integer :: iexch,icorr,igcx,igcc
-  TYPE(radial_grid_type),target,optional :: grid ! if present reconstruct radial grid.
-                              ! (only for old format pseudos)
   TYPE (pseudo_upf) :: upf
+  TYPE(radial_grid_type),TARGET,OPTIONAL :: grid   ! if present reconstruct radial grid.
+                                                   ! (only for old format pseudos)
+  !
+  integer :: iexch,icorr,igcx,igcc
   !
   !
   ! workaround for rrkj format - it contains the indices, not the name

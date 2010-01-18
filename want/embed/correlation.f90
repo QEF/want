@@ -22,7 +22,7 @@
    USE log_module,              ONLY : log_push, log_pop
    USE files_module,            ONLY : file_open, file_close, file_exist
    !
-   USE E_hamiltonian_module,    ONLY : dimT, dimE, dimB, blc_T, blc_E, blc_B, blc_EB
+   USE E_hamiltonian_module,    ONLY : dimT, dimE, dimB, blc_T, blc_E, blc_B, blc_EB, blc_BE
    USE E_control_module,        ONLY : transport_dir, datafile_sgm
    !
    USE T_egrid_module,          ONLY : de, ne, egrid, emin, emax, egrid_alloc => alloc
@@ -189,11 +189,14 @@ CONTAINS
                                   LHAVE_CORR=.TRUE., OBJ=blc_B)
       CALL operator_blc_allocate( dimE, dimB, nkpts_par, NRTOT_SGM=nrtot_corr, &
                                   LHAVE_CORR=.TRUE., OBJ=blc_EB)
+      CALL operator_blc_allocate( dimB, dimE, nkpts_par, NRTOT_SGM=nrtot_corr, &
+                                  LHAVE_CORR=.TRUE., OBJ=blc_BE)
       !
       blc_T%ivr_sgm = ivr_corr
       blc_E%ivr_sgm = ivr_corr
       blc_B%ivr_sgm = ivr_corr
       blc_EB%ivr_sgm = ivr_corr
+      blc_BE%ivr_sgm = ivr_corr
       !
       DEALLOCATE ( ivr_corr, STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_corr', ABS(ierr) )
@@ -292,7 +295,8 @@ CONTAINS
                   !
                   SELECT CASE( TRIM(opr%blc_name) )
                   !
-                  CASE( "block_00C", "block_00R", "block_00L", "block_T", "block_E", "block_B", "block_EB" )
+                  CASE( "block_00C", "block_00R", "block_00L", &
+                        "block_T",   "block_E",   "block_B",   "block_EB",  "block_BE" )
                       ivr_aux(i) = 0
                   CASE( "block_01R", "block_01L", "block_LC", "block_CR" )
                       ivr_aux(i) = 1
@@ -417,6 +421,7 @@ CONTAINS
        CALL correlation_sgmread( sgm_unit, blc_E,  IE=ie )
        CALL correlation_sgmread( sgm_unit, blc_B,  IE=ie )
        CALL correlation_sgmread( sgm_unit, blc_EB, IE=ie )
+       CALL correlation_sgmread( sgm_unit, blc_BE, IE=ie )
        !
    ELSE
        !
@@ -424,6 +429,7 @@ CONTAINS
        CALL correlation_sgmread( sgm_unit, blc_E )
        CALL correlation_sgmread( sgm_unit, blc_B )
        CALL correlation_sgmread( sgm_unit, blc_EB )
+       CALL correlation_sgmread( sgm_unit, blc_BE )
        !
    ENDIF
 

@@ -73,6 +73,7 @@
    IF (ierr/=0) CALL errore(subname,'allocating w, gw',ABS(ierr))
 
 
+
    !
    ! If smearing_type is lorentzian, the usual technique is used, 
    ! otherwise a numerical interpolation is adopted.
@@ -107,6 +108,14 @@
         
 
    CASE DEFAULT
+        !
+        ! This part is incompatible with having non-hermitean
+        ! correlation. For safety reasons, we give an error
+        ! for any kind of correlation
+        !
+        IF ( opr%lhave_corr .OR. opr%ldynam_corr ) &
+            CALL errore(subname,'smearing and self-energies not compatible',10)
+        ! 
         !
         ! Numeric smearing:
         ! diagonalize the matrix and apply 

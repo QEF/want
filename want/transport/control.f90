@@ -30,6 +30,9 @@
    INTEGER                   :: debug_level
    !
    LOGICAL                   :: do_eigenchannels = .FALSE.
+   LOGICAL                   :: do_eigplot = .FALSE.
+   INTEGER                   :: ie_eigplot = 0
+   INTEGER                   :: ik_eigplot = 0
    !
    LOGICAL                   :: use_debug_mode
    LOGICAL                   :: write_kdata
@@ -56,6 +59,9 @@
    PUBLIC :: debug_level
    !
    PUBLIC :: do_eigenchannels
+   PUBLIC :: do_eigplot
+   PUBLIC :: ie_eigplot, ik_eigplot
+   !
    PUBLIC :: use_debug_mode
    !
    PUBLIC :: write_kdata

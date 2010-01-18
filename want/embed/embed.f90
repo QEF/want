@@ -33,7 +33,7 @@
    !
    USE E_input_module,       ONLY : input_manager
    USE E_control_module,     ONLY : nprint, datafile_tot, datafile_sgm, datafile_sgm_emb, transport_dir
-   USE E_hamiltonian_module, ONLY : dimx, dimT, dimE, dimB, blc_T, blc_E, blc_B, blc_EB
+   USE E_hamiltonian_module, ONLY : dimx, dimT, dimE, dimB, blc_T, blc_E, blc_B, blc_EB, blc_BE
    USE E_correlation_module, ONLY : lhave_corr, ldynam_corr, correlation_init, correlation_read
    USE E_datafiles_module,   ONLY : datafiles_init
    USE E_workspace_module,   ONLY : gB, gE, sgm_B, rsgm_B, workspace_allocate
@@ -211,8 +211,12 @@
           ! work = (omg S -H_EB ) * gB
           CALL mat_mul( work(1:dimE, 1:dimB), blc_EB%aux, 'N', gB, 'N', dimE, dimB, dimB )
           ! 
-          ! sgmB = (omg S -H_EB ) * gB * (omg S -H_EB )^dag = work * (omg S -H_EB )^dag 
-          CALL mat_mul( sgm_B(:,:,ik), work(1:dimE, 1:dimB), 'N', blc_EB%aux, 'C', dimE, dimE, dimB )
+          ! sgmB = (omg S -H_EB ) * gB * (omg S -H_BE ) = work * (omg S -H_BE )^dag 
+          !
+          ! note that we do not use EB^dag because of the possiblity to have non-hermitean
+          ! self-energies built into the hamiltonians
+          !
+          CALL mat_mul( sgm_B(:,:,ik), work(1:dimE, 1:dimB), 'N', blc_BE%aux, 'N', dimE, dimE, dimB )
  
 
           ! 

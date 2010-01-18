@@ -22,7 +22,7 @@
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
    !
-   USE E_hamiltonian_module, ONLY : shift_T, blc_T, blc_E, blc_B, blc_EB
+   USE E_hamiltonian_module, ONLY : shift_T, blc_T, blc_E, blc_B, blc_EB, blc_BE
    !
    USE T_egrid_module,       ONLY : egrid
    USE T_operator_blc_module
@@ -61,6 +61,7 @@
    blc_E%aux(:,:)  =  (omg -shift_T) * blc_E%S(:,:,ik)  -blc_E%H(:,:,ik)
    blc_B%aux(:,:)  =  (omg -shift_T) * blc_B%S(:,:,ik)  -blc_B%H(:,:,ik)
    blc_EB%aux(:,:) =  (omg -shift_T) * blc_EB%S(:,:,ik) -blc_EB%H(:,:,ik)
+   blc_BE%aux(:,:) =  (omg -shift_T) * blc_BE%S(:,:,ik) -blc_BE%H(:,:,ik)
    
    !
    ! correlation
@@ -77,6 +78,9 @@
    IF ( ASSOCIATED( blc_EB%sgm ) ) THEN
        blc_EB%aux(:,:) = blc_EB%aux(:,:) -blc_EB%sgm(:,:,ik)
    ENDIF
+   IF ( ASSOCIATED( blc_BE%sgm ) ) THEN
+       blc_BE%aux(:,:) = blc_BE%aux(:,:) -blc_BE%sgm(:,:,ik)
+   ENDIF
 
    !
    ! finalize setup
@@ -85,6 +89,7 @@
    CALL operator_blc_update( IE=ie, IK=ik, OBJ=blc_E  )
    CALL operator_blc_update( IE=ie, IK=ik, OBJ=blc_B  )
    CALL operator_blc_update( IE=ie, IK=ik, OBJ=blc_EB )
+   CALL operator_blc_update( IE=ie, IK=ik, OBJ=blc_BE )
    
    CALL timing( subname, OPR='STOP' )
    CALL log_pop( subname )

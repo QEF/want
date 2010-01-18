@@ -39,6 +39,7 @@
     TYPE( operator_blc )      :: blc_E
     TYPE( operator_blc )      :: blc_B
     TYPE( operator_blc )      :: blc_EB
+    TYPE( operator_blc )      :: blc_BE
     !
     LOGICAL :: alloc = .FALSE.
 
@@ -56,6 +57,7 @@
    PUBLIC :: blc_E
    PUBLIC :: blc_B
    PUBLIC :: blc_EB
+   PUBLIC :: blc_BE
    !
    PUBLIC :: alloc
    !
@@ -95,6 +97,7 @@ CONTAINS
       CALL operator_blc_init( blc_E,   "block_E")
       CALL operator_blc_init( blc_B,   "block_B")
       CALL operator_blc_init( blc_EB,  "block_EB")
+      CALL operator_blc_init( blc_BE,  "block_BE")
 
       !
       ! allocations
@@ -103,6 +106,7 @@ CONTAINS
       CALL operator_blc_allocate( dimE, dimE, nkpts_par, OBJ=blc_E )
       CALL operator_blc_allocate( dimB, dimB, nkpts_par, OBJ=blc_B )
       CALL operator_blc_allocate( dimE, dimB, nkpts_par, OBJ=blc_EB )
+      CALL operator_blc_allocate( dimB, dimE, nkpts_par, OBJ=blc_BE )
       !
       alloc = .TRUE.
 
@@ -125,6 +129,7 @@ CONTAINS
       CALL operator_blc_deallocate( OBJ=blc_E )
       CALL operator_blc_deallocate( OBJ=blc_B )
       CALL operator_blc_deallocate( OBJ=blc_EB )
+      CALL operator_blc_deallocate( OBJ=blc_BE )
       !
       alloc = .FALSE.   
 

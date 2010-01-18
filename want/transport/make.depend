@@ -9,15 +9,14 @@ conductor.o : datafiles.o
 conductor.o : egrid.o
 conductor.o : hamiltonian.o
 conductor.o : input.o
-conductor.o : ../iotk/iotk_16_module.o
 conductor.o : kpoints.o
 conductor.o : ../libs/constants.o
 conductor.o : ../libs/files.o
 conductor.o : ../libs/kind.o
+conductor.o : ../libs/log_module.o
 conductor.o : ../libs/mp_global.o
 conductor.o : ../libs/mp.o
 conductor.o : ../libs/parameters.o
-conductor.o : ../libs/parser.o
 conductor.o : ../libs/timing.o
 conductor.o : ../libs/util.o
 conductor.o : operator_blc.o
@@ -26,6 +25,7 @@ conductor.o : ../wannier/io_module.o
 conductor.o : ../wannier/operator.o
 conductor.o : ../wannier/version.o
 conductor.o : workspace.o
+conductor.o : write_data.o
 control.o : ../libs/kind.o
 control.o : ../libs/parameters.o
 correlation.o : control.o
@@ -158,6 +158,7 @@ summary.o : hamiltonian.o
 summary.o : kpoints.o
 summary.o : ../libs/constants.o
 summary.o : ../libs/kind.o
+summary.o : ../libs/log_module.o
 summary.o : ../libs/mp_global.o
 summary.o : ../libs/parser.o
 summary.o : smearing.o
@@ -181,3 +182,9 @@ workspace.o : control.o
 workspace.o : hamiltonian.o
 workspace.o : kpoints.o
 workspace.o : ../libs/kind.o
+write_data.o : ../iotk/iotk_16_module.o
+write_data.o : ../libs/log_module.o
+write_data.o : ../libs/parameters.o
+write_data.o : ../libs/parser.o
+write_data.o : ../libs/timing.o
+write_data.o : ../wannier/io_module.o

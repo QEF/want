@@ -4,6 +4,14 @@
 =======================================================
 
 
+19 Jan 2010      erorr given when trying to use smearing and correlation
+                 self-energies. The condition can be made looser (just avoid
+                 non-hermitean self-energies), or the general case can be
+                 implemented. (AF)
+                 Bug fixed in embed when using dynamical self-energies to build
+                 the lead self-energies. The same problem is still present in 
+                 the transport part. (AF)
+
 18 Jan 2010      Bug fixed in transport/kpoints.f90. It was affecting the
                  dumping of sgm lead data and embed. Pointed out by D. Prezzi. (AF)
 

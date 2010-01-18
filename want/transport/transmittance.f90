@@ -7,15 +7,17 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***********************************************
-   SUBROUTINE transmittance( conduct, dimC, gamma_L, gamma_R, G_ret, opr00, &
-                             formula, do_eigenchannels)
+   SUBROUTINE transmittance( dimC, gamma_L, gamma_R, G_ret, opr00, &
+                             which_formula, conduct, do_eigenchannels, do_eigplot, z_eigplot)
    !***********************************************
    !
    ! Calculates the matrix involved in the quantum transmittance, 
-   ! returned in CONDUCT variable, following
-   ! LANDAUER formula in the MEAN FIELD case
-   ! otherwise uses another formula derived in the
-   ! paper PRL 94, 
+   ! returned in CONDUCT variable, using the LANDAUER formula in the MEAN FIELD case
+   !
+   ! otherwise the generalized expression derived in:
+   !     A. Ferretti et al, PRL 94, 116802 (2005).
+   !
+   ! is used instead.
    !
    USE kinds,                   ONLY : dbl
    USE constants,               ONLY : CZERO, CONE, CI, ZERO , EPS_m5, EPS_m6
@@ -29,13 +31,14 @@
    !
    ! input/output variables
    !
-   INTEGER,             INTENT(IN) ::  dimC
-   COMPLEX(dbl),        INTENT(IN) ::  gamma_L(dimC,dimC), gamma_R(dimC,dimC)
-   COMPLEX(dbl),        INTENT(IN) ::  G_ret(dimC,dimC)
-   TYPE(operator_blc),  INTENT(IN) ::  opr00
-   CHARACTER(*),        INTENT(IN) ::  formula
-   LOGICAL,             INTENT(IN) ::  do_eigenchannels
-   REAL(dbl),           INTENT(OUT)::  conduct(dimC)
+   INTEGER,             INTENT(IN)  :: dimC
+   COMPLEX(dbl),        INTENT(IN)  :: gamma_L(dimC,dimC), gamma_R(dimC,dimC)
+   COMPLEX(dbl),        INTENT(IN)  :: G_ret(dimC,dimC)
+   TYPE(operator_blc),  INTENT(IN)  :: opr00
+   CHARACTER(*),        INTENT(IN)  :: which_formula
+   LOGICAL,             INTENT(IN)  :: do_eigenchannels, do_eigplot
+   REAL(dbl),           INTENT(OUT) :: conduct(dimC)
+   COMPLEX(dbl),        INTENT(OUT) :: z_eigplot(dimC,dimC)
 
    !
    ! local variables
@@ -62,20 +65,29 @@
    !
    ALLOCATE( lambda(dimC,dimC), STAT=ierr )
    IF (ierr/=0) CALL errore(subname,'allocating lambda',ABS(ierr))
-
-!
-! if FORMULA = "generalized"
-! calculates the correction term (lambda)
-!
-! lambda = (gamma_R + gamma_L +2*eta)^{-1} * ( g_corr + gamma_R + gamma_L + 2*eta )
-!         = I + (gamma_R + gamma_L +2*eta)^{-1} * ( g_corr )
-!
-! where g_corr = i (sgm_corr - sgm_corr^\dag)
-! 
-
-   IF ( TRIM(formula) == "generalized" )  THEN
+   !
+   IF ( do_eigenchannels ) THEN
        !
-       ik = opr00%ik
+       ALLOCATE( z(dimC,dimC), w(dimC), STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'allocating z, w',ABS(ierr))
+       !
+   ENDIF
+
+
+   !
+   ! if which_formula = "generalized"
+   ! calculates the correction term (lambda)
+   !
+   ! lambda = (gamma_R + gamma_L +2*eta)^{-1} * ( g_corr + gamma_R + gamma_L + 2*eta )
+   !         = I + (gamma_R + gamma_L +2*eta)^{-1} * ( g_corr )
+   !
+   ! where g_corr = i (sgm_corr - sgm_corr^\dag)
+   ! 
+   !
+   ik = opr00%ik
+   !
+   IF ( TRIM(which_formula) == "generalized" )  THEN
+       !
        !
        DO j=1,dimC
            !
@@ -111,7 +123,7 @@
 !
 ! calculates the matrix product 
 ! whose trace (CONDUCT) is the main term of the transmittance 
-! units of 2e^2/h 
+! units of 2e^2/h for spin degenerate, or e^2/h for spin-polarized cases.
 ! 
 
    !
@@ -142,7 +154,7 @@
        ! WORK1 = G_adv * gamma_L * G_ret * gamma_R * Lambda
        ! This is calculated only if needed
        !
-       IF ( TRIM(formula) ==  'generalized' ) THEN
+       IF ( TRIM(which_formula) ==  'generalized' ) THEN
            !
            CALL mat_mul(work1, work, 'N', lambda, 'N', dimC, dimC, dimC)
            !
@@ -158,10 +170,12 @@
        DO i=1,dimC
            conduct(i) = REAL( work1(i,i), dbl )
        ENDDO
+       
+
+   ELSE IF ( do_eigenchannels .AND. .NOT. do_eigplot ) THEN
        !
-   ELSE
-       !
-       ! Here we compute and diagonalize the product
+       ! Here we compute only the eigenchannel decomposition of
+       ! the transmittance and diagonalize the product
        !
        ! work1 = gamma_R^1/2 * G_adv * gamma_L * G_ret * gamma_R^1/2
        !       = gamma_R^1/2 * work2 * gamma_R^1/2
@@ -170,11 +184,13 @@
        !
        ! To do this, we need to compute gamma_R^1/2  ( stored in work )
        !
-
-       ALLOCATE( z(dimC,dimC), w(dimC), STAT=ierr )
-       IF (ierr/=0) CALL errore(subname,'allocating z, w',ABS(ierr))
-
-       CALL mat_hdiag( z, w, gamma_R, dimC ) 
+       !
+       IF ( opr00%lhave_ovp ) THEN
+           CALL mat_hdiag( z, w, gamma_R, opr00%S(:,:,ik), dimC ) 
+       ELSE
+           CALL mat_hdiag( z, w, gamma_R, dimC ) 
+       ENDIF
+       !
        !
        DO i = 1, dimC
            !
@@ -208,17 +224,88 @@
        !
        ! get the eigenvalues
        ! we invert the sign of work2 in such a way to have an increasing
-       ! ordering of eigenvalues
+       ! ordering of eigenvalues (according to lapack diag routine)
        !
        work2 = -work2
        !
-       CALL mat_hdiag( z, conduct, work2, dimC ) 
+       IF ( opr00%lhave_ovp ) THEN
+           CALL mat_hdiag( z, conduct, work2, opr00%S(:,:,ik), dimC ) 
+       ELSE
+           CALL mat_hdiag( z, conduct, work2, dimC ) 
+       ENDIF
        !
        conduct = -conduct
        
-       DEALLOCATE( z, w, STAT=ierr )
-       IF (ierr/=0) CALL errore(subname,'deallocating z, w',ABS(ierr))
+
+
+   ELSE IF ( do_eigenchannels .AND. do_eigplot ) THEN
        !
+       ! here we follow the method given by: 
+       !
+       ! M Paulsson and M.Brandbyge, PRB 76, 115117 (2007)
+       !
+       ! This allows to compute data to plot the orbitals corresponding to
+       ! the eigenchannels.
+       !
+       ! Once we have calculated A_L = G^adv Gamma_L G^ret  (already stored in work2)
+       ! this matrix is diagonalized, and the new matrix given in 
+       !
+       !
+       IF ( opr00%lhave_ovp ) THEN
+           CALL mat_hdiag( z, w, work2, opr00%S(:,:,ik), dimC ) 
+       ELSE
+           CALL mat_hdiag( z, w, work2, dimC ) 
+       ENDIF
+       !
+       ! define \bar{z} = z * diag(sqrt(w))
+       ! Eq.(28) of the above paper
+       !
+       DO i = 1, dimC
+           !
+           IF ( w(i) < -EPS_m6 ) &
+                 CALL errore(subname,'G^adv*Gamma_L*G^ret not positive defined', 10)
+           !
+           ! clean any numerical noise leading to eigenvalues  -eps_m6 < w < 0.0
+           IF ( w(i) < ZERO ) w(i) = ZERO
+           !
+           w(i)   = SQRT( w(i) )
+           !
+       ENDDO
+       !
+       DO j = 1, dimC
+       DO i = 1, dimC
+           !
+           z(i,j) = z(i,j) * w(j)
+           !
+       ENDDO
+       ENDDO
+       
+       !
+       ! define the matrix to diagonalize
+       !
+       CALL mat_mul( work, gamma_R, 'N',    z, 'N', dimC, dimC, dimC)
+       CALL mat_mul( work2, z,      'C', work, 'N', dimC, dimC, dimC)
+       
+       !
+       ! get the eigenvalues
+       ! we invert the sign of work2 in such a way to have an increasing
+       ! ordering of eigenvalues (according to lapack diag routine)
+       !
+       work2 = -work2
+       !
+       IF ( opr00%lhave_ovp ) THEN
+           CALL mat_hdiag( z, conduct, work2, opr00%S(:,:,ik), dimC ) 
+       ELSE
+           CALL mat_hdiag( z, conduct, work2, dimC ) 
+       ENDIF
+       !
+       z_eigplot(:,:) = z(:,:)
+       !
+       conduct = -conduct
+       
+
+   ELSE
+       CALL errore(subname,'Unepxected error do_eigenchannels--do_eigplot',10)
    ENDIF
 
    !
@@ -229,26 +316,18 @@
    !
    DEALLOCATE( lambda, STAT=ierr )
    IF (ierr/=0) CALL errore(subname,'deallocating lambda',ABS(ierr))
-      
+   !      
+   IF ( do_eigenchannels ) THEN
+       !
+       DEALLOCATE( z, w, STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'deallocating z, w',ABS(ierr))
+       !
+   ENDIF
+
    CALL timing(subname, OPR='stop')
    CALL log_pop(subname)
    !
    RETURN
    !
 END SUBROUTINE transmittance
-
-!   !
-!   ! WORK1 = gamma_L * G_ret * gammma_R
-!   !
-!   CALL mat_mul(work1, work, 'N', gamma_R, 'N', dimC, dimC, dimC)
-!
-!   !
-!   ! WORK  = gamma_L * G_ret * gamma_R * lambda
-!   !
-!   CALL mat_mul(work, work1, 'N', lambda, 'N', dimC, dimC, dimC)
-!
-!   !
-!   ! WORK1 = gamma_L * G_ret * gamma_R * lambda * G_adv
-!   !
-!   CALL mat_mul(work1, work, 'N', G_ret, 'C', dimC, dimC, dimC)
 
