@@ -60,11 +60,11 @@ package-ready-stamp: uncompress-stamp configure-stamp
 #
 clean:
 	if test -d $(PACKAGE) ; then ( cd $(PACKAGE);  $(MAKE) clean ) ; fi
-	- rm -rf ./bin ./lib ./include package-ready-stamp
+	- rm -rf ./bin ./lib ./include package-ready-stamp configure-stamp
 
 wash: clean
 	if test -d $(PACKAGE) ; then ( rm -rf $(PACKAGE) ) ; fi 
-	- rm uncompress-stamp configure-stamp package-ready-stamp
+	- rm uncompress-stamp package-ready-stamp
 	- rm -rf $(INSTALL_DIR)
 	
 

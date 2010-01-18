@@ -57,11 +57,11 @@ package-ready-stamp: uncompress-stamp configure-stamp
 #
 clean:
 	if test -d $(PACKAGE) ; then ( cd $(PACKAGE);  $(MAKE) clean ) ; fi
-	- rm -rf ./lib package-ready-stamp
+	- rm -rf ./lib package-ready-stamp configure-stamp
 
 wash: clean
 	if test -d $(PACKAGE) ; then ( rm -rf $(PACKAGE) ) ; fi 
-	- rm uncompress-stamp configure-stamp package-ready-stamp
+	- rm uncompress-stamp package-ready-stamp
 	- rm ../install/make_blas.inc
 	- rm -rf $(INSTALL_DIR)
 	

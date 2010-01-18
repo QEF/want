@@ -157,7 +157,7 @@ CONTAINS
       CHARACTER(*), OPTIONAL, INTENT(in)  :: action
       INTEGER,                INTENT(out) :: ierr
 
-      CHARACTER(9)                        :: subname='file_open'
+      !CHARACTER(9)                        :: subname='file_open'
       CHARACTER(7)                        :: status_
       CHARACTER(10)                       :: access_
       CHARACTER(11)                       :: form_
@@ -338,7 +338,7 @@ CONTAINS
       CHARACTER(*), OPTIONAL, INTENT(in)  :: action
       INTEGER,                INTENT(out) :: ierr
 
-      CHARACTER(10)                       :: subname='file_close'
+      !CHARACTER(10)                       :: subname='file_close'
       CHARACTER(9)                        :: action_
       CHARACTER(10*nstrx)                 :: path_
        
