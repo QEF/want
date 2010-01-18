@@ -134,6 +134,15 @@
    LOGICAL :: do_eigenchannels = .FALSE.
        ! compute eigenchannels
 
+   LOGICAL :: do_eigplot = .FALSE.
+       ! compute and write auxiliary data to plot the eigenchannels
+ 
+   INTEGER :: ie_eigplot = 0
+       ! write auxdata for eigechannel analysis at this energy
+
+   INTEGER :: ik_eigplot = 0
+       ! write auxdata for eigechannel analysis at this kpt
+
    CHARACTER(nstrx) :: work_dir   = './'
        ! working directory where to write datafiles
 
@@ -184,7 +193,8 @@
    NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type,             &
                  conduct_formula, niterx, ne, emin, emax, nprint, delta, bias,  &
                  datafile_L, datafile_C, datafile_R, datafile_sgm,              &
-                 transport_dir, smearing_type, do_eigenchannels,                &
+                 transport_dir, smearing_type, do_eigenchannels, do_eigplot,    &
+                 ie_eigplot, ik_eigplot,                                        &
                  delta_ratio, xmax, nk, s, use_symm, debug_level,               &
                  work_dir, prefix, postfix, write_kdata, write_lead_sgm, ispin, &
                  shift_L, shift_C, shift_R, shift_corr, nfailx 
@@ -194,7 +204,8 @@
    PUBLIC :: ne, emin, emax, nprint, delta, bias, delta_ratio, xmax 
    PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: nk, s, use_symm, debug_level
-   PUBLIC :: work_dir, prefix, postfix, ispin, write_kdata, write_lead_sgm, do_eigenchannels
+   PUBLIC :: work_dir, prefix, postfix, ispin, write_kdata, write_lead_sgm 
+   PUBLIC :: do_eigenchannels, do_eigplot, ie_eigplot, ik_eigplot
    PUBLIC :: shift_L, shift_C, shift_R, shift_corr, nfailx
    PUBLIC :: INPUT_CONDUCTOR
 
@@ -255,6 +266,9 @@ CONTAINS
       CALL mp_bcast( use_symm,           ionode_id)      
       CALL mp_bcast( debug_level,        ionode_id)      
       CALL mp_bcast( do_eigenchannels,   ionode_id)      
+      CALL mp_bcast( do_eigplot,         ionode_id)      
+      CALL mp_bcast( ie_eigplot,         ionode_id)      
+      CALL mp_bcast( ik_eigplot,         ionode_id)      
       CALL mp_bcast( ispin,              ionode_id)      
       CALL mp_bcast( work_dir,           ionode_id)      
       CALL mp_bcast( prefix,             ionode_id)      
@@ -283,11 +297,11 @@ CONTAINS
       INQUIRE( FILE=datafile_C, EXIST=exists )
       IF ( .NOT. exists ) CALL errore(subname,'unable to find '//TRIM(datafile_C),1)
       !
-      IF ( emax <= emin ) CALL errore(subname,'Invalid EMIN EMAX',1)
-      IF ( ne <= 1 ) CALL errore(subname,'Invalid NE',1)
-      IF ( niterx <= 0 ) CALL errore(subname,'Invalid NITERX',1)
-      IF ( nprint <= 0) CALL errore(subname, ' nprint must be > 0 ', -nprint+1 )
-      IF ( delta < ZERO ) CALL errore(subname,'Invalid DELTA',1)
+      IF ( emax <= emin )   CALL errore(subname,'Invalid EMIN EMAX',1)
+      IF ( ne <= 1 )        CALL errore(subname,'Invalid NE',1)
+      IF ( niterx <= 0 )    CALL errore(subname,'Invalid NITERX',1)
+      IF ( nprint <= 0)     CALL errore(subname, ' nprint must be > 0 ', -nprint+1 )
+      IF ( delta < ZERO )   CALL errore(subname,'Invalid DELTA',1)
 
       IF ( delta > 3.0_dbl* EPS_m1 ) CALL errore(subname,'DELTA too large',1)
 
@@ -357,6 +371,18 @@ CONTAINS
 
       IF ( ispin < 0 ) CALL errore(subname, 'ispin too small', 1) 
       IF ( ispin > 2 ) CALL errore(subname, 'ispin too large', 2) 
+
+      IF ( do_eigplot .AND. .NOT. do_eigenchannels ) &
+          CALL errore(subname,'eigplot needs eigchannels',1)
+
+      IF ( ie_eigplot < 0 ) CALL errore(subname,'invalid ie_eigplot < 0',1)
+      IF ( ik_eigplot < 0 ) CALL errore(subname,'invalid ik_eigplot < 0',1)
+      !
+      IF ( ie_eigplot > 0 .AND. .NOT. do_eigplot ) &
+          CALL errore(subname,'ie_eigplot needs do_eigplot',1)
+      IF ( ik_eigplot > 0 .AND. .NOT. do_eigplot ) &
+          CALL errore(subname,'ik_eigplot needs do_eigplot',1)
+
 
       CALL log_pop( 'read_namelist_input_conductor' )
 

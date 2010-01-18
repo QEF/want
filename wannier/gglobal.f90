@@ -18,8 +18,8 @@ SUBROUTINE gglobal( ng, gvect, gmap, b1, b2, b3, nr1, nr2, nr3, gcut, lgam )
 
   INTEGER,    INTENT(OUT) :: ng
   INTEGER,    INTENT(OUT) :: gvect(3,*)
-  INTEGER,    INTENT(OUT) :: gmap(-nr1:nr1, -nr2:nr2, -nr3:nr3)
   INTEGER,    INTENT(IN)  :: nr1, nr2, nr3
+  INTEGER,    INTENT(OUT) :: gmap(-nr1:nr1, -nr2:nr2, -nr3:nr3)
   REAL(dbl),  INTENT(IN)  :: b1(3), b2(3), b3(3), gcut
   LOGICAL,    INTENT(IN)  :: lgam
 

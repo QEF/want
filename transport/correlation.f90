@@ -261,6 +261,7 @@ CONTAINS
           j = 0
           DO i=1,3
               !
+              ivr_aux(i)=0
               IF ( i == transport_dir ) THEN
                   !
                   ! set ivr_aux(i) = 0 , 1 depending on the
@@ -293,6 +294,8 @@ CONTAINS
           lfound = .FALSE.
           !
           DO ir = 1, opr%nrtot_sgm
+              !
+              ind=0
               !
               IF ( ALL( opr%ivr_sgm(:,ir) == ivr_aux(:) ) )  THEN
                   !

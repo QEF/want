@@ -21,7 +21,7 @@
    !
    USE E_control_module,     ONLY : idir => transport_dir, datafile_tot
    USE E_hamiltonian_module, ONLY : hamiltonian_allocate, ispin, &
-                                    blc_T, blc_E, blc_B, blc_EB
+                                    blc_T, blc_E, blc_B, blc_EB, blc_BE
    !
    USE T_operator_blc_module
    USE iotk_module
@@ -74,6 +74,9 @@
        CALL iotk_scan_empty( stdin, "H_EB", ATTR=blc_EB%tag, IERR=ierr)
        IF (ierr/=0) CALL errore(subname, 'searching for tag H_EB', ABS(ierr) )       
        !
+       CALL iotk_scan_empty( stdin, "H_BE", ATTR=blc_BE%tag, IERR=ierr)
+       IF (ierr/=0) CALL errore(subname, 'searching for tag H_BE', ABS(ierr) )       
+       !
        CALL iotk_scan_end( stdin, 'HAMILTONIAN_DATA', IERR=ierr )
        IF (ierr/=0) CALL errore(subname,'searching end for HAMILTONIAN_DATA',ABS(ierr))
        !
@@ -83,6 +86,7 @@
    CALL mp_bcast(  blc_E%tag,    ionode_id )
    CALL mp_bcast(  blc_B%tag,    ionode_id )
    CALL mp_bcast(  blc_EB%tag,   ionode_id )
+   CALL mp_bcast(  blc_BE%tag,   ionode_id )
 
    !
    ! Read basic quantities from datafile
@@ -91,6 +95,7 @@
    CALL read_matrix( datafile_tot, ispin, idir, blc_E )
    CALL read_matrix( datafile_tot, ispin, idir, blc_B )
    CALL read_matrix( datafile_tot, ispin, idir, blc_EB )
+   CALL read_matrix( datafile_tot, ispin, idir, blc_BE )
 
    
    CALL timing( subname, OPR='STOP' )

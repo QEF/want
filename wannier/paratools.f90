@@ -220,7 +220,8 @@ END SUBROUTINE para_get_poolindex
    COMPLEX(dbl),   INTENT(INOUT) :: mydata(:,:,:)
    !
    CHARACTER(16)        :: subname='para_poolrecover'
-   INTEGER              :: nkpts_g, datalen, ip, ik_g, ierr
+   INTEGER              :: nkpts_g, ik_g
+   !INTEGER              :: datalen, ip, ierr
 
 
    CALL timing( subname, OPR="start")
@@ -230,9 +231,8 @@ END SUBROUTINE para_get_poolindex
    nkpts_g = SIZE( mydata, 3)
    IF ( .NOT. alloc ) CALL paratools_init( nkpts_g )
    !
-#define __TEST
-!
-#ifdef __TEST
+!#define __TEST
+!#ifdef __TEST
    !
    CALL timing( 'mp_sum', OPR="start")
    !
@@ -242,18 +242,20 @@ END SUBROUTINE para_get_poolindex
    !
    CALL timing( 'mp_sum', OPR="stop")
    !
-#else
-   !
-   datalen = SIZE( mydata, 1) * SIZE( mydata, 2)
-   !
-   displs(:) = displs_aux(:) * datalen
-   msglen(:) = msglen_aux(:) * datalen
-   !
-   CALL timing( 'mp_allgather', OPR="start")
-   CALL mp_allgather( mydata, displs, msglen )
-   CALL timing( 'mp_allgather', OPR="stop")
-   !
-#endif
+!#else
+!   !
+!   ! This version is slower than the one above
+!   !
+!   datalen = SIZE( mydata, 1) * SIZE( mydata, 2)
+!   !
+!   displs(:) = displs_aux(:) * datalen
+!   msglen(:) = msglen_aux(:) * datalen
+!   !
+!   CALL timing( 'mp_allgather', OPR="start")
+!   CALL mp_allgather( mydata, displs, msglen )
+!   CALL timing( 'mp_allgather', OPR="stop")
+!   !
+!#endif
    
    CALL timing( subname, OPR="stop")
    CALL log_pop( subname )
@@ -271,7 +273,8 @@ END SUBROUTINE para_poolrecover_ct
    REAL(dbl),   INTENT(INOUT) :: mydata(:,:)
    !
    CHARACTER(16)        :: subname='para_poolrecover'
-   INTEGER              :: nkpts_g, datalen, ip, ik_g, ierr
+   INTEGER              :: nkpts_g, ik_g
+   !INTEGER              :: datalen, ip, ierr
 
    
    CALL timing( subname, OPR="start")
@@ -281,9 +284,8 @@ END SUBROUTINE para_poolrecover_ct
    nkpts_g = SIZE( mydata, 2)
    IF ( .NOT. alloc ) CALL paratools_init( nkpts_g )
    !
-#define __TEST
-!
-#ifdef __TEST
+!#define __TEST
+!#ifdef __TEST
    !
    CALL timing( 'mp_sum', OPR="start")
    !
@@ -293,18 +295,21 @@ END SUBROUTINE para_poolrecover_ct
    !
    CALL timing( 'mp_sum', OPR="stop")
    !
-#else
-   !
-   datalen = SIZE( mydata, 1)
-   !
-   displs(:) = displs_aux(:) * datalen
-   msglen(:) = msglen_aux(:) * datalen
-   !
-   CALL timing( 'mp_allgather', OPR="start")
-   CALL mp_allgather( mydata, displs, msglen )
-   CALL timing( 'mp_allgather', OPR="stop")
-   !
-#endif
+!#else
+!   !
+!   ! This second way seems to be slower, and it is thus removed.
+!   !
+!   !
+!   datalen = SIZE( mydata, 1)
+!   !
+!   displs(:) = displs_aux(:) * datalen
+!   msglen(:) = msglen_aux(:) * datalen
+!   !
+!   CALL timing( 'mp_allgather', OPR="start")
+!   CALL mp_allgather( mydata, displs, msglen )
+!   CALL timing( 'mp_allgather', OPR="stop")
+!   !
+!#endif
    
    CALL timing( subname, OPR="stop")
    CALL log_pop( subname )

@@ -99,7 +99,7 @@ subroutine readpp
      call read_upf(upf(nt), rgrid(nt), isupf, unit=iunps)
      !
      if (isupf == 0) then
-        call set_pseudo_upf (nt, upf(nt))
+        call set_pseudo_upf ( upf(nt) )
         ! 
         ! UPF is assumed to be multi-projector
         !
@@ -126,14 +126,14 @@ subroutine readpp
            ELSE
               CALL readvan (iunps, nt, upf(nt))
            ENDIF
-           CALL set_pseudo_upf (nt, upf(nt), rgrid(nt))
+           CALL set_pseudo_upf ( upf(nt), rgrid(nt))
            !
         else
            newpseudo (nt) = .false.
            ! 
            call read_ncpp (iunps, nt, upf(nt))
            !
-           CALL set_pseudo_upf (nt, upf(nt), rgrid(nt)) 
+           CALL set_pseudo_upf ( upf(nt), rgrid(nt)) 
            !
         endif
         !
