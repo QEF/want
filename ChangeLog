@@ -4,6 +4,9 @@
 =======================================================
 
 
+18 Jan 2010      Bug fixed in transport/kpoints.f90. It was affecting the
+                 dumping of sgm lead data and embed. Pointed out by D. Prezzi. (AF)
+
 22 Nov 2009      IOTK lib updated with today's CVS version. 
                  extlibs directory added; blas and lapack moved there;
                  configure.ac updated using the one from espresso cvs;
