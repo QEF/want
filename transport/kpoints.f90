@@ -233,7 +233,7 @@ CONTAINS
               vkpt_par(:,ik) = vaux(1:2)
               wk_par( ik )   = ONE
               !
-              vkpt_par3D(:,ik) = kpoints_rmask( vkpt_par, ZERO, transport_dir )
+              vkpt_par3D(:,ik) = kpoints_rmask( vkpt_par(:,ik), ZERO, transport_dir )
               !
           ENDIF
           !
@@ -242,6 +242,7 @@ CONTAINS
       !
       wk_par ( : ) = wk_par ( : ) / REAL(nkpts_par_x, dbl)
       nkpts_par    = ik 
+
 
       ALLOCATE( table_par(nrtot_par,nkpts_par) , STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'allocating table_par, wk_par',ABS(ierr))
