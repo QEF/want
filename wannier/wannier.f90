@@ -26,7 +26,7 @@
       USE log_module,          ONLY : log_push, log_pop
       USE files_module,        ONLY : file_open, file_close
       USE version_module,      ONLY : version_number
-      USE util_module,         ONLY : zmat_unitary, mat_mul, mat_svd, mat_hdiag, zmat_hdotp
+      USE util_module,         ONLY : zmat_unitary, mat_mul, mat_svd, mat_hdiag, mat_hdotp
       USE kpoints_module,      ONLY : nkpts, nkpts_g, iks, ike, wbtot
       USE overlap_module,      ONLY : dimwann, Mkb
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
@@ -229,7 +229,7 @@
            DO ik = 1, nkpts
                !
                ik_g = ik + iks -1
-               gcnorm1 = gcnorm1 + REAL( zmat_hdotp( dimwann, 'U', domg(:,ik_g), domg(:,ik_g) ), dbl )
+               gcnorm1 = gcnorm1 + REAL( mat_hdotp( dimwann, 'U', domg(:,ik_g), domg(:,ik_g) ), dbl )
                !
            ENDDO
            !
@@ -259,7 +259,7 @@
                !
                ik_g = ik + iks -1
                !
-               gcnorm_aux = gcnorm_aux -REAL( zmat_hdotp( dimwann, 'U', domg(:,ik_g), dq(:,ik) ), dbl )
+               gcnorm_aux = gcnorm_aux -REAL( mat_hdotp( dimwann, 'U', domg(:,ik_g), dq(:,ik) ), dbl )
                !
            ENDDO
            !
