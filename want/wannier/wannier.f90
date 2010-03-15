@@ -92,7 +92,7 @@
 
 
       !
-      ! ... import overlap and projections from the disentangle sotred data
+      ! ... import overlap and projections from the disentangle stored data
       !
       CALL overlap_extract(dimwann)
       !
