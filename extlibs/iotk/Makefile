@@ -51,7 +51,7 @@ package-ready-stamp: uncompress-stamp configure-stamp
 	mv $(PACKAGE)/src/*.a ./lib ;
 	mv $(PACKAGE)/src/*.x ./bin ;
 	cp $(PACKAGE)/tools/iotk ./bin ;
-	mv $(PACKAGE)/src/iotk_module.mod ./include ;
+	mv $(PACKAGE)/src/*.mod ./include ;
 	#
 	- ( cd ../../bin ; ln -sf ../extlibs/iotk/bin/* . )
 	#
