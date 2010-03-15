@@ -526,6 +526,39 @@ run_conductor () {
    run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=$PARALLEL
 }
 
+#
+#----------------------
+run_embed () {
+#----------------------
+#
+   local NAME=EMBED
+   local EXEC=$WANT_BIN/embed.x
+   local RUN=yes
+   local INPUT=
+   local OUTPUT=
+   local SUFFIX=
+   local PARALLEL=yes
+   local name_tmp
+   
+   for arg 
+   do
+         [[ "$arg" == NAME=* ]]      && NAME="${arg#NAME=}"
+         [[ "$arg" == INPUT=* ]]     && INPUT="${arg#INPUT=}"
+         [[ "$arg" == OUTPUT=* ]]    && OUTPUT="${arg#OUTPUT=}"
+         [[ "$arg" == SUFFIX=* ]]    && SUFFIX="${arg#SUFFIX=}"
+         [[ "$arg" == RUN=* ]]       && RUN="${arg#RUN=}"
+         [[ "$arg" == PARALLEL=* ]]  && PARALLEL="${arg#PARALLEL=}"
+   done
+   
+   [[ "$RUN" != "yes" ]]  && return
+
+   name_tmp=`echo $NAME | tr [:upper:] [:lower:]`
+   if [ -z "$INPUT" ]  ; then  INPUT=$TEST_HOME/embed$SUFFIX.in  ; fi
+   if [ -z "$OUTPUT" ] ; then OUTPUT=$TEST_HOME/embed$SUFFIX.out ; fi
+
+   run NAME=$NAME INPUT=$INPUT OUTPUT=$OUTPUT EXEC=$EXEC PARALLEL=$PARALLEL
+}
+
 
 #
 #
