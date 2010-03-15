@@ -921,5 +921,5 @@ zmatrix.o : ../libs/kind.o
 zmatrix.o : ../libs/timing.o
 memusage.o : ../include/f_defs.h
 qvan2.o : ../include/f_defs.h
-startup.o : ../include/configure.h
+# startup.o : @configure.h@
 version.o : ../include/version.h

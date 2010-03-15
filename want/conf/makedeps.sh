@@ -17,7 +17,6 @@ for DIR in $DIR_LIST
 do
     # set inter-directory dependencies
     case $DIR in
-        iotk )      DEPENDS="../include"         ;;
         libs )      DEPENDS="../include"         ;;
         wannier )   DEPENDS="../include ../libs" ;;
         transport ) DEPENDS="../include ../libs ../wannier " ;;
