@@ -43,6 +43,7 @@ AC_ARG_ENABLE(wrappers,
       check_wrappers=0
    fi],
    [check_wrappers=1])
+
 # force internal blas switch
 AC_ARG_WITH(internal-blas, 
    [AS_HELP_STRING([--with-internal-blas],
@@ -53,7 +54,8 @@ AC_ARG_WITH(internal-blas,
       use_internal_blas=0
    fi],
    [use_internal_blas=0])
-# force internal blas switch
+
+# force internal lapack switch
 AC_ARG_WITH(internal-lapack, 
    [AS_HELP_STRING([--with-internal-lapack],
        [compile with internal lapack (default: no)])],
@@ -65,17 +67,6 @@ AC_ARG_WITH(internal-lapack,
    [use_internal_lapack=0])
 
 # <AF>
-# use etsf-io 
-AC_ARG_ENABLE(etsf-io, 
-   [AS_HELP_STRING([--enable-etsf-io],
-       [enable the use of etsf-io interface (default: no)])],
-   [if   test "$enableval" = "yes" ; then
-      use_etsf_io=1
-      use_netcdf=1
-   else
-      use_etsf_io=0
-   fi],
-   [use_etsf_io=0])
 
 # use netcdf
 AC_ARG_WITH(netcdf, 
@@ -88,6 +79,40 @@ AC_ARG_WITH(netcdf,
    fi],
    [use_netcdf=0])
 
+# use etsf-io 
+AC_ARG_ENABLE(etsf-io, 
+   [AS_HELP_STRING([--enable-etsf-io],
+       [enable the use of etsf-io interface (default: no)])],
+   [if   test "$enableval" = "yes" ; then
+      use_etsf_io=1
+      use_netcdf=1
+   else
+      use_etsf_io=0
+   fi],
+   [use_etsf_io=0])
+
+# use etsf-io
+AC_ARG_WITH(etsf-io, 
+   [AS_HELP_STRING([--with-etsf-io],
+       [use etsf-io lib (default: no)])],
+   [if  test "$withval" = "yes" ; then
+      use_etsf_io=1
+      use_netcdf=1
+   else
+      use_etsf_io=0
+   fi],
+   [use_etsf_io=0])
+
+# iotk lib
+AC_ARG_WITH(external-iotk, 
+   [AS_HELP_STRING([--with-external-iotk],
+       [compile with external iotk lib (default: no)])],
+    [if   test "$withval" = "yes" ; then
+      use_internal_iotk=0
+   else
+      use_internal_iotk=1
+   fi],
+   [use_internal_iotk=1])
 
 
 # -----------------------------
@@ -95,7 +120,7 @@ AC_ARG_WITH(netcdf,
 # packages
 #
 
-echo "use-internal-lapack" $use_internal_lapack
+#echo "use-internal-lapack" $use_internal_lapack
 
 AC_ARG_WITH(scalapack, 
    [AS_HELP_STRING([--with-scalapack],
@@ -148,8 +173,12 @@ pgplot_libs=$PGPLOT_LIBS  # PGPLOT libraries - used only by metadyn_pp.x
 #iotk_real_kinds=$IOTK_REAL_KINDS
 #iotk_fc=$IOTK_FC
 #
+iotk_include=$IOTK_INCLUDE
+iotk_libs=$IOTK_LIBS     # iotk library, similar to above
+#
 netcdf_include=$NETCDF_INCLUDE
 netcdf_libs=$NETCDF_LIBS
+#
 etsf_io_include=$ETSF_IO_INCLUDE
 etsf_io_libs=$ETSF_IO_LIBS
 
@@ -804,10 +833,18 @@ internal_libs=
 
 # switch default value for extlibs
 if test "$use_internal_blas" -eq 0 ; then
-blas_libs_switch=external ; fi
+   blas_libs_switch=external ; fi
 if test "$use_internal_lapack" -eq 0 ; then
-lapack_libs_switch=external ; fi
+   lapack_libs_switch=external ; fi
 #
+if test "$use_internal_iotk" -eq 1 ; then
+   iotk_libs_switch=internal
+   iotk_libs="-L$topdir/extlibs/iotk/lib -liotk"
+   iotk_include="${imod}$topdir/extlibs/iotk/include"
+else
+   iotk_libs_switch=external
+fi
+
 
 # check for blas
 # supported vendor replacements:
@@ -1663,6 +1700,7 @@ else
    scalapack_line="@delete@"
 fi
 lapack_line="LAPACK_LIBS=$lapack_libs"
+iotk_line="IOTK_LIBS=$iotk_libs"
 fft_line="FFT_LIBS=$fft_libs"
 if test "$mpi_libs" != "" ; then 
    mpi_line="MPI_LIBS=$mpi_libs"
@@ -1740,10 +1778,16 @@ AC_SUBST(etsf_io_libs)         # <AF>
 AC_SUBST(etsf_io_libs_switch)  # <AF>
 AC_SUBST(etsf_io_include)      # <AF>
 AC_SUBST(etsf_io_line)         # <AF>
+#
 AC_SUBST(netcdf_libs)          # <AF>
 AC_SUBST(netcdf_libs_switch)   # <AF>
 AC_SUBST(netcdf_include)       # <AF>
 AC_SUBST(netcdf_line)          # <AF>
+#
+AC_SUBST(iotk_libs)            # <AF>
+AC_SUBST(iotk_libs_switch)     # <AF>
+AC_SUBST(iotk_include)         # <AF>
+AC_SUBST(iotk_line)            # <AF>
 #
 AC_SUBST(ar)
 AC_SUBST(arflags)
@@ -1765,6 +1809,7 @@ AC_CONFIG_FILES(configure.msg)
 
 AC_CONFIG_FILES(extlibs/install/make_blas.inc)
 AC_CONFIG_FILES(extlibs/install/make_lapack.inc)
+AC_CONFIG_FILES(extlibs/install/make_iotk.inc)
 
 
 AC_OUTPUT
@@ -1779,40 +1824,45 @@ then
 fi
 # </AF>
 
-# <AF>
-#----------------------
-# configure iotk
-#
-if test -x $topdir/conf/configure_iotk
-then
-        echo
-        echo configuring iotk...
-        #
-        if test "$iotk_integer_kinds" = "" ; then iotk_integer_kinds=ALL ; fi
-        if test "$iotk_logical_kinds" = "" ; then iotk_logical_kinds=ALL ; fi
-        if test "$iotk_real_kinds" = ""    ; then iotk_real_kinds=ALL    ; fi
-        if test "$iotk_fc" = ""            ; then iotk_fc=$f90           ; fi
-        #
-        # uncomment here below to search for all INTEGER and LOGICAL kinds
-        #
-        # echo setting IOTK_INTEGER_KINDS... $iotk_integer_kinds
-        # echo setting IOTK_LOGICAL_KINDS... $iotk_logical_kinds
-        #
-        echo setting IOTK_REAL_KINDS... $iotk_real_kinds
-        echo setting IOTK_FC... $iotk_fc
-        echo
-        #
-        # for the same reasons as before, add the two following lines if the case
-        #
-        # IOTK_INTEGER_KINDS=$iotk_integer_kinds \
-        # IOTK_LOGICAL_KINDS=$iotk_logical_kinds \
-        #
-        ( cd $topdir ; ./conf/configure_iotk  IOTK_REAL_KINDS=$iotk_real_kinds \
-                                              FC=$iotk_fc )
-fi
+## <AF>
+##----------------------
+## configure iotk
+##
+#if test -x $topdir/conf/configure_iotk
+#then
+#        echo
+#        echo configuring iotk...
+#        #
+#        if test "$iotk_integer_kinds" = "" ; then iotk_integer_kinds=ALL ; fi
+#        if test "$iotk_logical_kinds" = "" ; then iotk_logical_kinds=ALL ; fi
+#        if test "$iotk_real_kinds" = ""    ; then iotk_real_kinds=ALL    ; fi
+#        if test "$iotk_fc" = ""            ; then iotk_fc=$f90           ; fi
+#        #
+#        # uncomment here below to search for all INTEGER and LOGICAL kinds
+#        #
+#        # echo setting IOTK_INTEGER_KINDS... $iotk_integer_kinds
+#        # echo setting IOTK_LOGICAL_KINDS... $iotk_logical_kinds
+#        #
+#        echo setting IOTK_REAL_KINDS... $iotk_real_kinds
+#        echo setting IOTK_FC... $iotk_fc
+#        echo
+#        #
+#        # for the same reasons as before, add the two following lines if the case
+#        #
+#        # IOTK_INTEGER_KINDS=$iotk_integer_kinds \
+#        # IOTK_LOGICAL_KINDS=$iotk_logical_kinds \
+#        #
+#        ( cd $topdir ; ./conf/configure_iotk  IOTK_REAL_KINDS=$iotk_real_kinds \
+#                                              FC=$iotk_fc )
+#fi
 
 # <AF>
 #----------------------
+# setup for configuring extlibs
+#
+if test "$iotk_libs_switch" = "nternal" ; then
+   test -e ./extlibs/iotk/configure-stamp && rm ./extlibs/iotk/configure-stamp
+fi
 # setup for configuring plugins
 #
 if test "$use_etsf_io" = "1" ; then

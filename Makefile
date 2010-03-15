@@ -21,7 +21,6 @@ default:
 	@echo  "     embed              compile embedding executables"
 	@echo  "     utility            compile utility executables"
 	@echo  "     libwant            compile the want utility library"
-	@echo  "     libiotk            compile iotk library"
 	@echo  "     libctools          compile ctools library"
 	@echo  "     libplugins         compile plugins"
 	@echo 
@@ -51,31 +50,27 @@ libplugins:
 	if test -d plugins ; then \
 	( cd plugins ; $(MAKE) ) ; fi
 
-libiotk:
-	if test -d iotk ; then \
-	( cd iotk ; $(MAKE) ) ; fi
-
 libctools:
 	if test -d ctools ; then \
 	( cd ctools ; $(MAKE) ) ; fi
 
-libwant: libextlibs libiotk libplugins
+libwant: libextlibs libplugins
 	if test -d libs ; then \
 	( cd libs ; $(MAKE) ) ; fi
 
-wannier: libextlibs libiotk libctools libwant libplugins
+wannier: libextlibs libctools libwant libplugins
 	if test -d wannier ; then \
 	( cd wannier ; $(MAKE) ) ; fi
 
-transport: libextlibs libiotk libctools libwant libplugins wannier
+transport: libextlibs libctools libwant libplugins wannier
 	if test -d transport ; then \
 	( cd transport ; $(MAKE) ) ; fi
 
-embed: libextlibs libiotk libctools libwant libplugins transport wannier
+embed: libextlibs libctools libwant libplugins transport wannier
 	if test -d embed ; then \
 	( cd embed ; $(MAKE) ) ; fi
 
-utility: libextlibs libiotk libctools libwant libplugins wannier
+utility: libextlibs libctools libwant libplugins wannier
 	if test -d utility ; then \
 	( cd utility ; $(MAKE) ) ; fi
 
