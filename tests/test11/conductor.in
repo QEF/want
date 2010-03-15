@@ -6,9 +6,9 @@
    ne = 1000
    emin = -7.0
    emax = 2.0
-   datafile_L = "./SCRATCH/pt_h2_pt_WanT.ham"
+   datafile_L = "./SCRATCH/pt1_WanT.ham"
    datafile_C = "./SCRATCH/pt_h2_pt_WanT.ham"
-   datafile_R = "./SCRATCH/pt_h2_pt_WanT.ham"
+   datafile_R = "./SCRATCH/pt1_WanT.ham"
    transport_dir = 3
    delta = 0.005
 !   smearing_type = 'gaussian'
@@ -21,9 +21,9 @@
    <H_CR    rows="1-50"  cols="1-6"  />
    <H_LC    rows="45-50" cols="1-50" />
    <H00_L   rows="1-6"   cols="1-6"  />
-   <H01_L   rows="45-50" cols="1-6" />
+   <H01_L   rows="1-6"   cols="1-6"  />
    <H00_R   rows="1-6"   cols="1-6"  />
-   <H01_R   rows="45-50" cols="1-6" />
+   <H01_R   rows="1-6"   cols="1-6"  />
 
 </HAMILTONIAN_DATA>
 
