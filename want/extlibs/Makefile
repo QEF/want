@@ -9,7 +9,7 @@ include ../make.sys
 #
 # MAIN target
 #
-all: libblas liblapack
+all: libblas liblapack libiotk
 
 #
 # blas
@@ -34,10 +34,24 @@ liblapack_internal:
 liblapack_external:
 liblapack_:
 
+
+#
+# iotk
+#
+libiotk:  libiotk_$(IOTK_LIBS_SWITCH)
+
+libiotk_internal:
+	 if test -d iotk ;  then ( cd iotk;  $(MAKE) ) ; fi
+
+libiotk_external:
+libiotk_:
+
+
 #
 # cleaning
 #
 clean wash:
 	 if test -d blas ;    then ( cd blas;    $(MAKE) $@ ) ; fi
 	 if test -d lapack ;  then ( cd lapack;  $(MAKE) $@ ) ; fi
+	 if test -d iotk ;    then ( cd iotk;    $(MAKE) $@ ) ; fi
 
