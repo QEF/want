@@ -4,7 +4,8 @@
 =======================================================
 
 
-15 Mar 2010      iotk moved to extlibs. A number of related minor changes done. (AF)
+15 Mar 2010      iotk moved to extlibs. A number of related minor changes done. 
+                 Version updated to 2.3.0 .(AF)
 
 19 Jan 2010      erorr given when trying to use smearing and correlation
                  self-energies. The condition can be made looser (just avoid
