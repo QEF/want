@@ -1606,7 +1606,7 @@ fi
 #
 if test "$use_etsf_io" = "1" -a "$etsf_io_libs" = "" ; then
     etsf_io_libs="-L$topdir/plugins/etsf_io/lib -letsf_io"
-    etsf_io_include="${imod}../plugins/etsf_io/include"
+    etsf_io_include="${imod}$topdir/plugins/etsf_io/include"
     #plugins_libs="$plugins_libs libetsf_io"
     etsf_io_libs_switch="internal"
 fi
@@ -1619,7 +1619,7 @@ fi
 #
 if test "$use_netcdf" = "1" -a "$netcdf_libs" = "" ; then
     netcdf_libs="-L$topdir/plugins/netcdf/lib -lnetcdf"
-    netcdf_include="${imod}../plugins/netcdf/include"
+    netcdf_include="${imod}$topdir/plugins/netcdf/include"
     #plugins_libs="$plugins_libs libnetcdf"
     netcdf_libs_switch="internal"
 fi

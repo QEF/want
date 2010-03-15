@@ -125,7 +125,7 @@ cmplx_bands.x \
 dos.x \
 plot.x
 
-EXTERNAL_LIBS= ../iotk/libiotk.a ../ctools/libctools.a ../libs/libwant.a 
+EXTERNAL_LIBS= ../ctools/libctools.a ../libs/libwant.a 
 BIN_DEPS=      $(OBJS) $(EXTERNAL_LIBS)
 
 #
