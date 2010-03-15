@@ -22,7 +22,6 @@ correlation.o : ../transport/operator_blc.o
 correlation.o : ../wannier/io_module.o
 correlation.o : ../wannier/operator.o
 datafiles.o : control.o
-datafiles.o : ../iotk/iotk_16_module.o
 datafiles.o : ../libs/log_module.o
 datafiles.o : ../libs/mp.o
 datafiles.o : ../libs/parameters.o
@@ -36,7 +35,6 @@ embed.o : correlation.o
 embed.o : datafiles.o
 embed.o : hamiltonian.o
 embed.o : input.o
-embed.o : ../iotk/iotk_16_module.o
 embed.o : ../libs/constants.o
 embed.o : ../libs/files.o
 embed.o : ../libs/kind.o
@@ -56,7 +54,6 @@ embed.o : ../wannier/version.o
 embed.o : workspace.o
 hamiltonian_init.o : control.o
 hamiltonian_init.o : hamiltonian.o
-hamiltonian_init.o : ../iotk/iotk_16_module.o
 hamiltonian_init.o : ../libs/kind.o
 hamiltonian_init.o : ../libs/log_module.o
 hamiltonian_init.o : ../libs/mp.o

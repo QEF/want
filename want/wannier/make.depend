@@ -51,7 +51,6 @@ blc2wan.o : converters.o
 blc2wan.o : datafiles.o
 blc2wan.o : hamiltonian.o
 blc2wan.o : io_module.o
-blc2wan.o : ../iotk/iotk_16_module.o
 blc2wan.o : kpoints.o
 blc2wan.o : lattice.o
 blc2wan.o : ../libs/constants.o
@@ -150,7 +149,6 @@ control.o : ../libs/parameters.o
 converters.o : ../libs/constants.o
 converters.o : ../libs/kind.o
 converters.o : ../libs/util.o
-correlation.o : ../iotk/iotk_16_module.o
 correlation.o : kpoints.o
 correlation.o : lattice.o
 correlation.o : ../libs/constants.o
@@ -159,7 +157,6 @@ correlation.o : ../libs/log_module.o
 correlation.o : ../libs/parameters.o
 correlation.o : subspace.o
 crystal_tools.o : converters.o
-crystal_tools.o : ../iotk/iotk_16_module.o
 crystal_tools.o : ../libs/constants.o
 crystal_tools.o : ../libs/crystal_io.o
 crystal_tools.o : ../libs/kind.o
@@ -169,7 +166,6 @@ crystal_tools.o : ../libs/parser.o
 crystal_tools.o : ../libs/timing.o
 datafiles.o : crystal_tools.o
 datafiles.o : io_module.o
-datafiles.o : ../iotk/iotk_16_module.o
 datafiles.o : ../libs/log_module.o
 datafiles.o : ../libs/mp.o
 datafiles.o : ../libs/parameters.o
@@ -283,7 +279,6 @@ hamiltonian_calc.o : subspace.o
 hamiltonian_calc.o : windows.o
 hamiltonian.o : converters.o
 hamiltonian.o : io_module.o
-hamiltonian.o : ../iotk/iotk_16_module.o
 hamiltonian.o : kpoints.o
 hamiltonian.o : lattice.o
 hamiltonian.o : ../libs/constants.o
@@ -354,7 +349,6 @@ input_parameters.o : ../libs/parser.o
 io_module.o : control.o
 io_module.o : crystal_tools.o
 io_module.o : etsf_io_data.o
-io_module.o : ../iotk/iotk_16_module.o
 io_module.o : ../libs/crystal_io.o
 io_module.o : ../libs/files.o
 io_module.o : ../libs/io_global.o
@@ -422,7 +416,6 @@ localization_init.o : ../libs/util.o
 localization_init.o : localization.o
 localization_init.o : overlap_module.o
 localization_init.o : paratools.o
-localization.o : ../iotk/iotk_16_module.o
 localization.o : kpoints.o
 localization.o : ../libs/constants.o
 localization.o : ../libs/io_global.o
@@ -464,7 +457,6 @@ omega.o : ../libs/kind.o
 omega.o : ../libs/log_module.o
 omega.o : ../libs/mp.o
 omega.o : ../libs/timing.o
-operator.o : ../iotk/iotk_16_module.o
 operator.o : ../libs/constants.o
 operator.o : ../libs/files.o
 operator.o : ../libs/kind.o
@@ -502,7 +494,6 @@ overlap_extract.o : overlap_module.o
 overlap_extract.o : subspace.o
 overlap_extract.o : windows.o
 overlap_module.o : io_module.o
-overlap_module.o : ../iotk/iotk_16_module.o
 overlap_module.o : kpoints.o
 overlap_module.o : ../libs/constants.o
 overlap_module.o : ../libs/kind.o
@@ -635,7 +626,6 @@ read_upf_v1.o : ../libs/kind.o
 read_upf_v1.o : ../libs/parser.o
 read_upf_v1.o : pseudo_types.o
 read_upf_v1.o : radial_grids.o
-read_upf_v2.o : ../iotk/iotk_16_module.o
 read_upf_v2.o : ../libs/kind.o
 read_upf_v2.o : ../libs/parser.o
 read_upf_v2.o : pseudo_types.o
@@ -697,7 +687,6 @@ subspace_init.o : paratools.o
 subspace_init.o : subspace.o
 subspace_init.o : windows.o
 subspace.o : io_module.o
-subspace.o : ../iotk/iotk_16_module.o
 subspace.o : kpoints.o
 subspace.o : ../libs/constants.o
 subspace.o : ../libs/kind.o
@@ -771,7 +760,6 @@ unitary_update.o : ../libs/parser.o
 unitary_update.o : ../libs/timing.o
 unitary_update.o : ../libs/util.o
 unitary_update.o : paratools.o
-upf.o : ../iotk/iotk_16_module.o
 upf.o : ../libs/kind.o
 upf.o : pseudo_types.o
 upf.o : radial_grids.o
@@ -788,7 +776,6 @@ uspp.o : ../libs/random_numbers.o
 uspp.o : ../libs/util.o
 uspp.o : pseudo_types.o
 wannier90_tools.o : converters.o
-wannier90_tools.o : ../iotk/iotk_16_module.o
 wannier90_tools.o : ../libs/constants.o
 wannier90_tools.o : ../libs/kind.o
 wannier90_tools.o : ../libs/log_module.o
@@ -900,7 +887,6 @@ wfc_manager.o : windows.o
 windows.o : control.o
 windows.o : etsf_io_data.o
 windows.o : input_parameters.o
-windows.o : ../iotk/iotk_16_module.o
 windows.o : kpoints.o
 windows.o : ../libs/constants.o
 windows.o : ../libs/io_global.o
@@ -924,7 +910,6 @@ write_decay.o : io_module.o
 write_decay.o : ../libs/kind.o
 write_decay.o : ../libs/log_module.o
 write_decay.o : ../libs/timing.o
-write_upf_v2.o : ../iotk/iotk_16_module.o
 write_upf_v2.o : ../libs/kind.o
 write_upf_v2.o : pseudo_types.o
 write_upf_v2.o : radial_grids.o
