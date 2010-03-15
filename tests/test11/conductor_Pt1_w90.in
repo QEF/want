@@ -8,6 +8,9 @@
    emax =   5.0
    datafile_C = "./SCRATCH/wannier90_Pt1.chk"
    transport_dir = 3
+   shift_R =  6.7
+   shift_L =  6.7
+   shift_C =  6.7
 /
 
 <HAMILTONIAN_DATA>
