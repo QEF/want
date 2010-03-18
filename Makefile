@@ -105,7 +105,7 @@ wash : wash_extlibs wash_plugins clean clean_test
 		./conf/config.log ./conf/config.status \
 		./conf/*.lineno \
 		./include/configure.h ./include/fft_defs.h \
-	        ./include/ctools.h ./include/iotk_config.h \
+	        ./include/c_defs.h ./include/iotk_config.h \
 		*/dum1 */dum2 
 	- touch make.sys
 
