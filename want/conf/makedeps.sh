@@ -9,7 +9,7 @@ cd ..
 TOPDIR=`pwd`
 BINDIR=$TOPDIR/conf
 
-DIR_LIST="iotk libs wannier transport utility embed"
+DIR_LIST="libs wannier transport utility embed"
 SPECIAL_MODULES="etsf_io  etsf_io_tools  etsf_io_low_level \
                  mkl_dfti.f90  iotk_module "
 
