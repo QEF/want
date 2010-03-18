@@ -34,10 +34,13 @@ default:
 #
 # MAIN target
 #
-all: wannier transport embed utility
+all: build_date  wannier transport embed utility
 
 deps:
 	if test -x ./conf/makedeps.sh ; then ./conf/makedeps.sh ; fi
+
+build_date:
+	if test -x ./conf/make_build_date.sh ; then ./conf/make_build_date.sh ; fi
 
 # 
 # LIBS and MODULES
@@ -87,6 +90,7 @@ clean:
 	if test -d transport ; then ( cd transport; $(MAKE) clean ) ; fi
 	if test -d embed ;     then ( cd embed;     $(MAKE) clean ) ; fi
 	if test -d utility ;   then ( cd utility;   $(MAKE) clean ) ; fi
+	- /bin/rm  ./include/build_date.h
 	- /bin/rm -rf bin/*.x
 
 clean_test:

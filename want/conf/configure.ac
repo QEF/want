@@ -557,7 +557,7 @@ ia32:path* | ia64:path* | x86_64:path* )
 	try_fflags_openmp="-openmp"
 	try_f90flags="\$(FFLAGS) -fpp"
 	try_fflags_noopt="-O0"
-	try_ldflags=""
+	try_ldflags="-fast"
 	try_ldflags_static="-Bstatic"
 	imod="-M"
 	;;
@@ -1598,12 +1598,6 @@ if test "$use_openmp" -eq 1 ; then try_dflags="$try_dflags -D__OPENMP" ; fi
 
 # preprocessing flag for signal trapping (experimental)
 if test "$use_signals" -eq 1 ; then try_dflags="$try_dflags -D__TRAP_SIGUSR1" ; fi
-
-
-# AF
-# build date
-#
-try_dflags="$try_dflags -D__CONF_BUILD_DATE=\$(BUILD_DATE)"
 
 if test "$dflags" = "" ; then dflags="$try_dflags" ; fi
 echo setting DFLAGS... $dflags
