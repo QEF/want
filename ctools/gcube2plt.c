@@ -275,7 +275,7 @@ which can be read by gOpenMol or SCARECROW.
 
 
 */
-#include "ctools.h"
+#include "c_defs.h"
 
 #include <stdio.h>
 #include <ctype.h>

@@ -10,7 +10,7 @@
 #include <sys/resource.h>
 #include <unistd.h>
 
-#include "ctools.h"
+#include "c_defs.h"
 
 double F77_FUNC(cclock,CCLOCK)()
 

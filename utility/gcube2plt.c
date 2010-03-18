@@ -276,7 +276,7 @@ which can be read by gOpenMol or SCARECROW.
 
 
 */
-#include "ctools.h"
+#include "c_defs.h"
 
 #ifdef HAVE_MALLOC
 #   include <malloc.h>
