@@ -7,6 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
 #include "configure.h"
+#include "build_date.h"
 !
 !**********************************************************
    SUBROUTINE startup(version,main_name)
@@ -92,10 +93,11 @@
    !
    IF ( ionode ) THEN
        !
+       WRITE( stdout, "(2x,'        BUILT :',4x,a)" ) &
+           TRIM( ADJUSTL( __CONF_BUILD_DATE  ))
+       !
 #ifdef __HAVE_CONFIG_INFO
        !
-       WRITE( stdout, "(2x,'        BUILT :',4x,a)" ) &
-           TRIM( ADJUSTL( " __CONF_BUILD_DATE "  ))
        WRITE( stdout, "(2x,'         HOST :',4x,a)" ) &
            TRIM( ADJUSTL( __CONF_HOST        ))
        WRITE( stdout, "(2x,'         ARCH :',4x,a)" ) &

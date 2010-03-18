@@ -35,7 +35,6 @@ AR                  = @ar@
 ARFLAGS             = @arflags@
 RANLIB              = @ranlib@
 
-#BUILD_DATE          = "`date '+%c'`"
 
 #------------------------------
 # specific definitions
