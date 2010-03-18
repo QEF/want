@@ -1,4 +1,4 @@
-AC_INIT(WanT, 2.2, , want)
+AC_INIT(WANT, 2.3, , want)
 
 # -----------------------------
 # options:
@@ -43,7 +43,6 @@ AC_ARG_ENABLE(wrappers,
       check_wrappers=0
    fi],
    [check_wrappers=1])
-
 # force internal blas switch
 AC_ARG_WITH(internal-blas, 
    [AS_HELP_STRING([--with-internal-blas],
@@ -54,7 +53,6 @@ AC_ARG_WITH(internal-blas,
       use_internal_blas=0
    fi],
    [use_internal_blas=0])
-
 # force internal lapack switch
 AC_ARG_WITH(internal-lapack, 
    [AS_HELP_STRING([--with-internal-lapack],
@@ -65,11 +63,20 @@ AC_ARG_WITH(internal-lapack,
       use_internal_lapack=0
    fi],
    [use_internal_lapack=0])
+# enable signals
+AC_ARG_ENABLE(signals, 
+   [AS_HELP_STRING([--enable-signals],
+       [enable signal trapping (default: no)])],
+   [if   test "$enableval" = "yes" ; then
+      use_signals=1
+   else
+      use_signals=0
+   fi],
+   [use_signals=0])
 
-# <AF>
-
+# AF
 # use netcdf
-AC_ARG_WITH(netcdf, 
+AC_ARG_WITH(netcdf,
    [AS_HELP_STRING([--with-netcdf],
        [use netcdf if available (default: no)])],
    [if  test "$withval" = "yes" ; then
@@ -79,8 +86,8 @@ AC_ARG_WITH(netcdf,
    fi],
    [use_netcdf=0])
 
-# use etsf-io 
-AC_ARG_ENABLE(etsf-io, 
+# use etsf-io
+AC_ARG_ENABLE(etsf-io,
    [AS_HELP_STRING([--enable-etsf-io],
        [enable the use of etsf-io interface (default: no)])],
    [if   test "$enableval" = "yes" ; then
@@ -92,7 +99,7 @@ AC_ARG_ENABLE(etsf-io,
    [use_etsf_io=0])
 
 # use etsf-io
-AC_ARG_WITH(etsf-io, 
+AC_ARG_WITH(etsf-io,
    [AS_HELP_STRING([--with-etsf-io],
        [use etsf-io lib (default: no)])],
    [if  test "$withval" = "yes" ; then
@@ -104,7 +111,7 @@ AC_ARG_WITH(etsf-io,
    [use_etsf_io=0])
 
 # iotk lib
-AC_ARG_WITH(external-iotk, 
+AC_ARG_WITH(external-iotk,
    [AS_HELP_STRING([--with-external-iotk],
        [compile with external iotk lib (default: no)])],
     [if   test "$withval" = "yes" ; then
@@ -115,12 +122,13 @@ AC_ARG_WITH(external-iotk,
    [use_internal_iotk=1])
 
 
+
+
+
 # -----------------------------
 # -----------------------------
 # packages
 #
-
-#echo "use-internal-lapack" $use_internal_lapack
 
 AC_ARG_WITH(scalapack, 
    [AS_HELP_STRING([--with-scalapack],
@@ -130,8 +138,7 @@ AC_ARG_WITH(scalapack,
    else
       with_scalapack=0
    fi],
-   [with_scalapack=0])
-
+   [with_scalapack=1])
 # -----------------------------
 # store variables from the environment, if set (may be or not be set)
 # If set, they take precedence over configure internal choice. 
@@ -139,7 +146,7 @@ AC_ARG_WITH(scalapack,
 # compilers are tested. Specify compiler name only, not the full path
 # (i.e. F90=/usr/local/bin/f90 may not work, use F90=f90)
 
-topdir=$TOPDIR     # current directory - used only for obsolete ifc v.6
+topdir=$TOPDIR     # current directory 
 arch=$ARCH         # see below for recognized architectures, plus
                    # "ppc64-mn" for MareNostrum IBM parallel machine
 env_cc=$CC         # C compiler (must be in the execution path)
@@ -155,6 +162,7 @@ fflags=$FFLAGS     # Flags for Fortran 77 and 90 compilers
 f90flags=$F90FLAGS # Flags for Fortran 90 compiler only
 ld=$LD             # Loader (must be in the execution path)
 ldflags=$LDFLAGS   # Flags for loader
+ld_libs=$LD_LIBS   # Additional libraries
 blas_libs=$BLAS_LIBS     # blas library - specify e.g. /my/blas/lib/libmyblas.a
                          # or -L/my/blas/lib -lmyblas
 lapack_libs=$LAPACK_LIBS # lapack library, similar to above
@@ -167,12 +175,8 @@ blacs_dir=$BLACS_LIB          # Where to look for libblacs.a
 ar=$AR                   # ar (shouldn't be needed)
 arflags=$ARFLAGS         # Flags for ar (as above)
 pgplot_libs=$PGPLOT_LIBS  # PGPLOT libraries - used only by metadyn_pp.x 
-## <AF>
-#iotk_integer_kinds=$IOTK_INTEGER_KINDS
-#iotk_logical_kinds=$IOTK_LOGICAL_KINDS
-#iotk_real_kinds=$IOTK_REAL_KINDS
-#iotk_fc=$IOTK_FC
-#
+
+# AF
 iotk_include=$IOTK_INCLUDE
 iotk_libs=$IOTK_LIBS     # iotk library, similar to above
 #
@@ -181,7 +185,6 @@ netcdf_libs=$NETCDF_LIBS
 #
 etsf_io_include=$ETSF_IO_INCLUDE
 etsf_io_libs=$ETSF_IO_LIBS
-
 
 
 # configure for current directory by default
@@ -203,12 +206,6 @@ if test "$host" != "" ; then ranlib=echo; fi
 cross_compiling=yes
 if test "$host" = "" ; then host=$build; fi
 
-# date and local dir
-# <AF>
-built_date=`date "+%c"`
-echo seting built date... $built_date
-#
-
 # identify architecture
 if test "$arch" = ""
 then
@@ -217,12 +214,8 @@ then
 		x86_64-*-linux-gnu )    arch=x86_64 ;;
 		*-pc-linux-gnu )        arch=ia32   ;;
 		*-ibm-aix* )            arch=aix    ;;
-		mips-sgi-* )            arch=mips   ;;
-		alphaev*-dec-osf* )     arch=alpha  ;;
-		alphaev*-*-linux* )     arch=alinux ;;
 		sparc-sun-* )           arch=sparc  ;;
 		i386-pc-solaris* )      arch=solaris;;
-		*cray-unicosmp* )       arch=crayx1 ;;
 		powerpc-apple-darwin* ) arch=macppc ;;
 		i686-apple-darwin* )    arch=mac686 ;;
 		*-pc-cygwin )           arch=cygwin ;;
@@ -249,14 +242,11 @@ try_dflags=""
 
 # candidate compilers and flags based on architecture
 case $arch in
-ia64 | x86_64 )
-	try_f90="ifort ifc efc pgf90 pathf95 $try_f90"
-	;;
-ia32 )
-	try_f90="ifort ifc pgf90 pathf95 $try_f90"
+ia32 | ia64 | x86_64 )
+	try_f90="ifort pgf90 pathf95 sunf95 openf95 $try_f90"
 	;;
 solaris )
-	try_f90="f95 g95"
+	try_f90="sunf95 $try_f90"
 	;;
 aix )
 	try_mpif90="mpxlf90_r mpxlf90"
@@ -264,17 +254,7 @@ aix )
 	try_arflags="-X64 ruv"
 	try_dflags="-D__AIX -D__XLF"
 	;;
-mips )
-	try_dflags="-D__ORIGIN"
-	;;
-alpha )
-	try_dflags="-D__ALPHA"
-	;;
-alinux )
-	try_f90="fort $try_f90"
-	try_dflags="-D__ALPHA"
-	;;
-crayx1 | crayxt4 )
+crayxt | crayxt4 )
 	try_f90="ftn $try_f90"
 	;;
 macppc )
@@ -357,30 +337,46 @@ case "$arch" in
 	ia32 | ia64 | x86_64 | mac686 )
 	echo $ECHO_N "checking version of $mpif90... $ECHO_C"
 	ifort_version=`$mpif90 -V 2>&1 | grep "Intel(R)"`
+	sunf95_version=`$mpif90 -V 2>&1 | grep "^sunf95"`
+	openf95_version=`$mpif90 -V 2>&1 | grep "^Open64"`
 	pgf_version=`$mpif90 -V 2>&1 | grep "^pgf"`
 	eko_version=`$mpif90 -v 2>&1 | grep "EKOPath"`
 	g95_version=`$mpif90 -v 2>&1 | grep "g95"`
-	# for MKL libraries
-        MKL_LIBS="-lguide -lpthread"
-        MKL_FLAGS=""
+	gfortran_version=`$mpif90 -v 2>&1 | grep "gcc version"`
+        #
 	if test "$ifort_version" != ""
 	then
 		version=`$mpif90 -V 2>&1 | grep Version |
 			 sed 's/.*Version//' | awk '{print $1}'`
-		if test `echo $version | sed 's/\..*//'` -lt 8; then
-		# ifc up to version 7
-		   echo "${ECHO_T}ifc $version"
-                   f90_in_mpif90="ifc"
-		else 
-		# ifort v.8 and later
-		   echo "${ECHO_T}ifort $version"
-                   f90_in_mpif90="ifort"
+		ifort_version=`echo $version | sed 's/\..*//'`
+		echo "${ECHO_T}ifort $version"
+                f90_in_mpif90="ifort"
+		if test "$ifort_version" -gt 8; then
+		# flags for MKL - ifort 9 and later
+		   MKL_LIBS=""
+	  	   if test "$ifort_version" -gt 9; then
+			MKL_FLAGS="-static-intel"
+		   else
+			MKL_FLAGS="-i-static"
+		   fi
+                   if test "$use_openmp" -eq 1; then
+			MKL_FLAGS="$MKL_FLAGS -openmp"
+		   fi
+	        else
+		# flags for MKL - ifort 8 and earlier
+                   MKL_LIBS="-lguide -lpthread"
+                   MKL_FLAGS=""
 		fi
-		# flags for MKL according to Axel - ifort 9 and later
-		if test `echo $version | sed 's/\..*//'` -gt 8; then
-			MKL_LIBS=" "
-			MKL_FLAGS="-i-static -openmp"
-		fi
+	elif test "$sunf95_version" != ""
+	then
+		version=`echo $sunf95_version | awk '{print $5}'`
+		echo "${ECHO_T}sunf95 $version"
+                f90_in_mpif90="sunf95"
+	elif test "$openf95_version" != ""
+	then
+		version=`echo $openf95_version | awk '{print $5}'`
+		echo "${ECHO_T}openf95 $version"
+                f90_in_mpif90="openf95"
 	elif test "$pgf_version" != ""
 	then
 		version=`echo $pgf_version | awk '{print $2}'`
@@ -396,6 +392,11 @@ case "$arch" in
 		version=`echo $g95_version | awk '{print $3}'`
 		echo "${ECHO_T}g95 $version"
                 f90_in_mpif90="g95"
+	elif test "$gfortran_version" != ""
+	then
+		version=`echo $gfortran_version | awk '{print $3}'`
+		echo "${ECHO_T}gfortran $version"
+                f90_in_mpif90="gfortran"
 	else
 		echo "${ECHO_T}unknown, assuming gfortran"
                 f90_in_mpif90="gfortran"
@@ -420,15 +421,18 @@ case "$arch:$f90" in
 *:ifort* )
 	try_cc="icc ecc $try_cc"
 	;;
-*:ifc* )
-	try_cc="icc ecc $try_cc"
-	;;
 *:pgf90 )
 	try_cc="pgcc $try_cc"
 	try_f77="pgf77 $f90"
 	;;
 *:pathf95 )
 	try_cc="pathcc $try_cc"
+	;;
+*:sunf95 )
+	try_cc="suncc $try_cc"
+	;;
+*:openf95 )
+	try_cc="opencc $try_cc"
 	;;
 aix:*xlf*_r )
 	try_cc="xlc_r $try_cc"
@@ -438,16 +442,7 @@ aix:*xlf* )
 	try_cc="xlc $try_cc"
 	try_f77="xlf $f90"
 	;;
-mips:* )
-	try_f77="f77 $f90"
-	;;
-alpha:* )
-	try_f77="f77 $f90"
-	;;
-alinux:* )
-	try_cc="ccc $try_cc"
-	;;
-sparc:* | solaris:f95 )
+sparc:* | solaris:sunf95 )
 	try_f77="f77 $f90"
 	;;
 cray*:ftn )
@@ -511,37 +506,21 @@ echo using F90... $f90
 
 case "$arch:$f90" in
 ia32:ifort* | ia64:ifort* | x86_64:ifort* | mac686:ifort*  )
-	try_fflags="-O2 -assume byterecl"
+	try_fflags="-O2 -assume byterecl -g -traceback"
 	try_fflags_openmp="-openmp"
 	try_f90flags="\$(FFLAGS) -nomodule"
-	try_fflags_noopt="-O0 -assume byterecl"
+	try_fflags_noopt="-O0 -assume byterecl -g -traceback"
 	try_ldflags=""
 	try_ldflags_static="-static"
 	try_dflags="$try_dflags -D__INTEL"
 	pre_fdflags="-fpp "
 	;;
-ia32:ifc* | ia64:ifc* | x86_64:ifc*)
-	try_fflags="-Vaxlib -O2"
-	try_f90flags="\$(FFLAGS) -nomodule"
-	try_fflags_noopt="-O0"
-	try_ldflags="-Vaxlib"
-	try_ldflags_static="-static"
-	try_dflags="$try_dflags -D__INTEL"
-	pre_fdflags="-fpp "
-	if test `echo $version | sed 's/\..*//'` -lt 7
-	then
-		# old versions of ifc require this stuff
-		try_f90flags="\$(FFLAGS) -cl,./intel.pcl"
-                if test -x $topdir/ifcmods.sh
-                then
-                   ./ifcmods.sh
-                fi
-	fi
-	;;
 ia32:pgf* | ia64:pgf* | x86_64:pgf* )
-	try_fflags="-fast -r8"
+# in try_fflags we use -O3 instead of -fast because some *.f files in Multigrid
+# confuse the optimizer when option -fast is enabled
+	try_fflags="-O3 -r8"
 	try_fflags_openmp="-mp"
-	try_f90flags="\$(FFLAGS)"
+	try_f90flags="-fast -Mcache_align -r8"
 	try_fflags_noopt="-O0"
 	try_ldflags=""
 	try_ldflags_static="-Bstatic"
@@ -565,14 +544,30 @@ ia32:path* | ia64:path* | x86_64:path* )
 	try_ldflags_static="-static"
 	;;
 *:gfortran )
-	try_fflags="-O3"
+	try_fflags="-O3 -g"
 	try_fflags_openmp="-fopenmp"
 	try_f90flags="\$(FFLAGS) -x f95-cpp-input"
-	try_fflags_noopt="-O0"
-	try_ldflags=""
+	try_fflags_noopt="-O0 -g"
+	try_ldflags="-g"
 	try_dflags="$try_dflags -D__GFORTRAN -D__STD_F95"
 	try_ldflags_static="-static"
         ;;
+*:sunf95 )
+	try_fflags="-O4"
+	try_fflags_openmp="-openmp"
+	try_f90flags="\$(FFLAGS) -fpp"
+	try_fflags_noopt="-O0"
+	try_ldflags=""
+	try_ldflags_static="-Bstatic"
+	imod="-M"
+	;;
+*:openf95 )
+	try_fflags="-O3"
+	try_f90flags="\$(FFLAGS) -ftpp"
+	try_fflags_noopt="-O0"
+	try_ldflags=""
+	imod="-I"
+	;;
 aix:*xlf* )
 	try_fflags="-q64 -qalias=noaryovrlp -O3 -qstrict \
 -qarch=auto -qtune=auto -qdpc -Q -qalias=nointptr"
@@ -584,27 +579,7 @@ aix:*xlf* )
 	pre_fdflags="-WF,"
 	xlf_flags=1
 	;;
-mips:f90 )
-	try_fflags="-mips4 -64 -O2 -r10000 -r8"
-	try_f90flags="\$(FFLAGS)"
-	try_fflags_noopt="-mips4 -64 -O0"
-	try_ldflags="-mips4 -64"
-	pre_fdflags="-ftpp -macro_expand "
-	;;
-alinux:fort )
-	pre_fdflags="-cpp "
-	try_fflags="-O -r8 -align dcommons -align records"
-	try_f90flags="\$(FFLAGS) -free"
-	try_fflags_noopt="-O0 -r8 -align dcommons -align records"
-        try_ldflags_static="-non_shared"
-	;;
-alpha:f90 )
-	pre_fdflags="-cpp "
-	try_fflags="-O -real_size 64 -align dcommons -align records -assume buffered_io -fpe1"
-	try_f90flags="\$(FFLAGS) -free"
-	try_fflags_noopt="-O0 -real_size 64 -align dcommons -align records -assume buffered_io"
-	;;
-solaris:f95 )
+solaris:sunf95 )
 	try_fflags="-fast -O2 -fpp"
 	try_f90flags="\$(FFLAGS)"
 	try_fflags_noopt="-O0 "
@@ -620,18 +595,13 @@ sparc:f90 )
 	imod="-M"
         have_cpp=0
 	;;
-crayx1:ftn )
-        try_fflags="-s default64 -dp -rma -e0 \
--O scalar3,stream3,vector3,nointerchange -Z -O inline5"
-        try_f90flags="\$(FFLAGS)"
-        try_fflags_noopt="-s default64 -dp -rma -e0 -O0 -Z"
-        try_ldflags="-s default64 -f nan64"
-        pre_fdflags="-e Z -F"
-	;;
-crayxt4:ftn )
-        try_fflags="-fast -r8"
-        try_f90flags="\$(FFLAGS)"
+crayxt*:ftn )
+# see comment above for pgf*
+	try_fflags_openmp="-mp"
+        try_fflags="-O3 -r8"
+	try_f90flags="-fast -Mcache_align -r8"
         try_fflags_noopt="-O0"
+        try_ldflags_openmp="-mp"
         try_ldflags="-v"
 	try_dflags="$try_dflags -D__PGI"
 	have_cpp=0
@@ -690,10 +660,12 @@ ppc64-mn:* )
 
 esac
 if test "$use_shared" -eq 0 ; then
-try_ldflags="$try_ldflags $try_ldflags_static" ; fi
+  try_ldflags="$try_ldflags $try_ldflags_static" ; fi
 
 if test "$use_openmp" -eq 1 ; then 
-$try_fflags="$try_fflags $try_fflags_openmp" ; fi
+  $try_fflags="$try_fflags $try_fflags_openmp"
+  $try_ldlags="$try_ldlags $try_ldlags_openmp" 
+fi
 
 if test "$fflags" = ""   ; then fflags=$try_fflags     ; fi
 if test "$f90flags" = "" ; then f90flags=$try_f90flags ; fi
@@ -720,13 +692,7 @@ aix:xlc* | aix:cc )
 	try_cflags="-q64 -O2"
 	c_ldflags="-q64"
 	;;
-mips:cc )
-	try_cflags="-mips4 -64 -O2 -r10000"
-	;;
-alpha:cc )
-	try_cflags="-O"
-	;;
-solaris:cc  )
+*:suncc  )
 	try_cflags="-fast -O"
 	;;
 sparc:cc )
@@ -734,10 +700,7 @@ sparc:cc )
 -xlic_lib=sunperf"
 	try_cpp="fpp"
 	;;
-crayx1:cc )
-        try_cflags=""
-        ;;
-crayxt4:cc )
+crayxt*:cc )
         try_cflags="-fast"
         ;;
 macppc:xlc* )
@@ -789,7 +752,7 @@ then
 	f90rule="\$(MPIF90) \$(F90FLAGS) -c \$<"
 	echo "${ECHO_T}no"
 else
-	f90rule="\$(CPP) \$(CPPFLAGS) \$< -o \$*.F90 \\
+	f90rule="\$(CPP) \$(CPPFLAGS) \$< -o \$*.F90 ; \\
 	\$(MPIF90) \$(F90FLAGS) -c \$*.F90 -o \$*.o"
 	echo "${ECHO_T}yes"
 fi
@@ -828,44 +791,26 @@ have_acml=0
 have_atlas=0
 have_essl=0
 have_mkl=0
-# <AF>
-internal_libs=
-
-# switch default value for extlibs
-if test "$use_internal_blas" -eq 0 ; then
-   blas_libs_switch=external ; fi
-if test "$use_internal_lapack" -eq 0 ; then
-   lapack_libs_switch=external ; fi
-#
-if test "$use_internal_iotk" -eq 1 ; then
-   iotk_libs_switch=internal
-   iotk_libs="-L$topdir/extlibs/iotk/lib -liotk"
-   iotk_include="${imod}$topdir/extlibs/iotk/include"
-else
-   iotk_libs_switch=external
-fi
 
 
 # check for blas
 # supported vendor replacements:
 #   mkl and acml on Intel/AMD architectures
 #   essl on aix
-#   complib.sgimath on mips
-#   cxml on alpha
 #   SUNperf on sparc
 # atlas is used over blas if available
 # internal version is used if none is found
 if test "$use_internal_blas" -eq 0 
 then
-if test "$blas_libs" = "" 
-then
+   if test "$blas_libs" = "" 
+   then
 	# check directories in LD_LIBRARY_PATH too
 	# (maybe they are already searched by default, but I'm not sure)
 	ld_library_path=`echo $LD_LIBRARY_PATH | sed 's/:/ /g'`
 	
 	case "$arch:$f90" in
 
-	x86_64:pgf* | x86_64:path* )
+	x86_64:pgf* | x86_64:path* | x86_64:openf95)
 		# check for acml - note that it contains lapack as well
                 try_libdirs="/opt/acml*/pathscale64/lib/"
                 try_libdirs="$libdirs $ld_library_path $try_libdirs"
@@ -892,7 +837,8 @@ then
 
 	ia64:* )
 		# check for mkl (in several directories)
-		try_libdirs="/opt/intel/mkl/*/lib/64
+		try_libdirs="/opt/intel/Compiler/*/*/mkl/lib/64
+		             /opt/intel/mkl/*/lib/64
 			     /opt/intel/mkl*/lib/64"
 		try_libdirs="$libdirs $try_libdirs $ld_library_path"
 
@@ -901,26 +847,44 @@ then
 			unset ac_cv_search_dgemm # clear cached value
 			if test "$dir" = "none"
 			then
-				try_loption=
+				try_loption="-L$topdir/install"
 			else
 				echo $ECHO_N "in $dir: " $ECHO_C
-				try_loption="-L$dir"
+				try_loption="-L$topdir/install -L$dir"
 			fi
 			FFLAGS="$test_fflags"
 			LDFLAGS="$MKL_FLAGS $test_ldflags $try_loption"
 			LIBS="$MKL_LIBS"
-			AC_SEARCH_LIBS(dgemm, mkl_ipf, have_blas=1 have_mkl=1
-				       blas_libs="$try_loption $LIBS"
-                                       ldflags="$MKL_FLAGS $ldflags")
+			# 
+			# unthreaded MKL: use install/mkl_ipf_nothread
+			# multithreaded MKL: use install/mkl_ipf
+			# (should work for MKL 10.2 and later as well)
+			#
+                        if test "$use_openmp" -eq 0; then
+			   AC_SEARCH_LIBS(dgemm, mkl_ipf_nothread,
+					 have_blas=1 have_mkl=1
+				         blas_libs="$try_loption $LIBS"
+                                         ldflags="$MKL_FLAGS $ldflags")
+                        else
+			   AC_SEARCH_LIBS(dgemm, mkl_ipf,
+					 have_blas=1 have_mkl=1
+				         blas_libs="$try_loption $LIBS"
+                                         ldflags="$MKL_FLAGS $ldflags")
+			fi
 			if test "$ac_cv_search_dgemm" != "no"
 			then break ; fi
 		done
 		;;
 
-	x86_64:* )
-		try_libdirs="/opt/intel/mkl/*/lib/em64t
-			     /opt/intel/mkl*/lib/em64t"
-		try_libdirs="$libdirs $try_libdirs $ld_library_path"
+	*:sunf95 )
+		# check for acml - note that it contains lapack as well
+		if test "$arch" = "x86_64"
+		then
+			try_libdirs="/usr/local/sunstudio*/lib/amd64/"
+		else
+			try_libdirs="/usr/local/sunstudio*/lib/"
+		fi
+		try_libdirs="$libdirs $ld_library_path $try_libdirs"
 
 		for dir in none $try_libdirs
 		do
@@ -933,21 +897,50 @@ then
 				try_loption="-L$dir"
 			fi
 			FFLAGS="$test_fflags"
-			LDFLAGS="$MKL_FLAGS $test_ldflags $try_loption"
-			LIBS="$MKL_LIBS"	
-                        #A hack for MKL 10.2 which requires multiple libraries 
-   		        AC_SEARCH_LIBS(dgemm, mkl_intel_lp64, 
-                                       have_blas=1 have_mkl=1
-				       blas_libs="$try_loption $LIBS -lmkl_sequential -lmkl_core -lpthread"
-                                       ldflags="$MKL_FLAGS $ldflags", 
-                                       echo "MKL 10.2 not found",
-                                       -lmkl_sequential -lmkl_core -lpthread)
+			LDFLAGS="$test_ldflags $try_loption"
+			LIBS=""
+			AC_SEARCH_LIBS(dgemm, sunperf, have_blas=1 have_lapack=1
+				blas_libs="$try_loption $LIBS")
 			if test "$ac_cv_search_dgemm" != "no"
 			then break ; fi
+		done
+		;;
+
+	x86_64:* )
+                try_libdirs="/opt/intel/Compiler/*/*/mkl/lib/em64t
+                             /opt/intel/mkl/*/lib/em64t
+                             /opt/intel/mkl*/lib/em64t"
+		try_libdirs="$libdirs $try_libdirs $ld_library_path"
+
+		for dir in none $try_libdirs
+		do
 			unset ac_cv_search_dgemm # clear cached value
-			AC_SEARCH_LIBS(dgemm, mkl_em64t, have_blas=1 have_mkl=1
-				       blas_libs="$try_loption $LIBS"
-                                       ldflags="$MKL_FLAGS $ldflags")
+			if test "$dir" = "none"
+			then
+				try_loption="-L$topdir/install"
+			else
+				echo $ECHO_N "in $dir: " $ECHO_C
+				try_loption="-L$topdir/install -L$dir"
+			fi
+			FFLAGS="$test_fflags"
+			LDFLAGS="$MKL_FLAGS $test_ldflags $try_loption"
+			LIBS="$MKL_LIBS"	
+			# 
+			# unthreaded MKL: use install/mkl_em64t_nothread
+			# multithreaded MKL: use install/mkl_em64t
+			# (should work for MKL 10.2 and later as well)
+			#
+                        if test "$use_openmp" -eq 0; then
+   		           AC_SEARCH_LIBS(dgemm, mkl_em64t_nothread,
+				have_blas=1 have_mkl=1
+				blas_libs="$try_loption $LIBS"
+                                ldflags="$MKL_FLAGS $ldflags" )
+			else
+			   AC_SEARCH_LIBS(dgemm, mkl_em64t, 
+				have_blas=1 have_mkl=1
+				blas_libs="$try_loption $LIBS"
+                                ldflags="$MKL_FLAGS $ldflags")
+			fi
 			if test "$ac_cv_search_dgemm" != "no"
 			then break ; fi
        		done
@@ -955,8 +948,9 @@ then
 
 	ia32:* )
 		# check for mkl (in several directories)
-		try_libdirs="/opt/intel/mkl/*/lib/32
-			     /opt/intel/mkl*/lib/32"
+                try_libdirs="/opt/intel/Compiler/*/*/mkl/lib/32
+                             /opt/intel/mkl/*/lib/32
+                             /opt/intel/mkl*/lib/32"
 		try_libdirs="$libdirs $try_libdirs $ld_library_path"
 
 		for dir in none $try_libdirs
@@ -964,27 +958,29 @@ then
 			unset ac_cv_search_dgemm # clear cached value
 			if test "$dir" = "none"
 			then
-				try_loption=
+				try_loption="-L$topdir/install"
 			else
 				echo $ECHO_N "in $dir: " $ECHO_C
-				try_loption="-L$dir"
+				try_loption="-L$topdir/install -L$dir"
 			fi
 			FFLAGS="$test_fflags"
 			LDFLAGS="$MKL_FLAGS $test_ldflags $try_loption"
 			LIBS="$MKL_LIBS"
-                        #A hack for MKL 10.2 which requires multiple libraries 
-   		        AC_SEARCH_LIBS(dgemm, mkl_intel, 
-                                       have_blas=1 have_mkl=1
-				       blas_libs="$try_loption $LIBS -lmkl_sequential -lmkl_core -lpthread"
-                                       ldflags="$MKL_FLAGS $ldflags", 
-                                       echo "MKL 10.2 not found",
-                                       -lmkl_sequential -lmkl_core -lpthread)
-			if test "$ac_cv_search_dgemm" != "no"
-			then break ; fi
-			unset ac_cv_search_dgemm # clear cached value
-			AC_SEARCH_LIBS(dgemm, mkl_ia32, have_blas=1 have_mkl=1
-				       blas_libs="$try_loption $LIBS"
-                                       ldflags="$MKL_FLAGS $ldflags")
+			# unthreaded MKL: use install/mkl_ia32_nothread
+			# multithreaded MKL: use install/mkl_ia32
+			# (should work for MKL 10.2 and later as well)
+			#
+                        if test "$use_openmp" -eq 0; then
+   		           AC_SEARCH_LIBS(dgemm, mkl_ia32_nothread,
+				have_blas=1 have_mkl=1
+				blas_libs="$try_loption $LIBS"
+                                ldflags="$MKL_FLAGS $ldflags" )
+			else
+			   AC_SEARCH_LIBS(dgemm, mkl_ia32, 
+				have_blas=1 have_mkl=1
+				blas_libs="$try_loption $LIBS"
+                                ldflags="$MKL_FLAGS $ldflags")
+			fi
 			if test "$ac_cv_search_dgemm" != "no"
 			then break ; fi 
 
@@ -1006,26 +1002,6 @@ then
                     have_essl=1 
                     try_dflags="$try_dflags -D__ESSL"
                 fi
-		;;
-
-	mips:* )
-		# check for complib.sgimath
-		unset ac_cv_search_dgemm # clear cached value
-		FFLAGS="$test_fflags"
-		LDFLAGS="$test_ldflags"
-		LIBS=""
-		AC_SEARCH_LIBS(dgemm, complib.sgimath, have_blas=1
-			       blas_libs="$LIBS")
-		;;
-
-	alpha:* | alinux:* )
-		# check for cxml
-		unset ac_cv_search_dgemm # clear cached value
-		FFLAGS="$test_fflags"
-		LDFLAGS="$test_ldflags"
-		LIBS=""
-		AC_SEARCH_LIBS(dgemm, cxml, have_blas=1 have_lapack=1
-                                blas_libs="$LIBS")
 		;;
 
 	sparc:* | solaris:* )
@@ -1087,7 +1063,7 @@ then
                 ;;
 
 	esac
-
+	# blas not (yet) found: look for more possibilities
 	if test "$have_blas" -eq 0
 	then
 	case "$f90" in
@@ -1129,6 +1105,8 @@ then
 		done
 	fi
 
+	# blas still not found
+
 	if test "$have_blas" -eq 0
 	then
 		# check for blas (in several directories)
@@ -1154,16 +1132,20 @@ then
 			then break ; fi
 		done
 	fi
-fi
+   else
+        # blas provided in BLAS_LIBS - not checked!
+	have_blas=1
+   fi
 fi
 
 # check for lapack
+#
 # same supported vendor replacements as for blas
 # internal version is used if none is found
 if test "$use_internal_lapack" -eq 0 
-then
-if test "$lapack_libs" = ""
-then
+   then
+   if test "$lapack_libs" = ""
+   then
 	# check directories in LD_LIBRARY_PATH too
 	# (maybe they are already searched by default, but I'm not sure)
 	ld_library_path=`echo $LD_LIBRARY_PATH | sed 's/:/ /g'`
@@ -1172,14 +1154,15 @@ then
 
 	ia32:* | ia64:*| x86_64:* )
 		# check for mkl_lapack (if mkl found and acml not found)
-		if test "$have_mkl" -ne 0 && test "$have_mkl" -ne 0
+                # OBSOLESCENT - recent versions of mkl contain lapack
+		if test "$have_mkl" -ne 0 && test "$have_acml" -eq 0
 		then
-       			unset ac_cv_search_dspev # clear cached value
+       			unset ac_cv_search_dspev ac_lib # clear cached value
                		FFLAGS="$test_fflags"
              	  	LIBS=" $blas_libs"
 			LDFLAGS="$MKL_FLAGS $test_ldflags"
-			AC_SEARCH_LIBS(dspev, mkl_lapack, have_lapack=1
-				       lapack_libs="$LIBS")
+			AC_SEARCH_LIBS(dspev, mkl_lapack, have_lapack=1)
+		        if test "$ac_lib" != "" ; then lapack_libs="-l$ac_lib"; fi
 		fi
 		;;
 
@@ -1193,18 +1176,16 @@ then
 			       lapack_libs="-xlic_lib=sunperf $LIBS")
 		;;
 	aix:* )
-		# check for essl (may not be revealed by the previous
-		# test of blas) 
-                if test have_essl -eq 0
-                then
-		   unset ac_cv_search_dspev # clear cached value
-		   FFLAGS="$test_fflags"
-		   LDFLAGS="$test_ldflags"
-		   LIBS="$blas_libs"
-		   AC_SEARCH_LIBS(dspev, essl, have_essl=1
-		  	          lapack_libs="-lessl" 
- 				  try_dflags="$try_dflags -D__ESSL")
-                fi
+		# check for essl
+		unset ac_cv_search_dspev # clear cached value
+		FFLAGS="$test_fflags"
+		LDFLAGS="$test_ldflags"
+		LIBS="$blas_libs"
+		AC_SEARCH_LIBS(dspev, essl, have_lapack=1
+		 		lapack_libs="-lessl" 
+ 				try_dflags="$try_dflags -D__ESSL")
+		# essl may not have been found in previous test on blas
+		if test "$have_lapack" -eq 1; then have_essl=1; fi
 		;;
 	necsx:* )
                 #sx5-nec or sx6-nec or sx8-nec: check in (/SX)/usr/lib
@@ -1231,10 +1212,10 @@ then
                 ;;
 	esac
 
-	# macppc :    try_libdirs="/usr/local/lib /sw/lib"
 	if test "$have_lapack" -eq 0
 	then
 		# check for lapack (in several directories)
+	        # macppc : try_libdirs="/usr/local/lib /sw/lib"
 		try_libdirs="/usr/local/lib"
 		try_libdirs="$libdirs $try_libdirs $ld_library_path"
 
@@ -1253,72 +1234,66 @@ then
 			LIBS="$blas_libs"
 			AC_SEARCH_LIBS(dspev, lapack, have_lapack=1
 				       lapack_libs="$try_loption -llapack")
-			if test "$ac_cv_search_dspev" != "no"
-			then break ; fi
+			if test "$ac_cv_search_dspev" != "no"; then
+			   # essl must precede lapack (if present)
+			   if test "$have_essl" -ne 0 ; then
+				lapack_libs="-lessl $lapack_libs"
+			   fi
+			   break
+			fi
 		done
 	fi
 
-	# essl must precede lapack (if present)
+   else
+        # lapack provided in LAPACK_LIBS - not checked!
+	have_lapack=1
+   fi
+fi
 
-	if test "$have_essl" -ne 0 && test "$have_lapack" -ne 0
-	then lapack_libs="-lessl $lapack_libs" ; fi
+# no blas library found, or internal blas required: use the built-in blas
+# (blas_libs is used in the above lapack tests: do not move the following
+# settings above lapack tests, which would seem a more logical place)
 
-        # if some or all lapack routines are missing, add them here
+if test "$have_blas" -eq 0 -o "$use_internal_blas" -eq 1 ; then
+    blas_libs="$topdir/BLAS/blas.a"
+    blas_libs_switch="internal"
+else
+    blas_libs_switch="external"
+fi
 
-        if test "$have_lapack" -eq 0 ; then
+# no lapack library found, or incomplete lapack found (atlas, essl),
+# or internal lapack esplicitly required
 
-            if test "$have_atlas" -ne 0 ; then
-
-            # add missing lapack routines so as to complete atlas
-            # note that some compilers do not like to have multiple symbols
-
-	    lapack_libs="$lapack_libs -L$topdir/extlibs/lapack/lib -llapack"
-
-        elif test "$have_essl" -ne 0 ; then
-
-        # ibm doesn't complain if there are multiple symbols so add everything
- 
-#	    lapack_libs="$lapack_libs $topdir/flib/lapack.a"
-	   lapack_libs="$lapack_libs -L$topdir/extlibs/lapack/lib -llapack"
-	   lapack_libs_switch="internal"
-
-        else
-
-	# nothing found, use built-in library
-
-# 	    lapack_libs="$topdir/flib/lapack.a"
-	   lapack_libs="-L$topdir/extlibs/lapack/lib -llapack"
-	   lapack_libs_switch="internal"
-
-        fi
+if test "$have_lapack" -eq 0 -o "$use_internal_lapack" -eq 1 ; then
+    lapack_libs="$topdir/lapack-3.2/lapack.a"
+    lapack_libs_switch="internal"
+else 
+    if test "$have_essl" -eq 1 -o "$have_atlas" -eq 1 ; then
+    # IBM essl or atlas: add missing lapack routines - must be loaded after lib
+    # atlas: add missing lapack routines so as to complete atlas
+    # note that some compilers do not like to have multiple symbols
+      lapack_libs="$lapack_libs $topdir/lapack-3.2/lapack.a"
+      lapack_libs_switch="internal"
+    else
+      lapack_libs_switch="external"
     fi
 fi
-fi
-
-# no blas library found: use the built-in blas
-# (blas_libs is used in the above tests so it is safe to set it here)
-
-#if test "$have_blas" -eq 0 -a "$blas_libs" = ""
-#then
-#    blas_libs="$topdir/flib/blas.a"
-#fi
-
-if test "$blas_libs_switch" = "internal" -o "$use_internal_blas" -eq 1 ; then
-    blas_libs="-L$topdir/extlibs/blas/lib -lblas"
-    blas_libs_switch="internal"
-elif test "$have_blas" -eq 0 -a "$blas_libs" = ""; then
-    blas_libs="-L$topdir/blas/lib -lblas"
-    blas_libs_switch="internal";
-fi
-
-if test "$lapack_libs" = "" -o "$use_internal_lapack" -eq 1 ; then
-    lapack_libs="-L$topdir/extlibs/lapack/lib -llapack"
-    lapack_libs_switch="internal"
-fi
-
 
 echo setting BLAS_LIBS... $blas_libs
 echo setting LAPACK_LIBS... $lapack_libs
+
+
+# AF
+if test "$use_internal_iotk" -eq 1 ; then
+   iotk_libs="-L$topdir/extlibs/iotk/lib -liotk"
+   iotk_include="${imod}$topdir/extlibs/iotk/include"
+   iotk_libs_switch="internal"
+else
+   iotk_libs_switch="external"
+fi
+#
+echo setting IOTK_LIBS... $iotk_libs
+
 
 # check for FFT libraries (no check for explicit openmp)
 # supported vendor replacements:
@@ -1564,27 +1539,9 @@ then
 
 	if test "$use_parallel" -ne 0
 	then
-		case "$arch" in
-		alpha )
-			AC_LANG_PUSH(C)
-			CFLAGS="$test_cflags"
-			CPPFLAGS="$test_cppflags"
-			LDFLAGS="$c_ldflags"
-			LIBS=""
-			AC_SEARCH_LIBS(elan_baseInit, elan, mpi_libs="$LIBS")
-			LIBS="-lmpi $mpi_libs"
-			AC_SEARCH_LIBS(mpi_waitany_, fmpi, have_mpi=1
-				       mpi_libs="$LIBS")
-			AC_LANG_POP(C)
-
-			LIBS="$mpi_libs"
-			AC_SEARCH_LIBS(pmpi_init, pmpi, mpi_libs="$LIBS")
-			;;
-		esac
-
 		if test "$have_mpi" -eq 0
-		then
 			# check for mpi
+		then
 			unset ac_cv_search_mpi_init # clear cached value
 			LDFLAGS="$test_ldflags"
 			LIBS="$mpi_libs"
@@ -1594,38 +1551,6 @@ then
 	fi
 fi
 echo setting MPI_LIBS... $mpi_libs
-
-#
-# ETSF_IO & NETCDF
-# <AF>
-
-if test "$etsf_io_libs" != "" ; then 
-    use_etsf_io=1 
-    etsf_io_libs_switch="external"
-fi
-#
-if test "$use_etsf_io" = "1" -a "$etsf_io_libs" = "" ; then
-    etsf_io_libs="-L$topdir/plugins/etsf_io/lib -letsf_io"
-    etsf_io_include="${imod}$topdir/plugins/etsf_io/include"
-    #plugins_libs="$plugins_libs libetsf_io"
-    etsf_io_libs_switch="internal"
-fi
-if test "$use_etsf_io" = "1" ; then try_dflags="$try_dflags -D__ETSF_IO" ; fi
-#
-if test "$netcdf_libs" != "" ; then 
-    use_netcdf=1
-    netcdf_libs_switch="external"
-fi
-#
-if test "$use_netcdf" = "1" -a "$netcdf_libs" = "" ; then
-    netcdf_libs="-L$topdir/plugins/netcdf/lib -lnetcdf"
-    netcdf_include="${imod}$topdir/plugins/netcdf/include"
-    #plugins_libs="$plugins_libs libnetcdf"
-    netcdf_libs_switch="internal"
-fi
-if test "$use_netcdf" = "1" ; then try_dflags="$try_dflags -D__NETCDF" ; fi
-
-
 
 # final check on availability of parallel environment
 parallel=0
@@ -1671,8 +1596,18 @@ fi
 # preprocessing flag for openmp (experimental)
 if test "$use_openmp" -eq 1 ; then try_dflags="$try_dflags -D__OPENMP" ; fi
 
+# preprocessing flag for signal trapping (experimental)
+if test "$use_signals" -eq 1 ; then try_dflags="$try_dflags -D__TRAP_SIGUSR1" ; fi
+
+
+# AF
+# build date
+#
+try_dflags="$try_dflags -D__CONF_BUILD_DATE=\$(BUILD_DATE)"
+
 if test "$dflags" = "" ; then dflags="$try_dflags" ; fi
 echo setting DFLAGS... $dflags
+
 
 if test "$iflags" = "" ; then iflags="$try_iflags" ; fi
 echo setting IFLAGS... $iflags
@@ -1692,15 +1627,46 @@ then
 fi
 echo setting RANLIB... $ranlib
 
+
+# AF
+# etsf-io and NetCDF
+# 
+if test "$etsf_io_libs" != "" ; then
+    use_etsf_io=1
+    etsf_io_libs_switch="external"
+fi
+#
+if test "$use_etsf_io" = "1" -a "$etsf_io_libs" = "" ; then
+    etsf_io_libs="-L$topdir/plugins/etsf_io/lib -letsf_io"
+    etsf_io_include="${imod}$topdir/plugins/etsf_io/include"
+    etsf_io_libs_switch="internal"
+fi
+if test "$use_etsf_io" = "1" ; then try_dflags="$try_dflags -D__ETSF_IO" ; fi
+#
+if test "$netcdf_libs" != "" ; then
+    use_netcdf=1
+    netcdf_libs_switch="external"
+fi
+#
+if test "$use_netcdf" = "1" -a "$netcdf_libs" = "" ; then
+    netcdf_libs="-L$topdir/plugins/netcdf/lib -lnetcdf"
+    netcdf_include="${imod}$topdir/plugins/netcdf/include"
+    #plugins_libs="$plugins_libs libnetcdf"
+    netcdf_libs_switch="internal"
+fi
+if test "$use_netcdf" = "1" ; then try_dflags="$try_dflags -D__NETCDF" ; fi
+
+
+
 # configure output messages
 blas_line="BLAS_LIBS=$blas_libs"
 if test "$have_scalapack" -eq 1; then
    scalapack_line="SCALAPACK_LIBS=$scalapack_libs"
 else
+   scalapack_libs=""
    scalapack_line="@delete@"
 fi
 lapack_line="LAPACK_LIBS=$lapack_libs"
-iotk_line="IOTK_LIBS=$iotk_libs"
 fft_line="FFT_LIBS=$fft_libs"
 if test "$mpi_libs" != "" ; then 
    mpi_line="MPI_LIBS=$mpi_libs"
@@ -1712,16 +1678,17 @@ if test "$arch" = "aix" ; then
 else
    mass_line="@delete@"
 fi
-# <AF>
-if test "$etsf_io_libs" != "" ; then 
+
+# AF
+if test "$etsf_io_libs" != "" ; then
    etsf_io_line="ETSF_IO_LIBS=$etsf_io_libs"
-else 
-   etsf_io_line="@delete@" 
+else
+   etsf_io_line="@delete@"
 fi
-if test "$netcdf_libs" != "" ; then 
+if test "$netcdf_libs" != "" ; then
    netcdf_line="NETCDF_LIBS=$netcdf_libs"
-else 
-   netcdf_line="@delete@" 
+else
+   netcdf_line="@delete@"
 fi
 #
 
@@ -1741,9 +1708,12 @@ else
 	parallel_report="Configured for compilation of serial executables."
 fi
 
+
+
+
+
 # export settings to generated files
 AC_SUBST(topdir)         # <AF>
-AC_SUBST(built_date)     # <AF>
 AC_SUBST(host)           # <AF>
 AC_SUBST(arch)           # <AF>
 #
@@ -1764,15 +1734,27 @@ AC_SUBST(imod)
 AC_SUBST(iflags)
 AC_SUBST(ld)
 AC_SUBST(ldflags)
+AC_SUBST(ld_libs)
 AC_SUBST(blas_libs)
 AC_SUBST(blas_libs_switch)
 AC_SUBST(lapack_libs)
 AC_SUBST(lapack_libs_switch)
-AC_SUBST(scalapack_libs)
 AC_SUBST(fft_libs)
 AC_SUBST(mpi_libs)
 AC_SUBST(mass_libs)
 AC_SUBST(pgplot_libs)
+AC_SUBST(scalapack_libs)
+AC_SUBST(ar)
+AC_SUBST(arflags)
+AC_SUBST(ranlib)
+AC_SUBST(f90rule)
+AC_SUBST(blas_line)
+AC_SUBST(lapack_line)
+AC_SUBST(scalapack_line)
+AC_SUBST(fft_line)
+AC_SUBST(mpi_line)
+AC_SUBST(mass_line)
+AC_SUBST(parallel_report)
 #
 AC_SUBST(etsf_io_libs)         # <AF>
 AC_SUBST(etsf_io_libs_switch)  # <AF>
@@ -1789,78 +1771,33 @@ AC_SUBST(iotk_libs_switch)     # <AF>
 AC_SUBST(iotk_include)         # <AF>
 AC_SUBST(iotk_line)            # <AF>
 #
-AC_SUBST(ar)
-AC_SUBST(arflags)
-AC_SUBST(ranlib)
-AC_SUBST(f90rule)
-AC_SUBST(blas_line)
-AC_SUBST(lapack_line)
-AC_SUBST(scalapack_line)
-AC_SUBST(fft_line)
-AC_SUBST(mpi_line)
-AC_SUBST(mass_line)
-AC_SUBST(parallel_report)
 
-#AC_CONFIG_HEADERS([include/c_defs.h:include/c_defs.h.in])
-AC_CONFIG_HEADERS([include/ctools.h:include/ctools.h.in])
-AC_CONFIG_FILES([include/configure.h:include/configure.h.in]) # <AF>
+AC_CONFIG_HEADERS([include/c_defs.h:include/c_defs.h.in])
+AC_CONFIG_FILES([include/configure.h:include/configure.h.in]) # AF
 AC_CONFIG_FILES(make.sys)
 AC_CONFIG_FILES(configure.msg)
 
 AC_CONFIG_FILES(extlibs/install/make_blas.inc)
 AC_CONFIG_FILES(extlibs/install/make_lapack.inc)
-AC_CONFIG_FILES(extlibs/install/make_iotk.inc)
+AC_CONFIG_FILES(extlibs/install/make_iotk.inc)  # AF
 
 
 AC_OUTPUT
 
-# <AF>
+# AF
 # greate also f_defs.h with a (not so) dirty trick
 #
-if test -e include/ctools.h
+if test -e include/c_defs.h
 then
    test -e include/f_defs.h && rm include/f_defs.h
-   grep "#define " include/ctools.h > include/f_defs.h
+   grep "#define " include/c_defs.h > include/f_defs.h
 fi
-# </AF>
+# AF
 
-## <AF>
-##----------------------
-## configure iotk
-##
-#if test -x $topdir/conf/configure_iotk
-#then
-#        echo
-#        echo configuring iotk...
-#        #
-#        if test "$iotk_integer_kinds" = "" ; then iotk_integer_kinds=ALL ; fi
-#        if test "$iotk_logical_kinds" = "" ; then iotk_logical_kinds=ALL ; fi
-#        if test "$iotk_real_kinds" = ""    ; then iotk_real_kinds=ALL    ; fi
-#        if test "$iotk_fc" = ""            ; then iotk_fc=$f90           ; fi
-#        #
-#        # uncomment here below to search for all INTEGER and LOGICAL kinds
-#        #
-#        # echo setting IOTK_INTEGER_KINDS... $iotk_integer_kinds
-#        # echo setting IOTK_LOGICAL_KINDS... $iotk_logical_kinds
-#        #
-#        echo setting IOTK_REAL_KINDS... $iotk_real_kinds
-#        echo setting IOTK_FC... $iotk_fc
-#        echo
-#        #
-#        # for the same reasons as before, add the two following lines if the case
-#        #
-#        # IOTK_INTEGER_KINDS=$iotk_integer_kinds \
-#        # IOTK_LOGICAL_KINDS=$iotk_logical_kinds \
-#        #
-#        ( cd $topdir ; ./conf/configure_iotk  IOTK_REAL_KINDS=$iotk_real_kinds \
-#                                              FC=$iotk_fc )
-#fi
-
-# <AF>
-#----------------------
+# AF
 # setup for configuring extlibs
 #
-if test "$iotk_libs_switch" = "nternal" ; then
+if test "$iotk_libs_switch" = "internal" ; then
    test -e ./extlibs/iotk/configure-stamp && rm ./extlibs/iotk/configure-stamp
 fi
 # setup for configuring plugins

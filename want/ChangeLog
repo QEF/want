@@ -4,6 +4,12 @@
 =======================================================
 
 
+18 Mar 2010      configure.ac updated using todays QE cvs version. Changes to
+                 makefile system added (in particular related to the build_date var). 
+                 ~want/install dir added. (AF)
+
+16 Mar 2010      Portability on Sun f95 compiler added. (AF)
+
 15 Mar 2010      iotk moved to extlibs. A number of related minor changes done. 
                  Version updated to 2.3.0 .(AF)
 

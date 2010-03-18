@@ -6,7 +6,7 @@
   or http://www.gnu.org/copyleft/gpl.txt .
 */
 
-#include "ctools.h"
+#include "c_defs.h"
 
 /* 
   This function return the numer of kilobytes allocated

@@ -6,7 +6,7 @@
   or http://www.gnu.org/copyleft/gpl.txt .
 */
 
-#include "ctools.h"
+#include "c_defs.h"
 
 #if defined __FFTW
 #  include "fftw.c"

@@ -13,7 +13,7 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <time.h>
-#include "ctools.h"
+#include "c_defs.h"
 
 static void fatal ( const char * msg )
 {

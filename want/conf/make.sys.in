@@ -34,6 +34,8 @@ LDFLAGS             = @ldflags@
 AR                  = @ar@
 ARFLAGS             = @arflags@
 RANLIB              = @ranlib@
+#
+BUILD_DATE          = "`date '+%c'`"
 
 # -----------------------------
 # libraries
