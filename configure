@@ -62,7 +62,7 @@ if [ "$configure" = "yes" ] ; then
    test -e ./include/fft_defs.h     && rm ./include/fft_defs.h
 
    CFLAGS=$*
-   ./conf/configure "$CFLAGS"
+   ./conf/configure $CFLAGS
 
    #
    # copy make.sys in the home dir
