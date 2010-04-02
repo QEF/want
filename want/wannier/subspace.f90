@@ -18,7 +18,7 @@
    USE log_module,     ONLY : log_push, log_pop
    USE windows_module, ONLY : nbnd, dimwin, dimwinx, windows_allocate, &
                               windows_alloc => alloc
-   USE kpoints_module, ONLY : nkpts, nkpts_g, kpoints_alloc
+   USE kpoints_module, ONLY : nkpts_g, kpoints_alloc
    USE io_module,      ONLY : ionode, ionode_id
    USE mp,             ONLY : mp_bcast
    USE iotk_module
@@ -63,7 +63,7 @@
 ! end of declarations
 !
 
-   PUBLIC :: nkpts, nkpts_g, dimwinx
+   PUBLIC :: nkpts_g, dimwinx
    PUBLIC :: dimwann
    PUBLIC :: maxiter_dis, alpha_dis, disentangle_thr
    PUBLIC :: wan_eig
@@ -104,7 +104,6 @@ CONTAINS
        !
        !
        IF ( dimwinx <= 0 ) CALL errore(subname,'Invalid dimwinx',2)
-       IF ( nkpts   <= 0 ) CALL errore(subname,'Invalid nkpts',3)
        IF ( nkpts_g <= 0 ) CALL errore(subname,'Invalid nkpts_g',3)
        IF ( dimwann <= 0 ) CALL errore(subname,'Invalid dimwann', ABS(dimwann)+1)
        !

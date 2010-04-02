@@ -24,8 +24,8 @@ SUBROUTINE warning( routine, message )
   !
   IF ( ionode ) THEN
      !   
-     WRITE( stdout , '(5X,"WARNING from routine ",A,":")' ) routine
-     WRITE( stdout , '(5X,A)' ) message
+     WRITE( stdout , '(2X,"WARNING from routine ",A,":")' ) routine
+     WRITE( stdout , '(2X,A,/)' ) message
      !   
   END IF
   !

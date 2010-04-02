@@ -88,7 +88,7 @@ CONTAINS
        CALL log_push( subname )
        !
        IF ( dimwinx <= 0 ) CALL errore(subname,'Invalid dimwinx',1)
-       IF ( nkpts <= 0   ) CALL errore(subname,'Invalid nkpts',1)
+       IF ( nkpts < 0    ) CALL errore(subname,'Invalid nkpts',1)
        IF ( dimwann <= 0 ) CALL errore(subname,'Invalid dimwann',1)
        IF ( nb <= 0      ) CALL errore(subname,'Invalid nb',1)
 

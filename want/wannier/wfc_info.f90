@@ -78,7 +78,7 @@ CONTAINS
        IF ( npwx <= 0 )  CALL errore(subname,'npwx <= 0',ABS(npwx)+1)
        IF ( nwfc <= 0 )  CALL errore(subname,'nwfc <= 0',ABS(nwfc)+1)
        IF ( nbnd <= 0 )  CALL errore(subname,'nbnd <= 0',ABS(nbnd)+1)
-       IF ( nkpts <= 0 )  CALL errore(subname,'nkpts <= 0',ABS(nkpts)+1)
+       IF ( nkpts < 0 )  CALL errore(subname,'nkpts < 0',ABS(nkpts))
 
        ALLOCATE( obj%ibnd(nwfc), STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'allocating ibnd',ABS(ierr))

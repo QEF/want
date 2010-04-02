@@ -5,7 +5,8 @@
 
 
 Apr 02 2010      Bug fixed in the write_eigchn procedure (conductor). 
-                 Cleanup of the transport part. (AF)
+                 Cleanup of the transport part. Test11 updated. 
+                 nproc > nkpts allowed. (AF)
 
 18 Mar 2010      configure.ac updated using todays QE cvs version. Changes to
                  makefile system (in particular related to the build_date var). 

@@ -160,13 +160,15 @@ CONTAINS
 
       IF ( nkpts   > nkptx ) CALL errore(subname,'too many kpts', 10)
       IF ( nkpts_g > nkptx ) CALL errore(subname,'too many kpts', 11)
+      !
+      IF ( nkpts_g < nproc ) CALL warning(subname,'too many CPU used')
 
       !
       ! local quantities (within each pool)
       !
       IF ( klocal ) THEN
           !
-          IF ( nkpts <= 0) CALL errore(subname,'Invalid NKPTS',ABS(nkpts)+1)
+          IF ( nkpts < 0) CALL errore(subname,'Invalid NKPTS',ABS(nkpts)+1)
           !
           ALLOCATE( vkpt(3,nkpts),STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'allocating vkpt',ABS(ierr))
