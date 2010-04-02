@@ -17,7 +17,7 @@
    USE io_module,         ONLY : ionode, ionode_id
    USE log_module,        ONLY : log_push, log_pop
    USE lattice_module,    ONLY : avec, bvec, lattice_alloc => alloc
-   USE kpoints_module,    ONLY : nkpts, nkpts_g, nk, vkpt_g, wk_g,  &
+   USE kpoints_module,    ONLY : nkpts_g, nk, vkpt_g, wk_g,  &
                                  nrtot, nr, ivr,  wr,  kpoints_alloc 
    USE subspace_module,   ONLY : dimwann, subspace_alloc => alloc
    USE converters_module, ONLY : cry2cart, cart2cry
@@ -56,7 +56,7 @@
 ! end of declarations
 !
 
-   PUBLIC :: nkpts, dimwann
+   PUBLIC :: nkpts_g, dimwann
    PUBLIC :: nrtot
    PUBLIC :: rham
    PUBLIC :: rovp
@@ -89,7 +89,6 @@ CONTAINS
        IF ( .NOT. subspace_alloc )  CALL errore(subname,'subspace NOT alloc',1)
        
        IF ( dimwann <= 0 )  CALL errore(subname,'Invalid DIMWANN',1)
-       IF ( nkpts <= 0 )    CALL errore(subname,'Invalid NKPTS',1)
        IF ( nrtot <= 0 )    CALL errore(subname,'Invalid NRTOT',1)
 
        !

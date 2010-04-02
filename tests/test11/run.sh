@@ -21,6 +21,8 @@ MANUAL=" Usage
  wannier         perform the above cited minimization
  plot            compute WFs on real space for plotting
  conductor       evaluate the transmittance across the junction
+ conductor_auto  evaluate the transmittance taking all the matrix elements
+                 from the same calculation (not recommended in general)
  conductor_bulk  evaluate the bulk transmittance for the leads
  current         compute the current
  want            perform all WANT calculations
@@ -52,6 +54,7 @@ DISENTANGLE=
 WANNIER=
 PLOT=
 CONDUCTOR=
+CONDUCTOR_AUTO=
 CONDUCTOR_BULK=
 CURRENT=
 CHECK=
@@ -69,13 +72,16 @@ case $INPUT in
    (wannier)        WANNIER=yes ;;
    (plot)           PLOT=yes ;;
    (conductor)      CONDUCTOR=yes ;;
+   (conductor_auto) CONDUCTOR_AUTO=yes ;;
    (conductor_bulk) CONDUCTOR_BULK=yes ;;
    (current)        CURRENT=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ; 
-                    CONDUCTOR=yes ; CONDUCTOR_BULK=yes ; CURRENT=yes ; PLOT=yes ;;
+                    CONDUCTOR=yes ; CONDUCTOR_AUTO=yes ; CONDUCTOR_BULK=yes ; 
+                    CURRENT=yes ; PLOT=yes ;;
    (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
                     DISENTANGLE=yes ; WANNIER=yes ; 
-                    CONDUCTOR=yes ; CONDUCTOR_BULK=yes ; CURRENT=yes ; PLOT=yes ;;
+                    CONDUCTOR=yes ; CONDUCTOR_AUTO=yes ; CONDUCTOR_BULK=yes ; 
+                    CURRENT=yes ; PLOT=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -139,6 +145,11 @@ run_conductor SUFFIX=$SUFFIX  RUN=$CONDUCTOR
 # running CURRENT
 #
 run_current NAME=CURRENT  SUFFIX=$SUFFIX  RUN=$CURRENT
+
+#
+# running CONDUCTOR_AUTO
+#
+run_conductor NAME=CONDUCTOR_AUTO  SUFFIX=${SUFFIX}_auto  RUN=$CONDUCTOR_AUTO
 
 #
 # running CONDUCTOR_BULK

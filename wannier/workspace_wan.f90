@@ -53,7 +53,7 @@ CONTAINS
       INTEGER  :: ierr
 
       IF ( alloc )       CALL errore(subname,'already allocated', 1 )
-      IF ( nkpts <=0  )  CALL errore(subname,'invalid nkpts', 1 )
+      IF ( nkpts <0  )   CALL errore(subname,'invalid nkpts', 1 )
       IF ( nb <=0  )     CALL errore(subname,'invalid nb', 1 )
       IF ( dimwann <=0 ) CALL errore(subname,'invalid dimwann', 1 )
 

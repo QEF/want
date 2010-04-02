@@ -24,7 +24,7 @@
    !
    USE parameters,      ONLY : nnx
    USE lattice_module,  ONLY : bvec, lattice_alloc => alloc
-   USE kpoints_module,  ONLY : vkpt_g, nkpts_g, nkpts, nk, s, nb, vb, wb, wbtot, &
+   USE kpoints_module,  ONLY : vkpt_g, nkpts_g, nk, s, nb, vb, wb, wbtot, &
                                nnlist, nncell, nnrev, nnpos,          &
                                kpoints_alloc, bshells_allocate 
    !
@@ -64,8 +64,7 @@
 
    IF ( .NOT. lattice_alloc ) CALL errore(subname, 'lattice NOT alloc', 1 )
    IF ( .NOT. kpoints_alloc ) CALL errore(subname, 'kpoints NOT alloc', 1 )
-   IF ( nkpts <= 0)   CALL errore(subname, 'Invalid nkpts', ABS(nkpts)+1 )
-   IF ( nkpts_g <= 0) CALL errore(subname, 'Invalid nkptsi_g', ABS(nkpts_g)+1 )
+   IF ( nkpts_g <= 0) CALL errore(subname, 'Invalid nkpts_g', ABS(nkpts_g)+1 )
 
    !
    ! if not already done, check that the kpt grid is Monkhorst-pack
