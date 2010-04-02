@@ -755,6 +755,7 @@ enable_shared
 enable_wrappers
 with_internal_blas
 with_internal_lapack
+with_internal_libs
 enable_signals
 with_netcdf
 enable_etsf_io
@@ -1412,6 +1413,8 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-internal-blas    compile with internal blas (default: no)
   --with-internal-lapack  compile with internal lapack (default: no)
+  --with-internal-libs    compile with internal blas, lapack, etc (default:
+                          no)
   --with-netcdf           use netcdf if available (default: no)
   --with-etsf-io          use etsf-io lib (default: no)
   --with-external-iotk    compile with external iotk lib (default: no)
@@ -1953,6 +1956,21 @@ if test "${with_internal_lapack+set}" = set; then
 else
   use_internal_lapack=0
 fi
+
+# AF
+# force internal lapack switch
+
+# Check whether --with-internal-libs was given.
+if test "${with_internal_libs+set}" = set; then
+  withval=$with_internal_libs; if   test "$withval" = "yes" ; then
+      use_internal_blas=1
+      use_internal_lapack=1
+   else
+      use_internal_blas=0
+      use_internal_lapack=0
+   fi
+fi
+
 
 # enable signals
 # Check whether --enable-signals was given.
@@ -8234,7 +8252,7 @@ fi
 # settings above lapack tests, which would seem a more logical place)
 
 if test "$have_blas" -eq 0 -o "$use_internal_blas" -eq 1 ; then
-    blas_libs="$topdir/BLAS/blas.a"
+    blas_libs="-L$topdir/extlibs/blas/lib -lblas"    #AF
     blas_libs_switch="internal"
 else
     blas_libs_switch="external"
@@ -8244,7 +8262,7 @@ fi
 # or internal lapack esplicitly required
 
 if test "$have_lapack" -eq 0 -o "$use_internal_lapack" -eq 1 ; then
-    lapack_libs="$topdir/lapack-3.2/lapack.a"
+    lapack_libs="-L$topdir/extlibs/lapack/lib -llapack"
     lapack_libs_switch="internal"
 else
     if test "$have_essl" -eq 1 -o "$have_atlas" -eq 1 ; then

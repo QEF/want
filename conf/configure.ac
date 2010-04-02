@@ -63,6 +63,20 @@ AC_ARG_WITH(internal-lapack,
       use_internal_lapack=0
    fi],
    [use_internal_lapack=0])
+# AF
+# force internal lapack switch
+AC_ARG_WITH(internal-libs, 
+   [AS_HELP_STRING([--with-internal-libs],
+       [compile with internal blas, lapack, etc (default: no)])],
+    [if   test "$withval" = "yes" ; then
+      use_internal_blas=1
+      use_internal_lapack=1
+   else
+      use_internal_blas=0
+      use_internal_lapack=0
+   fi],
+   [])
+
 # enable signals
 AC_ARG_ENABLE(signals, 
    [AS_HELP_STRING([--enable-signals],
@@ -1255,7 +1269,7 @@ fi
 # settings above lapack tests, which would seem a more logical place)
 
 if test "$have_blas" -eq 0 -o "$use_internal_blas" -eq 1 ; then
-    blas_libs="$topdir/BLAS/blas.a"
+    blas_libs="-L$topdir/extlibs/blas/lib -lblas"    #AF
     blas_libs_switch="internal"
 else
     blas_libs_switch="external"
@@ -1265,7 +1279,7 @@ fi
 # or internal lapack esplicitly required
 
 if test "$have_lapack" -eq 0 -o "$use_internal_lapack" -eq 1 ; then
-    lapack_libs="$topdir/lapack-3.2/lapack.a"
+    lapack_libs="-L$topdir/extlibs/lapack/lib -llapack"
     lapack_libs_switch="internal"
 else 
     if test "$have_essl" -eq 1 -o "$have_atlas" -eq 1 ; then
