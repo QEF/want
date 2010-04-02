@@ -178,6 +178,7 @@ workspace.o : control.o
 workspace.o : hamiltonian.o
 workspace.o : kpoints.o
 workspace.o : ../libs/kind.o
+write_data.o : ../libs/files.o
 write_data.o : ../libs/kind.o
 write_data.o : ../libs/log_module.o
 write_data.o : ../libs/parameters.o

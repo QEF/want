@@ -19,15 +19,17 @@
    USE log_module,              ONLY : log_push, log_pop
    USE io_module,               ONLY : ionode, stdout, io_name
    USE parser_module,           ONLY : int2char
+   USE files_module,            ONLY : file_open, file_close
    USE iotk_module
    !
    IMPLICIT NONE
    PRIVATE 
 
    CHARACTER(nstrx) :: filename
+   CHARACTER(nstrx) :: attr
 
    PUBLIC :: wd_write_data
-   PUBLIC :: wd_write_eigplot
+   PUBLIC :: wd_write_eigchn
 
 
 CONTAINS
@@ -78,29 +80,52 @@ END SUBROUTINE wd_write_data
 
 
 !**********************************************************
-   SUBROUTINE wd_write_eigplot(iunit, ie, ik, dim1, dim2, mydata)
+   SUBROUTINE wd_write_eigchn(iun, ie, ik, dim1, dim2, mydata)
    !**********************************************************
    !
    IMPLICIT NONE
       !
-      INTEGER,      INTENT(IN) :: iunit
+      INTEGER,      INTENT(IN) :: iun
       INTEGER,      INTENT(IN) :: ie, ik
       INTEGER,      INTENT(IN) :: dim1, dim2
       COMPLEX(dbl), INTENT(IN) :: mydata(dim1,dim2)
       !
-      CHARACTER(20) :: str
+      CHARACTER(15) :: subname='wd_write_eigchn'
+      INTEGER       :: i, ierr
       !
-      CALL log_push( 'wd_write_eigplot' )
+      CALL log_push( subname )
       !
-      CALL io_name( "miao", filename )
+      CALL io_name( "eigchn", filename )
+      CALL file_open(iun,TRIM(filename),PATH="/",ACTION="write", &
+                     FORM="UNFORMATTED", IERR=ierr )
+      IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr) )
+          !
+          CALL iotk_write_begin(iun,"EIGENCHANNELS")
+          !
+          CALL iotk_write_attr(attr, "ik", ik, FIRST=.TRUE.)
+          CALL iotk_write_attr(attr, "ie", ie )
+          CALL iotk_write_attr(attr, "dim1", dim1)
+          CALL iotk_write_attr(attr, "dim1", dim2)
+          CALL iotk_write_empty(iun, "DATA", ATTR=attr)
+          !
+          DO i = 1, dim2
+              !
+              CALL iotk_write_dat(iun,"eigchn"//TRIM(iotk_index(i)), mydata(1:dim1,i))
+              !
+          ENDDO
+          !
+          CALL iotk_write_end(iun,"EIGENCHANNELS")
+          !
+      CALL file_close(iun,PATH="/",ACTION="write", IERR=ierr)
+      IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr) )
       !
-      CALL io_name( "Miao", filename, LPATH=.FALSE. )
-      IF (ionode) WRITE(stdout,"(/,2x,a,'Miao written on file: ',3x,a)") TRIM(filename)
+      CALL io_name( "eigchn", filename, LPATH=.FALSE. )
+      IF (ionode) WRITE(stdout,"(/,2x,a,'Eigenchannels written on file: ',3x,a)") TRIM(filename)
       !
-      CALL log_pop( 'wd_write_eigplot' )
+      CALL log_pop( subname )
       RETURN
       !
-END SUBROUTINE wd_write_eigplot
+END SUBROUTINE wd_write_eigchn
 
 END MODULE T_write_data_module
 
