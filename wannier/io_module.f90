@@ -585,6 +585,11 @@
            body_   = "doscond" 
            suffix_ = ".dat"
            !
+      CASE ( "eigenchannels", "eigchn" )
+           !
+           body_   = "eigchn" 
+           suffix_ = ".dat"
+           !
       CASE ( "dos" )
            !
            body_   = "dos" 
@@ -597,7 +602,7 @@
            suffix_ = TRIM(suffix_sgm) // TRIM(proc_)
            !
       CASE DEFAULT
-           CALL errore('io_name','Unknown DATA type in input',1)
+           CALL errore('io_name','Unknown DATA type in input: '//TRIM(data_type),1)
       END SELECT
 
       filename = TRIM(path_)//TRIM(prefix_)//TRIM(body_)//TRIM(postfix_)//TRIM(suffix_)

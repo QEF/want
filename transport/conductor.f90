@@ -136,7 +136,7 @@ END PROGRAM conductor
                                     gR, gL, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
                                     rsgm_L, rsgm_R, workspace_allocate
    USE T_correlation_module, ONLY : lhave_corr, ldynam_corr, correlation_read
-   USE T_write_data_module,  ONLY : wd_write_data, wd_write_eigplot
+   USE T_write_data_module,  ONLY : wd_write_data, wd_write_eigchn
    USE T_operator_blc_module
    !
    IMPLICIT NONE
@@ -146,7 +146,7 @@ END PROGRAM conductor
    !
    CHARACTER(12)    :: subname="do_conductor"
    !
-   INTEGER          :: i, ie, ir, ik, ierr, niter
+   INTEGER          :: i, ie, ir, ik, idim, ierr, niter
    INTEGER          :: iomg_s, iomg_e
    LOGICAL          :: write_eigchn
    REAL(dbl)        :: avg_iter
@@ -193,7 +193,9 @@ END PROGRAM conductor
    !
    IF ( do_eigenchannels .AND. do_eigplot ) THEN
        !
-       ALLOCATE ( z_eigplot(dimC, MIN(dimC,dimR,dimL) ), STAT=ierr )
+       idim = MIN(dimC,dimR,dimL)
+       !
+       ALLOCATE ( z_eigplot(dimC, idim ), STAT=ierr )
        IF( ierr /=0 ) CALL errore(subname,'allocating z_eigplot', ABS(ierr) )
        !
    ENDIF
@@ -381,6 +383,10 @@ END PROGRAM conductor
               z_eigplot = work( 1:dimC, 1:MIN(dimC,dimR,dimL) )
               write_eigchn = .TRUE.
               !
+          ELSE
+              !
+              write_eigchn = .FALSE.
+              !
           ENDIF
           ! 
           ! 
@@ -454,8 +460,10 @@ END PROGRAM conductor
    !
    IF ( write_eigchn ) THEN
        !
-       CALL wd_write_eigplot( aux_unit, ie_eigplot, ik_eigplot, &
-                              dimC, MIN(dimC,dimR,dimL), z_eigplot)
+       idim = MIN(dimC,dimR,dimL)
+       !
+       CALL wd_write_eigchn( aux_unit, ie_eigplot, ik_eigplot, &
+                             dimC, idim, z_eigplot)
        !
    ENDIF
 

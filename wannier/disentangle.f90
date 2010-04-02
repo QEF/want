@@ -225,7 +225,7 @@
                        CALL subspace_write(space_unit,"SUBSPACE")
                        !
                     CALL file_close(space_unit,PATH="/",ACTION="write", IERR=ierr)
-                    IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr) )
+                    IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr) )
                     !
                 ENDIF
 
