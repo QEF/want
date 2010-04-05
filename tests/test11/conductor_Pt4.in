@@ -1,0 +1,22 @@
+
+  &INPUT_CONDUCTOR
+    postfix='_Pt4'
+    dimC = 24
+    calculation_type = 'bulk'
+    ne = 1000  
+    emin = -10.0
+    emax =   5.0 
+    datafile_C = "./SCRATCH/pt4_WanT.ham"
+    transport_dir = 3
+    delta = 0.0005
+!    smearing_type = "gaussian"
+!    smearing_type = "lorentzian"
+  /
+
+<HAMILTONIAN_DATA>
+
+   <H00_C  cols="ALL" rows="ALL" />
+   <H_CR   cols="ALL" rows="ALL" />
+
+</HAMILTONIAN_DATA>
+

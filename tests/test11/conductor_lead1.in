@@ -1,0 +1,29 @@
+
+&INPUT_CONDUCTOR
+   postfix="_lead1"
+   dimL = 6
+   dimC = 50
+   dimR = 6
+   ne = 1000
+   emin = -7.0
+   emax = 2.0
+   datafile_L = "./SCRATCH/pt1_WanT.ham"
+   datafile_C = "./SCRATCH/pt_h2_pt_WanT.ham"
+   datafile_R = "./SCRATCH/pt1_WanT.ham"
+   transport_dir = 3
+   delta = 0.005
+!   smearing_type = 'gaussian'
+/
+
+<HAMILTONIAN_DATA>
+
+   <H00_C   rows="1-50"  cols="1-50" />
+   <H_CR    rows="1-50"  cols="1-6"  />
+   <H_LC    rows="45-50" cols="1-50" />
+   <H00_L   rows="ALL"   cols="ALL"  />
+   <H01_L   rows="ALL"   cols="ALL" />
+   <H00_R   rows="ALL"   cols="ALL"  />
+   <H01_R   rows="ALL"   cols="ALL" />
+
+</HAMILTONIAN_DATA>
+
