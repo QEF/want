@@ -1,9 +1,0 @@
-
-&INPUTPP
-  prefix='pt_h2_pt'
-  outdir='./SCRATCH/'
-  pseudo_dir = '../pseudo/'
-  psfile(1) = 'Pt.pz-rrkjus.UPF'
-  psfile(2) = 'H.pz-rrkjus.UPF'
-/
-

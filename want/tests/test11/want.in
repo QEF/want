@@ -5,7 +5,6 @@
    work_dir = './SCRATCH/'
    verbosity = 'high'
    wantdata_fmt = 'binary'
-   dftdata_fmt = 'pw_export'
 /
 
 &SUBSPACE
