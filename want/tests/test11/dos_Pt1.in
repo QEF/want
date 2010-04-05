@@ -1,0 +1,13 @@
+
+ &INPUT
+   prefix = 'pt1'
+   postfix = '_WanT'
+   work_dir = './SCRATCH'
+   fileout = 'dos_Pt1.dat'
+   nk(1) = 1
+   nk(2) = 1
+   nk(3) = 400
+   delta = 0.05
+   smearing_type = 'gaussian'
+ /
+

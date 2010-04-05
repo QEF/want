@@ -1,0 +1,46 @@
+
+&CONTROL
+   prefix = 'pt4'
+   postfix = '_WanT'
+   work_dir = './SCRATCH/'
+   restart_mode = 'from_scratch'
+/
+
+&SUBSPACE
+   dimwann  = 24
+   win_max  =  2.0        
+   froz_max =  -4.5    ! Fermi = -4.95 eV
+/   
+
+&LOCALIZATION
+   maxiter0_wan = 100
+   maxiter1_wan = 1500
+   ncg = 5       
+/
+
+WANNIER_CENTERS {crystal}
+atomic   1  2 -2      1.0
+atomic   1  2 -1      1.0
+atomic   1  2  0      1.0
+atomic   1  2  1      1.0
+atomic   1  2  2      1.0
+1gauss   0.0  0.0  0.125     0  0  0.5    1.0
+atomic   2  2 -2      1.0
+atomic   2  2 -1      1.0
+atomic   2  2  0      1.0
+atomic   2  2  1      1.0
+atomic   2  2  2      1.0
+1gauss   0.0  0.0  0.375     0  0  0.5    1.0
+atomic   3  2 -2      1.0
+atomic   3  2 -1      1.0
+atomic   3  2  0      1.0
+atomic   3  2  1      1.0
+atomic   3  2  2      1.0
+1gauss   0.0  0.0  0.625     0  0  0.5    1.0
+atomic   4  2 -2      1.0
+atomic   4  2 -1      1.0
+atomic   4  2  0      1.0
+atomic   4  2  1      1.0
+atomic   4  2  2      1.0
+1gauss   0.0  0.0  0.875     0  0  0.5    1.0
+    
