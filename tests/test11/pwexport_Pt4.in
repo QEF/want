@@ -1,8 +1,0 @@
-
-&INPUTPP
-  prefix='pt4'
-  outdir='./SCRATCH/'
-  pseudo_dir = '../pseudo/'
-  psfile(1) = 'Pt.pz-rrkjus.UPF'
-/
-

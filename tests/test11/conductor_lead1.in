@@ -5,14 +5,18 @@
    dimC = 50
    dimR = 6
    ne = 1000
-   emin = -7.0
-   emax = 2.0
+   emin = -8.0
+   emax =  2.0
    datafile_L = "./SCRATCH/pt1_WanT.ham"
    datafile_C = "./SCRATCH/pt_h2_pt_WanT.ham"
    datafile_R = "./SCRATCH/pt1_WanT.ham"
    transport_dir = 3
    delta = 0.005
-!   smearing_type = 'gaussian'
+   work_dir = './SCRATCH'
+   do_eigenchannels = .TRUE.
+   do_eigplot = .TRUE.
+   ie_eigplot = 800 
+   ik_eigplot = 1
 /
 
 <HAMILTONIAN_DATA>

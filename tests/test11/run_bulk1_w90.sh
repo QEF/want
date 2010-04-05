@@ -33,7 +33,7 @@ MANUAL=" Usage
 
 #
 # macros
-SUFFIX="_Pt1_w90"
+SUFFIX="_bulk1_w90"
 
 #
 # evaluate the starting choice about what is to run 
