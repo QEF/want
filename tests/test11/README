@@ -7,32 +7,45 @@
   setting a chain of 8 Pt atoms with an H2 molecule between them in the unit cell.
   We used 4 kpts along chain direction to sample the Brillouin zone, and a cutoff 
   of 22 Ry for wfc (while 176 Ry for rho).
+  The calculations are performed both using a lead principal layer of 1 and 
+  4 Pt atoms. For this reason, we adopted the following naming scheme:
 
-  The output of the calculations are the conductance (namely the transmittance)
-  and the DOS for the bulk-like platinum leads (cond_bulk.dat and dos_bulk.dat) and 
-  for the general geometry of platinum leads contacted through the H2 molecule 
-  (cond.dat and dos.dat).
-  transport calculation is carried out coupling conductor (8 Pt and 2 H atoms 
-  per cell, 50 WFs) with leads (1 Pt atom, 6 WFs), extracting the coupling 
-  matrices directly from the supercell conductor calculation (see the manual for 
-  further details). 
+  *_bulk1*    files related the the bulk Pt, using 1 atom per cell
+  *_bulk4*    files related the the bulk Pt, using 4 atoms per cell
 
-  Disentangle calculation is performed within an energy window ranging up to 
-  10 eV. A conditioned minimization is carried out and the amplitude of the 
-  penalty functional is set to 20 (see manual for further details). Fifty initial 
-  guess centers are considered: 10 of 1gauss type with s-geometry are localized 
-  at the bond midpoints, and 5 d-type atomic orbitals are localized on each Pt 
-  atom.
+  conductor_lead1.*    files related to a transport calculation using
+              data for the leads from *_bulk1*
+  conductor_lead4.*    files related to a transport calculation using
+              data for the leads from *_bulk4*
+  conductor_auto.*     files related to a transport calculation using
+              data for the leads from the same conductor calculation
+              (this is meant to be more of a demonstration than a
+               real input choice and it is not recommended in real calculations)
 
+  At first, the WFs are computed for the isolated systems (the conductor region,
+  and the leads, both 1 and 4 atoms per cell).
+  DOS and bands are computed for the leads to ensure that the electronic structure
+  is well described. 
+  The bulk trnasmittance is also computed for bulk1 and bulk4 as a references.
+  Here some differences can be found, due to the different size of the principal 
+  layers in the two cases: 1 atom PL is not enough while 4 atoms PL is almost converged.
+
+  The main output of the transport calculations is the full conductance across the
+  junction, computed in different flavors:
+  - conductor_lead1.in:    using 1 Pt-atom principal layers (data from bulk1)
+  - conductor_lead4.in:    using 4 Pt-atoms principal layers (data from bulk4)
+  - conductor_auto.in:     using 1 Pt-atom principal layers (data from the conductor region)
+  
+  The current corresponding to the lead1 and lead4 calculations is also computed. 
 
 RESULTS discussion
 
-  After 2000 iterations the disentangle procedure is not fully converged, but
-  can be considered adeguate. An almost fine localization is reached by wannier.x 
-
   Transport calculation results are plotted in files:
-     $TESTDIR/cond_bulk.dat   and   $TESTDIR/doscond_bulk.dat
-     $TESTDIR/cond.dat        and   $TESTDIR/doscond.dat
+     $TESTDIR/cond_bulk1.dat   
+     $TESTDIR/cond_bulk4.dat   
+     $TESTDIR/cond_lead1.dat        
+     $TESTDIR/cond_lead4.dat        
+     $TESTDIR/cond_auto.dat        
 
   In the bulk-like calculation, conductance exhibits a stepwise behavior, with the
   presence of dips due to the lack of symmetry in the simulated interactions. 
@@ -40,6 +53,10 @@ RESULTS discussion
   depletion of large part of the Pt d channels. Again, numerical noise (basically
   connected with the matching procedure when small cells are used, as in the present 
   case) produces some dips in the transmittance (and in the DOS correspondingly).
+
+  According to these results, the automethod is more noisy than the others,
+  reflecting the fact that a good description of the leads is very important.
+  To our experience this is a general feature not restricted to this test only. 
 
   Results may be checked with a published work which uses the same approach based
   on Wannier functions: 
