@@ -1,6 +1,6 @@
 
   &INPUT_CONDUCTOR
-    postfix='_Pt4'
+    postfix='_bulk4'
     dimC = 24
     calculation_type = 'bulk'
     ne = 1000  
