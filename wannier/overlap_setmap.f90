@@ -124,12 +124,12 @@ SUBROUTINE overlap_setmap( npwk, npwx_g, ngx, ngy, ngz, &
       itmp = fft2gv(ipoint_new)
       !
       ! this used to give an error. Now we just set the index to -1
-      ! and this has to be checked in the parent routine.
+      ! and this has to be checked in the parent calling routine.
       IF ( itmp <= 0 ) itmp = -1
           !CALL errore(subname,'unexpected index',-itmp+1)
 
       !
-      ! if the translation of the G go over a point out of the 
+      ! if the translation of the G goes over a point out of the 
       ! initial G group, we set the related inxed to a dummy position
       !
       map(ig) = MIN( itmp, npwx_g)

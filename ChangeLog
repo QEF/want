@@ -4,7 +4,9 @@
 =======================================================
 
 
-Apr 06 2010      Configure wrapper updated. Eigenchannel writing fixed. (AF)
+Apr 06 2010      Configure wrapper updated. Eigenchannel writing fixed. 
+                 Bug fixed in the implementation of overlaps within gamma_only. 
+                 Test03 and Test04 updated. (AF)
 
 Apr 02 2010      Bug fixed in the write_eigchn procedure (conductor). 
                  Cleanup of the transport part. Test11 updated. 
