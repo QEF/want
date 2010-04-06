@@ -388,7 +388,18 @@ END PROGRAM conductor
               write_eigchn = .FALSE.
               !
           ENDIF
-          ! 
+          
+          !
+          ! write auxiliary data for eigenchannel analysis
+          !
+          IF ( write_eigchn ) THEN
+              !
+              idim = MIN(dimC,dimR,dimL)
+              !
+              CALL wd_write_eigchn( aux_unit, ie_eigplot, ik_eigplot, &
+                                    dimC, idim, z_eigplot)
+              !
+          ENDIF
           ! 
       ENDDO kpt_loop 
 
@@ -452,18 +463,6 @@ END PROGRAM conductor
        !
        CALL operator_write_close(sgmL_unit)
        CALL operator_write_close(sgmR_unit)
-       !
-   ENDIF
-
-   !
-   ! write auxiliary data for eigenchannel analysis
-   !
-   IF ( write_eigchn ) THEN
-       !
-       idim = MIN(dimC,dimR,dimL)
-       !
-       CALL wd_write_eigchn( aux_unit, ie_eigplot, ik_eigplot, &
-                             dimC, idim, z_eigplot)
        !
    ENDIF
 
