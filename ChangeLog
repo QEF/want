@@ -4,6 +4,8 @@
 =======================================================
 
 
+Apr 06 2010      configure wrapper updated. (AF)
+
 Apr 02 2010      Bug fixed in the write_eigchn procedure (conductor). 
                  Cleanup of the transport part. Test11 updated. 
                  nproc > nkpts allowed. (AF)

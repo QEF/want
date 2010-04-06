@@ -28,58 +28,32 @@ if [ "$auxdir" != "configure" ] ; then cd $auxdir ; fi
 
 
 #
-# detect what to do
+# detect the simplest cases
 #
-configure=yes
-
-##
-#case $1 in
-#  ("-c" | "--conf" )      configure=yes  ;;
-#  ("-h" | "--help" )      help=yes ;;
-#  (*)                     configure=yes ;;
-#esac
-
-##
-## print manual
-##
-#if [ "$help" = "yes" ] ; then
-#   echo "$MANUAL"  ; exit 0 
-#fi
-
+case $1 in
+  ("-h" | "--help" )      echo "$MANUAL"     ; ./conf/configure --help ; exit 0 ;;
+esac
 
 #
 # run the autoconf configure with the
 # given cong_flags
 #
-if [ "$configure" = "yes" ] ; then
 
-   test -e ./make.sys               && rm ./make.sys
-   test -e ./conf/make.sys          && rm ./conf/make.sys
-   test -e ./conf/configure.msg     && rm ./conf/configure.msg
-   test -e ./include/configure.h    && rm ./include/configure.h
-   test -e ./include/iotk_config.h  && rm ./include/iotk_config.h
-   test -e ./include/ctools.h       && rm ./include/ctools.h
-   test -e ./include/fft_defs.h     && rm ./include/fft_defs.h
+test -e ./make.sys               && rm ./make.sys
+test -e ./conf/make.sys          && rm ./conf/make.sys
+test -e ./conf/configure.msg     && rm ./conf/configure.msg
 
-   CFLAGS=$*
-   ./conf/configure $CFLAGS
+./conf/configure $*
 
-   #
-   # copy make.sys in the home dir
-   # and final clean up
-   #
-   test -e ./conf/make.sys     && mv ./conf/make.sys    .
-   test -e config.log          && mv config.log         ./conf/
-   test -e config.status       && mv config.status      ./conf/
-   test -e configure.msg       && mv configure.msg      ./conf/
-   test -e *.lineno            && mv *.lineno           ./conf/
-   #
-fi
-
+#
+# copy make.sys in the home dir
+# and final clean up
+#
+test -e ./conf/make.sys     && mv ./conf/make.sys    .
+test -e config.log          && mv config.log         ./conf/
+test -e config.status       && mv config.status      ./conf/
+test -e configure.msg       && mv configure.msg      ./conf/
+#
 
 exit 0
-
-
-
-
 
