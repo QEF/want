@@ -301,7 +301,7 @@ run_conductor NAME=CONDUCTOR_LEAD4  SUFFIX=${SUFFIX}_lead4  RUN=$CONDUCTOR_LEAD4
 # running CONDUCTOR_AUTO
 #
 run_conductor NAME=CONDUCTOR_AUTO  SUFFIX=${SUFFIX}_auto  RUN=$CONDUCTOR_AUTO
-if [ -e eigchn_auto.dat ] ; then mv eigchn_auto.dat ./SCRATCH 
+if [ -e eigchn_auto.dat ] ; then mv eigchn_auto.dat ./SCRATCH ; fi
 
 #
 # running CURRENT
@@ -309,8 +309,8 @@ if [ -e eigchn_auto.dat ] ; then mv eigchn_auto.dat ./SCRATCH
 run_current NAME=CURRENT_LEAD1  SUFFIX=${SUFFIX}_lead1  RUN=$CURRENT_LEAD1
 run_current NAME=CURRENT_LEAD4  SUFFIX=${SUFFIX}_lead4  RUN=$CURRENT_LEAD4
 #
-if [ -e eigchn_lead1.dat ] ; then mv eigchn_lead1.dat ./SCRATCH 
-if [ -e eigchn_lead4.dat ] ; then mv eigchn_lead4.dat ./SCRATCH 
+if [ -e eigchn_lead1.dat ] ; then mv eigchn_lead1.dat ./SCRATCH ; fi
+if [ -e eigchn_lead4.dat ] ; then mv eigchn_lead4.dat ./SCRATCH ; fi
 
 
 
