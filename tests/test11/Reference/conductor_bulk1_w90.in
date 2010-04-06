@@ -1,0 +1,22 @@
+
+&INPUT_CONDUCTOR
+   postfix = '_bulk1_w90'
+   dimC = 6
+   calculation_type = 'bulk'
+   ne   = 1000
+   emin = -10.0
+   emax =   5.0
+   datafile_C = "./SCRATCH/wannier90_Pt1.chk"
+   transport_dir = 3
+   shift_R =  6.7
+   shift_L =  6.7
+   shift_C =  6.7
+/
+
+<HAMILTONIAN_DATA>
+
+   <H00_C rows="ALL" cols="ALL"  />
+   <H_CR  rows="ALL" cols="ALL"  />
+
+</HAMILTONIAN_DATA>
+
