@@ -12,7 +12,7 @@
    datafile_R = "./SCRATCH/pt1_WanT.ham"
    transport_dir = 3
    delta = 0.005
-   work_dir = './SCRATCH'
+!   work_dir = './SCRATCH'
    do_eigenchannels = .TRUE.
    do_eigplot = .TRUE.
    ie_eigplot = 800 

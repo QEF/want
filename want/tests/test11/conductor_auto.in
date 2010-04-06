@@ -1,7 +1,6 @@
 
 &INPUT_CONDUCTOR
    postfix = '_auto'
-   work_dir = './SCRATCH'
    dimL = 6
    dimC = 50
    dimR = 6
@@ -14,6 +13,7 @@
    transport_dir = 3
    delta = 0.005
 !   smearing_type = 'gaussian'
+!   work_dir = './SCRATCH'
    do_eigenchannels = .TRUE.
    do_eigplot = .TRUE.
    ie_eigplot = 800

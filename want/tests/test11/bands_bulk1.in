@@ -3,7 +3,7 @@
    prefix    = 'pt1'
    postfix   = '_WanT'
    work_dir  = './SCRATCH'
-   fileout   = 'bands_Pt1.dat'
+   fileout   = 'bands_bulk1.dat'
    nkpts_in  = 2
    nkpts_max = 100
  /

@@ -4,7 +4,7 @@
    postfix        = '_WanT'
    work_dir       = './SCRATCH'
    datafile_dft   = './SCRATCH/wannier90_Pt1.chk'
-   fileout        = 'bands_Pt1_w90_NN.dat'
+   fileout        = 'bands_bulk1_w90_NN.dat'
    ircut(3)       = 1
    nkpts_in       = 2
    nkpts_max      = 100
