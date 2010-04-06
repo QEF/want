@@ -1,0 +1,17 @@
+
+     Program PWSCF     v.4.1.2  starts ...
+     Today is  5Apr2010 at 17:23: 9 
+
+     Parallel version (MPI)
+
+     Number of processors in use:       6
+     R & G space division:  proc/pool =    6
+
+     For Norm-Conserving or Ultrasoft (Vanderbilt) Pseudopotentials or PAW
+
+     Current dimensions of program pwscf are:
+     Max number of different atomic species (ntypx) = 10
+     Max number of k-points (npk) =  40000
+     Max angular momentum in pseudopotentials (lmaxx) =  3
+     Waiting for input...
+6 total processes killed (some possibly by mpirun during cleanup)
