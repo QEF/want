@@ -42,7 +42,7 @@
       INTEGER :: j2, npwk2, ind2
       !
       INTEGER,      ALLOCATABLE :: map(:),  map_aux(:)
-      COMPLEX(dbl), ALLOCATABLE :: aux1(:), aux2(:)
+      COMPLEX(dbl), ALLOCATABLE :: aux1(:), aux2(:), caux(:,:)
       !
       COMPLEX(dbl),    EXTERNAL :: ZDOTC
       !
@@ -71,7 +71,16 @@
 
       IF ( dimw1 > dimwinx ) CALL errore(subname, 'Invalid dimw1', dimw1)
       IF ( dimw2 > dimwinx ) CALL errore(subname, 'Invalid dimw2', dimw2)
+      !
+      IF ( gamma_only .AND. dimw1 /= dimw2 ) CALL errore(subname,'invalid dimw1,2', 2)
 
+
+      !
+      ! local workspace
+      !
+      ALLOCATE( caux(dimw1,dimw2), STAT=ierr )
+      IF (ierr/=0) CALL errore(subname,'allocating caux',npwkx)
+      !
       ALLOCATE( map(npwkx), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating map',npwkx)
       !
@@ -120,15 +129,18 @@
       ! this mapping takes into account the e^{iGr} factor when k1 and k2 are 
       ! in different Brillouin zones.
       !
-
+      itmp(:) = lnncell
+      IF ( gamma_only ) itmp(:) = -itmp(:)
+      !
       CALL overlap_setmap( npwk2, npwx_g, nfft(1), nfft(2), nfft(3), igsort(:,ik2), &
-                           lnncell, 1, map)
+                           itmp, 1, map)
       map( npwk2+1: npwkx ) = 0
+      !
       !
       IF ( gamma_only ) THEN
           !
           CALL overlap_setmap( npwk2, npwx_g, nfft(1), nfft(2), nfft(3), igsort(:,ik2), &
-                               lnncell, -1, map_aux)
+                               itmp, -1, map_aux)
           map_aux( npwk2+1: npwkx ) = 0
           !
       ENDIF
@@ -136,20 +148,20 @@
       !
       ! checks about the maps
       !
-      IF ( .NOT. gamma_only ) THEN
-          !
-          IF ( ANY( map(:) < 0 ) ) CALL errore(subname,'invalid inxed in map', 10)
-          !
-      ELSE
+      IF ( gamma_only ) THEN
           !
           DO ig = 1, npwk2
              IF ( map(ig) < 0 ) map(ig)     = -npwx_g
-             IF ( map(ig) < 0 .AND. map_aux(ig) <= 0) CALL errore(subname,'mismatch in maps',10)
+             IF ( map(ig) < 0 .AND. map_aux(ig) <= 0 ) CALL errore(subname,'mismatch in maps',10)
+             IF ( map(ig) == 0 )                       CALL errore(subname,'map == 0',10)
           ENDDO
           !
+      ELSE
+          !
+          IF ( ANY( map(1:npwk2) <= 0 ) ) CALL errore(subname,'invalid inxed in map', 10)
+          !
       ENDIF
-              
-          
+
 
       !
       ! loops over bands
@@ -166,7 +178,13 @@
           IF ( gamma_only ) THEN
               !
               DO ig = 1, npwk2
-                  IF ( map(ig) < 0 )  aux2( map_aux(ig) ) = CONJG( evc( ig, ind2) )
+                  !
+                  IF ( map(ig) < 0 )  THEN 
+                      aux2( igsort(ig,ik1) ) = CONJG( evc( map_aux(ig), ind2) )
+                  ELSE
+                      aux2( igsort(ig,ik1) ) = evc( map(ig), ind2)
+                  ENDIF
+                  !
               ENDDO
               !
           ENDIF
@@ -184,7 +202,7 @@
               !
               ! last position for ig is dummy
               !
-              Mkb( j1, j2)= ZDOTC ( npwx_g -1, aux1, 1, aux2, 1) 
+              Mkb( j1, j2) = ZDOTC ( npwx_g -1, aux1, 1, aux2, 1) 
               !
           ENDDO
           !
@@ -195,7 +213,7 @@
       !
       IF ( gamma_only ) THEN
           !
-          itmp(:) = -lnncell(:)
+          itmp(:) =  lnncell(:)
           !
           CALL overlap_setmap( npwk2, npwx_g, nfft(1), nfft(2), nfft(3), igsort(:,ik2), &
                                itmp, 1, map)
@@ -208,6 +226,7 @@
           DO ig = 1, npwk2
              IF ( map(ig) < 0 ) map(ig)     = -npwx_g
              IF ( map(ig) < 0 .AND. map_aux(ig) <= 0) CALL errore(subname,'mismatch in maps II',10)
+             IF ( map(ig) == 0 )                      CALL errore(subname,'map == 0 II',10)
           ENDDO
       
 
@@ -216,40 +235,46 @@
               aux2(:) = CZERO
               ind2 = wfc_info_getindex(imin2 +j2 -1, ik2, "IKB", evc_info)
               !
-              DO ig=1, npwk2
-                  aux2( ABS(map( ig )) ) = CONJG( evc( ig, ind2) )
-              ENDDO
               !
               DO ig = 1, npwk2
-                  IF ( map(ig) < 0 )  aux2( map_aux(ig) ) = evc( ig, ind2)
+                  !
+                  IF ( map(ig) < 0 )  THEN 
+                      aux2( igsort(ig,ik1) ) = CONJG( evc( map_aux(ig), ind2) )
+                  ELSE
+                      aux2( igsort(ig,ik1) ) = evc( map(ig), ind2)
+                  ENDIF
+                  !
               ENDDO
-             
+
 
               DO j1 = 1, dimw1
                   !
                   aux1(:) = CZERO
                   ind1 = wfc_info_getindex(imin1 +j1 -1, ik1, "IK", evc_info)
                   !
-                  DO ig=1, npwk1
-                     aux1( igsort( ig, ik1 ) ) = CONJG( evc( ig, ind1) )
+                  DO ig = 1, npwk1
+                     aux1( igsort( ig, ik1 ) ) = evc( ig, ind1)
                   ENDDO
     
                   !
-                  ! last position for ig is dummy
+                  ! first and last positions for ig are dummy
+                  ! The first comes as well because G < 0 (instead of being G<=0 )
                   !
-                  Mkb(j1,j2) = Mkb( j1, j2) + ZDOTC ( npwx_g -2, aux1(2), 1, aux2(2), 1) 
+                  Mkb( j1, j2) = Mkb( j1, j2) + CONJG ( ZDOTC ( npwx_g -2, aux1(2), 1, aux2(2), 1) )
                   !
               ENDDO
               !
           ENDDO
-          !
+          !  
       ENDIF
 
 
-
-
-
-
+      !
+      ! local cleanup
+      !
+      DEALLOCATE( caux, STAT=ierr)
+      IF (ierr/=0) CALL errore(subname,'deallocating caux',ABS(ierr))
+      !
       DEALLOCATE( aux1, STAT=ierr)
       IF (ierr/=0) CALL errore(subname,'deallocating aux1',ABS(ierr))
       !
