@@ -1,3 +1,4 @@
+
   ======================================================================
               =                                            =
               =     *** WanT *** Wannier Transport Code    =
@@ -7,30 +8,42 @@
   ======================================================================
 
 
-  Program <plot>  v. 2.1.0  starts ...
-  Date 23Jun2007 at 17:18:20 
+  Program <plot>  v. 2.3.0  starts ...
+  Date  5Apr2010 at 18:41:25 
 
      Serial run.
 
-          BUILT :    Mon May 28 10:12:03 2007
-           HOST :    i686-pc-linux-gnu
-           ARCH :    ia32
-             CC :    cc
+          BUILT :    Fri Apr  2 12:55:27 2010
+           HOST :    x86_64-unknown-linux-gnu
+           ARCH :    x86_64
+             CC :    icc
             CPP :    cpp
-            F90 :    ifort
+            F90 :    mpif90
             F77 :    ifort
-         DFLAGS :    -D__INTEL -D__FFTW
-      BLAS LIBS :    -lblas
-    LAPACK LIBS :    -llapack
-       FFT LIBS :    -lfftw
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA
+      BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
+    LAPACK LIBS :    
+       FFT LIBS :    
       MASS LIBS :    
 
+
+
+  ======================================================================
+  =  Post Processing Init                                              =
+  ======================================================================
+
+  checking for fmt wannier90... no
+  checking for fmt crystal... no
+  checking for fmt qexml... ok
 
   DFT-data fmt automaticaly detected: qexml
   DFT-data read from file: pt_h2_pt.save/data-file.xml
 
-  Subspace data read from file: pt_h2_pt_WanT.space
-  Wannier data read from file: pt_h2_pt_WanT.wan
+      Windows data read from file: pt_h2_pt_WanT.space
+     Subspace data read from file: pt_h2_pt_WanT.space
+  Hamiltonian data read from file: pt_h2_pt_WanT.ham
+      Wannier data read from file: pt_h2_pt_WanT.wan
+
 
 
   ======================================================================
@@ -44,24 +57,26 @@
   Omega =    1913.4780981 (Ang^3 )
 
   Crystal axes:
-                in units of Bohr                 in Alat units
-    a(1) = ( 18.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
-    a(2) = (  0.0000 18.0000  0.0000 )     (   0.0000  1.0000  0.0000 )
-    a(3) = (  0.0000  0.0000 39.8543 )     (   0.0000  0.0000  2.2141 )
-  Crystal axes: (Ang)
-    a(1) = (  9.5252  0.0000  0.0000 )
-    a(2) = (  0.0000  9.5252  0.0000 )
-    a(3) = (  0.0000  0.0000 21.0900 )
+                in Bohr units                           in Alat units
+    a(1) = (   18.00000    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    a(2) = (    0.00000   18.00000    0.00000 )    (    0.00000    1.00000    0.00000 )
+    a(3) = (    0.00000    0.00000   39.85434 )    (    0.00000    0.00000    2.21413 )
+                in Ang units
+    a(1) = (    9.52519    0.00000    0.00000 )
+    a(2) = (    0.00000    9.52519    0.00000 )
+    a(3) = (    0.00000    0.00000   21.09000 )
 
    Reciprocal lattice vectors:
-                in units of Bohr^-1              in 2Pi/Alat units
-    b(1) = (  0.3491  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
-    b(2) = (  0.0000  0.3491  0.0000 )     (   0.0000  1.0000  0.0000 )
-    b(3) = (  0.0000  0.0000  0.1577 )     (   0.0000  0.0000  0.4516 )
+                in Bohr^-1 units                        in 2Pi/Alat units
+    b(1) = (    0.34907    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    b(2) = (    0.00000    0.34907    0.00000 )    (    0.00000    1.00000    0.00000 )
+    b(3) = (    0.00000    0.00000    0.15765 )    (    0.00000    0.00000    0.45164 )
  </LATTICE>
 
  <K-POINTS>
-  nkpts =     4
+         nproc =     1   (Parallelism over kpts)
+  global nkpts =     4
+   local nkpts =     4
   Monkhorst-Pack grid:      nk = (   1   1   4 ),      shift = (   0   0   0 )
 
   K-point calculation: (cart. coord. in Bohr^-1)
@@ -80,13 +95,16 @@
   Reading Wfc grids from file: pt_h2_pt.save/data-file.xml
 
 
-          Energy cut-off for wfcs =         22.00 (Ry)
-                         for rho  =        176.00 (Ry)
+
+          Energy cut-off for rho  =        176.00 (Ry)
       Total number of PW for rho  =     508969
-        Max number of PW for wfc  =      22573
-      Total number of PW for wfcs =      24117
-             input FFT mesh (rho) =  (    80   80  180 )
-          required FFT mesh (rho) =  (    80   80  180 )
+                    (smooth grid) =     180003
+        FFT grid components (rho) =  (    80   80  180 )
+                    (smooth grid) =  (    54   54  120 )
+
+          Energy cut-off for wfcs =         22.00 (Ry)
+        Max number of PW for wfc  =      22572
+
 
 
   ======================================================================
@@ -108,23 +126,23 @@
        r3 :    0.3000 -->   0.6000
 
   Grid dimensions:
-      nrx :       -20 -->       19
-      nry :       -20 -->       19
-      nrz :        54 -->      107
+      nrx :       -14 -->       13
+      nry :       -14 -->       13
+      nrz :        36 -->       71
 
 
   Centers for the required Wannier functions:
 
         in cartesian coord (Bohr)
-    Wf(  24 ) = (     0.006077     0.012688    15.720145 )
-    Wf(  25 ) = (     0.006813     0.000358    18.392033 )
-    Wf(  26 ) = (     0.005535    -0.001298    21.084457 )
-    Wf(  27 ) = (    -0.010647     0.024068    21.999249 )
+    Wf(  24 ) = (     0.005917    -0.004514    15.722994 )
+    Wf(  25 ) = (     0.005379     0.003298    18.397624 )
+    Wf(  26 ) = (    -0.002936    -0.009135    21.086989 )
+    Wf(  27 ) = (    -0.009675     0.029518    22.029610 )
         in crystal coord
-    Wf(  24 ) = (     0.000338     0.000705     0.394440 )
-    Wf(  25 ) = (     0.000379     0.000020     0.461481 )
-    Wf(  26 ) = (     0.000308    -0.000072     0.529038 )
-    Wf(  27 ) = (    -0.000591     0.001337     0.551991 )
+    Wf(  24 ) = (     0.000329    -0.000251     0.394511 )
+    Wf(  25 ) = (     0.000299     0.000183     0.461622 )
+    Wf(  26 ) = (    -0.000163    -0.000507     0.529101 )
+    Wf(  27 ) = (    -0.000538     0.001640     0.552753 )
 
   Collecting WFs: 
   Plotting Cell dimensions [cryst. coord]:
@@ -133,39 +151,39 @@
        r3 :   -0.0500 -->   0.9500
 
   New center positions [cryst. coord]:
-    Wf(  24 ) = (     0.000338     0.000705     0.394440 )
-    Wf(  25 ) = (     0.000379     0.000020     0.461481 )
-    Wf(  26 ) = (     0.000308    -0.000072     0.529038 )
-    Wf(  27 ) = (    -0.000591     0.001337     0.551991 )
+    Wf(  24 ) = (     0.000329    -0.000251     0.394511 )
+    Wf(  25 ) = (     0.000299     0.000183     0.461622 )
+    Wf(  26 ) = (    -0.000163    -0.000507     0.529101 )
+    Wf(  27 ) = (    -0.000538     0.001640     0.552753 )
 
 
   Atoms in the selected cell: (cart. coord. in Bohr)
      Pt   tau(   1 ) = (   0.0000000   0.0000000  13.6627199 )
-     H    tau(   2 ) = (   0.0000000   0.0000000  16.8185625 )
-     H    tau(   3 ) = (   0.0000000   0.0000000  18.4815215 )
-     Pt   tau(   4 ) = (   0.0000000   0.0000000  21.6373641 )
+     H    tau(   2 ) = (   0.0000000   0.0000000  16.8185626 )
+     H    tau(   3 ) = (   0.0000000   0.0000000  18.4815216 )
+     Pt   tau(   4 ) = (   0.0000000   0.0000000  21.6373642 )
 
 
     Wfc Fourier Transf. for k-point    1
-                              Total time spent up to now :   130.39 secs
+                              Total time spent up to now :    95.40 secs
 
     Wfc Fourier Transf. for k-point    2
-                              Total time spent up to now :   259.02 secs
+                              Total time spent up to now :   190.24 secs
 
     Wfc Fourier Transf. for k-point    3
-                              Total time spent up to now :   388.63 secs
+                              Total time spent up to now :   285.56 secs
 
     Wfc Fourier Transf. for k-point    4
-                              Total time spent up to now :   519.34 secs
+                              Total time spent up to now :   380.40 secs
 
 
   WF normalization:
     Index              Max value     Normaliz.
   ---------------------------------------------
-    Wf(   1 )   -->     0.289139      0.822073
-    Wf(   2 )   -->     0.321382      0.923214
-    Wf(   3 )   -->     0.212444      0.666377
-    Wf(   4 )   -->     0.228385      0.618060
+    Wf(   1 )   -->     0.283212      0.820643
+    Wf(   2 )   -->     0.311687      0.917517
+    Wf(   3 )   -->     0.229398      0.680874
+    Wf(   4 )   -->     0.246653      0.614292
 
 
   writing WF(  24) plot on file: ./SCRATCH//pt_h2_pt_WanT_WFM024.cube
@@ -179,9 +197,9 @@ Coordinate file (in CHARMM 'crd' format): './SCRATCH//pt_h2_pt_WanT_WFM024.crd'
 
  WanT
  plot output - cube format
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.381297,-2.381297,6.327002
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.469494,-2.469494,6.327002
 Min value: 0.000000
-Max value: 0.083601
+Max value: 0.080209
 Job done ...
 **********************************************************
   deleting tmp files: ./SCRATCH//pt_h2_pt_WanT_WFM024.cube
@@ -199,9 +217,9 @@ Coordinate file (in CHARMM 'crd' format): './SCRATCH//pt_h2_pt_WanT_WFM025.crd'
 
  WanT
  plot output - cube format
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.381297,-2.381297,6.327002
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.469494,-2.469494,6.327002
 Min value: 0.000000
-Max value: 0.103290
+Max value: 0.097149
 Job done ...
 **********************************************************
   deleting tmp files: ./SCRATCH//pt_h2_pt_WanT_WFM025.cube
@@ -219,9 +237,9 @@ Coordinate file (in CHARMM 'crd' format): './SCRATCH//pt_h2_pt_WanT_WFM026.crd'
 
  WanT
  plot output - cube format
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.381297,-2.381297,6.327002
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.469494,-2.469494,6.327002
 Min value: 0.000000
-Max value: 0.045132
+Max value: 0.052624
 Job done ...
 **********************************************************
   deleting tmp files: ./SCRATCH//pt_h2_pt_WanT_WFM026.cube
@@ -239,9 +257,9 @@ Coordinate file (in CHARMM 'crd' format): './SCRATCH//pt_h2_pt_WanT_WFM027.crd'
 
  WanT
  plot output - cube format
-Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.381297,-2.381297,6.327002
+Number of atoms: 4, x-, y-, z-origin (in Angstrom): -2.469494,-2.469494,6.327002
 Min value: 0.000000
-Max value: 0.052160
+Max value: 0.060838
 Job done ...
 **********************************************************
   deleting tmp files: ./SCRATCH//pt_h2_pt_WanT_WFM027.cube
@@ -253,21 +271,24 @@ Job done ...
   ======================================================================
 
    <global routines>
-             clock number :    13
+             clock number :    16
 
-                     plot :  8m40.00s CPU 
- 
-             want_dftread :     0.27s CPU
-                want_init :     0.08s CPU
-             bshells_init :     0.04s CPU
-             windows_read :     0.02s CPU
-            subspace_read :     0.04s CPU
-          ggrids_read_ext :     0.32s CPU
-      wfc_data_grids_read :     0.03s CPU
-           wfc_data_kread :     1.21s CPU (       4 calls,   0.302 s avg)
-               kwann_calc :   509.74s CPU (      16 calls,  31.859 s avg)
-                   cfft3d :     6.96s CPU (      16 calls,   0.435 s avg)
-               cwann_calc :     0.18s CPU (      16 calls,   0.011 s avg)
-                 gcubeplt :     0.40s CPU (       4 calls,   0.099 s avg)
+                     plot :  6m20.00s CPU 
+
+               plot_input :     0.00s CPU
+            postproc_init :     0.11s CPU
+             want_dftread :     0.05s CPU
+                want_init :     0.00s CPU
+             bshells_init :     0.00s CPU
+             windows_read :     0.00s CPU
+            subspace_read :     0.00s CPU
+                  do_plot :   380.38s CPU
+          ggrids_read_ext :     0.08s CPU
+      wfc_data_grids_read :     0.01s CPU
+           wfc_data_kread :     0.23s CPU (       4 calls,   0.058 s avg)
+               kwann_calc :   379.78s CPU (      16 calls,  23.736 s avg)
+                   cfft3d :     0.18s CPU (      16 calls,   0.011 s avg)
+               cwann_calc :     0.01s CPU (      16 calls,   0.001 s avg)
+                 gcubeplt :     0.03s CPU (       4 calls,   0.008 s avg)
 
 
