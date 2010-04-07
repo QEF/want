@@ -4,6 +4,8 @@
 =======================================================
 
 
+Apr 07 2010      gamma_only option included in ccalbec. Test04 updated. (AF)
+
 Apr 06 2010      Configure wrapper updated. Eigenchannel writing fixed. 
                  Bug fixed in the implementation of overlaps within gamma_only. 
                  Test03 and Test04 updated. (AF)

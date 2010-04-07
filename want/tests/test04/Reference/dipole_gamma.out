@@ -1,0 +1,41 @@
+
+     Program POST-PROC v.4.1.2  starts ...
+     Today is  7Apr2010 at 17:46:22 
+
+     Parallel version (MPI)
+
+     Number of processors in use:       6
+     R & G space division:  proc/pool =    6
+
+     Planes per process (thick) : nr3 =144 npp =  24 ncplane =20736
+     Planes per process (smooth): nr3s= 96 npps=  16 ncplanes= 9216
+ 
+     Proc/  planes cols     G    planes cols    G      columns  G
+     Pool       (dense grid)       (smooth grid)      (wavefct grid)
+        1    24   2388   214960   16   1192    75984    300     9508
+        2    24   2388   214960   16   1192    75984    298     9506
+        3    24   2387   214957   16   1193    76007    297     9511
+        4    24   2388   214960   16   1192    75964    298     9506
+        5    24   2390   214966   16   1192    75952    298     9510
+        6    24   2388   214956   16   1192    75972    298     9510
+     tot    144  14329  1289759   96   7153   455863   1789    57051
+ 
+
+     negative rho (up, down):  0.621E-01 0.000E+00
+
+     charge density inside the Wigner-Seitz cell:   56.00000000
+
+     reference position (x0):        -6.24098115    3.37988455   -5.78911153 bohr
+
+     Dipole moments (with respect to x0):
+     Elect   -1.0102    0.3789   -2.6188 au,     -2.5678    0.9632   -6.6562 Debye
+     Ionic    0.0000    0.0000    0.0000 au,      0.0000    0.0000    0.0000 Debye
+     Total   -1.0102    0.3789   -2.6188 au,     -2.5678    0.9632   -6.6562 Debye
+
+     Electrons quadrupole moment      -1185.96144994 a.u.
+          Ions quadrupole moment       1055.72934419 a.u.
+         Total quadrupole moment       -130.23210575 a.u.
+
+     Makov-Payne correction only for cubic lattices
+
+     corrected vacuum level =     0.27340268 eV
