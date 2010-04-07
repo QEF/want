@@ -8269,7 +8269,7 @@ else
     # IBM essl or atlas: add missing lapack routines - must be loaded after lib
     # atlas: add missing lapack routines so as to complete atlas
     # note that some compilers do not like to have multiple symbols
-      lapack_libs="$lapack_libs $topdir/lapack-3.2/lapack.a"
+      lapack_libs="$lapack_libs $topdir/extlibs/lapack/lib/liblapack.a"
       lapack_libs_switch="internal"
     else
       lapack_libs_switch="external"
