@@ -13,8 +13,7 @@ MANUAL=" Usage
  (no FLAG will print this manual page) :
  
  scf               DFT self-consistent calculation
- pwexport          export DFT data to WanT package in IOTK fmt
- dft               perform SCF, NSCF and PWEXPORT all together
+ dft               perform all DFT calculations
  dipole            compute dipole using DFT postproc
  disentangle       select the optimal subspace on which perform the wannier minimization 
  disentangle_buff  the same using buffering of wfcs and beta proj.
@@ -45,7 +44,6 @@ SUFFIX=""
 # evaluate the starting choice about what is to run 
 
 SCF=
-PWEXPORT=
 DIPOLE=
 DISENTANGLE=
 DISENTANGLE_BUFF=
@@ -59,16 +57,15 @@ INPUT=`echo $1 | tr [:upper:] [:lower:]`
 
 case $INPUT in 
    (scf)               SCF=yes ;;
-   (pwexport)          PWEXPORT=yes ;;
    (dipole)            DIPOLE=yes ;;
-   (dft)               SCF=yes; PWEXPORT=yes ; DIPOLE=no ;;
+   (dft)               SCF=yes; DIPOLE=no ;;
    (disentangle)       DISENTANGLE=yes ;;
    (disentangle_buff)  DISENTANGLE_BUFF=yes ;;
    (wannier)           WANNIER=yes ;;
    (plot)              PLOT=yes ;;
    (want)              DISENTANGLE=yes ; DISENTANGLE_BUFF=yes ; WANNIER=yes ;
                        PLOT=yes ;;
-   (all)               SCF=yes ; PWEXPORT=yes ; DIPOLE=no ;
+   (all)               SCF=yes ; DIPOLE=no ;
                        DISENTANGLE=yes ; DISENTANGLE_BUFF=yes ; WANNIER=yes ; 
                        PLOT=yes ;;
    (check)             CHECK=yes ;;
@@ -99,10 +96,6 @@ fi
 #
 run_dft  NAME=SCF   SUFFIX=$SUFFIX  RUN=$SCF
 
-#
-# running DFT PWEXPORT
-#
-run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
 
 #
 # running DIPOLE

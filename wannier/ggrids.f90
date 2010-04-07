@@ -522,7 +522,7 @@ END SUBROUTINE ggrids_gv_indexes
           WRITE(iunit, "(6x,'              (smooth grid) =  ( ', 3i5,' )' )") nffts(:)
        !
        IF ( gamma_only ) &
-          WRITE(iunit, "(6x,'       Use Gamma-only trick ' )") 
+          WRITE(iunit, "(6x,'       Use gamma-only trick =  ',5x, '.TRUE.' )") 
        !
    ENDIF
    !
