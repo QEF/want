@@ -36,7 +36,7 @@ SUBROUTINE wf2_augment( nrxl, nrxh, nryl, nryh, nrzl, nrzh, &
    !
    USE kinds,                       ONLY : dbl
    USE constants,                   ONLY : CZERO, TPI, ONE, EPS_m6
-   USE kpoints_module,              ONLY : nkpts, vkpt
+   USE kpoints_module,              ONLY : nkpts_g, vkpt_g
    USE us_module,                   ONLY : okvan
    USE uspp,                        ONLY : nkb
    USE uspp_param,                  ONLY : upf, lmaxq, nh, nhm
@@ -65,7 +65,7 @@ SUBROUTINE wf2_augment( nrxl, nrxh, nryl, nryh, nrzl, nrzh, &
    INTEGER       :: nx, ny, nz, nxx, nyy, nzz
    INTEGER       :: nnrx, nnry, nnrz, ir
    INTEGER       :: i, j, ih, jh, ikb, na, nt, ig, iwf
-   INTEGER       :: ierr, ik1, ik2, nq, iq
+   INTEGER       :: ierr, ik1_g, ik2_g, nq, iq
    LOGICAL       :: lfound
    REAL(dbl)     :: arg, xq(3), xq_aux(3), cost, rtmp(3)
    COMPLEX(dbl)  :: phase, cwork
@@ -118,13 +118,13 @@ SUBROUTINE wf2_augment( nrxl, nrxh, nryl, nryh, nrzl, nrzh, &
    ALLOCATE ( becmap( nhm, nat ), STAT=ierr ) 
    IF (ierr/=0 ) CALL errore(subname, 'allocating becmap', ABS(ierr) )
    !
-   ALLOCATE ( qmap( nkpts, nkpts ), STAT=ierr ) 
+   ALLOCATE ( qmap( nkpts_g, nkpts_g ), STAT=ierr ) 
    IF (ierr/=0 ) CALL errore(subname, 'allocating qmap', ABS(ierr) )
    !
-   ALLOCATE ( vq( 3, nkpts**2 ), STAT=ierr ) 
+   ALLOCATE ( vq( 3, nkpts_g**2 ), STAT=ierr ) 
    IF (ierr/=0 ) CALL errore(subname, 'allocating vq', ABS(ierr) )
    !
-   ALLOCATE ( vkpt_cry( 3, nkpts ), STAT=ierr ) 
+   ALLOCATE ( vkpt_cry( 3, nkpts_g ), STAT=ierr ) 
    IF (ierr/=0 ) CALL errore(subname, 'allocating vkpt_cry', ABS(ierr) )
 
    !
@@ -136,7 +136,7 @@ SUBROUTINE wf2_augment( nrxl, nrxh, nryl, nryh, nrzl, nrzh, &
    !
    ! normalization factor
    !
-   cost =  ONE / ( REAL(nkpts**2, dbl) )
+   cost =  ONE / ( REAL(nkpts_g**2, dbl) )
 
 
    !
@@ -173,13 +173,13 @@ SUBROUTINE wf2_augment( nrxl, nrxh, nryl, nryh, nrzl, nrzh, &
    ! find the indipendent q-vectors in BZ
    ! q = k1 - k2
    !
-   vkpt_cry(:,:) = vkpt(:,:)
+   vkpt_cry(:,:) = vkpt_g(:,:)
    CALL cart2cry( vkpt_cry, bvec )
    !
    nq = 0
    !
-   DO ik2 = 1, nkpts
-   DO ik1 = 1, nkpts
+   DO ik2_g = 1, nkpts_g
+   DO ik1_g = 1, nkpts_g
        !
        ! crystal units
        ! xq are in the BZ centered around 0
@@ -187,7 +187,7 @@ SUBROUTINE wf2_augment( nrxl, nrxh, nryl, nryh, nrzl, nrzh, &
        ! that we are using the G-set corresponding to the charge density
        ! instead of centering the cutoff sphere around each q-vector
        !
-       xq(:) = MODULO( vkpt_cry(:,ik1) - vkpt_cry(:,ik2) +0.5_dbl, ONE ) -0.5_dbl
+       xq(:) = MODULO( vkpt_cry(:,ik1_g) - vkpt_cry(:,ik2_g) +0.5_dbl, ONE ) -0.5_dbl
        !
        lfound = .FALSE.
        DO iq = 1, nq
@@ -205,7 +205,7 @@ SUBROUTINE wf2_augment( nrxl, nrxh, nryl, nryh, nrzl, nrzh, &
                 ( rtmp(3) < EPS_m6 .OR. rtmp(3) > ONE-EPS_m6 )  ) THEN 
               !
               lfound = .TRUE.
-              qmap( ik1, ik2) = iq
+              qmap( ik1_g, ik2_g) = iq
               !
            ENDIF
            !
@@ -214,7 +214,7 @@ SUBROUTINE wf2_augment( nrxl, nrxh, nryl, nryh, nrzl, nrzh, &
        IF ( .NOT. lfound ) THEN
           nq = nq +1 
           vq(:, nq) = xq(:)
-          qmap(ik1, ik2) = nq
+          qmap(ik1_g, ik2_g) = nq
        ENDIF
        !
    ENDDO 
@@ -285,13 +285,13 @@ SUBROUTINE wf2_augment( nrxl, nrxh, nryl, nryh, nrzl, nrzh, &
                               j = becmap( jh, na )
                               !
                               cwork = CZERO
-                              DO ik2 = 1, nkpts 
-                              DO ik1 = 1, nkpts
+                              DO ik2_g = 1, nkpts_g 
+                              DO ik1_g = 1, nkpts_g
                                   !
-                                  IF ( qmap(ik1, ik2) == iq ) THEN 
+                                  IF ( qmap(ik1_g, ik2_g) == iq ) THEN 
                                       !
-                                      cwork = cwork + becp( i, iwf, ik1) * &
-                                                      CONJG( becp( j, iwf, ik2) )
+                                      cwork = cwork + becp( i, iwf, ik1_g) * &
+                                                      CONJG( becp( j, iwf, ik2_g) )
                                   ENDIF 
                                   !
                               ENDDO

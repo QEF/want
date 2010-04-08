@@ -892,6 +892,12 @@ END PROGRAM plot_main
           CALL mp_sum( cwann(:,:,:,m) )
           !
       ENDDO
+      !
+      IF ( uspp_augmentation ) THEN
+          !
+          CALL mp_sum( becp ) 
+          !
+      ENDIF
       
 
       !
@@ -917,11 +923,6 @@ END PROGRAM plot_main
 ! Compute USPP augmentation if the case
 !
       IF ( uspp_augmentation ) THEN
-          !
-          ! recover parallelism over kpts
-          !
-          CALL mp_sum( becp ) 
-         
 
           ALLOCATE ( cwann_aug( nrxl:nrxh, nryl:nryh, nrzl:nrzh, nplot ), STAT=ierr ) 
           IF( ierr /=0 ) CALL errore(subname, 'allocating cwann_aug', ABS(ierr) )
