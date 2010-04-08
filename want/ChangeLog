@@ -5,7 +5,7 @@
 
 
 Apr 08 2010      gamma_only option spreaded to plot.x .
-                 Test03 and Test04 updated. (AF)
+                 Test03 and Test04 updated. Overall documentation updated. (AF)
 
 Apr 07 2010      gamma_only option included in ccalbec. Test04 updated. 
                  Parallelism over kpt included in plot.x . (AF)
