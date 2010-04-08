@@ -1,0 +1,16 @@
+
+ &INPUT
+   prefix        = 'hydrogen_H6'
+   postfix       = '_cryLDA'
+   work_dir      = './SCRATCH'
+   datafile_dft  = './CRYSTAL/hydrogen_H6_cryLDA.xml'
+   fileout       = 'dos_H6_cryLDA.dat'
+   nk(1)         = 400
+   nk(2)         = 1
+   nk(3)         = 1
+   delta         = 0.05
+   emin          = -5.0
+   emax          = 10.0
+   ne            = 2000
+!   smearing_type = 'lorentzian'
+ /
