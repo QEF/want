@@ -244,7 +244,7 @@ END PROGRAM plot_main
    USE windows_module,            ONLY : imin, dimwin, dimwinx
    USE subspace_module,           ONLY : dimwann, eamp
    USE localization_module,       ONLY : cu, rave
-   USE ggrids_module,             ONLY : nfft, nffts, igv, &
+   USE ggrids_module,             ONLY : nfft, nffts, igv, gamma_only,  &
                                          ggrids_read_ext, ggrids_deallocate, &
                                          ggrids_gk_indexes, ggrids_summary
    USE wfc_info_module
@@ -844,8 +844,28 @@ END PROGRAM plot_main
           DO m=1,nplot
 
              CALL timing('cfft3d',OPR='start')
-             CALL cfft3d( kwann(:,m), nr1, nr2, nr3,  &
-                                      nr1, nr2, nr3,  1 )
+             !
+             IF ( gamma_only ) THEN
+                 !
+                 ! ig = 1 corresponds to G=0
+                 ! this is to get rid of the gamma_only trick
+                 !
+                 kwann(1,m) = 0.5_dbl * kwann(1,m)
+                 !
+                 CALL cfft3d( kwann(:,m), nr1, nr2, nr3,  &
+                                          nr1, nr2, nr3,  1 )
+                 !
+                 ! then, take twice the real part
+                 !
+                 kwann(:,m) = kwann(:,m) + CONJG( kwann(:,m) )
+                 !
+             ELSE
+                 !
+                 CALL cfft3d( kwann(:,m), nr1, nr2, nr3,  &
+                                          nr1, nr2, nr3,  1 )
+                 !
+             ENDIF
+             !
              CALL timing('cfft3d',OPR='stop')
 
              !

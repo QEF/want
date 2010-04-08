@@ -1,0 +1,277 @@
+
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <plot>  v. 2.3.0  starts ...
+  Date  8Apr2010 at 12:21:37 
+
+     Serial run.
+
+          BUILT :    Thu Apr  8 11:15:56 2010
+           HOST :    x86_64-unknown-linux-gnu
+           ARCH :    x86_64
+             CC :    icc
+            CPP :    cpp
+            F90 :    mpif90
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA
+      BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
+    LAPACK LIBS :    
+       FFT LIBS :    
+      MASS LIBS :    
+
+
+
+  ======================================================================
+  =  Post Processing Init                                              =
+  ======================================================================
+
+  checking for fmt wannier90... no
+  checking for fmt crystal... no
+  checking for fmt qexml... ok
+
+  DFT-data fmt automaticaly detected: qexml
+  DFT-data read from file: benzene_gamma.save/data-file.xml
+
+      Windows data read from file: benzene_gamma_WanT.space
+     Subspace data read from file: benzene_gamma_WanT.space
+  Hamiltonian data read from file: benzene_gamma_WanT.ham
+      Wannier data read from file: benzene_gamma_WanT.wan
+
+
+
+  ======================================================================
+  =  DFT data                                                          =
+  ======================================================================
+
+ <LATTICE>
+  Alat  =      20.0000000 (Bohr)
+  Alat  =      10.5835400 (Ang )
+  Omega =    8000.0000000 (Bohr^3)
+  Omega =    1185.4762744 (Ang^3 )
+
+  Crystal axes:
+                in Bohr units                           in Alat units
+    a(1) = (   20.00000    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    a(2) = (    0.00000   20.00000    0.00000 )    (    0.00000    1.00000    0.00000 )
+    a(3) = (    0.00000    0.00000   20.00000 )    (    0.00000    0.00000    1.00000 )
+                in Ang units
+    a(1) = (   10.58354    0.00000    0.00000 )
+    a(2) = (    0.00000   10.58354    0.00000 )
+    a(3) = (    0.00000    0.00000   10.58354 )
+
+   Reciprocal lattice vectors:
+                in Bohr^-1 units                        in 2Pi/Alat units
+    b(1) = (    0.31416    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    b(2) = (    0.00000    0.31416    0.00000 )    (    0.00000    1.00000    0.00000 )
+    b(3) = (    0.00000    0.00000    0.31416 )    (    0.00000    0.00000    1.00000 )
+ </LATTICE>
+
+ <K-POINTS>
+         nproc =     1   (Parallelism over kpts)
+  global nkpts =     1
+   local nkpts =     1
+  Monkhorst-Pack grid:      nk = (   1   1   1 ),      shift = (   0   0   0 )
+
+  K-point calculation: (cart. coord. in Bohr^-1)
+    k (    1) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      1.0000000
+ </K-POINTS>
+
+
+  ======================================================================
+  =  Grids                                                             =
+  ======================================================================
+
+  Reading density G-grid from file: benzene_gamma.save/data-file.xml
+  Reading Wfc grids from file: benzene_gamma.save/data-file.xml
+
+
+
+          Energy cut-off for rho  =        140.00 (Ry)
+      Total number of PW for rho  =     111868
+        FFT grid components (rho) =  (    80   80   80 )
+             Use gamma-only trick =       .TRUE.
+
+          Energy cut-off for wfcs =         35.00 (Ry)
+        Max number of PW for wfc  =      14009
+
+
+
+  ======================================================================
+  =  Wannier function plotting                                         =
+  ======================================================================
+
+  nplot =    4 Wannier func.s to be plotted
+     wf (   1 ) =    1
+     wf (   2 ) =    2
+     wf (   3 ) =   14
+     wf (   4 ) =   15
+
+  Data type  :   modulus
+  Output fmt :   plt
+
+  Plotting Cell extrema [cryst. coord]:
+       r1 :   -0.5000 -->   0.5000
+       r2 :   -0.5000 -->   0.5000
+       r3 :   -0.5000 -->   0.5000
+
+  Grid dimensions:
+      nrx :       -40 -->       39
+      nry :       -40 -->       39
+      nrz :       -40 -->       39
+
+
+  Centers for the required Wannier functions:
+
+        in cartesian coord (Bohr)
+    Wf(   1 ) = (    -5.615443     2.481323     3.125938 )
+    Wf(   2 ) = (    -3.641169     5.901765     3.117728 )
+    Wf(  14 ) = (    -0.225637     4.947338     3.085821 )
+    Wf(  15 ) = (     1.188963     2.477359     3.063849 )
+        in crystal coord
+    Wf(   1 ) = (    -0.280772     0.124066     0.156297 )
+    Wf(   2 ) = (    -0.182058     0.295088     0.155886 )
+    Wf(  14 ) = (    -0.011282     0.247367     0.154291 )
+    Wf(  15 ) = (     0.059448     0.123868     0.153192 )
+
+
+  Atoms in the selected cell: (cart. coord. in Bohr)
+     H    tau(   1 ) = (  -6.3532593   2.4812104   3.1331659 )
+     C    tau(   2 ) = (  -2.9876570   4.7715585   3.1085995 )
+     H    tau(   3 ) = (  -4.0081091   6.5384524   3.1237173 )
+     C    tau(   4 ) = (  -0.3420404   4.7696688   3.0859228 )
+     H    tau(   5 ) = (   0.6784117   6.5365627   3.0821433 )
+     C    tau(   6 ) = (   0.9788781   2.4774310   3.0651358 )
+     H    tau(   7 ) = (   3.0197824   2.4774310   3.0462385 )
+     C    tau(   8 ) = (  -0.3439302   0.1870829   3.0708050 )
+     H    tau(   9 ) = (   0.6746322  -1.5798110   3.0537974 )
+     C    tau(  10 ) = (  -2.9895467   0.1889726   3.0934817 )
+     H    tau(  11 ) = (  -4.0118886  -1.5779213   3.0972611 )
+     C    tau(  12 ) = (  -4.3123550   2.4812104   3.1142687 )
+
+
+    Wfc Fourier Transf. for k-point    1
+                              Total time spent up to now :    59.21 secs
+
+
+  WF normalization:
+    Index              Max value     Normaliz.
+  ---------------------------------------------
+    Wf(   1 )   -->     0.395238      1.000000
+    Wf(   2 )   -->     0.394974      1.000000
+    Wf(   3 )   -->     0.397223      1.000000
+    Wf(   4 )   -->     0.401494      1.000000
+
+
+  writing WF(   1) plot on file: ./SCRATCH//benzene_gamma_WanT_WFM001.cube
+       atomic positions on file: ./SCRATCH//benzene_gamma_WanT_WFM001.xyz
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './SCRATCH//benzene_gamma_WanT_WFM001.cube'
+Output file (plot file):  './SCRATCH//benzene_gamma_WanT_WFM001.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH//benzene_gamma_WanT_WFM001.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.156210
+Job done ...
+**********************************************************
+  deleting tmp files: ./SCRATCH//benzene_gamma_WanT_WFM001.cube
+                      ./SCRATCH//benzene_gamma_WanT_WFM001.crd
+
+
+  writing WF(   2) plot on file: ./SCRATCH//benzene_gamma_WanT_WFM002.cube
+       atomic positions on file: ./SCRATCH//benzene_gamma_WanT_WFM002.xyz
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './SCRATCH//benzene_gamma_WanT_WFM002.cube'
+Output file (plot file):  './SCRATCH//benzene_gamma_WanT_WFM002.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH//benzene_gamma_WanT_WFM002.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.156000
+Job done ...
+**********************************************************
+  deleting tmp files: ./SCRATCH//benzene_gamma_WanT_WFM002.cube
+                      ./SCRATCH//benzene_gamma_WanT_WFM002.crd
+
+
+  writing WF(  14) plot on file: ./SCRATCH//benzene_gamma_WanT_WFM014.cube
+       atomic positions on file: ./SCRATCH//benzene_gamma_WanT_WFM014.xyz
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './SCRATCH//benzene_gamma_WanT_WFM014.cube'
+Output file (plot file):  './SCRATCH//benzene_gamma_WanT_WFM014.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH//benzene_gamma_WanT_WFM014.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.157790
+Job done ...
+**********************************************************
+  deleting tmp files: ./SCRATCH//benzene_gamma_WanT_WFM014.cube
+                      ./SCRATCH//benzene_gamma_WanT_WFM014.crd
+
+
+  writing WF(  15) plot on file: ./SCRATCH//benzene_gamma_WanT_WFM015.cube
+       atomic positions on file: ./SCRATCH//benzene_gamma_WanT_WFM015.xyz
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './SCRATCH//benzene_gamma_WanT_WFM015.cube'
+Output file (plot file):  './SCRATCH//benzene_gamma_WanT_WFM015.plt'
+Coordinate file (in CHARMM 'crd' format): './SCRATCH//benzene_gamma_WanT_WFM015.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 12, x-, y-, z-origin (in Angstrom): -5.291771,-5.291771,-5.291771
+Min value: 0.000000
+Max value: 0.161200
+Job done ...
+**********************************************************
+  deleting tmp files: ./SCRATCH//benzene_gamma_WanT_WFM015.cube
+                      ./SCRATCH//benzene_gamma_WanT_WFM015.crd
+
+
+
+
+  ======================================================================
+
+   <global routines>
+             clock number :    16
+
+                     plot :  1m 0.00s CPU 
+
+               plot_input :     0.00s CPU
+            postproc_init :     0.14s CPU
+             want_dftread :     0.04s CPU
+                want_init :     0.00s CPU
+             bshells_init :     0.00s CPU
+             windows_read :     0.00s CPU
+            subspace_read :     0.00s CPU
+                  do_plot :    60.62s CPU
+          ggrids_read_ext :     0.03s CPU
+      wfc_data_grids_read :     0.00s CPU
+           wfc_data_kread :     0.04s CPU
+               kwann_calc :    58.89s CPU (       4 calls,  14.721 s avg)
+                   cfft3d :     0.08s CPU (       4 calls,   0.019 s avg)
+               cwann_calc :     0.03s CPU (       4 calls,   0.007 s avg)
+                 gcubeplt :     0.60s CPU (       4 calls,   0.151 s avg)
+
+
