@@ -143,6 +143,18 @@ froz_max      REAL
               upper limit [eV] of the frozen window above described.
               DEFAULT : -50000000 (this is a large number which stands for -INF)
 
+iwin_min(:),  INTEGER
+iwin_max(:)   For each kpt, min and max band indexes to define the outer window.
+              They overwrite win_min and win_max and are meant to fine tune
+              the outer window in extreme cases. 
+              DEFAULT : not used
+
+ifroz_min(:), INTEGER
+ifroz_max(:)  For each kpt, min and max band indexes to define the frozen window.
+              They overwrite froz_min and froz_max and are meant to fine tune
+              the frozen window in extreme cases. 
+              DEFAULT : not used
+
 efermi        REAL
               Fermi energy [eV]. Allow to read Efermi from input instead of
               getting it from dftdata files. Useful to be used with Abinit interface
@@ -165,18 +177,17 @@ nsave_dis     INTEGER
               every nsave_dis iterations save subspace data to disk
               DEFAULT: 200
 
-use_blimit    LOGICAL
-              if .TRUE., b vectors are set to zero when calculation overlap augmentations.
-              This essentially means we are doing a sort of thermodynamic limit
-              even if this is not consistent with the actual kpt grid. The .TRUE. value
-              should be considered for debug purposes.
-              DEFAULT: .FALSE.
-
 use_symmetry  LOGICAL
               if .TRUE., read and use symmetry operation to reduce the workload
               due to summations over k and b vectors.
-              NOTE: at the moment, data is only read and not used.
-              DEFAULT: .TRUE.
+              NOTE: at the moment, the parameter is only read and not used.
+              DEFAULT: .FALSE.
+
+use_timerev   LOGICAL
+              if .TRUE. exploit time reversal symmetry to reduce the workload
+              (see use_symmetry).
+              NOTE: at the moment, the parameter is only read and not used.
+              DEFAULT: .FALSE.
 
 disentangle_thr    REAL
               threshold for convergence of the iterative disentangle procedure

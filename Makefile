@@ -22,6 +22,7 @@ default:
 	@echo  "     utility            compile utility executables"
 	@echo  "     libwant            compile the want utility library"
 	@echo  "     libctools          compile ctools library"
+	@echo  "     libextlibs         compile internal versions of std libraries (blas, lapack, ...)"
 	@echo  "     libplugins         compile plugins"
 	@echo 
 	@echo  "     all                all the above executables "

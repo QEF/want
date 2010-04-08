@@ -90,16 +90,21 @@ delta       REAL
             DEFAULT : 1.0E-5
 
 delta_ratio REAL
-            ratio between ddelta (internal width parameter) used to compute convolutions with 
-            poles, and the smearing delta parameter. 
+            ratio between ddelta (used for convolution with the pole) and
+            the smearing delta parameter. 
             It describes "how much" ddelta is smaller than delta.
             DEFAULT : 5.0E-3
+
+xmax        REAL
+            fft parameter to evaluate numerical smearing schemes.
+            DEFAULT : 25.0
 
 smearing_type  STRING
             ( "lorantzian" | "gaussian" | "fermi-dirac", "fd" | "methfessel-paxton", "mp" |
               "marzari-vanderbilt", "mv" )
             the shape of the smearing function used. "lorentzian" is the std choice when
-            using Green function techniques.
+            using Green function techniques. Numerical smearing schemes are still
+            esperimental.
             DEFAULT : "lorentzian"
 
 nk(2)       INTEGER
@@ -122,11 +127,6 @@ nprint      INTEGER
 niterx      INTEGER
             maximum number of iterations in the calculation of transfer matrices
             DEFAULT : 20
-
-use_overlap    LOGICAL
-            If .TRUE. reads the overlap matrices from file, otherwise basis orthonormality
-            is assumed (which is by definition the case of Wannier functions)
-            DEFAULT : .FALSE.
 
 write_kdata LOGICAL
             If .TRUE. kpoint-resolved transmittance and dos are written.
@@ -175,6 +175,42 @@ shift_corr  REAL
             of the correlation self-energy operator.
             DEFAULT : 0.0
 
+nfailx      INTEGER
+            allow the iterative procedure for lead self-energies to fail
+            at most nfailx times. Then a fatal error is issued. 
+            DEFAULT : 5
+
+ispin       INTEGER
+            spin component to be taken into account. At the moment this is 
+            only used when reading datafiles produced by CRYSTAL.
+            Possible values are 0 for spin unpolarized calculations and
+            1, 2 for spin polarized ones. 
+            DEFAULT : 0
+
+do_eigenchannels    LOGICAL
+            If true, the eigenchannel decomposition of the transmittance
+            is written (columns 3+) in the conductance file
+            DEFAULT : .FALSE.
+
+do_eigplot  LOGICAL
+            If true, the eigenchannel eigenvectors are written for
+            selected energies and kpoints (see ie_eigplot and ik_eigplot).
+            The datafile produces is meant to be further postprocessed by
+            plot.x . 
+            DEFAULT : .FALSE.
+
+ie_eigplot  INTEGER
+            The index of the frequency grid where the eigenchannels are
+            dumped to disk.
+            DEFAULT : unset
+
+ik_eigplot  INTEGER
+            The index of the kpt for which the eigenchannels are
+            dumped to disk.
+            DEFAULT : unset
+
+
+==============================================================================
 
 CARD <HAMILTONIAN_DATA>
 
