@@ -231,6 +231,7 @@ END PROGRAM plot_main
    USE io_module,                 ONLY : prefix, postfix, work_dir, stdout, ionode
    USE io_module,                 ONLY : io_name, dftdata_fmt, aux_unit, aux1_unit 
    USE io_module,                 ONLY : io_open_dftdata, io_close_dftdata
+   USE mp,                        ONLY : mp_sum
    USE control_module,            ONLY : use_uspp
    USE files_module,              ONLY : file_delete
    USE util_module,               ONLY : mat_mul
@@ -239,7 +240,7 @@ END PROGRAM plot_main
    !
    USE lattice_module,            ONLY : avec, bvec, alat, tpiba, omega
    USE ions_module,               ONLY : symb, tau, nat
-   USE kpoints_module,            ONLY : nkpts, vkpt
+   USE kpoints_module,            ONLY : nkpts, nkpts_g, vkpt_g, iks, ike
    USE windows_module,            ONLY : imin, dimwin, dimwinx
    USE subspace_module,           ONLY : dimwann, eamp
    USE localization_module,       ONLY : cu, rave
@@ -281,7 +282,7 @@ END PROGRAM plot_main
       INTEGER :: nnrx, nnry, nnrz
       INTEGER :: nx, ny, nz, nzz, nyy, nxx
       !
-      INTEGER :: ia, ib, ik, ig, ir
+      INTEGER :: ia, ib, ik_g, ik, ig, ir
       INTEGER :: natot, nplot
       INTEGER :: m, n, i, j, ierr
       INTEGER :: zatom
@@ -503,7 +504,7 @@ END PROGRAM plot_main
       ALLOCATE( kwann( nr1*nr2*nr3, nplot ), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating kwann ', ABS(ierr) )
       !
-      ALLOCATE( vkpt_cry(3, nkpts), STAT=ierr )
+      ALLOCATE( vkpt_cry(3, nkpts_g), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating vkpt_cry ', ABS(ierr) )
       !
       ALLOCATE( rave_cry(3, dimwann), STAT=ierr )
@@ -523,7 +524,7 @@ END PROGRAM plot_main
       ! convert vkpt from cart coord (bohr^-1) to cryst 
       ! the same for rave, from cart coord (bohr) to cryst
       !
-      vkpt_cry(:,:) = vkpt(:,:)
+      vkpt_cry(:,:) = vkpt_g(:,:)
       rave_cry(:,:) = rave(:,:)
       CALL cart2cry( vkpt_cry, bvec )
       CALL cart2cry( rave_cry, avec)
@@ -704,8 +705,10 @@ END PROGRAM plot_main
           ALLOCATE( vkb(npwkx, nkb), STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'allocating vkb',ABS(ierr))
           !
-          ALLOCATE( becp(nkb, nplot, nkpts), STAT=ierr )
+          ALLOCATE( becp(nkb, nplot, nkpts_g), STAT=ierr )
           IF (ierr/=0) CALL errore(subname,'allocating becp',ABS(ierr))
+          !
+          becp(:,:,:) = CZERO
           !
           IF (ionode) WRITE( stdout, "(/)") 
           !
@@ -723,26 +726,28 @@ END PROGRAM plot_main
       cwann( :, :, :, :) = CZERO
 
       kpoint_loop: &
-      DO ik = 1, nkpts
+      DO ik_g = iks, ike
+          !
+          ik = ik_g -iks +1
           ! 
           IF (ionode) WRITE(stdout, "(4x,'Wfc Fourier Transf. for k-point ',i4 )") ik
 
           !
           ! getting wfc 
           !
-          CALL wfc_data_kread( dftdata_fmt, ik, "IK", evc, evc_info)
+          CALL wfc_data_kread( dftdata_fmt, ik_g, "IK", evc, evc_info)
 
           !
           ! built the right transformation to rotate the original wfcs.
           !
-          CALL mat_mul( cutot, eamp(:,:,ik), 'N', cu(:,:,ik), 'N' ,  &
-                        dimwin(ik), dimwann, dimwann)
+          CALL mat_mul( cutot, eamp(:,:,ik_g), 'N', cu(:,:,ik_g), 'N' ,  &
+                        dimwin(ik_g), dimwann, dimwann)
 
           !
           ! set the FFT map
           !
           map(:) = 0
-          CALL ggrids_gk_indexes( igv, igsort(:,ik), npwk(ik), & 
+          CALL ggrids_gk_indexes( igv, igsort(:,ik_g), npwk(ik_g), & 
                                   nr1, nr2, nr3, GK2FFT=map ) 
          
           !
@@ -755,17 +760,17 @@ END PROGRAM plot_main
               !
               ! apply a global shift to set the WF in the required cell
               !
-              arg = TPI * DOT_PRODUCT( vkpt_cry(:,ik), rave_shift(:,iwann(m)) )
+              arg = TPI * DOT_PRODUCT( vkpt_cry(:,ik_g), rave_shift(:,iwann(m)) )
               phase = CMPLX( COS(arg), SIN(arg), dbl )
 
 
               kwann( :, m ) = CZERO
               !
-              DO ig = 1, npwk(ik)
+              DO ig = 1, npwk(ik_g)
                  !
-                 DO n = 1, dimwin(ik)
+                 DO n = 1, dimwin(ik_g)
      
-                     ib =  wfc_info_getindex(imin(ik)+n-1, ik, "IK", evc_info )
+                     ib =  wfc_info_getindex(imin(ik_g)+n-1, ik_g, "IK", evc_info )
                      !
                      kwann( map(ig), m ) = kwann( map(ig), m ) + &
                                            cutot(n, iwann(m) ) * evc( ig, ib )
@@ -786,10 +791,10 @@ END PROGRAM plot_main
           !
           IF ( uspp_augmentation ) THEN
               ! 
-              xk(:) = vkpt(:,ik) / tpiba
-              CALL init_us_2( npwk(ik), igsort(1,ik), xk, 1, nkb, vkb )
+              xk(:) = vkpt_g(:,ik_g) / tpiba
+              CALL init_us_2( npwk(ik_g), igsort(1,ik_g), xk, 1, nkb, vkb )
               !
-              vkb_ik = ik
+              vkb_ik = ik_g
 
               !
               ! we ned to reset the order of G indexes in KWANN from the
@@ -799,15 +804,15 @@ END PROGRAM plot_main
               IF( ierr /=0 ) CALL errore(subname, 'allocating wfc_aux', ABS(ierr) )
               !
               DO m  = 1, nplot
-              DO ig = 1, npwk(ik)
+              DO ig = 1, npwk(ik_g)
                  wfc_aux( ig, m ) = kwann( map(ig), m )
               ENDDO
               ENDDO
               !
-              wfc_aux( npwk(ik)+1: npwkx, : ) = CZERO
+              wfc_aux( npwk(ik_g)+1: npwkx, : ) = CZERO
               !
               ! 
-              CALL ccalbec( nkb, nkb, npwkx, npwk(ik), nplot, becp( 1:nkb, 1:nplot, ik), &
+              CALL ccalbec( nkb, nkb, npwkx, npwk(ik_g), nplot, becp( 1:nkb, 1:nplot, ik_g), &
                             vkb, wfc_aux )
               !
               DEALLOCATE( wfc_aux, STAT=ierr )
@@ -829,9 +834,9 @@ END PROGRAM plot_main
           nnrz = ABS( nrzl / nr3 ) + 2
           !
           !
-          raux(1) = vkpt_cry(1,ik) / REAL( nr1, dbl)
-          raux(2) = vkpt_cry(2,ik) / REAL( nr2, dbl)
-          raux(3) = vkpt_cry(3,ik) / REAL( nr3, dbl)
+          raux(1) = vkpt_cry(1,ik_g) / REAL( nr1, dbl)
+          raux(2) = vkpt_cry(2,ik_g) / REAL( nr2, dbl)
+          raux(3) = vkpt_cry(3,ik_g) / REAL( nr3, dbl)
 
           ! 
           ! FFT call and real-space loop
@@ -878,8 +883,16 @@ END PROGRAM plot_main
           IF (ionode) CALL timing_upto_now(stdout)
           !
       ENDDO kpoint_loop
+
       !
-      IF (ionode) WRITE(stdout, "()")
+      ! recovering kpt parallelism
+      !
+      DO m = 1, nplot
+          !
+          CALL mp_sum( cwann(:,:,:,m) )
+          !
+      ENDDO
+      
 
       !
       ! clean the large amount of memory used by wfcs and grids
@@ -897,6 +910,7 @@ END PROGRAM plot_main
       !
       !
       CALL io_close_dftdata( LSERIAL=.FALSE. )
+      IF (ionode) WRITE(stdout, "()")
 
 
 !
@@ -904,6 +918,11 @@ END PROGRAM plot_main
 !
       IF ( uspp_augmentation ) THEN
           !
+          ! recover parallelism over kpts
+          !
+          CALL mp_sum( becp ) 
+         
+
           ALLOCATE ( cwann_aug( nrxl:nrxh, nryl:nryh, nrzl:nrzh, nplot ), STAT=ierr ) 
           IF( ierr /=0 ) CALL errore(subname, 'allocating cwann_aug', ABS(ierr) )
 
@@ -931,7 +950,7 @@ END PROGRAM plot_main
       ! at the point where they have max modulus
       ! WF square moduli are written in units of bohr^-3 
       !
-      cost =  ONE / ( REAL(nkpts, dbl) * SQRT(omega) )
+      cost =  ONE / ( REAL(nkpts_g, dbl) * SQRT(omega) )
       !
       IF ( ionode ) THEN
           !
