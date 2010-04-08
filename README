@@ -73,9 +73,9 @@ produce such codes in the form of the following reference:
 
 In the text: "The results of this work have been obtained using the WanT package.[ref]"
 
-In references: "[ref] WanT code by A. Ferretti, B. Bonferroni, A. Calzolari, and 
-M. Buongiorno Nardelli, http://www.wannier-transport.org. See also: A. Calzolari, 
-N. Marzari, I. Souza and M. Buongiorno Nardelli, Phys. Rev. B 69, 035108 (2004)."
+In references: 
+"[ref] WanT code by A. Ferretti, B. Bonferroni, A. Calzolari, and 
+       M. Buongiorno Nardelli, http://www.wannier-transport.org. 
 
 
 ==========================
