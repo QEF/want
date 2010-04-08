@@ -1,0 +1,13 @@
+
+ &INPUT
+   prefix       = 'hydrogen_H6'
+   postfix      = '_cryLDA'
+   work_dir     = './SCRATCH'
+   datafile_dft = './CRYSTAL/hydrogen_H6_cryLDA.xml'
+   fileout      = 'bands_H6_cryLDA.dat'
+   nkpts_in     = 2
+   nkpts_max    = 200
+ /
+
+G   0.0  0.0  0.0
+Z   0.5  0.0  0.0

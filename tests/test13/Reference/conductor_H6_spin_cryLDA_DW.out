@@ -1,0 +1,221 @@
+
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <conductor>  v. 2.3.0  starts ...
+  Date  8Apr2010 at 18:17: 9 
+
+     Parallel run, # proc:    6
+
+          BUILT :    Thu Apr  8 11:15:56 2010
+           HOST :    x86_64-unknown-linux-gnu
+           ARCH :    x86_64
+             CC :    icc
+            CPP :    cpp
+            F90 :    mpif90
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA
+      BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
+    LAPACK LIBS :    
+       FFT LIBS :    
+      MASS LIBS :    
+
+
+
+  ======================================================================
+  =  Conductor Init                                                    =
+  ======================================================================
+
+  ./CRYSTAL/hydrogen_H6_spin_cryLDA.xml converted to internal fmt
+
+  ======================================================================
+  =  INPUT Summary                                                     =
+  ======================================================================
+
+  <INPUT>
+          Calculation Type :     bulk
+                    prefix :     
+                   postfix :     _H6_spin_cryLDA_DW
+                  work_dir :     ./
+               L-lead dim. :         6
+            conductor dim. :         6
+               R-lead dim. :         6
+       Conductance Formula :     landauer
+       Transport Direction :         1
+          Have Correlation :     FALSE
+              Write k-data :     FALSE
+       Max iteration number:       200
+
+                    nprint :        20
+
+        Conductor datafile :     ./CRYSTAL/hydrogen_H6_spin_cryLDA.xml.ham
+  </INPUT>
+
+
+  <ENERGY_GRID>
+                 Dimension :       2000
+                Min Energy :      -15.00000
+                Max Energy :       15.00000
+               Energy Step :        0.01501
+                     Delta :        0.00050
+             Smearing Type :     lorentzian
+             Smearing grid :      20000
+             Smearing gmax :       25.00000
+                   Shift_L :        0.00000
+                   Shift_C :        0.00000
+                   Shift_R :        0.00000
+                Shift_corr :        0.00000
+  </ENERGY_GRID>
+
+
+  <K-POINTS>
+       nkpts_par =    1
+       nrtot_par =    1
+        use_symm = TRUE
+
+       Parallel kpoints grid:        nk = (  1  1  1 )   s = (  0  0  0 )
+       k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+
+       Parallel R vector grid:       nr = (  1  1  1 )
+       R (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+  </K-POINTS>
+
+
+  <PARALLELISM>
+       Paralellization over frequencies
+       # of processes:     6
+  </PARALLELISM>
+
+
+  ======================================================================
+  =  Frequency Loop                                                    =
+  ======================================================================
+
+  Computing E(     1 ) =    -15.00000 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.06 secs
+
+  Computing E(    20 ) =    -14.71486 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.07 secs
+
+  Computing E(    40 ) =    -14.41471 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.07 secs
+
+  Computing E(    60 ) =    -14.11456 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.07 secs
+
+  Computing E(    80 ) =    -13.81441 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.07 secs
+
+  Computing E(   100 ) =    -13.51426 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.08 secs
+
+  Computing E(   120 ) =    -13.21411 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.08 secs
+
+  Computing E(   140 ) =    -12.91396 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.08 secs
+
+  Computing E(   160 ) =    -12.61381 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.08 secs
+
+  Computing E(   180 ) =    -12.31366 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.08 secs
+
+  Computing E(   200 ) =    -12.01351 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.09 secs
+
+  Computing E(   220 ) =    -11.71336 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.09 secs
+
+  Computing E(   240 ) =    -11.41321 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.09 secs
+
+  Computing E(   260 ) =    -11.11306 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.09 secs
+
+  Computing E(   280 ) =    -10.81291 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.10 secs
+
+  Computing E(   300 ) =    -10.51276 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.10 secs
+
+  Computing E(   320 ) =    -10.21261 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.10 secs
+
+  Computing E(   334 ) =    -10.00250 eV
+  T matrix converged after avg. # of iterations    0.000
+
+                              Total time spent up to now :     0.10 secs
+
+
+  ======================================================================
+  =  Writing data                                                      =
+  ======================================================================
+
+
+  conductance written on file:    cond_H6_spin_cryLDA_DW.dat
+
+  doscond written on file:    doscond_H6_spin_cryLDA_DW.dat
+
+  ======================================================================
+
+   <global routines>
+             clock number :    14
+
+                conductor :     0.00s CPU 
+
+           datafiles_init :     0.05s CPU
+      crystal_to_internal :     0.01s CPU
+            smearing_init :     0.01s CPU
+                   cft_1z :     0.01s CPU (       2 calls,   0.004 s avg)
+         hamiltonian_init :     0.00s CPU
+              read_matrix :     0.00s CPU (       2 calls,   0.001 s avg)
+              fourier_par :     0.00s CPU (       4 calls,   0.000 s avg)
+             do_conductor :     0.24s CPU
+        hamiltonian_setup :     0.00s CPU (     334 calls,   0.000 s avg)
+            transfer_mtrx :     0.01s CPU (     668 calls,   0.000 s avg)
+                    green :     0.01s CPU (     668 calls,   0.000 s avg)
+              gzero_maker :     0.00s CPU (    1002 calls,   0.000 s avg)
+            transmittance :     0.00s CPU (     334 calls,   0.000 s avg)
+
+

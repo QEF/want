@@ -83,8 +83,7 @@ run_clean () {
 
    cd $TMPDIR
       test -d $TEST_NAME && rm -rf $TEST_NAME
-
-   exit 0
+   
 }
 
 

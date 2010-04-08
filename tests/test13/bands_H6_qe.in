@@ -1,0 +1,14 @@
+
+ &INPUT
+   prefix    = 'hydrogen_H6'
+   postfix   = '_WanT'
+   work_dir  = './SCRATCH'
+   fileout   = 'bands_H6_qe.dat'
+!   fileout   = 'bands_H6_qe_NN.dat'
+!   ircut(3) = 1
+   nkpts_in  = 2
+   nkpts_max = 200
+ /
+
+G   0.0  0.0  0.0
+Z   0.0  0.0  0.5
