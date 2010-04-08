@@ -470,7 +470,7 @@ run_plot () {
    local INPUT=
    local OUTPUT=
    local SUFFIX=
-   local PARALLEL=no
+   local PARALLEL=yes
    local name_tmp
    
    for arg 
