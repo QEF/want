@@ -4,6 +4,10 @@
 =======================================================
 
 
+Apr 09 2010      Cleanup of hamiltonian data in trnasport. test12 updated. 
+                 Bug fixed in configure when issued with --with-etsf-io flag. 
+                 Interface to abinit 6.0.3 checked. libtest updated. (AF)
+
 Apr 08 2010      gamma_only option spreaded to plot.x .
                  Test03 and Test04 updated. Overall documentation updated. 
                  Test13 finalized and added to repository. Test14 added. (AF)

@@ -281,6 +281,9 @@ CONTAINS
       !
       IF ( .NOT. rgrid_from_file ) THEN
           !
+          !! consider only odd R grids
+          !nr(1:3) = 2 * ( nk(1:3)/2 ) +1
+          !
           nr(1:3) = nk(1:3)
           nrtot = PRODUCT(nr)
           !
@@ -294,9 +297,9 @@ CONTAINS
       ELSE
           !
           IF ( .NOT. rgrid_alloc )    CALL errore(subname, 'rgrid not alloc', 20)
-          IF ( .NOT. ALLOCATED(vr) )  CALL errore(subname, 'vr not alloc', 10)
-          IF ( .NOT. ALLOCATED(ivr) ) CALL errore(subname,'ivr not alloc', 11)
-          IF ( .NOT. ALLOCATED(wr) )  CALL errore(subname, 'wr not alloc', 12)
+          IF ( .NOT. ALLOCATED(vr) )  CALL errore(subname, 'vr not alloc',    10)
+          IF ( .NOT. ALLOCATED(ivr) ) CALL errore(subname, 'ivr not alloc',   11)
+          IF ( .NOT. ALLOCATED(wr) )  CALL errore(subname, 'wr not alloc',    12)
          
           !
           ! compute ivr, crystal compononet of vr

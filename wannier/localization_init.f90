@@ -25,7 +25,7 @@
    USE timing_module,       ONLY : timing
    USE log_module,          ONLY : log_push, log_pop
    USE files_module,        ONLY : file_open, file_close
-   USE util_module,         ONLY : zmat_unitary, mat_mul, mat_svd
+   USE util_module,         ONLY : zmat_is_unitary, mat_mul, mat_svd
    USE kpoints_module,      ONLY : nkpts, nkpts_g, iks
    USE localization_module, ONLY : localization_read, cU
    USE overlap_module,      ONLY : ca, dimwann
@@ -183,7 +183,7 @@
        !
        ik_g = ik + iks -1
        !
-       IF ( .NOT. zmat_unitary( dimwann, dimwann, cU(:,:,ik_g), &
+       IF ( .NOT. zmat_is_unitary( dimwann, dimwann, cU(:,:,ik_g), &
                   SIDE='both', TOLL=unitary_thr )  ) &
                   CALL errore(subname,'U matrix not unitary', ik_g)
        !

@@ -25,7 +25,7 @@
    USE io_module,         ONLY : stdout, io_name, wantdata_form, space_unit, ionode
    USE log_module,        ONLY : log_push, log_pop
    USE files_module,      ONLY : file_open, file_close
-   USE util_module,       ONLY : zmat_unitary, mat_mul, mat_svd
+   USE util_module,       ONLY : zmat_is_unitary, mat_mul, mat_svd
    !
    USE windows_module,    ONLY : lfrozen, dimfroz, indxfroz, frozen, dimwin, dimwinx
    USE kpoints_module,    ONLY : vkpt_g, nkpts, nkpts_g, iks
@@ -276,15 +276,15 @@
    ! orthogonal to the frozen states, at those k-points where both are present in
    ! the trial subspace.
    !
-   ! the subroutine zmat_unitary is called using SIDE='left' to perform A^{\dag}.A
+   ! the subroutine zmat_is_unitary is called using SIDE='left' to perform A^{\dag}.A
    ! while it should be SIDE = 'right' to perform A.A^{\dag}
    !
    DO ik = 1, nkpts
        !
        ik_g = ik + iks -1
        !
-       IF ( .NOT. zmat_unitary( dimwin(ik_g), dimwann, lamp(:,:,ik_g), &
-                                SIDE='left', TOLL=unitary_thr ) ) &
+       IF ( .NOT. zmat_is_unitary( dimwin(ik_g), dimwann, lamp(:,:,ik_g), &
+                                   SIDE='left', TOLL=unitary_thr ) ) &
        CALL errore(subname, 'Vectors in lamp not orthonormal',ik_g)
        !
    ENDDO

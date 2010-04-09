@@ -24,7 +24,7 @@
        USE control_module,        ONLY : subspace_init_mode => subspace_init, verbosity, &
                                          unitary_thr, nprint_dis, nsave_dis, read_pseudo, &
                                          read_symmetry
-       USE util_module,           ONLY : zmat_unitary, mat_hdiag, mat_mul
+       USE util_module,           ONLY : zmat_is_unitary, mat_hdiag, mat_mul
        USE kpoints_module,        ONLY : nkpts, nkpts_g, iks, ike, vkpt_g, &
                                          nb, nnlist, nnpos, nnrev
        USE windows_module,        ONLY : imin, dimwin, dimwinx, eig, dimfroz, indxnfroz
@@ -470,8 +470,8 @@
            !
            ! check the unitariry of lamp
            !
-           IF ( .NOT. zmat_unitary( dimwin(ik_g), dimwann, lamp(:,:,ik_g), &
-                                    SIDE='left', TOLL=unitary_thr ) )&
+           IF ( .NOT. zmat_is_unitary( dimwin(ik_g), dimwann, lamp(:,:,ik_g), &
+                                       SIDE='left', TOLL=unitary_thr ) )&
                  CALL errore(subname,"Lamp matrices not orthogonal",ik_g)
 
            DO j = 1, dimwann

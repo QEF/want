@@ -21,7 +21,7 @@ SUBROUTINE unitary_update(dimwann, nkpts, dqp, cU)
    USE io_module,         ONLY : stdout
    USE timing_module,     ONLY : timing
    USE log_module,        ONLY : log_push, log_pop
-   USE util_module,       ONLY : mat_mul, mat_hdiag, zmat_unitary
+   USE util_module,       ONLY : mat_mul, mat_hdiag, zmat_is_unitary
    USE parser_module,     ONLY : int2char
    USE kpoints_module,    ONLY : nkpts_g, iks, ike
    USE paratools_module,  ONLY : para_poolrecover
@@ -114,8 +114,8 @@ SUBROUTINE unitary_update(dimwann, nkpts, dqp, cU)
         cU(:,:,ik_g) = work(:,:)
 
 #ifdef __CHECK_UNITARY
-        IF (  .NOT. zmat_unitary( dimwann, dimwann, cU(:,:,ik_g), &
-                                  SIDE='both', TOLL=unitary_thr )  )  &
+        IF (  .NOT. zmat_is_unitary( dimwann, dimwann, cU(:,:,ik_g), &
+                                     SIDE='both', TOLL=unitary_thr )  )  &
            CALL warning( subname, 'U matrix NOT unitary (II) at ikpt = '//TRIM(int2char(ik_g)))
 #endif
    ENDDO

@@ -184,11 +184,11 @@
    INTEGER :: debug_level = 0
        ! level of debug report; values <= 0 switch the debug_mode off
 
-
+   INTEGER :: ispin = 0
        ! define which spin component has to be used in the calculation.
        ! This variable is intended to exist temporarily until a full
        ! treatment of the spin degrees of freedom is not implemented.
-       ! Currently it is used only within the interface with CRYSTAL06.
+       ! Currently it is used only within the interface with CRYSTAL09.
 
    NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type,             &
                  conduct_formula, niterx, ne, emin, emax, nprint, delta, bias,  &
