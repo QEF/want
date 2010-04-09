@@ -14,8 +14,7 @@ MANUAL=" Usage
  
  scf             DFT self-consistent calculation
  nscf            DFT non-self-consistent calculation
- pwexport        export DFT data to WanT package in IOTK fmt
- dft             perform SCF, NSCF, PWEXPORT all together
+ dft             perform SCF, NSCF all together
  disentangle     select the optimal subspace on which perform
                  the wannier minimization
  wannier         perform the above cited minimization
@@ -49,7 +48,6 @@ SUFFIX=
 
 SCF=
 NSCF=
-PWEXPORT=
 DISENTANGLE=
 WANNIER=
 DOS=
@@ -65,8 +63,7 @@ INPUT=`echo $1 | tr [:upper:] [:lower:]`
 case $INPUT in 
    (scf)            SCF=yes ;;
    (nscf)           NSCF=yes ;;
-   (pwexport)       PWEXPORT=yes ;;
-   (dft)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ;;
+   (dft)            SCF=yes ; NSCF=yes ;;
    (disentangle)    DISENTANGLE=yes ;;
    (wannier)        WANNIER=yes ;;
    (dos)            DOS=yes ;;
@@ -76,7 +73,7 @@ case $INPUT in
    (want)           DISENTANGLE=yes ; WANNIER=yes ;
                     DOS=yes ; BLC2WAN=yes ;
                     CONDUCTOR=yes ; CONDUCTOR_SGM=yes ;;
-   (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
+   (all)            SCF=yes ; NSCF=yes ; 
                     DISENTANGLE=yes ; WANNIER=yes ;
                     DOS=yes ; BLC2WAN=yes ;
                     CONDUCTOR=yes ; CONDUCTOR_SGM=yes ;;
@@ -112,10 +109,6 @@ run_dft  NAME=SCF   SUFFIX=$SUFFIX  RUN=$SCF
 #
 run_dft  NAME=NSCF  SUFFIX=$SUFFIX  RUN=$NSCF
    
-#
-# running DFT PWEXPORT
-#
-run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
 
 #
 # running DISENTANGLE

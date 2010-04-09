@@ -9,11 +9,12 @@
    datafile_C   = "./SCRATCH/si111_WanT.ham"
    datafile_sgm = "./SCRATCH/sigma.wan.dat"
    transport_dir = 3
-   delta = 0.1
+   delta = 0.01
    smearing_type = "gaussian"
    use_symm = .TRUE.
    nk(1) = 8
    nk(2) = 4
+!   debug_level = 10
 /
 
 <HAMILTONIAN_DATA>

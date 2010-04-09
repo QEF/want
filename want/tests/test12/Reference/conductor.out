@@ -1,3 +1,4 @@
+
   ======================================================================
               =                                            =
               =     *** WanT *** Wannier Transport Code    =
@@ -7,24 +8,29 @@
   ======================================================================
 
 
-  Program <conductor>  v. 2.1.0  starts ...
-  Date  8Jun2007 at 15:13: 2 
+  Program <conductor>  v. 2.3.0  starts ...
+  Date  9Apr2010 at 19:25:36 
 
-     Serial run.
+     Parallel run, # proc:    6
 
-          BUILT :    Mon May 28 10:12:03 2007
-           HOST :    i686-pc-linux-gnu
-           ARCH :    ia32
-             CC :    cc
+          BUILT :    Fri Apr  9 19:15:00 2010
+           HOST :    x86_64-unknown-linux-gnu
+           ARCH :    x86_64
+             CC :    icc
             CPP :    cpp
-            F90 :    ifort
+            F90 :    mpif90
             F77 :    ifort
-         DFLAGS :    -D__INTEL -D__FFTW
-      BLAS LIBS :    -lblas
-    LAPACK LIBS :    -llapack
-       FFT LIBS :    -lfftw
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA -D__ETSF_IO -D__NETCDF
+      BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
+    LAPACK LIBS :    
+       FFT LIBS :    
       MASS LIBS :    
 
+
+
+  ======================================================================
+  =  Conductor Init                                                    =
+  ======================================================================
 
 
   ======================================================================
@@ -32,41 +38,44 @@
   ======================================================================
 
   <INPUT>
-       Calculation Type    :     bulk
-       prefix              :     
-       postfix             :     
-       work_dir            :     ./
+          Calculation Type :     bulk
+                    prefix :     
+                   postfix :     
+                  work_dir :     ./
                L-lead dim. :        48
             conductor dim. :        48
                R-lead dim. :        48
        Conductance Formula :     landauer
        Transport Direction :         3
-       Use Overlap         :     FALSE
-       Use Correlation     :     FALSE
-       Write k-data        :     FALSE
+          Have Correlation :     FALSE
+              Write k-data :     FALSE
        Max iteration number:       200
 
-       Print info each  20 energy step
+                    nprint :        20
 
-       Conductor data read from file  :     ./SCRATCH/si111_WanT.ham
+        Conductor datafile :     ./SCRATCH/si111_WanT.ham
   </INPUT>
 
 
   <ENERGY_GRID>
-       Dimension     :        300
-       Min Energy    :       -4.00000
-       Max Energy    :        4.00000
-       Energy Step   :        0.02676
-       Delta         :        0.10000
-       Smearing Type :     gaussian
-       Smearing grid :      20000
-       Smearing gmax :       25.00000
+                 Dimension :        300
+                Min Energy :       -4.00000
+                Max Energy :        4.00000
+               Energy Step :        0.02676
+                     Delta :        0.10000
+             Smearing Type :     gaussian
+             Smearing grid :      20000
+             Smearing gmax :       25.00000
+                   Shift_L :        0.00000
+                   Shift_C :        0.00000
+                   Shift_R :        0.00000
+                Shift_corr :        0.00000
   </ENERGY_GRID>
 
 
   <K-POINTS>
        nkpts_par =   18
-       nrtot_par =   18
+       nrtot_par =   32
         use_symm = TRUE
 
        Parallel kpoints grid:        nk = (  8  4  1 )   s = (  0  0  0 )
@@ -89,31 +98,45 @@
        k (  17) =    (  -0.12500  0.00000  0.00000 ),   weight =   0.0625
        k (  18) =    (   0.00000  0.00000  0.00000 ),   weight =   0.0312
 
-       Parallel R vector grid:      nr = (  6  3  1 )
-       R (   1) =    (  -2.00000 -1.00000  0.00000 ),   weight =   1.0000
-       R (   2) =    (  -1.00000 -1.00000  0.00000 ),   weight =   1.0000
-       R (   3) =    (   0.00000 -1.00000  0.00000 ),   weight =   1.0000
-       R (   4) =    (   1.00000 -1.00000  0.00000 ),   weight =   1.0000
-       R (   5) =    (   2.00000 -1.00000  0.00000 ),   weight =   1.0000
-       R (   6) =    (   3.00000 -1.00000  0.00000 ),   weight =   1.0000
-       R (   7) =    (  -2.00000  0.00000  0.00000 ),   weight =   1.0000
-       R (   8) =    (  -1.00000  0.00000  0.00000 ),   weight =   1.0000
-       R (   9) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000
-       R (  10) =    (   1.00000  0.00000  0.00000 ),   weight =   1.0000
-       R (  11) =    (   2.00000  0.00000  0.00000 ),   weight =   1.0000
-       R (  12) =    (   3.00000  0.00000  0.00000 ),   weight =   1.0000
-       R (  13) =    (  -2.00000  1.00000  0.00000 ),   weight =   1.0000
-       R (  14) =    (  -1.00000  1.00000  0.00000 ),   weight =   1.0000
-       R (  15) =    (   0.00000  1.00000  0.00000 ),   weight =   1.0000
-       R (  16) =    (   1.00000  1.00000  0.00000 ),   weight =   1.0000
-       R (  17) =    (   2.00000  1.00000  0.00000 ),   weight =   1.0000
-       R (  18) =    (   3.00000  1.00000  0.00000 ),   weight =   1.0000
+       Parallel R vector grid:       nr = (  8  4  1 )
+       R (   1) =    (  -3.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (   2) =    (  -2.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (   3) =    (  -1.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (   4) =    (   0.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (   5) =    (   1.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (   6) =    (   2.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (   7) =    (   3.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (   8) =    (   4.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (   9) =    (  -3.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  10) =    (  -2.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  11) =    (  -1.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  12) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  13) =    (   1.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  14) =    (   2.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  15) =    (   3.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  16) =    (   4.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  17) =    (  -3.00000  1.00000  0.00000 ),   weight =   1.0000
+       R (  18) =    (  -2.00000  1.00000  0.00000 ),   weight =   1.0000
+       R (  19) =    (  -1.00000  1.00000  0.00000 ),   weight =   1.0000
+       R (  20) =    (   0.00000  1.00000  0.00000 ),   weight =   1.0000
+       R (  21) =    (   1.00000  1.00000  0.00000 ),   weight =   1.0000
+       R (  22) =    (   2.00000  1.00000  0.00000 ),   weight =   1.0000
+       R (  23) =    (   3.00000  1.00000  0.00000 ),   weight =   1.0000
+       R (  24) =    (   4.00000  1.00000  0.00000 ),   weight =   1.0000
+       R (  25) =    (  -3.00000  2.00000  0.00000 ),   weight =   1.0000
+       R (  26) =    (  -2.00000  2.00000  0.00000 ),   weight =   1.0000
+       R (  27) =    (  -1.00000  2.00000  0.00000 ),   weight =   1.0000
+       R (  28) =    (   0.00000  2.00000  0.00000 ),   weight =   1.0000
+       R (  29) =    (   1.00000  2.00000  0.00000 ),   weight =   1.0000
+       R (  30) =    (   2.00000  2.00000  0.00000 ),   weight =   1.0000
+       R (  31) =    (   3.00000  2.00000  0.00000 ),   weight =   1.0000
+       R (  32) =    (   4.00000  2.00000  0.00000 ),   weight =   1.0000
   </K-POINTS>
 
 
   <PARALLELISM>
        Paralellization over frequencies
-       # of processes:     1
+       # of processes:     6
   </PARALLELISM>
 
 
@@ -121,85 +144,25 @@
   =  Frequency Loop                                                    =
   ======================================================================
 
-  Computing E(     1 ) =  -4.00000 eV
+  Computing E(     1 ) =     -4.00000 eV
   T matrix converged after avg. # of iterations    5.000
 
-                              Total time spent up to now :     2.58 secs
+                              Total time spent up to now :     0.71 secs
 
-  Computing E(    20 ) =  -3.49164 eV
+  Computing E(    20 ) =     -3.49164 eV
   T matrix converged after avg. # of iterations    5.278
 
-                              Total time spent up to now :    48.60 secs
+                              Total time spent up to now :    12.12 secs
 
-  Computing E(    40 ) =  -2.95652 eV
-  T matrix converged after avg. # of iterations    5.500
-
-                              Total time spent up to now :    98.16 secs
-
-  Computing E(    60 ) =  -2.42140 eV
+  Computing E(    40 ) =     -2.95652 eV
   T matrix converged after avg. # of iterations    5.556
 
-                              Total time spent up to now :   149.08 secs
+                              Total time spent up to now :    24.44 secs
 
-  Computing E(    80 ) =  -1.88629 eV
+  Computing E(    50 ) =     -2.68896 eV
   T matrix converged after avg. # of iterations    5.500
 
-                              Total time spent up to now :   199.74 secs
-
-  Computing E(   100 ) =  -1.35117 eV
-  T matrix converged after avg. # of iterations    5.222
-
-                              Total time spent up to now :   250.33 secs
-
-  Computing E(   120 ) =  -0.81605 eV
-  T matrix converged after avg. # of iterations    4.278
-
-                              Total time spent up to now :   296.60 secs
-
-  Computing E(   140 ) =  -0.28094 eV
-  T matrix converged after avg. # of iterations    3.389
-
-                              Total time spent up to now :   336.76 secs
-
-  Computing E(   160 ) =   0.25418 eV
-  T matrix converged after avg. # of iterations    2.722
-
-                              Total time spent up to now :   371.81 secs
-
-  Computing E(   180 ) =   0.78930 eV
-  T matrix converged after avg. # of iterations    3.500
-
-                              Total time spent up to now :   407.82 secs
-
-  Computing E(   200 ) =   1.32441 eV
-  T matrix converged after avg. # of iterations    4.944
-
-                              Total time spent up to now :   450.90 secs
-
-  Computing E(   220 ) =   1.85953 eV
-  T matrix converged after avg. # of iterations    5.667
-
-                              Total time spent up to now :   500.80 secs
-
-  Computing E(   240 ) =   2.39465 eV
-  T matrix converged after avg. # of iterations    5.722
-
-                              Total time spent up to now :   553.00 secs
-
-  Computing E(   260 ) =   2.92977 eV
-  T matrix converged after avg. # of iterations    5.944
-
-                              Total time spent up to now :   605.63 secs
-
-  Computing E(   280 ) =   3.46488 eV
-  T matrix converged after avg. # of iterations    6.056
-
-                              Total time spent up to now :   659.23 secs
-
-  Computing E(   300 ) =   4.00000 eV
-  T matrix converged after avg. # of iterations    5.889
-
-                              Total time spent up to now :   712.84 secs
+                              Total time spent up to now :    30.68 secs
 
 
   ======================================================================
@@ -207,23 +170,28 @@
   ======================================================================
 
 
-  Conductance written on file:    cond.dat
-          DOS written on file:    doscond.dat
+  conductance written on file:    cond.dat
+
+  doscond written on file:    doscond.dat
 
   ======================================================================
 
    <global routines>
-             clock number :     9
+             clock number :    13
 
-                conductor : 11m52.00s CPU 
- 
-            smearing_init :     0.08s CPU
-                   cft_1z :     0.05s CPU (       2 calls,   0.027 s avg)
-              read_matrix :     0.03s CPU (       2 calls,   0.015 s avg)
-              fourier_par :     0.04s CPU (       2 calls,   0.019 s avg)
-                 transfer :   569.71s CPU (   10800 calls,   0.053 s avg)
-                    green :    76.08s CPU (   10800 calls,   0.007 s avg)
-              gzero_maker :    82.94s CPU (   16200 calls,   0.005 s avg)
-            transmittance :    11.55s CPU (    5400 calls,   0.002 s avg)
+                conductor :    31.00s CPU 
+
+           datafiles_init :     0.00s CPU
+            smearing_init :     0.02s CPU
+                   cft_1z :     0.01s CPU (       2 calls,   0.006 s avg)
+         hamiltonian_init :     0.09s CPU
+              read_matrix :     0.08s CPU (       2 calls,   0.041 s avg)
+              fourier_par :     0.03s CPU (       4 calls,   0.008 s avg)
+             do_conductor :    31.25s CPU
+        hamiltonian_setup :     0.13s CPU (     900 calls,   0.000 s avg)
+            transfer_mtrx :    23.93s CPU (    1800 calls,   0.013 s avg)
+                    green :     3.68s CPU (    1800 calls,   0.002 s avg)
+              gzero_maker :     4.29s CPU (    2700 calls,   0.002 s avg)
+            transmittance :     0.48s CPU (     900 calls,   0.001 s avg)
 
 
