@@ -6,7 +6,7 @@
    IMPLICIT NONE
 
    INTEGER  :: nbnd   = 70
-   INTEGER  :: nkpts  = 54
+   INTEGER  :: nkpts  = 128
    INTEGER  :: nspin  = 1
    INTEGER  :: nomega = 1
    LOGICAL  :: ldiag = .TRUE.
@@ -17,7 +17,7 @@
    !
    !
    CHARACTER(256)       :: fileout = "sigma.xml"
-   CHARACTER(256)       :: filekpt = "kpt.dat"
+   CHARACTER(256)       :: filekpt = "kpt_844.dat"
    !
    !
    INTEGER  :: i, ik, ie, ierr
