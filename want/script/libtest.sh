@@ -219,9 +219,11 @@ run_abinit () {
    [[ -z "$PARA_PREFIX" ]] &&  PARALELL=no
    #
    if [ "$PARALLEL" = "yes" ] ; then
-      EXEC=$ABINIT_BIN/abinip 
+      if [ -x $ABINIT_BIN/abinip ] ; then EXEC=$ABINIT_BIN/abinip ; fi
+      if [ -x $ABINIT_BIN/abinit ] ; then EXEC=$ABINIT_BIN/abinit ; fi
    else
-      EXEC=$ABINIT_BIN/abinis 
+      if [ -x $ABINIT_BIN/abinis ] ; then EXEC=$ABINIT_BIN/abinis ; fi
+      if [ -x $ABINIT_BIN/abinit ] ; then EXEC=$ABINIT_BIN/abinit ; fi
    fi
    
    name_tmp=`echo $NAME | tr [:upper:] [:lower:]`

@@ -1607,34 +1607,6 @@ then
         fi
 fi
 
-# preprocessing flag for openmp (experimental)
-if test "$use_openmp" -eq 1 ; then try_dflags="$try_dflags -D__OPENMP" ; fi
-
-# preprocessing flag for signal trapping (experimental)
-if test "$use_signals" -eq 1 ; then try_dflags="$try_dflags -D__TRAP_SIGUSR1" ; fi
-
-if test "$dflags" = "" ; then dflags="$try_dflags" ; fi
-echo setting DFLAGS... $dflags
-
-
-if test "$iflags" = "" ; then iflags="$try_iflags" ; fi
-echo setting IFLAGS... $iflags
-
-# xlf compilers (AIX and powerpc) want comma-separated -D directives
-if test "$xlf_flags" -ne 0
-then
-	fdflags="`echo $dflags | sed 's/  */,/g'`"
-else
-	fdflags="\$(DFLAGS)"
-fi
-echo setting FDFLAGS... $fdflags
-
-if test "$ranlib" != "echo"
-then
-   AC_CHECK_PROG(ranlib,ranlib,ranlib,echo)
-fi
-echo setting RANLIB... $ranlib
-
 
 # AF
 # etsf-io and NetCDF
@@ -1663,6 +1635,36 @@ if test "$use_netcdf" = "1" -a "$netcdf_libs" = "" ; then
     netcdf_libs_switch="internal"
 fi
 if test "$use_netcdf" = "1" ; then try_dflags="$try_dflags -D__NETCDF" ; fi
+
+
+
+# preprocessing flag for openmp (experimental)
+if test "$use_openmp" -eq 1 ; then try_dflags="$try_dflags -D__OPENMP" ; fi
+
+# preprocessing flag for signal trapping (experimental)
+if test "$use_signals" -eq 1 ; then try_dflags="$try_dflags -D__TRAP_SIGUSR1" ; fi
+
+if test "$dflags" = "" ; then dflags="$try_dflags" ; fi
+echo setting DFLAGS... $dflags
+
+
+if test "$iflags" = "" ; then iflags="$try_iflags" ; fi
+echo setting IFLAGS... $iflags
+
+# xlf compilers (AIX and powerpc) want comma-separated -D directives
+if test "$xlf_flags" -ne 0
+then
+	fdflags="`echo $dflags | sed 's/  */,/g'`"
+else
+	fdflags="\$(DFLAGS)"
+fi
+echo setting FDFLAGS... $fdflags
+
+if test "$ranlib" != "echo"
+then
+   AC_CHECK_PROG(ranlib,ranlib,ranlib,echo)
+fi
+echo setting RANLIB... $ranlib
 
 
 

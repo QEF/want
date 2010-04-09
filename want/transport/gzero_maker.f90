@@ -24,10 +24,10 @@
    ! NOTE: \omega *S - H is hermitean  (no immaginary part included)
    !
    USE kinds
-   USE constants,              ONLY : ONE, CONE, CZERO, CI, PI
+   USE constants,              ONLY : ONE, CONE, CZERO, CI, PI, EPS_m8
    USE timing_module,          ONLY : timing
    USE log_module,             ONLY : log_push, log_pop
-   USE util_module,            ONLY : mat_hdiag, mat_mul, mat_inv
+   USE util_module,            ONLY : mat_hdiag, mat_mul, mat_inv, zmat_is_herm
    USE T_smearing_module,      ONLY : smear_alloc => alloc, delta, smearing_type, g_smear, &
                                       xgrid_smear => xgrid, &
                                       nx_smear    => nx,    &
@@ -109,21 +109,21 @@
 
    CASE DEFAULT
         !
-        ! This part is incompatible with having non-hermitean
-        ! correlation. For safety reasons, we give an error
-        ! for any kind of correlation
+        ! opr%aux = \omega S - H    at the opr%ik kpt
+        ! 
+        aux =   opr%aux(:,:)
+
         !
-        IF ( opr%lhave_corr .OR. opr%ldynam_corr ) &
-            CALL errore(subname,'smearing and self-energies not compatible',10)
+        ! This part is incompatible with having non-hermitean
+        ! correlation. A check is performed and an in case an error is issued
+        !
+        IF ( .NOT. zmat_is_herm( ndim, aux, TOLL=EPS_m8 ) ) &
+            CALL errore(subname,'non hermitean opr is incompatible',10)
         ! 
         !
         ! Numeric smearing:
         ! diagonalize the matrix and apply 
         ! the function to the eigenvalues
-        !
-        ! opr%aux = \omega S - H    at the opr%ik kpt
-        ! 
-        aux =   opr%aux(:,:)
         !
         CALL mat_hdiag( z, w, aux, ndim) 
         w(:) = w(:)/delta

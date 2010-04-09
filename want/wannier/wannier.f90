@@ -26,7 +26,7 @@
       USE log_module,          ONLY : log_push, log_pop
       USE files_module,        ONLY : file_open, file_close
       USE version_module,      ONLY : version_number
-      USE util_module,         ONLY : zmat_unitary, mat_mul, mat_svd, mat_hdiag, mat_hdotp
+      USE util_module,         ONLY : zmat_is_unitary, mat_mul, mat_svd, mat_hdiag, mat_hdotp
       USE kpoints_module,      ONLY : nkpts, nkpts_g, iks, ike, wbtot
       USE overlap_module,      ONLY : dimwann, Mkb
       USE localization_module, ONLY : maxiter0_wan, maxiter1_wan, alpha0_wan, alpha1_wan,&
@@ -497,8 +497,8 @@
           !
           ik_g = ik + iks -1
           !
-          IF (  .NOT. zmat_unitary( dimwann, dimwann, cu(:,:,ik_g),  &
-                                    SIDE='both', TOLL=unitary_thr )  )  &
+          IF (  .NOT. zmat_is_unitary( dimwann, dimwann, cu(:,:,ik_g),  &
+                                       SIDE='both', TOLL=unitary_thr )  )  &
                CALL warning('wannier', 'U matrix NOT unitary at ikpt = '//TRIM(int2char(ik_g)) )
           !
       ENDDO

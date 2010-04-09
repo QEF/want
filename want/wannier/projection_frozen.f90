@@ -21,7 +21,7 @@
    USE io_module,        ONLY : stdout
    USE timing_module,    ONLY : timing
    USE log_module,       ONLY : log_push, log_pop
-   USE util_module,      ONLY : mat_hdiag, zmat_unitary, mat_mul
+   USE util_module,      ONLY : mat_hdiag, zmat_is_unitary, mat_mul
    USE control_module,   ONLY : unitary_thr
    USE kpoints_module,   ONLY : iks
    !
@@ -144,9 +144,9 @@
            !
            ! check LEFT unitariery (lamp^dag * lamp = I)
            !
-           IF ( .NOT. zmat_unitary( dimwin(ik_g), dimwann-dimfroz(ik_g),  &
-                                    lamp(:,dimfroz(ik_g)+1:dimwann,ik_g), &
-                                    SIDE='left', TOLL=unitary_thr ) )     &
+           IF ( .NOT. zmat_is_unitary( dimwin(ik_g), dimwann-dimfroz(ik_g),  &
+                                       lamp(:,dimfroz(ik_g)+1:dimwann,ik_g), &
+                                       SIDE='left', TOLL=unitary_thr ) )     &
               CALL errore(subname, 'Vectors in lamp not orthonormal',ik_g)
 
        ENDIF 

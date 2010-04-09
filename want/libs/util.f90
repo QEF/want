@@ -35,7 +35,8 @@
 ! SUBROUTINE  zmat_diag( z, w, a, n, side)
 ! COMPLEX/REAL FUNCTION   mat_dotp( m, n, a, b)
 ! COMPLEX/REAL FUNCTION   mat_hdotp( m, a, b)
-! LOGICAL FUNCTION  zmat_unitary( m, n, z [,side] [,toll])
+! LOGICAL FUNCTION  zmat_is_unitary( m, n, z [,side] [,toll])
+! LOGICAL FUNCTION  zmat_is_herm( n, z [,toll])
 ! INTEGER FUNCTION   mat_rank( m, n, a, toll)
 ! 
 ! </INFO>
@@ -114,7 +115,8 @@ PUBLIC ::  mat_mul
 PUBLIC ::  mat_hdiag
 PUBLIC ::  mat_inv
 PUBLIC :: zmat_diag
-PUBLIC :: zmat_unitary
+PUBLIC :: zmat_is_unitary
+PUBLIC :: zmat_is_herm
 PUBLIC ::  mat_rank
 PUBLIC ::  mat_hdotp
 PUBLIC ::  mat_dotp
@@ -1394,14 +1396,70 @@ END SUBROUTINE dmat_inv
 
 
 !**********************************************************
-   FUNCTION  zmat_unitary( m, n, z, side, toll )
+   FUNCTION  zmat_is_herm( n, z, toll )
    !**********************************************************
    IMPLICIT NONE
-   LOGICAL                            :: zmat_unitary
-   INTEGER,                INTENT(in) :: m,n
-   COMPLEX(dbl),           INTENT(in) :: z(:,:)
-   CHARACTER(*), OPTIONAL, INTENT(in) :: side 
-   REAL(dbl), OPTIONAL,    INTENT(in) :: toll
+   LOGICAL               :: zmat_is_herm
+   INTEGER               :: n
+   COMPLEX(dbl)          :: z(:,:)
+   REAL(dbl), OPTIONAL   :: toll
+   !
+   ! n : actual dimension of Z
+   ! check if a complex matrix is hermitean.
+   !
+   REAL(dbl)     :: toll_
+   CHARACTER(12) :: subname='zmat_is_herm'
+   REAL(dbl)     :: rtmp
+   COMPLEX(dbl)  :: ztmp
+   INTEGER       :: i, j
+   
+
+   toll_ = TINY(ZERO)  
+   IF ( PRESENT(toll) ) toll_ = toll
+   IF ( toll_ <= 0.0 ) CALL errore(subname,'Invalid TOLL',1)
+  
+   IF ( n > SIZE( z, 1) ) CALL errore(subname,'Invalid n I',n)
+   IF ( n > SIZE( z, 2) ) CALL errore(subname,'Invalid n II',n)
+
+   zmat_is_herm = .TRUE.
+   !
+   main_loop: &
+   DO j = 1, n
+   DO i = 1, j
+       !
+       ztmp = z(i,j) - CONJG( z(j,i) )
+       rtmp = REAL( ztmp * CONJG( ztmp ), dbl ) 
+       !
+       IF ( rtmp > toll_ ) THEN
+
+WRITE(0,*) "i,j", i,j
+WRITE(0,*) "n", SHAPE(z) 
+WRITE(0,"(2f15.9)") z(i,j)
+WRITE(0,"(2f15.9)") z(j,i)
+WRITE(0,"(2f15.9)") ztmp
+WRITE(0,"(1f15.9)") rtmp
+WRITE(0,"(1f15.9)") toll_
+
+          zmat_is_herm = .FALSE. 
+          EXIT main_loop
+       ENDIF
+       !
+   ENDDO
+   ENDDO main_loop
+       
+   RETURN
+END FUNCTION zmat_is_herm
+
+
+!**********************************************************
+   FUNCTION  zmat_is_unitary( m, n, z, side, toll )
+   !**********************************************************
+   IMPLICIT NONE
+   LOGICAL                :: zmat_is_unitary
+   INTEGER                :: m,n
+   COMPLEX(dbl)           :: z(:,:)
+   CHARACTER(*), OPTIONAL :: side 
+   REAL(dbl),    OPTIONAL :: toll
    !
    ! m, n : actual dimensions of A
    ! check if a complex matrix is unitary.
@@ -1411,24 +1469,25 @@ END SUBROUTINE dmat_inv
    !
    REAL(dbl)     :: toll_
    CHARACTER(10) :: side_
+   CHARACTER(15) :: subname='zmat_is_unitary'
    INTEGER       :: dim1,dim2
    INTEGER       :: i, j, ierr
    COMPLEX(dbl), ALLOCATABLE  :: result(:,:)
    
-   zmat_unitary = .TRUE. 
+   zmat_is_unitary = .TRUE. 
 
    toll_ = TINY(ZERO)  
    side_ = 'both'
    IF ( PRESENT(side) ) side_ = TRIM(side)
    IF ( PRESENT(toll) ) toll_ = toll
-   IF ( toll_ <= 0 ) CALL errore('zmat_unitary','Invalid TOLL',1)
+   IF ( toll_ <= 0 ) CALL errore(subname,'Invalid TOLL',1)
   
-   IF ( m > SIZE( z, 1) ) CALL errore('zmat_unitary','Invalid m',m)
-   IF ( n > SIZE( z, 2) ) CALL errore('zmat_unitary','Invalid n',n)
+   IF ( m > SIZE( z, 1) ) CALL errore(subname,'Invalid m',m)
+   IF ( n > SIZE( z, 2) ) CALL errore(subname,'Invalid n',n)
    dim1 = m
    dim2 = n
-   IF ( dim1 <= 0) CALL errore('zmat_unitary','Invalid dim1',ABS(dim1)+1)
-   IF ( dim2 <= 0) CALL errore('zmat_unitary','Invalid dim2',ABS(dim2)+1)
+   IF ( dim1 <= 0) CALL errore(subname,'Invalid dim1',ABS(dim1)+1)
+   IF ( dim2 <= 0) CALL errore(subname,'Invalid dim2',ABS(dim2)+1)
 
 
    !
@@ -1438,7 +1497,7 @@ END SUBROUTINE dmat_inv
         TRIM(side_) == 'left' .OR. TRIM(side_) == 'LEFT'  ) THEN 
 
        ALLOCATE( result(dim2,dim2), STAT=ierr )
-          IF ( ierr /= 0 ) CALL errore('zmat_unitary','allocating result',ABS(ierr))
+          IF ( ierr /= 0 ) CALL errore(subname,'allocating result',ABS(ierr))
        ! 
        ! matrix mult
        CALL zmat_mul( result, z, 'C', z, 'N', dim2,dim2,dim1)
@@ -1446,15 +1505,15 @@ END SUBROUTINE dmat_inv
        DO j=1,dim2
        DO i=1,dim2
            IF ( i==j ) THEN
-                IF ( ABS( result(i,j) -CONE ) > toll_ ) zmat_unitary = .FALSE.
+                IF ( ABS( result(i,j) -CONE ) > toll_ ) zmat_is_unitary = .FALSE.
            ELSE
-                IF ( ABS( result(i,j) ) > toll_ ) zmat_unitary = .FALSE.
+                IF ( ABS( result(i,j) ) > toll_ ) zmat_is_unitary = .FALSE.
            ENDIF
        ENDDO
        ENDDO
 
        DEALLOCATE( result, STAT=ierr)
-          IF ( ierr /= 0 ) CALL errore('zmat_unitary','deallocating result',ABS(ierr))
+          IF ( ierr /= 0 ) CALL errore(subname,'deallocating result',ABS(ierr))
    ENDIF
        
    !
@@ -1464,7 +1523,7 @@ END SUBROUTINE dmat_inv
         TRIM(side_) == 'right'.OR. TRIM(side_) == 'RIGHT' ) THEN 
 
        ALLOCATE( result(dim1,dim1), STAT=ierr )
-          IF ( ierr /= 0 ) CALL errore('zmat_unitary','allocating result',ABS(ierr))
+          IF ( ierr /= 0 ) CALL errore(subname,'allocating result',ABS(ierr))
        ! 
        ! matrix mult
        CALL zmat_mul( result, z, 'N', z, 'C', dim1,dim1,dim2)
@@ -1472,18 +1531,18 @@ END SUBROUTINE dmat_inv
        DO j=1,dim1
        DO i=1,dim1
            IF ( i==j ) THEN
-                IF ( ABS( result(i,j) -CONE ) > toll_ ) zmat_unitary = .FALSE.
+                IF ( ABS( result(i,j) -CONE ) > toll_ ) zmat_is_unitary = .FALSE.
            ELSE
-                IF ( ABS( result(i,j) ) > toll_ ) zmat_unitary = .FALSE.
+                IF ( ABS( result(i,j) ) > toll_ ) zmat_is_unitary = .FALSE.
            ENDIF
        ENDDO
        ENDDO
 
        DEALLOCATE( result, STAT=ierr)
-          IF ( ierr /= 0 ) CALL errore('zmat_unitary','deallocating result',ABS(ierr))
+          IF ( ierr /= 0 ) CALL errore(subname,'deallocating result',ABS(ierr))
    ENDIF
    RETURN
-END FUNCTION zmat_unitary
+END FUNCTION zmat_is_unitary
 
 
 !**********************************************************

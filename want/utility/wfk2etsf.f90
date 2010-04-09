@@ -484,8 +484,7 @@ SUBROUTINE checkCommandLineInputs(infile)
 !!!#############################
 
   IMPLICIT NONE
-  INTEGER :: ios
-  character(80)::msj,infile
+  character(80):: infile
 
   call getarg(1,infile)
 
