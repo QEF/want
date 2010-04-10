@@ -39,6 +39,9 @@ MANUAL=" Usage
 # macros
 SUFFIX=_GaAs_abi
 if [ -z "$ABINIT_BIN" ] ; then exit 0 ; fi
+#
+# check for ETSF-IO support
+exit_if_no_etsf_support
 
 
 #
