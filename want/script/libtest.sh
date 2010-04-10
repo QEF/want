@@ -58,6 +58,25 @@ test_init () {
 
 }
 
+#
+#----------------------
+exit_if_no_etsf_support () {
+#----------------------
+#
+   make_sys_file="$TEST_HOME/../../make.sys"
+   #
+   if [ ! -e "$make_sys_file" ] ; then 
+      echo "ERROR: make.sys not present" ; exit 10 
+   fi
+   #
+   str=`grep '__ETSF_IO' $make_sys_file`
+   #
+   if [ -z "$str" ] ; then
+      echo "no ETSF-IO support... exit "
+      exit 0
+   fi
+}
+
 
 #
 #----------------------
