@@ -153,7 +153,7 @@
           !
       ELSE
           !
-          IF ( ANY( map(1:npwk2) <= 0 ) ) CALL errore(subname,'invalid inxed in map', 10)
+          IF ( ANY( map(1:npwk2) <= 0 ) ) CALL errore(subname,'invalid index in map', 10)
           !
       ENDIF
 
@@ -166,20 +166,24 @@
           aux2(:) = CZERO
           ind2 = wfc_info_getindex(imin2 +j2 -1, ik2, "IKB", evc_info)
           !
-          DO ig=1, npwk2
-              aux2( ABS(map( ig )) ) = evc( ig, ind2) 
-          ENDDO
-          !
           IF ( gamma_only ) THEN
               !
               DO ig = 1, npwk2
                   !
                   IF ( map(ig) < 0 )  THEN 
                       aux2( igsort(ig,ik1) ) = CONJG( evc( map_aux(ig), ind2) )
-                  ELSE
+                  ELSE IF ( map(ig) < npwx_g ) THEN
                       aux2( igsort(ig,ik1) ) = evc( map(ig), ind2)
                   ENDIF
                   !
+              ENDDO
+              !
+          ELSE
+              !
+              ! normal wfc representation
+              !
+              DO ig=1, npwk2
+                  aux2( map( ig ) ) = evc( ig, ind2) 
               ENDDO
               !
           ENDIF
@@ -235,7 +239,7 @@
                   !
                   IF ( map(ig) < 0 )  THEN 
                       aux2( igsort(ig,ik1) ) = CONJG( evc( map_aux(ig), ind2) )
-                  ELSE
+                  ELSE IF ( map(ig) < npwx_g ) THEN
                       aux2( igsort(ig,ik1) ) = evc( map(ig), ind2)
                   ENDIF
                   !
