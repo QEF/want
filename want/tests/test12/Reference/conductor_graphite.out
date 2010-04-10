@@ -9,7 +9,7 @@
 
 
   Program <conductor>  v. 2.3.0  starts ...
-  Date  9Apr2010 at 19:46:58 
+  Date 10Apr2010 at  8:40:36 
 
      Parallel run, # proc:    6
 
@@ -62,8 +62,8 @@
                 Min Energy :       -5.00000
                 Max Energy :        5.00000
                Energy Step :        0.02506
-                     Delta :        0.01000
-             Smearing Type :     lorentzian
+                     Delta :        0.05000
+             Smearing Type :     gaussian
              Smearing grid :      20000
              Smearing gmax :       25.00000
                    Shift_L :        0.00000
@@ -1411,29 +1411,29 @@
   ======================================================================
 
   Computing E(     1 ) =     -5.00000 eV
-  T matrix converged after avg. # of iterations    2.782
+  T matrix converged after avg. # of iterations    2.232
 
-                              Total time spent up to now :     1.19 secs
+                              Total time spent up to now :     1.18 secs
 
   Computing E(    20 ) =     -4.52381 eV
-  T matrix converged after avg. # of iterations    2.768
+  T matrix converged after avg. # of iterations    2.217
 
                               Total time spent up to now :    14.24 secs
 
   Computing E(    40 ) =     -4.02256 eV
-  T matrix converged after avg. # of iterations    2.769
+  T matrix converged after avg. # of iterations    2.204
 
-                              Total time spent up to now :    26.20 secs
+                              Total time spent up to now :    24.61 secs
 
   Computing E(    60 ) =     -3.52130 eV
-  T matrix converged after avg. # of iterations    2.750
+  T matrix converged after avg. # of iterations    2.156
 
-                              Total time spent up to now :    37.80 secs
+                              Total time spent up to now :    38.48 secs
 
   Computing E(    67 ) =     -3.34586 eV
-  T matrix converged after avg. # of iterations    2.777
+  T matrix converged after avg. # of iterations    2.159
 
-                              Total time spent up to now :    41.02 secs
+                              Total time spent up to now :    44.06 secs
 
 
   ======================================================================
@@ -1450,19 +1450,19 @@
    <global routines>
              clock number :    13
 
-                conductor :    42.00s CPU 
+                conductor :    54.00s CPU 
 
            datafiles_init :     0.00s CPU
             smearing_init :     0.03s CPU
                    cft_1z :     0.02s CPU (       2 calls,   0.011 s avg)
-         hamiltonian_init :     0.19s CPU
+         hamiltonian_init :     0.18s CPU
               read_matrix :     0.15s CPU (       2 calls,   0.077 s avg)
               fourier_par :     0.14s CPU (       4 calls,   0.035 s avg)
-             do_conductor :    41.94s CPU
-        hamiltonian_setup :     0.72s CPU (   83884 calls,   0.000 s avg)
-            transfer_mtrx :    29.95s CPU (  167768 calls,   0.000 s avg)
-                    green :     4.15s CPU (  167768 calls,   0.000 s avg)
-              gzero_maker :     1.32s CPU (  251652 calls,   0.000 s avg)
-            transmittance :     1.50s CPU (   83884 calls,   0.000 s avg)
+             do_conductor :    53.90s CPU
+        hamiltonian_setup :     0.73s CPU (   83884 calls,   0.000 s avg)
+            transfer_mtrx :    24.73s CPU (  167768 calls,   0.000 s avg)
+                    green :     9.80s CPU (  167768 calls,   0.000 s avg)
+              gzero_maker :     9.54s CPU (  251652 calls,   0.000 s avg)
+            transmittance :     1.45s CPU (   83884 calls,   0.000 s avg)
 
 
