@@ -4,7 +4,8 @@
 =======================================================
 
 
-Apr 09 2010      Cleanup of hamiltonian data in trnasport. test12 updated. 
+Apr 09 2010      Cleanup of hamiltonian data in trnasport. 
+                 test12 updated, including references. 
                  Bug fixed in configure when issued with --with-etsf-io flag. 
                  Interface to abinit 6.0.3 checked. libtest updated. (AF)
 
