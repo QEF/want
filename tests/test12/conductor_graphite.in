@@ -8,8 +8,8 @@
    emax =   5.0
    datafile_C = "./SCRATCH/graphite_WanT.ham"
    transport_dir = 3
-   delta = 0.01
-!   smearing_type = "gaussian"
+   delta = 0.05
+   smearing_type = "gaussian"
    use_symm = .TRUE.
    nk(1) = 50
    nk(2) = 50
