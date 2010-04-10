@@ -42,7 +42,7 @@
       INTEGER :: j2, npwk2, ind2
       !
       INTEGER,      ALLOCATABLE :: map(:),  map_aux(:)
-      COMPLEX(dbl), ALLOCATABLE :: aux1(:), aux2(:), caux(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: aux1(:), aux2(:)
       !
       COMPLEX(dbl),    EXTERNAL :: ZDOTC
       !
@@ -71,15 +71,10 @@
 
       IF ( dimw1 > dimwinx ) CALL errore(subname, 'Invalid dimw1', dimw1)
       IF ( dimw2 > dimwinx ) CALL errore(subname, 'Invalid dimw2', dimw2)
-      !
-      IF ( gamma_only .AND. dimw1 /= dimw2 ) CALL errore(subname,'invalid dimw1,2', 2)
 
 
       !
       ! local workspace
-      !
-      ALLOCATE( caux(dimw1,dimw2), STAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'allocating caux',npwkx)
       !
       ALLOCATE( map(npwkx), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating map',npwkx)
@@ -271,9 +266,6 @@
 
       !
       ! local cleanup
-      !
-      DEALLOCATE( caux, STAT=ierr)
-      IF (ierr/=0) CALL errore(subname,'deallocating caux',ABS(ierr))
       !
       DEALLOCATE( aux1, STAT=ierr)
       IF (ierr/=0) CALL errore(subname,'deallocating aux1',ABS(ierr))
