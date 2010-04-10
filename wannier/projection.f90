@@ -169,8 +169,13 @@
           !
           IF ( gamma_only ) THEN
               !
-              ca(:,iwann) = ca(:,iwann) + CONJG( ca(:,iwann) ) &
-                          - CONJG(evc(1, ind:ind+dimw-1 )) * trial_vect(1)
+              DO ib = 1, dimw
+                  !
+                  ind = wfc_info_getindex(imin +ib -1, ik_g, "SPSI_IK", evc_info)
+                  !
+                  ca(ib,iwann) = ca(ib,iwann) + CONJG( ca(ib,iwann) ) &
+                               - CONJG(evc(1, ind )) * trial_vect(1)
+              ENDDO
               !
           ENDIF
           !
