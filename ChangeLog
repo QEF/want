@@ -4,6 +4,8 @@
 =======================================================
 
 
+Apr 11 2010      WanT manual updated. (AF)
+
 Apr 10 2010      Test suite further cleaned. explicit check on ETSF-IO support 
                  added. Bug fixed in overlaps and projections under the option
                  gamma_only. (AF)

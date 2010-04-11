@@ -3,21 +3,19 @@
 INSTALLATION PROCEDURE
 ========================================
 
-NOTES: (i) The present version of the code adopts the installation procedure of the PWscf
-package (for more details see also http://www.pwscf.org). (ii) This installation 
-procedure is still experimental, and only a limited number of architectures are 
-currently supported. Details are also reported in the $TOPDIR/docs/README.install 
-file, where $TOPDIR is the top directory of the WanT source tree.
+NOTES: 
+(i) The present version of the code adopts the installation procedure 
+of the Qauntum-ESPRESSO distribution (for more details see also 
+http://www.quantum-espresso.org). 
 
 Installation is a two-step procedure:
    1. cd to the top directory of the WanT tree, and issue this command at the 
       shell prompt:   ./configure [<options>]
    2. type:           make <target>
 
-where <target> is one (or more) of the following: 
+where <target> is one (or more) of the following (typicalli "all" ): 
 
 wannier, transport, utility,
-libwant, libctools, libplugins, libextlibs, 
 all, clean, wash. 
 
 Running make without arguments prints a short manual. Cross-compilation
