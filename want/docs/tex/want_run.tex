@@ -12,49 +12,62 @@
 
 \noindent \underline {NOTE}: At present the \WANT{} code is
 implemented to work as a post processing of DFT
-calculations done using the codes in the \QUANTUMESPRESSO{} distribution 
-(\QUANTUMESPRESSOURL, \PWSCFURL); we will refer to these codes in the following.\\
+calculations done using the codes in: 
+\begin{itemize}
+  \item[\mydot]  \QUANTUMESPRESSO{} distribution;
+  \item[\mydot]  \ABINIT{} package;
+  \item[\mydot]  \CRYSTAL{} package;
+\end{itemize}
 
 \noindent Following the theoretical description of
 Section~\ref{section:intro}, the evaluation of transport
-properties requires three separate steps:
+properties requires the following steps:
 
-\begin{enumerate}
-\item Calculation of DFT electronic structure
-\item Calculation of maximally-localized Wannier functions
-\item Calculation of quantum conductance
-\end{enumerate}
+\begin{itemize}
+\item[\mydot] 1. Calculation of DFT electronic structure
+\item[\mydot] 2. Calculation of maximally-localized Wannier functions \\
+                 (always required except when using CRYSTAL)
+\item[\mydot] 3. Calculation of post-processing quantities (DOS, bands, etc)
+\item[\mydot] 4. Calculation of quantum conductance.
+\end{itemize}
 
-\noindent \underline{IMPORTANT}: For a correct results, the
-following steps \textbf{MUST} be done in the reported order.
 
-\subsection{Preliminary Steps: DFT
-Calculations}\label{subsection:run_dft}
+\subsection{DFT Calculations}
+\label{subsection:run_dft}
 \renewcommand{\theenumi}{\roman{enumi}}
-\renewcommand{\labelenumi}{\theenumi)}
+\renewcommand{\labelenumi}{(\theenumi)}
 \begin{enumerate}
 %
-\item Self-consistent calculation using the DFT codes ({\it e.g.} \PWSCF) 
-      in the \QUANTUMESPRESSO{} distribution. For the description of the input and for 
-      further details see the \PWSCF{} manual.
+\item Self-consistent calculation using any DFT engine ({\it e.g.} 
+      in the \QUANTUMESPRESSO{} or \ABINIT{} distributions). 
+      For the description of the input and for further details see 
+      the corresponding manuals.
       %
 \item Band structure calculation.\\
       \noindent  Starting from the self-consistent charge
-      calculated at point $(1)$, compute the Bloch functions for a
-      {\bf REGULAR {\bf k}-point grid in the COMPLETE Brillouin Zone}; the presence of
-      the Gamma point is not mandatory.
-      Reduction of \textbf{k}-points due to time-reversal symmetry is not (yet) allowed. 
-      The complete list of
+      calculated at point $(1)$, compute the eigenstates for a
+      {\bf regular {\bf k}-point grid in the complete Brillouin Zone}; the presence of
+      the Gamma point is not mandatory. 
+      Reduction of \textbf{k}-points due to time-reversal symmetry is being
+      investigated but not (yet) allowed. 
+
+      When using \QUANTUMESPRESSO{}, the complete list of
       \textbf{k}-points should be specified in the {\tt K\_POINTS} card.
-      The simple program
+      It is possible to use the automatic generator, but the flags
+      {\tt noinv = .TRUE.} and {\tt nosym = .TRUE.} must be used.
+      Otherwise the \textbf{k}-points should be explicitly given. The simple program
       {\tt kgrid.x} in {\tt \~{}want/utility} can be used to generate non-symmetrized
       Monkhorst-Pack grids (run it and follow the instructions).
+      
+      The {\tt GAMMA\_ONLY} option is also available and fully implemented also in \WANT.
       \\
       If using \QUANTUMESPRESSO{} v3.2 or newer, it is highly recommended to set
       {\tt wf\_collect = .TRUE.} in the {\tt \&CONTROL} namelist (see below). 
       %
 \item From \QUANTUMESPRESSO{} to \WANT.\\
       %
+      This step is no longer required if setting {\tt wf\_collect = .TRUE.}. 
+
       \noindent \QUANTUMESPRESSO{} upto v3.1: Use the post processing
       {\tt pw\_export.x} (distributed in the \QUANTUMESPRESSO{} suite\footnote{
       %
@@ -74,10 +87,6 @@ Calculations}\label{subsection:run_dft}
 
 \end{enumerate}
 
-\noindent \underline{NOTE}: Steps (i--iii) should be run, using the
-parallel version of the code, paying attention to use the same
-number of processors. From this point to the end, instead, the
-code is scalar.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection {Calculation of maximally-localized Wannier
