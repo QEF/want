@@ -3,21 +3,20 @@
    prefix = 'cmplx'
    postfix = '_WanT'
    work_dir = './SCRATCH/'
-!   restart_mode = "restart"
 /
 
 &SUBSPACE
    dimwann = 49
    win_max = 200
    froz_max = 0.25    ! Efermi
-   maxiter_dis = 2000
+   maxiter_dis = 5000
 /
 
 &LOCALIZATION
    a_condmin = 5.0
-   wannier_thr = 1.0e-6
+   wannier_thr = 1.0e-8
    maxiter0_wan = 100, 
-   maxiter1_wan = 10000, 
+   maxiter1_wan = 15000, 
 !   maxiter0_wan = 10, 
 !   maxiter1_wan = 10, 
    ncg = 5      

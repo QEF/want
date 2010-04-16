@@ -35,6 +35,10 @@ AR                  = @ar@
 ARFLAGS             = @arflags@
 RANLIB              = @ranlib@
 
+#
+# MOD_FLAGS = flag used by f90 compiler to locate modules
+MOD_FLAG            = @imod@
+
 
 # -----------------------------
 # libraries
