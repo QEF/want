@@ -22,7 +22,7 @@ Al plane + H2 molecule
       degauss=0.01,
       nosym = .TRUE.
       noinv = .TRUE.
-      nbnd  = 100 
+      nbnd  = 140 
    /
    &ELECTRONS
       conv_thr =  1.0d-8,
