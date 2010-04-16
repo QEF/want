@@ -53,6 +53,7 @@ LAPACK_LIBS_SWITCH  = @lapack_libs_switch@
 #
 IOTK_LIBS           = @iotk_libs@
 IOTK_LIBS_SWITCH    = @iotk_libs_switch@
+IOTK_INCLUDE        = @iotk_include@
 #
 FFT_LIBS            = @fft_libs@
 MPI_LIBS            = @mpi_libs@
@@ -60,9 +61,11 @@ MASS_LIBS           = @mass_libs@
 #
 ETSF_IO_LIBS        = @etsf_io_libs@
 ETSF_IO_LIBS_SWITCH = @etsf_io_libs_switch@
+ETSF_IO_INCLUDE     = @etsf_io_include@
 #
 NETCDF_LIBS         = @netcdf_libs@
 NETCDF_LIBS_SWITCH  = @netcdf_libs_switch@
+NETCDF_LIBS_INCLUDE = @netcdf_libs_include@
 #
 
 

@@ -21,8 +21,7 @@ default:
 all: sigma.x
 
 sigma.x:
-	$(F90) $(F90FLAGS) -o $@ sigma.f90 $(MOD_FLAG)../../../extlibs/iotk/include \
-	       -L../../../extlibs/iotk/lib -liotk
+	$(F90) $(F90FLAGS) -o $@ sigma.f90  $(IOTK_INCLUDE) $(IOTK_LIBS)
 
 clean:
 	- rm sigma.x 
