@@ -18,7 +18,6 @@ default:
 	@echo  "  Possible <target>'s are: "
 	@echo  "     wannier            compile Wannier function suite"
 	@echo  "     transport          compile transport executables"
-	@echo  "     embed              compile embedding executables"
 	@echo  "     utility            compile utility executables"
 	@echo  "     libwant            compile the want utility library"
 	@echo  "     libctools          compile ctools library"
@@ -35,7 +34,7 @@ default:
 #
 # MAIN target
 #
-all: build_date  wannier transport embed utility
+all: build_date  wannier transport utility
 
 deps:
 	if test -x ./conf/makedeps.sh ; then ./conf/makedeps.sh ; fi

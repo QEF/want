@@ -121,7 +121,6 @@ disentangle.x \
 wannier.x \
 blc2wan.x \
 bands.x \
-cmplx_bands.x \
 dos.x \
 plot.x
 
