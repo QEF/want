@@ -165,23 +165,23 @@ CONTAINS
        !
        CALL log_push ( subname )
        !
-       IF ( .NOT. kpoints_alloc ) CALL errore(subname,'kpoints NOT alloc',1)
+!       IF ( .NOT. kpoints_alloc ) CALL errore(subname,'kpoints NOT alloc',1)
        IF ( .NOT. subspace_alloc ) CALL errore(subname,'subspace NOT alloc',1)
 
        CALL iotk_write_begin(iun,TRIM(tag))
        CALL iotk_write_attr(attr,"dimwann",dimwann,FIRST=.TRUE.) 
-       CALL iotk_write_attr(attr,"nkpts",nkpts_g) 
-       CALL iotk_write_attr(attr,"nk",nk) 
+!       CALL iotk_write_attr(attr,"nkpts",nkpts_g) 
+!       CALL iotk_write_attr(attr,"nk",nk) 
        CALL iotk_write_attr(attr,"nrtot",nrtot) 
        CALL iotk_write_attr(attr,"nr",nr) 
        CALL iotk_write_attr(attr,"have_overlap",lhave_overlap) 
        CALL iotk_write_attr(attr,"fermi_energy",0.0_dbl) 
        CALL iotk_write_empty(iun,"DATA",ATTR=attr)
 
-       ALLOCATE( vkpt_cry(3, nkpts_g), STAT=ierr )
-       IF (ierr/=0) CALL errore(subname,'allocating vkpt_cry',ABS(ierr))   
-       vkpt_cry = vkpt_g
-       CALL cart2cry(vkpt_cry, bvec)
+!       ALLOCATE( vkpt_cry(3, nkpts_g), STAT=ierr )
+!       IF (ierr/=0) CALL errore(subname,'allocating vkpt_cry',ABS(ierr))   
+!       vkpt_cry = vkpt_g
+!       CALL cart2cry(vkpt_cry, bvec)
 
        CALL iotk_write_attr(attr,"units","bohr",FIRST=.TRUE.)
        CALL iotk_write_dat(iun,"DIRECT_LATTICE", avec, ATTR=attr, COLUMNS=3) 
@@ -190,20 +190,20 @@ CONTAINS
        CALL iotk_write_dat(iun,"RECIPROCAL_LATTICE", bvec, ATTR=attr, COLUMNS=3) 
        !
        CALL iotk_write_attr(attr,"units","crystal",FIRST=.TRUE.)
-       CALL iotk_write_dat(iun,"VKPT", vkpt_cry, ATTR=attr, COLUMNS=3, IERR=ierr) 
-            IF (ierr/=0) CALL errore(subname,'writing VKPT',ABS(ierr))
-            !
-       CALL iotk_write_dat(iun,"WK", wk_g, IERR=ierr) 
-            IF (ierr/=0) CALL errore(subname,'writing WK',ABS(ierr))
-            !
+!       CALL iotk_write_dat(iun,"VKPT", vkpt_cry, ATTR=attr, COLUMNS=3, IERR=ierr) 
+!            IF (ierr/=0) CALL errore(subname,'writing VKPT',ABS(ierr))
+!            !
+!       CALL iotk_write_dat(iun,"WK", wk_g, IERR=ierr) 
+!            IF (ierr/=0) CALL errore(subname,'writing WK',ABS(ierr))
+!            !
        CALL iotk_write_dat(iun,"IVR", ivr, ATTR=attr, COLUMNS=3, IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing ivr',ABS(ierr))
             !
        CALL iotk_write_dat(iun,"WR", wr, IERR=ierr) 
             IF (ierr/=0) CALL errore(subname,'writing wr',ABS(ierr))
 
-       DEALLOCATE( vkpt_cry, STAT=ierr )
-       IF (ierr/=0) CALL errore(subname,'deallocating vkpt_cry',ABS(ierr))   
+!       DEALLOCATE( vkpt_cry, STAT=ierr )
+!       IF (ierr/=0) CALL errore(subname,'deallocating vkpt_cry',ABS(ierr))   
 
 
        CALL iotk_write_begin(iun,"RHAM")
@@ -265,8 +265,8 @@ CONTAINS
            IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
            CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find attr DIMWANN',ABS(ierr))
-           CALL iotk_scan_attr(attr,'nkpts',nkpts_g_,IERR=ierr)
-           IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
+!           CALL iotk_scan_attr(attr,'nkpts',nkpts_g_,IERR=ierr)
+!           IF (ierr/=0) CALL errore(subname,'Unable to find attr NKPTS',ABS(ierr))
            CALL iotk_scan_attr(attr,'nrtot',nrtot_,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find attr NRTOT',ABS(ierr))
            !
@@ -277,14 +277,14 @@ CONTAINS
        ENDIF
        !
        CALL mp_bcast( dimwann_,      ionode_id )
-       CALL mp_bcast( nkpts_g_,      ionode_id )
+!       CALL mp_bcast( nkpts_g_,      ionode_id )
        CALL mp_bcast( nrtot_,        ionode_id )
        CALL mp_bcast( lhave_overlap, ionode_id )
 
        !
        ! few compatibility checks
        IF ( dimwann_ /= dimwann) CALL errore(subname,'invalid dimwann',1)
-       IF ( nkpts_g_ /= nkpts_g)   CALL errore(subname,'invalid nkpts',2)
+!       IF ( nkpts_g_ /= nkpts_g)   CALL errore(subname,'invalid nkpts',2)
        IF ( nrtot_   /= nrtot)     CALL errore(subname,'invalid nrtot',3)
        !
        ! allocations
