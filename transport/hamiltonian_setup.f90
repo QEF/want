@@ -68,17 +68,6 @@
    blc_LC%aux(:,:)   =  (omg -shift_C) * blc_LC%S(:,:,ik) -blc_LC%H(:,:,ik)
    blc_CR%aux(:,:)   =  (omg -shift_C) * blc_CR%S(:,:,ik) -blc_CR%H(:,:,ik)
 
-! XXXX
-#ifdef __CULO
-WRITE(0,*)
-WRITE(0,"(a,i5,2f15.9)") "ik, blc_00C%aux ", ik, blc_00C%aux(1,1)
-WRITE(0,"(a,i5,2f15.9)") "ik, blc_00C%H "  , ik, blc_00C%H(1,1,ik)
-WRITE(0,"(a,i5,2f15.9)") "ik, blc_00C%S "  , ik, blc_00C%S(1,1,ik)
-IF ( ASSOCIATED( blc_00C%sgm ) ) THEN
-  WRITE(0,"(a,i5,2f15.9)") "ik, blc_00C%gm " , ik, blc_00C%sgm(1,1,ik)
-ENDIF
-#endif
-
    !
    ! correlation
    !
