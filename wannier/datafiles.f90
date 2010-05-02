@@ -121,7 +121,7 @@ CONTAINS
        CASE ( 'internal' )
            !
            ! nothing to do
-           WRITE( stdout, "(2x, A,' used in internal fmt' )") TRIM( filein )
+           WRITE( stdout, "(2x, A,' used as internal fmt' )") TRIM( filein )
            !
        CASE DEFAULT
            CALL errore(subname,'invalid FMT = '//TRIM(fmtstr),10 )
