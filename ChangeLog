@@ -4,6 +4,9 @@
 =======================================================
 
 
+May 02 2010      fmt "internal" added to available choices. Postprocs
+                 able to start from want files only. (AF)
+
 
 -------------------------------------------------
 Date: 15 Apr 2010    Version: WanT-2.3.0

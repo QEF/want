@@ -45,6 +45,7 @@ input.o \
 input_base.o \
 input_manager.o \
 input_parameters.o \
+internal_tools.o \
 io_module.o \
 ions.o \
 kpoints.o \
