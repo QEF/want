@@ -16,12 +16,12 @@
    USE parameters,              ONLY : nstrx
    USE io_module,               ONLY : ionode, ionode_id, stdout, aux_unit
    USE io_module,               ONLY : work_dir, prefix, postfix, datafile => dftdata_file
-   USE io_module,               ONLY : file_is_internal => io_file_is_internal
    USE mp,                      ONLY : mp_bcast
    USE timing_module,           ONLY : timing
    USE log_module,              ONLY : log_push, log_pop
    USE crystal_tools_module,    ONLY : crystal_to_internal, file_is_crystal
    USE wannier90_tools_module,  ONLY : wannier90_to_internal, file_is_wannier90
+   USE internal_tools_module,   ONLY : file_is_internal
    USE iotk_module
    !
    IMPLICIT NONE

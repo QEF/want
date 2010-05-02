@@ -32,6 +32,7 @@ WANNIER_OBJS= \
 ../wannier/init_us_2.o \
 ../wannier/input_parameters.o \
 ../wannier/io_module.o \
+../wannier/internal_tools.o \
 ../wannier/ions.o \
 ../wannier/kpoints.o \
 ../wannier/lattice.o \

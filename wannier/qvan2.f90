@@ -87,6 +87,8 @@ subroutine qvan2 (ngy, ih, jh, np, qmod, qg, ylmk0)
   !
   !    and make the sum over the non zero LM
   !
+  work = 0.0
+  !
   do lm = 1, lpx (ivl, jvl)
      lp = lpl (ivl, jvl, lm)
      if ( lp < 1 .or. lp > 49 ) call errore (' qvan ', ' lp wrong ', max(lp,1))

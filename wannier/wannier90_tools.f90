@@ -219,7 +219,7 @@ END SUBROUTINE wannier90_tools_get_dims
    CALL iotk_free_unit( iunit )
 
    !
-   ! get dimensions from .eig
+   ! get eigenvalues from .eig
    !
    OPEN( iunit, FILE=file_eig, STATUS='old', FORM='formatted', IOSTAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(file_eig),ABS(ierr) )
@@ -282,7 +282,7 @@ END SUBROUTINE wannier90_tools_get_eig
    IF ( dbl /= KIND(1.0D0)) CALL errore(subname,'internal dbl kind incompatible',10)
 
    !
-   ! get dimensions from .chk
+   ! get data from .chk
    !
    OPEN( iunit, FILE=file_chk, STATUS='old', FORM='unformatted', IOSTAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(file_chk),ABS(ierr) )
@@ -376,7 +376,7 @@ END SUBROUTINE wannier90_tools_get_data
    SUBROUTINE wannier90_tools_get_lattice( alat, avec, bvec )
    !**********************************************************
    !
-   ! read main data from wannier90 files
+   ! read lattice data from wannier90 files
    !
    IMPLICIT NONE
    ! 
@@ -398,7 +398,7 @@ END SUBROUTINE wannier90_tools_get_data
    IF ( dbl /= KIND(1.0D0)) CALL errore(subname,'internal dbl kind incompatible',10)
 
    !
-   ! get dimensions from .chk
+   ! get data from .chk
    !
    OPEN( iunit, FILE=file_chk, STATUS='old', FORM='unformatted', IOSTAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(file_chk),ABS(ierr) )
@@ -461,7 +461,7 @@ END SUBROUTINE wannier90_tools_get_lattice
    IF ( dbl /= KIND(1.0D0)) CALL errore(subname,'internal dbl kind incompatible',10)
 
    !
-   ! get dimensions from .chk
+   ! get data from .chk
    !
    OPEN( iunit, FILE=file_chk, STATUS='old', FORM='unformatted', IOSTAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(file_chk),ABS(ierr) )
