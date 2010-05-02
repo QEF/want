@@ -110,12 +110,12 @@ END SUBROUTINE internal_tools_get_prefix
    !
    IMPLICIT NONE
    ! 
-   INTEGER,      OPTIONAL, INTENT(OUT) :: nbnd, nkpts, dimwann, nrtot, nr, nspin
+   INTEGER,      OPTIONAL, INTENT(OUT) :: nbnd, nkpts, dimwann, nrtot, nr(3), nspin
    CHARACTER(*), OPTIONAL, INTENT(OUT) :: spin_component
    !
    CHARACTER(23)  :: subname='internal_tools_get_dims'
    INTEGER        :: nbnd_, nkpts_, dimwann_, iunit
-   INTEGER        :: nrtot_, nr_, nspin_
+   INTEGER        :: nrtot_, nr_(3), nspin_
    CHARACTER(256) :: spin_component_
    INTEGER        :: ierr
    
@@ -178,8 +178,8 @@ END SUBROUTINE internal_tools_get_prefix
    CALL iotk_scan_end( iunit, 'WINDOWS', IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname,'searching end for WINDOWS',ABS(ierr) )
    !
-   CALL iotk_open_read( iunit, FILE=TRIM(file_space), IERR=ierr )
-   IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(file_space),ABS(ierr) )
+   CALL iotk_close_read( iunit, IERR=ierr )
+   IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(file_space),ABS(ierr) )
    !
    IF ( PRESENT( nbnd ) )        nbnd = nbnd_
    IF ( PRESENT( nkpts ) )      nkpts = nkpts_
@@ -238,8 +238,8 @@ END SUBROUTINE internal_tools_get_dims
    CALL iotk_scan_end( iunit, 'WINDOWS', IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname,'searching end for WINDOWS',ABS(ierr) )
    !
-   CALL iotk_open_read( iunit, FILE=TRIM(file_space), IERR=ierr )
-   IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(file_space),ABS(ierr) )
+   CALL iotk_close_read( iunit, IERR=ierr )
+   IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(file_space),ABS(ierr) )
    !
    !
    CALL log_pop( subname )
@@ -370,6 +370,7 @@ END SUBROUTINE internal_tools_get_kpoints
    !
    CHARACTER(*) :: filename
    !
+   CHARACTER(256) :: prefix_
    LOGICAL   :: lerror, lopnd
    INTEGER   :: ierr, iunit
      !
@@ -377,6 +378,15 @@ END SUBROUTINE internal_tools_get_kpoints
      !
      file_is_internal = .FALSE.
      lerror = .FALSE.
+     !
+     CALL internal_tools_get_prefix( filename, prefix_ )
+     !    
+     IF ( LEN_TRIM( prefix_ ) /= 0 ) THEN 
+         CALL internal_tools_init( prefix_ )
+     ELSE 
+         lerror = .TRUE.
+         RETURN
+     ENDIF
      !
      CALL iotk_open_read( iunit, TRIM(filename), IERR=ierr )
      IF ( ierr /= 0 ) lerror = .TRUE.
