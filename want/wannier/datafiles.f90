@@ -16,6 +16,7 @@
    USE parameters,              ONLY : nstrx
    USE io_module,               ONLY : ionode, ionode_id, stdout, aux_unit
    USE io_module,               ONLY : work_dir, prefix, postfix, datafile => dftdata_file
+   USE io_module,               ONLY : file_is_internal => io_file_is_internal
    USE mp,                      ONLY : mp_bcast
    USE timing_module,           ONLY : timing
    USE log_module,              ONLY : log_push, log_pop
@@ -120,6 +121,7 @@ CONTAINS
        CASE ( 'internal' )
            !
            ! nothing to do
+           WRITE( stdout, "(2x, A,' used in internal fmt' )") TRIM( filein )
            !
        CASE DEFAULT
            CALL errore(subname,'invalid FMT = '//TRIM(fmtstr),10 )
@@ -182,46 +184,5 @@ END SUBROUTINE datafiles_init
      RETURN
    END SUBROUTINE datafiles_check_fmt
 
-
-!**********************************************************
-   LOGICAL FUNCTION file_is_internal( filename )
-   !**********************************************************
-   !
-   ! check for internal fmt
-   ! 
-   CHARACTER(*) :: filename 
-   !
-   LOGICAL   :: lerror, lopnd
-   INTEGER   :: ierr
-     !
-     file_is_internal = .FALSE.
-     lerror = .FALSE.
-     !
-     CALL iotk_open_read( aux_unit, TRIM(filename), IERR=ierr )
-     IF ( ierr /= 0 ) lerror = .TRUE.
-     !
-     CALL iotk_scan_begin( aux_unit, "HAMILTONIAN", IERR=ierr )
-     IF ( ierr /= 0 ) lerror = .TRUE.
-     !
-     CALL iotk_scan_end( aux_unit, "HAMILTONIAN", IERR=ierr )
-     IF ( ierr /= 0 ) lerror = .TRUE.
-     !
-     CALL iotk_close_read( aux_unit, IERR=ierr ) 
-     IF ( ierr /= 0 ) lerror = .TRUE.
-     !
-     !
-     IF ( lerror ) THEN
-         !
-         INQUIRE( aux_unit, OPENED=lopnd )
-         IF( lopnd ) CLOSE( aux_unit )
-         !
-         RETURN
-         !
-     ENDIF
-     !
-     file_is_internal = .TRUE.
-     !
-  END FUNCTION file_is_internal
-  !
 END MODULE datafiles_module
 

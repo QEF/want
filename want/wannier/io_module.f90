@@ -125,6 +125,7 @@
    PUBLIC ::  io_close_dftdata
    PUBLIC ::  io_read_data
    PUBLIC ::  io_write_data
+   PUBLIC ::  io_file_is_internal
 
 
    CONTAINS
@@ -146,25 +147,27 @@
       CHARACTER(18)    :: subname='io_get_dftdata_fmt'  
       !
       CHARACTER(nstrx) :: filename, version
-      CHARACTER(nstrx) :: fmt_searched(5)
-      CHARACTER(nstrx) :: fmt_filename(5)
+      CHARACTER(nstrx) :: fmt_searched(6)
+      CHARACTER(nstrx) :: fmt_filename(6)
       LOGICAL          :: lfound, lfound1, lneed_wfc
       INTEGER          :: i, ierr
 
       !
       ! Setting fmts to be searched
       !
-      fmt_searched(1) = 'wannier90'
-      fmt_searched(2) = 'crystal'
-      fmt_searched(3) = 'qexml'
-      fmt_searched(4) = 'pw_export'
-      fmt_searched(5) = 'etsf_io'
+      fmt_searched(1) = 'internal'
+      fmt_searched(2) = 'wannier90'
+      fmt_searched(3) = 'crystal'
+      fmt_searched(4) = 'qexml'
+      fmt_searched(5) = 'pw_export'
+      fmt_searched(6) = 'etsf_io'
       !
       fmt_filename(1) = TRIM(dftdata_file_)
       fmt_filename(2) = TRIM(dftdata_file_)
-      fmt_filename(3) = '.save/data-file.xml'
-      fmt_filename(4) = '.export/index.xml'
-      fmt_filename(5) = '_WFK-etsf.nc'
+      fmt_filename(3) = TRIM(dftdata_file_)
+      fmt_filename(4) = '.save/data-file.xml'
+      fmt_filename(5) = '.export/index.xml'
+      fmt_filename(6) = '_WFK-etsf.nc'
 
       !
       ! init
@@ -181,9 +184,10 @@
                          TRIM( fmt_searched(i) )
            !
            IF ( TRIM( fmt_searched(i) ) == 'crystal'    .OR.  &
-                TRIM( fmt_searched(i) ) == 'wannier90'  ) THEN
+                TRIM( fmt_searched(i) ) == 'wannier90'  .OR.  &
+                TRIM( fmt_searched(i) ) == 'internal'   ) THEN
                !
-               ! in the case of crystal fmt, the presence of 
+               ! in these cases, the presence of 
                ! a non-null dftdata_file is required
                !
                IF ( LEN_TRIM(fmt_filename( i )) == 0 ) THEN
@@ -238,6 +242,12 @@
                IF (ionode) CALL qexml_closefile ( "read", IERR=ierr )
                CALL mp_bcast( ierr,   ionode_id )
                IF ( ierr /= 0 ) CALL errore(subname,'closing dftdata file',ABS(ierr))
+               !
+           ENDIF
+           !
+           IF ( lfound .AND. TRIM( fmt_searched(i) ) == 'internal'  )  THEN
+               !
+               lfound = io_file_is_internal( filename )
                !
            ENDIF
            !
@@ -354,6 +364,7 @@
           CALL io_get_dftdata_fmt ( prefix, work_dir, dftdata_file, dftdata_fmt, lneed_wfc )
           !
       ENDIF
+
       !
       ! if dftdata_fmt is still empty, it means no complete dtf dataset
       ! has been found
@@ -449,6 +460,10 @@
            !
            dftdata_fmt_version = 'unknown'
            !
+      CASE ( 'internal' )
+           !
+           dftdata_fmt_version = 'unknown'
+           !
       CASE DEFAULT
            !
            CALL errore(subname,'invalid dftdata_fmt = '//TRIM(dftdata_fmt),1)
@@ -539,7 +554,7 @@
                suffix_  = TRIM(suffix_etsf_io_data)
                postfix_ = " "
                !
-           CASE ( 'crystal', 'wannier90' ) 
+           CASE ( 'crystal', 'wannier90', 'internal' ) 
                !
                path_    = " "
                prefix_  = " " 
@@ -656,7 +671,7 @@
           CALL crio_open_file( dft_unit, TRIM(filename), ACTION='read', IERR=ierr)
           IF ( ierr/=0 ) CALL errore(subname, 'CRIO: opening '//TRIM(filename), ABS(ierr)) 
           !
-      CASE ( 'wannier90' )
+      CASE ( 'wannier90', 'internal' )
           !
           ! nothing to do
           !
@@ -711,7 +726,7 @@
           CALL crio_close_file( ACTION='read', IERR=ierr)
           IF ( ierr/=0 ) CALL errore(subname, 'CRIO: closing DFT datafile', ABS(ierr)) 
           !
-      CASE ( 'wannier90' )
+      CASE ( 'wannier90', 'internal' )
           !
           ! nothing to do
           !
@@ -723,6 +738,47 @@
       RETURN
       !
   END SUBROUTINE io_close_dftdata
+
+
+!**********************************************************
+   LOGICAL FUNCTION io_file_is_internal( filename )
+   !**********************************************************
+   !
+   ! check for internal fmt
+   !
+   CHARACTER(*) :: filename
+   !
+   LOGICAL   :: lerror, lopnd
+   INTEGER   :: ierr
+     !
+     io_file_is_internal = .FALSE.
+     lerror = .FALSE.
+     !
+     CALL iotk_open_read( aux_unit, TRIM(filename), IERR=ierr )
+     IF ( ierr /= 0 ) lerror = .TRUE.
+     !
+     CALL iotk_scan_begin( aux_unit, "HAMILTONIAN", IERR=ierr )
+     IF ( ierr /= 0 ) lerror = .TRUE.
+     !
+     CALL iotk_scan_end( aux_unit, "HAMILTONIAN", IERR=ierr )
+     IF ( ierr /= 0 ) lerror = .TRUE.
+     !
+     CALL iotk_close_read( aux_unit, IERR=ierr )
+     IF ( ierr /= 0 ) lerror = .TRUE.
+     !
+     !
+     IF ( lerror ) THEN
+         !
+         INQUIRE( aux_unit, OPENED=lopnd )
+         IF( lopnd ) CLOSE( aux_unit )
+         !
+         RETURN
+         !
+     ENDIF
+     !
+     io_file_is_internal = .TRUE.
+     !
+  END FUNCTION io_file_is_internal
 
           
 !**********************************************************
