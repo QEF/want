@@ -1431,15 +1431,6 @@ END SUBROUTINE dmat_inv
        rtmp = REAL( ztmp * CONJG( ztmp ), dbl ) 
        !
        IF ( rtmp > toll_ ) THEN
-
-WRITE(0,*) "i,j", i,j
-WRITE(0,*) "n", SHAPE(z) 
-WRITE(0,"(2f15.9)") z(i,j)
-WRITE(0,"(2f15.9)") z(j,i)
-WRITE(0,"(2f15.9)") ztmp
-WRITE(0,"(1f15.9)") rtmp
-WRITE(0,"(1f15.9)") toll_
-
           zmat_is_herm = .FALSE. 
           EXIT main_loop
        ENDIF
