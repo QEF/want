@@ -28,6 +28,7 @@
    USE qexpt_module
    USE crystal_io_module
    USE wannier90_tools_module
+   USE internal_tools_module
    !
 #ifdef __ETSF_IO
    USE etsf_io
@@ -542,6 +543,11 @@ CONTAINS
             IF (ionode) CALL wannier90_tools_get_dims( NKPTS=nkpts_g )
             CALL mp_bcast( nkpts_g,   ionode_id )
             !
+       CASE( 'internal' )
+            !
+            IF (ionode) CALL internal_tools_get_dims( NKPTS=nkpts_g )
+            CALL mp_bcast( nkpts_g,   ionode_id )
+            !
        CASE DEFAULT
             !
             CALL errore(subname,'invalid filefmt = '//TRIM(filefmt), 1)
@@ -651,6 +657,16 @@ CONTAINS
             CALL mp_bcast( lbvec,     ionode_id )
             !
             k_units = 'crystal'
+            !
+       CASE ( 'internal' )
+            !
+            IF (ionode) CALL internal_tools_get_kpoints( nkpts_g, VKPT=vkpt_g, &
+                                                         WK=wk_g, BVEC=lbvec )
+            CALL mp_bcast( vkpt_g,    ionode_id )
+            CALL mp_bcast( wk_g,      ionode_id )
+            CALL mp_bcast( lbvec,     ionode_id )
+            !
+            k_units = 'bohr^-1'
             !
        CASE DEFAULT
             !
