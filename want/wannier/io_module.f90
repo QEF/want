@@ -22,6 +22,7 @@
    USE crystal_io_module,       ONLY : crio_open_file, crio_read_header, crio_close_file
    USE crystal_tools_module,    ONLY : file_is_crystal
    USE wannier90_tools_module,  ONLY : file_is_wannier90
+   USE internal_tools_module,   ONLY : file_is_internal
    USE qexml_module
    USE qexpt_module
    USE iotk_module
@@ -125,7 +126,6 @@
    PUBLIC ::  io_close_dftdata
    PUBLIC ::  io_read_data
    PUBLIC ::  io_write_data
-   PUBLIC ::  io_file_is_internal
 
 
    CONTAINS
@@ -247,7 +247,7 @@
            !
            IF ( lfound .AND. TRIM( fmt_searched(i) ) == 'internal'  )  THEN
                !
-               lfound = io_file_is_internal( filename )
+               lfound = file_is_internal( filename )
                !
            ENDIF
            !
@@ -740,47 +740,6 @@
   END SUBROUTINE io_close_dftdata
 
 
-!**********************************************************
-   LOGICAL FUNCTION io_file_is_internal( filename )
-   !**********************************************************
-   !
-   ! check for internal fmt
-   !
-   CHARACTER(*) :: filename
-   !
-   LOGICAL   :: lerror, lopnd
-   INTEGER   :: ierr
-     !
-     io_file_is_internal = .FALSE.
-     lerror = .FALSE.
-     !
-     CALL iotk_open_read( aux_unit, TRIM(filename), IERR=ierr )
-     IF ( ierr /= 0 ) lerror = .TRUE.
-     !
-     CALL iotk_scan_begin( aux_unit, "HAMILTONIAN", IERR=ierr )
-     IF ( ierr /= 0 ) lerror = .TRUE.
-     !
-     CALL iotk_scan_end( aux_unit, "HAMILTONIAN", IERR=ierr )
-     IF ( ierr /= 0 ) lerror = .TRUE.
-     !
-     CALL iotk_close_read( aux_unit, IERR=ierr )
-     IF ( ierr /= 0 ) lerror = .TRUE.
-     !
-     !
-     IF ( lerror ) THEN
-         !
-         INQUIRE( aux_unit, OPENED=lopnd )
-         IF( lopnd ) CLOSE( aux_unit )
-         !
-         RETURN
-         !
-     ENDIF
-     !
-     io_file_is_internal = .TRUE.
-     !
-  END FUNCTION io_file_is_internal
-
-          
 !**********************************************************
    SUBROUTINE io_read_data(unit,name,prefix_,postfix_,work_dir_,title_,found)
    !**********************************************************

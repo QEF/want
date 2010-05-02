@@ -158,7 +158,7 @@ CONTAINS
        CHARACTER(*),    INTENT(in) :: tag
        CHARACTER(nstrx)   :: attr
        CHARACTER(17)      :: subname="hamiltonian_write"
-       REAL(dbl), ALLOCATABLE :: vkpt_cry(:,:)
+!       REAL(dbl), ALLOCATABLE :: vkpt_cry(:,:)
        INTEGER            :: ir, ierr
 
        IF ( .NOT. alloc ) RETURN
@@ -239,7 +239,8 @@ CONTAINS
        LOGICAL            :: lfound
        CHARACTER(nstrx)   :: attr
        CHARACTER(16)      :: subname="hamiltonian_read"
-       INTEGER            :: nkpts_g_, nrtot_, dimwann_
+!       INTEGER            :: nkpts_g_
+       INTEGER            :: nrtot_, dimwann_
        INTEGER            :: ir, ierr
 
        CALL log_push ( subname )

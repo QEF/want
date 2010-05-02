@@ -41,6 +41,7 @@ WANNIER_OBJS= \
 ../wannier/get_monkpack.o \
 ../wannier/get_rgrid.o \
 ../wannier/io_module.o \
+../wannier/internal_tools.o \
 ../wannier/monkpack.o \
 ../wannier/operator.o \
 ../wannier/startup.o \

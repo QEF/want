@@ -666,7 +666,7 @@ CONTAINS
             CALL mp_bcast( wk_g,      ionode_id )
             CALL mp_bcast( lbvec,     ionode_id )
             !
-            k_units = 'bohr^-1'
+            k_units = 'crystal'
             !
        CASE DEFAULT
             !

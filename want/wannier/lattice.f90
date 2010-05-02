@@ -21,6 +21,7 @@
    USE qexpt_module
    USE crystal_io_module
    USE wannier90_tools_module
+   USE internal_tools_module
    !
 #ifdef __ETSF_IO
    USE etsf_io
@@ -206,6 +207,14 @@ CONTAINS
        CASE ( 'wannier90' )
            !
            IF (ionode) CALL wannier90_tools_get_lattice( alat, avec, bvec )
+           !
+           CALL mp_bcast( alat,     ionode_id )
+           CALL mp_bcast( avec,     ionode_id )
+           CALL mp_bcast( bvec,     ionode_id )
+           !
+       CASE ( 'internal' )
+           !
+           IF (ionode) CALL internal_tools_get_lattice( alat, avec, bvec )
            !
            CALL mp_bcast( alat,     ionode_id )
            CALL mp_bcast( avec,     ionode_id )
