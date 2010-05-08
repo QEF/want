@@ -480,7 +480,7 @@ END PROGRAM dos_main
       !
       CALL monkpack( nk, s, vkpt_int )
       !
-      wk(1:nkpts_int) = TWO / REAL( nspin * nkpts_int ,dbl)
+      wk(1:nkpts_int) = ONE / REAL( nspin * nkpts_int ,dbl)
       !
       ! mv kpts in cartesian coords (bohr^-1)
       !
@@ -669,6 +669,7 @@ END PROGRAM dos_main
                   !
               ENDIF
 
+
               !
               ! Diagonalize the hamiltonian at the present k-point
               ! taking care of the overlaps if the case
@@ -691,13 +692,13 @@ END PROGRAM dos_main
 
       !
       ! DOS normalization costant
-      ! the factor TWO is included to avoid spin doubling
-      ! (internal coherence repsect to transport)
+      ! spin doubling is avoided
+      ! (internal coherence respect to transport)
       !
       !
       IF ( lhave_sgm .AND. ldynam_sgm ) THEN
           !
-          cost = ONE / ( TWO * PI )
+          cost = ONE / ( PI )
           !
           ALLOCATE( GF0( dimwann, dimwann ), STAT=ierr )
           IF( ierr /=0 ) CALL errore(subname,'allocating GF0', ABS(ierr) )
@@ -706,7 +707,7 @@ END PROGRAM dos_main
           IF( ierr /=0 ) CALL errore(subname,'allocating GF', ABS(ierr) )
           !
       ELSE
-          cost = ONE / ( TWO * delta )
+          cost = ONE / ( delta )
       ENDIF
      
       !
