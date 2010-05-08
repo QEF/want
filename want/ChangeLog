@@ -4,6 +4,9 @@
 =======================================================
 
 
+May 08 2010      Small inconsistency in the definition of kpt-weights in dos.x
+                 fixed. (AF)
+
 May 02 2010      fmt "internal" added to available choices. Postprocs
                  able to start from want files only. (AF)
 
