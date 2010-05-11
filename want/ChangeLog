@@ -4,6 +4,9 @@
 =======================================================
 
 
+May 11 2010      Error given on reading pseudo when built-in DFT functionals
+                 are different changed to a warning. (AF)
+
 May 08 2010      Small inconsistency in the definition of kpt-weights in dos.x
                  fixed. (AF)
 
