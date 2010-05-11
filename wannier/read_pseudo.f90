@@ -154,7 +154,8 @@ subroutine readpp
      else
         if ( iexch_ /= get_iexch() .or. icorr_ /= get_icorr() .or. &
              igcx_  /= get_igcx()  .or. igcc_ /= get_igcc() ) then
-           CALL errore( 'readpp','inconsistent DFT read',nt)
+           !CALL errore( 'readpp','inconsistent DFT read',nt)
+           CALL warning( 'readpp','inconsistent DFT read' )
         end if
      end if
      !
