@@ -228,8 +228,6 @@ END PROGRAM bands
    USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nkpts, nrtot, vr, wr 
    USE windows_module,       ONLY : nbnd, imin, imax, eig, efermi
-!XXX
-!   USE subspace_module,      ONLY : wan_eig
    USE hamiltonian_module,   ONLY : dimwann, rham, rovp, lhave_overlap
    USE correlation_module,   ONLY : lhave_sgm, ldynam_sgm, rsgm, correlation_allocate
    USE timing_module,        ONLY : timing

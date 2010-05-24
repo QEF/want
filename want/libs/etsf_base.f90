@@ -68,8 +68,6 @@ subroutine write_wfn_etsf(filename,fnlen,title,generating_code_and_version, &
   gw_corrections,kb_formfactor_sign,kb_formfactors,kb_formfactor_derivative)
   ! or put the arguments of variables you wish to write
   
-! XXXXX
-!  use netcdf
   implicit none
   
   ! input variables
@@ -337,8 +335,6 @@ function test_wfn_etsf(filename,fnlen,number_of_symmetry_operations,&
   k_dependent_gvectors,k_dependent_number_of_states, &
   number_of_electrons)
 
-! XXXX
-!  use netcdf
   implicit none
   integer :: test_wfn_etsf
 
@@ -577,8 +573,6 @@ subroutine read_wfn_etsf(filename,fnlen,&
   occupations,eigenvalues,coefficients_of_wavefunctions,&
   gw_corrections,kb_formfactor_sign,kb_formfactors,kb_formfactor_derivative)
 
-! XXXX
-!  use netcdf
   implicit none
 
   ! input variables
@@ -987,8 +981,6 @@ subroutine write_denpot_etsf(filename,fnlen,title,generating_code_and_version,&
   number_of_grid_points_vector1,number_of_grid_points_vector2,number_of_grid_points_vector3,&
   primitive_vectors,denpot,denpottype)
   
-! XXXX
-!  use netcdf
   implicit none
   
   ! input variables
@@ -1103,8 +1095,6 @@ function test_denpot_etsf(filename,fnlen,&
   number_of_grid_points_vector2, number_of_grid_points_vector3,denpottype)
   
 
-! XXXX
-!  use netcdf
   implicit none
   integer :: test_denpot_etsf
 
@@ -1254,8 +1244,6 @@ subroutine read_denpot_etsf(filename,fnlen,title,&
   number_of_grid_points_vector1,number_of_grid_points_vector2,number_of_grid_points_vector3,&
   primitive_vectors,denpot,denpottype)
 
-! XXXX
-!  use netcdf
   implicit none
 
   ! input variables
@@ -1425,8 +1413,6 @@ end subroutine read_denpot_etsf
 subroutine write_primitive_vectors(ncid,&
            number_of_cartesian_directions,number_of_vectors,&
            primitive_vectors)
-! XXXX
-! use netcdf
 implicit none
 
 !arguments
@@ -1452,8 +1438,6 @@ end subroutine write_primitive_vectors
 subroutine defput_primitive_vectors(ncid,ncddimid, nvdimid,&
            number_of_cartesian_directions,number_of_vectors,&
            primitive_vectors)
-! XXX
-! use netcdf
 implicit none
 
 !arguments
@@ -1476,8 +1460,6 @@ end subroutine defput_primitive_vectors
 
 
 subroutine write_space_group(ncid,space_group)
-! XXXX
-!use netcdf
 implicit none
 
 !arguments
@@ -1492,8 +1474,6 @@ call defput_space_group(ncid,space_group)
 end subroutine write_space_group
 
 subroutine defput_space_group(ncid,space_group)
-! XXX
-! use netcdf
 implicit none
 
 !arguments
@@ -1516,8 +1496,6 @@ end subroutine defput_space_group
 subroutine write_atomic_numbers(ncid,&
            number_of_atom_species,&
            atomic_numbers)
-! XXX
-! use netcdf
 implicit none
 
 !arguments
