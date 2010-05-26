@@ -100,17 +100,17 @@ AC_ARG_WITH(netcdf,
    fi],
    [use_netcdf=0])
 
-# use etsf-io
-AC_ARG_ENABLE(etsf-io,
-   [AS_HELP_STRING([--enable-etsf-io],
-       [enable the use of etsf-io interface (default: no)])],
-   [if   test "$enableval" = "yes" ; then
-      use_etsf_io=1
-      use_netcdf=1
-   else
-      use_etsf_io=0
-   fi],
-   [use_etsf_io=0])
+## use etsf-io
+#AC_ARG_ENABLE(etsf-io,
+#   [AS_HELP_STRING([--enable-etsf-io],
+#       [enable the use of etsf-io interface (default: no)])],
+#   [if   test "$enableval" = "yes" ; then
+#      use_etsf_io=1
+#      use_netcdf=1
+#   else
+#      use_etsf_io=0
+#   fi],
+#   [use_etsf_io=0])
 
 # use etsf-io
 AC_ARG_WITH(etsf-io,

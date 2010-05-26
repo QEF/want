@@ -4,6 +4,8 @@
 =======================================================
 
 
+May 26 2010      configure flag --enable-etsf-io removed. (AF)
+
 May 11 2010      Error given on reading pseudo when built-in DFT functionals
                  are different changed to a warning. (AF)
 
