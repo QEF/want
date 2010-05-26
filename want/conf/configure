@@ -758,7 +758,6 @@ with_internal_lapack
 with_internal_libs
 enable_signals
 with_netcdf
-enable_etsf_io
 with_etsf_io
 with_external_iotk
 with_scalapack
@@ -1406,7 +1405,6 @@ Optional Features:
   --disable-wrappers      disable C to fortran wrapper check (default:
                           enabled)
   --enable-signals        enable signal trapping (default: no)
-  --enable-etsf-io        enable the use of etsf-io interface (default: no)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -2000,19 +1998,17 @@ else
 fi
 
 
-# use etsf-io
-# Check whether --enable-etsf-io was given.
-if test "${enable_etsf_io+set}" = set; then
-  enableval=$enable_etsf_io; if   test "$enableval" = "yes" ; then
-      use_etsf_io=1
-      use_netcdf=1
-   else
-      use_etsf_io=0
-   fi
-else
-  use_etsf_io=0
-fi
-
+## use etsf-io
+#AC_ARG_ENABLE(etsf-io,
+#   [AS_HELP_STRING([--enable-etsf-io],
+#       [enable the use of etsf-io interface (default: no)])],
+#   [if   test "$enableval" = "yes" ; then
+#      use_etsf_io=1
+#      use_netcdf=1
+#   else
+#      use_etsf_io=0
+#   fi],
+#   [use_etsf_io=0])
 
 # use etsf-io
 
