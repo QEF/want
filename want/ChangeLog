@@ -4,6 +4,9 @@
 =======================================================
 
 
+Jun 10 2010      bug fix in midpoint.f90: input_from_file called
+                 with a wrong interface. Problem reported by Deborah Prezzi. (AF)
+
 May 26 2010      configure flag --enable-etsf-io removed. (AF)
 
 May 11 2010      Error given on reading pseudo when built-in DFT functionals
