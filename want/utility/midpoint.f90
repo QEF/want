@@ -176,8 +176,7 @@ END MODULE
       toll                        = 0.10
       
 
-      CALL input_from_file ( stdin, ierr )
-      IF ( ierr /= 0 )  CALL errore('midpoint','error in input from file',ABS(ierr))
+      CALL input_from_file ( stdin )
       !
       READ(stdin, INPUT, IOSTAT=ierr)
       IF ( ierr /= 0 )  CALL errore('midpoint','Unable to read namelist INPUT',ABS(ierr))
