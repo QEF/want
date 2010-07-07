@@ -124,7 +124,7 @@ END PROGRAM conductor
    USE operator_module,      ONLY : operator_write_init, operator_write_close, &
                                     operator_write_aux, operator_write_data
    USE T_control_module,     ONLY : conduct_formula, nprint, datafile_sgm,  &
-                                    write_kdata, write_lead_sgm, &
+                                    write_kdata, write_lead_sgm, transport_dir, &
                                     do_eigenchannels, do_eigplot, ie_eigplot, ik_eigplot
    USE T_egrid_module,       ONLY : ne, egrid
    USE T_kpoints_module,     ONLY : nkpts_par, vkpt_par3D, wk_par, ivr_par3D, &
@@ -396,8 +396,8 @@ END PROGRAM conductor
               !
               idim = MIN(dimC,dimR,dimL)
               !
-              CALL wd_write_eigchn( aux_unit, ie_eigplot, ik_eigplot, &
-                                    dimC, idim, z_eigplot)
+              CALL wd_write_eigchn( aux_unit, ie_eigplot, ik_eigplot, vkpt_par3D(:,ik) , &
+                                    transport_dir, dimC, idim, z_eigplot)
               !
           ENDIF
           ! 

@@ -80,13 +80,15 @@ END SUBROUTINE wd_write_data
 
 
 !**********************************************************
-   SUBROUTINE wd_write_eigchn(iun, ie, ik, dim1, dim2, mydata)
+   SUBROUTINE wd_write_eigchn(iun, ie, ik, vk, tdir, dim1, dim2, mydata)
    !**********************************************************
    !
    IMPLICIT NONE
       !
       INTEGER,      INTENT(IN) :: iun
       INTEGER,      INTENT(IN) :: ie, ik
+      REAL(dbl),    INTENT(IN) :: vk(3)   
+      INTEGER,      INTENT(IN) :: tdir
       INTEGER,      INTENT(IN) :: dim1, dim2
       COMPLEX(dbl), INTENT(IN) :: mydata(dim1,dim2)
       !
@@ -104,9 +106,13 @@ END SUBROUTINE wd_write_data
           !
           CALL iotk_write_attr(attr, "ik", ik, FIRST=.TRUE.)
           CALL iotk_write_attr(attr, "ie", ie )
+          CALL iotk_write_attr(attr, "transport_dir", tdir )
           CALL iotk_write_attr(attr, "dim1", dim1)
-          CALL iotk_write_attr(attr, "dim1", dim2)
+          CALL iotk_write_attr(attr, "dim2", dim2)
           CALL iotk_write_empty(iun, "DATA", ATTR=attr)
+          !
+          CALL iotk_write_attr(attr, "units", "crystal", FIRST=.TRUE.)
+          CALL iotk_write_dat(iun, "vkpt", vk(1:3), ATTR=attr )
           !
           DO i = 1, dim2
               !
@@ -120,7 +126,8 @@ END SUBROUTINE wd_write_data
       IF ( ierr/=0 ) CALL errore(subname, 'closing '//TRIM(filename), ABS(ierr) )
       !
       CALL io_name( "eigchn", filename, LPATH=.FALSE. )
-      IF (ionode) WRITE(stdout,"(/,2x,a,'Eigenchannels written on file: ',3x,a)") TRIM(filename)
+      !IF (ionode) 
+      WRITE(stdout,"(/,2x,a,'Eigenchannels written on file: ',3x,a)") TRIM(filename)
       !
       CALL log_pop( subname )
       RETURN

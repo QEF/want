@@ -237,8 +237,19 @@
        conduct = -conduct
        
 
-
    ELSE IF ( do_eigenchannels .AND. do_eigplot ) THEN
+!! XXX
+!       !
+!       ! WORK  = gamma_L * G_adv
+!       !
+!       CALL mat_mul(work, gamma_L, 'N', G_ret, 'C', dimC, dimC, dimC)
+!
+!       !
+!       ! WORK2 = G_ret * gamma_L * G_adv
+!       !
+!       CALL mat_mul(work2, G_ret, 'N', work, 'N', dimC, dimC, dimC)
+!! XXX
+
        !
        ! here we follow the method given by: 
        !
@@ -248,7 +259,9 @@
        ! the eigenchannels.
        !
        ! Once we have calculated A_L = G^adv Gamma_L G^ret  (already stored in work2)
-       ! this matrix is diagonalized, and the new matrix given in 
+       ! this matrix is diagonalized, and the sqrt is taken.
+       !
+       ! basically, we diagonalize   ( G^adv Gamma_L G^ret )^1/2  Gamma_R  ( G^adv Gamma_L G^ret )^1/2
        !
        !
        IF ( opr00%lhave_ovp ) THEN
@@ -275,16 +288,19 @@
        DO j = 1, dimC
        DO i = 1, dimC
            !
-           z(i,j) = z(i,j) * w(j)
+           work1(i,j) = z(i,j) * w(j)
            !
        ENDDO
        ENDDO
+       !
+       ! build  ( G^adv*Gamma_L*G^ret )^1/2
+       CALL mat_mul( work, work1, 'N', z, 'C', dimC, dimC, dimC)
        
        !
        ! define the matrix to diagonalize
        !
-       CALL mat_mul( work, gamma_R, 'N',    z, 'N', dimC, dimC, dimC)
-       CALL mat_mul( work2, z,      'C', work, 'N', dimC, dimC, dimC)
+       CALL mat_mul( work1, gamma_R, 'N',  work, 'N', dimC, dimC, dimC)
+       CALL mat_mul( work2, work,    'C',  work1, 'N', dimC, dimC, dimC)
        
        !
        ! get the eigenvalues
@@ -303,7 +319,6 @@
        !
        conduct = -conduct
        
-
    ELSE
        CALL errore(subname,'Unepxected error do_eigenchannels--do_eigplot',10)
    ENDIF
