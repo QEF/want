@@ -4,6 +4,11 @@
 =======================================================
 
 
+Jul 07 2010      bug fixed in the definition of eigenchannel orbitals.
+                 plot procedure extended to eigenchannels. test11 updated. 
+                 At the moment the plotting utility is not working when parallel 
+                 kpts are used in transport. (AF)
+
 Jun 10 2010      bug fix in midpoint.f90: input_from_file called
                  with a wrong interface. Problem reported by Deborah Prezzi. (AF)
 

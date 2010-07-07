@@ -31,6 +31,9 @@
    !
    CHARACTER(nstrx) :: wann              ! contains the list of WF indexes to plot 
                                          ! in the fmt e.g. "1-3,4,7-9"
+   CHARACTER(nstrx) :: eigchn            ! contains the list of eigenchannel indexes to plot 
+   CHARACTER(nstrx) :: datafile_eigchn   ! file with eigchn data (produced by conductor.x)
+   !
    REAL(dbl)        :: r1min, r1max      ! plot cell dim along a1 (cry units)
    REAL(dbl)        :: r2min, r2max      ! the same but for a2
    REAL(dbl)        :: r3min, r3max      ! the same but for a3
@@ -44,7 +47,7 @@
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, wann, &
+   NAMELIST /INPUT/ prefix, postfix, work_dir, wann, eigchn, datafile_eigchn, &
                     datatype, assume_ncpp, uspp_augmentation, output_fmt, collect_wf,   &
                     r1min, r1max, r2min, r2max, r3min, r3max, nr1, nr2, nr3, debug_level
 
@@ -80,7 +83,7 @@
       !
       ! do the main task
       !      
-      CALL do_plot( wann, datatype, uspp_augmentation, output_fmt, &
+      CALL do_plot( wann, eigchn, datafile_eigchn, datatype, uspp_augmentation, output_fmt, &
                     collect_wf, r1min, r1max, r2min, r2max, r3min, r3max, nr1, nr2, nr3)
 
       !
@@ -105,6 +108,7 @@ CONTAINS
    USE constants,            ONLY : EPS_m4
    USE mp,                   ONLY : mp_bcast
    USE io_module,            ONLY : io_init, ionode, ionode_id
+   USE files_module,         ONLY : file_exist
    !
    IMPLICIT NONE
 
@@ -127,6 +131,8 @@ CONTAINS
       debug_level                 = 0
       collect_wf                  = .TRUE.
       wann                        = ' '
+      eigchn                      = ' '
+      datafile_eigchn             = ' '
       datatype                    = 'modulus'
       output_fmt                  = 'plt'
       r1min                       = -0.5
@@ -161,6 +167,8 @@ CONTAINS
       CALL mp_bcast( debug_level,          ionode_id )
       CALL mp_bcast( collect_wf,           ionode_id )
       CALL mp_bcast( wann,                 ionode_id )
+      CALL mp_bcast( eigchn,               ionode_id )
+      CALL mp_bcast( datafile_eigchn,      ionode_id )
       CALL mp_bcast( datatype,             ionode_id )
       CALL mp_bcast( output_fmt,           ionode_id )
       CALL mp_bcast( r1min,                ionode_id )
@@ -177,7 +185,15 @@ CONTAINS
       !
       ! Some checks
       !
-      IF ( LEN_TRIM( wann) == 0 ) CALL errore(subname, 'wann not supplied ', 1)
+      IF ( LEN_TRIM( wann ) == 0 .AND. LEN_TRIM( eigchn ) == 0 ) &
+           CALL errore(subname, 'no states to plot supplied', 1)
+
+      IF ( LEN_TRIM( eigchn ) /= 0 .AND. LEN_TRIM( datafile_eigchn ) == 0 ) &
+           CALL errore(subname, 'datafile_eigchn must be present', 1)
+
+      IF ( LEN_TRIM( eigchn ) /= 0 .AND. .NOT. file_exist( datafile_eigchn ) ) &
+           CALL errore(subname, 'datafile_eigchn does not exist', 1)
+
       !
       CALL change_case( datatype, 'lower')
       IF ( TRIM(datatype) /= "modulus" .AND. TRIM(datatype) /= "module" .AND. &
@@ -214,7 +230,7 @@ END PROGRAM plot_main
 
 
 !********************************************************
-   SUBROUTINE do_plot( wann, datatype, uspp_augmentation, output_fmt, &
+   SUBROUTINE do_plot( wann, eigchn, datafile_eigchn, datatype, uspp_augmentation, output_fmt, &
                        collect_wf, r1min, r1max, r2min, r2max, r3min, r3max, nr1, nr2, nr3 )
    !********************************************************
    !
@@ -256,13 +272,15 @@ END PROGRAM plot_main
    USE parser_module
    USE struct_fact_data_module
    USE want_interfaces_module
+   USE iotk_module
    !
    IMPLICIT NONE
 
       !
       ! input variables
       !
-      CHARACTER(*)     :: wann
+      CHARACTER(*)     :: wann, eigchn
+      CHARACTER(*)     :: datafile_eigchn
       CHARACTER(*)     :: datatype          
       LOGICAL          :: uspp_augmentation 
       CHARACTER(*)     :: output_fmt        
@@ -275,7 +293,8 @@ END PROGRAM plot_main
       !
       ! local variables
       !
-      CHARACTER(7)      :: subname = 'do_plot'
+      CHARACTER(7)        :: subname = 'do_plot'
+      CHARACTER( nstrx )  :: str_states
       !
       INTEGER :: nrxl, nryl, nrzl
       INTEGER :: nrxh, nryh, nrzh
@@ -291,22 +310,25 @@ END PROGRAM plot_main
       REAL(dbl)    :: tmaxx, tmax, xk(3)
       REAL(dbl)    :: avecl(3,3), raux(3), r0(3), r1(3), rmin(3), rmax(3)
       REAL(dbl)    :: arg, cost, norm, norm_us
+      REAL(dbl)    :: vkpt_eigchn(3)
       COMPLEX(dbl) :: phase
       COMPLEX(dbl) :: caux, cmod
       !
-      INTEGER,      ALLOCATABLE :: map(:), iwann(:)
-      REAL(dbl),    ALLOCATABLE :: rwann_out(:,:,:)
+      INTEGER,      ALLOCATABLE :: map(:), istates(:)
+      REAL(dbl),    ALLOCATABLE :: rstates_out(:,:,:)
       REAL(dbl),    ALLOCATABLE :: tautot(:,:), tau_cry(:,:)
       REAL(dbl),    ALLOCATABLE :: vkpt_cry(:,:)
       REAL(dbl),    ALLOCATABLE :: rave_cry(:,:), rave_shift(:,:)
       CHARACTER(3), ALLOCATABLE :: symbtot(:)
-      COMPLEX(dbl), ALLOCATABLE :: cwann(:,:,:,:), cwann_aug(:,:,:,:)
-      COMPLEX(dbl), ALLOCATABLE :: kwann(:,:), wfc_aux(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: cstates(:,:,:,:), cstates_aug(:,:,:,:)
+      COMPLEX(dbl), ALLOCATABLE :: kstates(:,:), wfc_aux(:,:)
       COMPLEX(dbl), ALLOCATABLE :: cutot(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: cu_eigchn(:,:), ctmp(:,:)
 
-      CHARACTER( nstrx )  :: filename
-      CHARACTER( 5 )      :: str, aux_fmt
-      LOGICAL             :: do_modulus
+      INTEGER             :: dim1_, dim2_, tdir
+      CHARACTER( nstrx )  :: filename, attr
+      CHARACTER( 20 )     :: str, aux_fmt
+      LOGICAL             :: do_modulus, do_eigchn, do_wfs
       LOGICAL             :: okp( 3 )
       !
       ! end of declariations
@@ -315,12 +337,28 @@ END PROGRAM plot_main
       CALL timing( subname, OPR='start')
       CALL log_push( subname )
 
+
+      do_wfs    = .FALSE.
+      do_eigchn = .FALSE.
+      !
+      IF ( LEN_TRIM(wann)   /= 0 ) do_wfs    = .TRUE.
+      IF ( LEN_TRIM(eigchn) /= 0 ) do_eigchn = .TRUE.
+      !
+      IF ( do_wfs .AND. do_eigchn ) CALL errore(subname, 'both WFs and eigchn required',10)
+      !
+      IF ( do_wfs )     str_states = TRIM(wann)
+      IF ( do_eigchn )  str_states = TRIM(eigchn)
+
+
       !
       ! Few definitions
       !
+      do_modulus = .FALSE.
       IF ( TRIM(datatype) == "module" ) datatype = "modulus"
       IF ( TRIM(datatype) == "modulus") do_modulus = .TRUE.
       
+      IF ( do_eigchn .AND. .NOT. do_modulus ) &
+          CALL errore(subname,'eigenchannels are plotted only with datatype = modulus',10)
 
       !
       ! ... Opening the file containing the PW-DFT data
@@ -341,6 +379,53 @@ END PROGRAM plot_main
       !
       ! ... closing the main data file
       CALL io_close_dftdata( LSERIAL=.FALSE. )
+
+ 
+      !
+      ! read auxiliary eigchn data
+      !
+      IF ( do_eigchn ) THEN
+          !
+          CALL iotk_open_read( aux_unit, FILE=TRIM(datafile_eigchn), IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'opening file: '//TRIM(datafile_eigchn),ABS(ierr) )
+          !
+          CALL iotk_scan_begin( aux_unit, "EIGENCHANNELS", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'searching EIGENCHANNELS', ABS(ierr) )
+          !
+          CALL iotk_scan_empty( aux_unit, "DATA", ATTR=attr, IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'searching DATA', ABS(ierr) )
+          CALL iotk_scan_attr( attr, "transport_dir", tdir, IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'searching transport_dir', ABS(ierr) )
+          CALL iotk_scan_attr( attr, "dim1", dim1_, IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'searching dim1', ABS(ierr) )
+          CALL iotk_scan_attr( attr, "dim2", dim2_, IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'searching dim2', ABS(ierr) )
+          !
+          CALL iotk_scan_dat( aux_unit, "vkpt", vkpt_eigchn(1:3), IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'searching vkpt', ABS(ierr) )
+          !
+          IF ( dim1_ /= dimwann) CALL errore(subname,'invalid dim1_',1)
+          IF ( dim2_ > dimwann)  CALL errore(subname,'invalid dim2_',1)
+          !
+          ALLOCATE( cu_eigchn(dim1_,dim2_), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating cu_eigchn', ABS(ierr) )
+          ALLOCATE( ctmp(dimwinx,dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating ctmp', ABS(ierr) )
+          !
+          DO i = 1, dim2_
+              !
+              CALL iotk_scan_dat( aux_unit, "eigchn"//TRIM(iotk_index(i)), cu_eigchn(:,i), IERR=ierr )
+              IF ( ierr/=0 ) CALL errore(subname,'searching eigchn'//TRIM(iotk_index(i)), ABS(ierr) )
+              !
+          ENDDO
+          !
+          CALL iotk_scan_end( aux_unit, "EIGENCHANNELS", IERR=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'searching end of EIGENCHANNELS', ABS(ierr) )
+          !
+          CALL iotk_close_read( aux_unit, IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'closing file: '//TRIM(datafile_eigchn), ABS(ierr) )
+          !
+      ENDIF
 
 
       !
@@ -409,22 +494,22 @@ END PROGRAM plot_main
 !
 ! ... final settings on input
 !
+
       !
       ! get the exact number of plot
-      CALL parser_replica( wann, nplot, IERR=ierr )
-      IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in wann string I',ABS(ierr))
+      CALL parser_replica( str_states, nplot, IERR=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in str_states string I',ABS(ierr))
       !
-      ALLOCATE( iwann(nplot), STAT=ierr )
-      IF ( ierr/=0 ) CALL errore(subname,'allocating iwann',ABS(ierr))
+      ALLOCATE( istates(nplot), STAT=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,'allocating istates',ABS(ierr))
       !
       ! get the WF indexes
-      CALL parser_replica( wann, nplot, iwann, ierr )
-      IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in wann string II',ABS(ierr))
+      CALL parser_replica( str_states, nplot, istates, ierr )
+      IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in str_states string II',ABS(ierr))
       !
-      DO m = 1, nplot
-         IF ( iwann(m) <= 0  .OR. iwann(m) > dimwann ) &
-              CALL errore(subname,'iwann too large',m)
-      ENDDO
+      IF ( do_wfs    .AND. ANY( istates(:) > dimwann )) CALL errore(subname,'istates too large',1)
+      IF ( do_eigchn .AND. ANY( istates(:) > dim2_ ))   CALL errore(subname,'istates too large',2)
+      IF ( ANY( istates(:) < 1 )) CALL errore(subname,'istates too small',2)
       !
       !
       ! if lattice is not orthorombic, only .cube or .xsf output fmts are allowed
@@ -452,13 +537,14 @@ END PROGRAM plot_main
       !
       ! summary of the input
       !
-      CALL write_header( stdout, "Wannier function plotting" )
+      IF ( do_wfs )     CALL write_header( stdout, "Wannier function plotting" )
+      IF ( do_eigchn)   CALL write_header( stdout, "Eigenchannels plotting" )
       !
       IF ( ionode ) THEN
           !
-          WRITE( stdout,"(2x,'nplot = ',i4, ' Wannier func.s to be plotted')") nplot
+          WRITE( stdout,"(2x,'nplot = ',i4, ' States to be plotted')") nplot
           DO m=1,nplot
-              WRITE( stdout,"(5x,'wf (',i4,' ) = ',i4 )") m, iwann(m)
+              WRITE( stdout,"(5x,'st (',i4,' ) = ',i4 )") m, istates(m)
           ENDDO
           WRITE( stdout,"(/,2x,'Data type  :',3x,a)") TRIM(datatype)
           WRITE( stdout,"(  2x,'Output fmt :',3x,a)") TRIM(output_fmt)
@@ -498,11 +584,11 @@ END PROGRAM plot_main
       !
       ! allocate WF and local data
       !
-      ALLOCATE ( cwann( nrxl:nrxh, nryl:nryh, nrzl:nrzh, nplot ), STAT=ierr ) 
-      IF( ierr /=0 ) CALL errore(subname, 'allocating cwann ', ABS(ierr) )
+      ALLOCATE ( cstates( nrxl:nrxh, nryl:nryh, nrzl:nrzh, nplot ), STAT=ierr ) 
+      IF( ierr /=0 ) CALL errore(subname, 'allocating cstates ', ABS(ierr) )
       !
-      ALLOCATE( kwann( nr1*nr2*nr3, nplot ), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'allocating kwann ', ABS(ierr) )
+      ALLOCATE( kstates( nr1*nr2*nr3, nplot ), STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating kstates ', ABS(ierr) )
       !
       ALLOCATE( vkpt_cry(3, nkpts_g), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating vkpt_cry ', ABS(ierr) )
@@ -535,15 +621,16 @@ END PROGRAM plot_main
       ! rmin(i) and rmax(i)-1.0
       !
       rave_shift(:,:) = ZERO
-      IF ( collect_wf ) THEN
+      !
+      IF ( collect_wf .AND. do_wfs ) THEN
          !
          DO m=1,nplot
             !
             DO i=1,3
                j = 0
-               IF ( rave_cry(i,iwann(m)) -( rmin(i)+rmax(i)-ONE )/TWO < ZERO ) j = 1
-               rave_shift(i,iwann(m)) = REAL( INT( rave_cry(i,iwann(m)) &
-                                              -( rmin(i)+rmax(i)-ONE)/TWO ) -j ) 
+               IF ( rave_cry(i,istates(m)) -( rmin(i)+rmax(i)-ONE )/TWO < ZERO ) j = 1
+               rave_shift(i,istates(m))    = REAL( INT( rave_cry(i,istates(m)) &
+                                           -( rmin(i)+rmax(i)-ONE)/TWO ) -j ) 
             ENDDO
             !
          ENDDO
@@ -553,22 +640,26 @@ END PROGRAM plot_main
       !
       IF ( ionode ) THEN
           !
-          WRITE( stdout, " (/,2x, 'Centers for the required Wannier functions:')")
-          WRITE( stdout, " (/,8x,'in cartesian coord (Bohr)' )")
+          IF ( do_wfs ) THEN
+              !
+              WRITE( stdout, " (/,2x, 'Centers for the required Wannier functions:')")
+              WRITE( stdout, " (/,8x,'in cartesian coord (Bohr)' )")
+              !
+              DO m=1,nplot
+                 WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
+                        istates(m), rave(:,istates(m))
+              ENDDO
+              !
+              WRITE( stdout, " (8x,'in crystal coord' )")
+              !
+              DO m=1,nplot
+                 WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
+                        istates(m), rave_cry(:,istates(m))
+              ENDDO
+              !
+          ENDIF
           !
-          DO m=1,nplot
-             WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
-                    iwann(m), rave(:,iwann(m))
-          ENDDO
-          !
-          WRITE( stdout, " (8x,'in crystal coord' )")
-          !
-          DO m=1,nplot
-             WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
-                    iwann(m), rave_cry(:,iwann(m))
-          ENDDO
-          !
-          IF ( collect_wf ) THEN
+          IF ( collect_wf .AND. do_wfs ) THEN
               !
               WRITE( stdout,"(/,2x,'Collecting WFs: ')")
               WRITE( stdout,"(2x,'Plotting Cell dimensions [cryst. coord]:')") 
@@ -582,7 +673,7 @@ END PROGRAM plot_main
               !
               DO m=1,nplot
                   WRITE( stdout, " (4x,'Wf(',i4,' ) = (', 3f13.6, ' )' )" ) &
-                         iwann(m), rave_cry(:,iwann(m))-rave_shift(:,iwann(m))
+                         istates(m), rave_cry(:,istates(m))-rave_shift(:,istates(m))
               ENDDO
               !
           ENDIF
@@ -723,7 +814,7 @@ END PROGRAM plot_main
       !
       ! init real space WFs
       !
-      cwann( :, :, :, :) = CZERO
+      cstates( :, :, :, :) = CZERO
 
       kpoint_loop: &
       DO ik_g = iks, ike
@@ -742,6 +833,19 @@ END PROGRAM plot_main
           !
           CALL mat_mul( cutot, eamp(:,:,ik_g), 'N', cu(:,:,ik_g), 'N' ,  &
                         dimwin(ik_g), dimwann, dimwann)
+          !
+          ! apply the eigchn rotation if needed
+          !
+          IF ( do_eigchn ) THEN
+              !
+              ctmp( 1:dimwin(ik_g), 1:dimwann )  = cutot( 1:dimwin(ik_g), 1:dimwann )
+              cutot( :,: ) = CZERO
+              !
+              CALL mat_mul( cutot(:,1:dim2_), ctmp, 'N', cu_eigchn(:,:), 'N' ,  &
+                            dimwin(ik_g), dim2_, dimwann)
+              !
+          ENDIF
+
 
           !
           ! set the FFT map
@@ -749,22 +853,23 @@ END PROGRAM plot_main
           map(:) = 0
           CALL ggrids_gk_indexes( igv, igsort(:,ik_g), npwk(ik_g), & 
                                   nr1, nr2, nr3, GK2FFT=map ) 
+
          
           !
-          ! set the kwann function
+          ! set the kstates function
           !
           DO m = 1, nplot
 
-              CALL timing('kwann_calc',OPR='start')
+              CALL timing('kstates_calc',OPR='start')
 
               !
               ! apply a global shift to set the WF in the required cell
               !
-              arg = TPI * DOT_PRODUCT( vkpt_cry(:,ik_g), rave_shift(:,iwann(m)) )
+              arg = TPI * DOT_PRODUCT( vkpt_cry(:,ik_g), rave_shift(:,istates(m)) )
               phase = CMPLX( COS(arg), SIN(arg), dbl )
 
 
-              kwann( :, m ) = CZERO
+              kstates( :, m ) = CZERO
               !
               DO ig = 1, npwk(ik_g)
                  !
@@ -772,16 +877,16 @@ END PROGRAM plot_main
      
                      ib =  wfc_info_getindex(imin(ik_g)+n-1, ik_g, "IK", evc_info )
                      !
-                     kwann( map(ig), m ) = kwann( map(ig), m ) + &
-                                           cutot(n, iwann(m) ) * evc( ig, ib )
+                     kstates( map(ig), m ) = kstates( map(ig), m ) + &
+                                             cutot(n, istates(m) ) * evc( ig, ib )
                  ENDDO
                  !
                  ! apply the translation phase
-                 kwann( map(ig) ,m) = kwann( map(ig) ,m) * phase 
+                 kstates( map(ig) ,m) = kstates( map(ig) ,m) * phase 
                  !
               ENDDO
               !
-              CALL timing('kwann_calc',OPR='stop')
+              CALL timing('kstates_calc',OPR='stop')
               !
           ENDDO
 
@@ -805,7 +910,7 @@ END PROGRAM plot_main
               !
               DO m  = 1, nplot
               DO ig = 1, npwk(ik_g)
-                 wfc_aux( ig, m ) = kwann( map(ig), m )
+                  wfc_aux( ig, m ) = kstates( map(ig), m )
               ENDDO
               ENDDO
               !
@@ -850,19 +955,19 @@ END PROGRAM plot_main
                  ! ig = 1 corresponds to G=0
                  ! this is to get rid of the gamma_only trick
                  !
-                 kwann(1,m) = 0.5_dbl * kwann(1,m)
+                 kstates(1,m) = 0.5_dbl * kstates(1,m)
                  !
-                 CALL cfft3d( kwann(:,m), nr1, nr2, nr3,  &
-                                          nr1, nr2, nr3,  1 )
+                 CALL cfft3d( kstates(:,m), nr1, nr2, nr3,  &
+                                            nr1, nr2, nr3,  1 )
                  !
                  ! then, take twice the real part
                  !
-                 kwann(:,m) = kwann(:,m) + CONJG( kwann(:,m) )
+                 kstates(:,m) = kstates(:,m) + CONJG( kstates(:,m) )
                  !
              ELSE
                  !
-                 CALL cfft3d( kwann(:,m), nr1, nr2, nr3,  &
-                                          nr1, nr2, nr3,  1 )
+                 CALL cfft3d( kstates(:,m), nr1, nr2, nr3,  &
+                                            nr1, nr2, nr3,  1 )
                  !
              ENDIF
              !
@@ -871,7 +976,7 @@ END PROGRAM plot_main
              !
              ! loop over FFT grid
              !
-             CALL timing('cwann_calc',OPR='start')
+             CALL timing('cstates_calc',OPR='start')
              !
              DO nzz = nrzl, nrzh
                  nz = MOD( nzz + nnrz * nr3 , nr3 ) + 1
@@ -889,27 +994,28 @@ END PROGRAM plot_main
                                  raux(3) * REAL(nzz, dbl)
                                  !
                          caux  = CMPLX( COS( TPI*arg ), SIN( TPI*arg), dbl ) * &
-                                 kwann( ir, m )
+                                 kstates( ir, m )
                                  !
-                         cwann( nxx, nyy, nzz, m) = cwann( nxx, nyy, nzz, m) + caux
+                         cstates( nxx, nyy, nzz, m) = cstates( nxx, nyy, nzz, m) + caux
                          !
                      ENDDO
                  ENDDO
              ENDDO
              !
-             CALL timing('cwann_calc',OPR='stop')
+             CALL timing('cstates_calc',OPR='stop')
           ENDDO 
           !
           IF (ionode) CALL timing_upto_now(stdout)
           !
       ENDDO kpoint_loop
 
+
       !
       ! recovering kpt parallelism
       !
       DO m = 1, nplot
           !
-          CALL mp_sum( cwann(:,:,:,m) )
+          CALL mp_sum( cstates(:,:,:,m) )
           !
       ENDDO
       !
@@ -923,8 +1029,8 @@ END PROGRAM plot_main
       !
       ! clean the large amount of memory used by wfcs and grids
       !
-      DEALLOCATE( kwann, STAT=ierr)
-      IF (ierr/=0) CALL errore(subname,'deallocating kwann',ABS(ierr))
+      DEALLOCATE( kstates, STAT=ierr)
+      IF (ierr/=0) CALL errore(subname,'deallocating kstates',ABS(ierr))
       !
       DEALLOCATE( map, STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'deallocating map', ABS(ierr) )
@@ -934,6 +1040,12 @@ END PROGRAM plot_main
       !
       CALL wfc_data_deallocate()
       !
+      IF ( do_eigchn ) THEN
+          !
+          DEALLOCATE( cu_eigchn, ctmp, STAT=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'deallocating cu_eigchn, ctmp', ABS(ierr) )
+          !
+      ENDIF
       !
       CALL io_close_dftdata( LSERIAL=.FALSE. )
       IF (ionode) WRITE(stdout, "()")
@@ -944,16 +1056,16 @@ END PROGRAM plot_main
 !
       IF ( uspp_augmentation ) THEN
 
-          ALLOCATE ( cwann_aug( nrxl:nrxh, nryl:nryh, nrzl:nrzh, nplot ), STAT=ierr ) 
-          IF( ierr /=0 ) CALL errore(subname, 'allocating cwann_aug', ABS(ierr) )
+          ALLOCATE ( cstates_aug( nrxl:nrxh, nryl:nryh, nrzl:nrzh, nplot ), STAT=ierr ) 
+          IF( ierr /=0 ) CALL errore(subname, 'allocating cstates_aug', ABS(ierr) )
 
           !
           ! compute the augmentation in reciprocal space
           !
-          cwann_aug( :,:,:,:) = CZERO
+          cstates_aug( :,:,:,:) = CZERO
           !
           CALL wf2_augment( nrxl, nrxh, nryl,nryh, nrzl,nrzh, &
-                            nr1, nr2, nr3, nplot, cwann_aug ) 
+                            nr1, nr2, nr3, nplot, cstates_aug ) 
 
           DEALLOCATE( becp, STAT=ierr)
           IF( ierr /=0 ) CALL errore(subname, 'deallocating becp', ABS(ierr) )
@@ -967,15 +1079,17 @@ END PROGRAM plot_main
 ! Fix the global phase of WFs
 !
       !
-      ! WF are made be almost real by setting the phase
+      ! WFs are made be almost real by setting the phase
       ! at the point where they have max modulus
       ! WF square moduli are written in units of bohr^-3 
+      !
+      ! Eigenchannel phases are left unchanged
       !
       cost =  ONE / ( REAL(nkpts_g, dbl) * SQRT(omega) )
       !
       IF ( ionode ) THEN
           !
-          WRITE(stdout, " (2x,'WF normalization:')")
+          WRITE(stdout, " (2x,'States normalization:')")
           !
           IF ( uspp_augmentation ) THEN
                WRITE(stdout, " (2x,'  Index', 14x, 'Max value', 5x, 'Normaliz.', 5x, &
@@ -1000,14 +1114,14 @@ END PROGRAM plot_main
           DO nyy = nryl, nryh
           DO nxx=  nrxl, nrxh
               !
-              cwann( nxx, nyy, nzz, m ) = cwann( nxx, nyy, nzz, m ) * cost
+              cstates( nxx, nyy, nzz, m ) = cstates( nxx, nyy, nzz, m ) * cost
               !
-              tmax = REAL(cwann( nxx, nyy, nzz, m) * &
-                          CONJG( cwann( nxx, nyy, nzz, m) ), dbl )
+              tmax = REAL(cstates( nxx, nyy, nzz, m) * &
+                          CONJG( cstates( nxx, nyy, nzz, m) ), dbl )
               !
               IF ( tmax > tmaxx ) THEN
                    tmaxx = tmax
-                   cmod = cwann( nxx, nyy, nzz, m)
+                   cmod = cstates( nxx, nyy, nzz, m)
               ENDIF
               !
               norm = norm + tmax
@@ -1021,12 +1135,24 @@ END PROGRAM plot_main
           norm_us = ZERO
           IF ( uspp_augmentation ) THEN
               !
-              norm_us = REAL( SUM( cwann_aug(:,:,:, m))  )
+              norm_us = REAL( SUM( cstates_aug(:,:,:, m))  )
               norm_us = norm_us * omega / REAL( nr1*nr2*nr3, dbl )
               !
           ENDIF
           !
+          !
+          ! set the phase and invert it
+          cmod = CONJG( cmod ) / SQRT( cmod * CONJG(cmod) ) 
+          !
+          IF ( do_wfs ) THEN
+              ! 
+              cstates(:,:,:,m) = cstates(:,:,:,m) * cmod
+              !
+          ENDIF
+
+          !
           ! report
+          !
           IF ( ionode ) THEN
               !
               IF ( uspp_augmentation ) THEN
@@ -1037,13 +1163,9 @@ END PROGRAM plot_main
                                 m, ABS(cmod), norm
               ENDIF
               !
+              IF ( do_wfs ) WRITE( stdout, "(4x, 16x, 2f12.6, ' (phase)' )" ) cmod
+              !
           ENDIF
-          !
-          !
-          ! set the phase and invert it
-          cmod = CONJG( cmod ) / SQRT( cmod * CONJG(cmod) ) 
-          !
-          cwann(:,:,:,m) = cwann(:,:,:,m) * cmod
           !
       ENDDO
       !
@@ -1091,8 +1213,8 @@ END PROGRAM plot_main
       !
       ! workspace for output writing
       !
-      ALLOCATE( rwann_out( nrxl:nrxh, nryl:nryh, nrzl:nrzh ), STAT=ierr ) 
-      IF (ierr/=0) CALL errore(subname,'allocating rwann_out',ABS(ierr))
+      ALLOCATE( rstates_out( nrxl:nrxh, nryl:nryh, nrzl:nrzh ), STAT=ierr ) 
+      IF (ierr/=0) CALL errore(subname,'allocating rstates_out',ABS(ierr))
 
 
       !
@@ -1105,21 +1227,23 @@ END PROGRAM plot_main
           !
           SELECT CASE ( TRIM(datatype) )
           CASE( "modulus" )    
-              str = "_WFM"
+              str=" "
+              IF ( do_wfs )    str = "_WFM"
+              IF ( do_eigchn ) str = "_EIGCHN"
               !
               IF ( uspp_augmentation ) THEN
-                  rwann_out(:,:,:) = REAL( cwann(:,:,:,m) * CONJG( cwann(:,:,:,m) ) ) +  &
-                                     REAL( cwann_aug(:,:,:,m), dbl ) 
+                  rstates_out(:,:,:) = REAL( cstates(:,:,:,m) * CONJG( cstates(:,:,:,m) ) ) +  &
+                                     REAL( cstates_aug(:,:,:,m), dbl ) 
               ELSE
-                  rwann_out(:,:,:) = REAL( cwann(:,:,:,m) * CONJG( cwann(:,:,:,m) ) )
+                  rstates_out(:,:,:) = REAL( cstates(:,:,:,m) * CONJG( cstates(:,:,:,m) ) )
               ENDIF
               !
           CASE( "real" )    
               str = "_WFR"
-              rwann_out(:,:,:) = REAL( cwann(:,:,:,m) )
+              rstates_out(:,:,:) = REAL( cstates(:,:,:,m) )
           CASE( "imaginary" )    
               str = "_WFI"
-              rwann_out(:,:,:) = AIMAG( cwann(:,:,:,m) )
+              rstates_out(:,:,:) = AIMAG( cstates(:,:,:,m) )
           CASE DEFAULT
               CALL errore(subname,'invalid DATATYPE '//TRIM(datatype),3)
           END SELECT 
@@ -1127,24 +1251,24 @@ END PROGRAM plot_main
 
           filename=TRIM(work_dir)//"/"//TRIM(prefix)//TRIM(postfix)
           !
-          IF ( iwann(m) <= 9 ) THEN
+          IF ( istates(m) <= 9 ) THEN
                !
-               filename=TRIM(filename)//TRIM(str)//"00"//TRIM(int2char(iwann(m)))
-          ELSE IF ( iwann(m) <= 99 ) THEN
+               filename=TRIM(filename)//TRIM(str)//"00"//TRIM(int2char(istates(m)))
+          ELSE IF ( istates(m) <= 99 ) THEN
                !
-               filename=TRIM(filename)//TRIM(str)//"0"//TRIM(int2char(iwann(m)))
-          ELSE IF ( iwann(m) <= 999 ) THEN
+               filename=TRIM(filename)//TRIM(str)//"0"//TRIM(int2char(istates(m)))
+          ELSE IF ( istates(m) <= 999 ) THEN
                !
-               filename=TRIM(filename)//TRIM(str)//TRIM(int2char(iwann(m)))
+               filename=TRIM(filename)//TRIM(str)//TRIM(int2char(istates(m)))
           ELSE
-              CALL errore(subname,'iwann(m) > 999', iwann(m))
+              CALL errore(subname,'istates(m) > 999', istates(m))
           ENDIF
           !
           !
           IF ( ionode ) THEN 
                !
-               WRITE( stdout,"(2x,'writing WF(',i4,') plot on file: ',a)") &
-                      iwann(m), TRIM(filename)//TRIM(aux_fmt)
+               WRITE( stdout,"(2x,'writing STATE(',i4,') plot on file: ',a)") &
+                      istates(m), TRIM(filename)//TRIM(aux_fmt)
 
                OPEN ( aux_unit, FILE=TRIM(filename)//TRIM(aux_fmt), FORM='formatted', &
                                 STATUS='unknown', IOSTAT=ierr )
@@ -1178,7 +1302,7 @@ END PROGRAM plot_main
     
                   DO nx = nrxl, nrxh
                   DO ny = nryl, nryh
-                      WRITE( aux_unit, "(6e13.5)" ) rwann_out( nx, ny, : )
+                      WRITE( aux_unit, "(6e13.5)" ) rstates_out( nx, ny, : )
                   ENDDO
                   ENDDO
                   !
@@ -1198,7 +1322,7 @@ END PROGRAM plot_main
                   DO ny = nryl, nryh
                   DO nx = nrxl, nrxh
                       !
-                      WRITE( aux_unit, "(f20.10)" ) rwann_out( nx, ny, nz )
+                      WRITE( aux_unit, "(f20.10)" ) rstates_out( nx, ny, nz )
                       !
                   ENDDO
                   ENDDO
@@ -1223,7 +1347,7 @@ END PROGRAM plot_main
                   CALL xsf_struct ( avec, nat, tau, symb, aux_unit )
                   tau = tau / alat
                   !
-                  CALL xsf_datagrid_3d ( rwann_out(nrxl:nrxh, nryl:nryh, nrzl:nrzh),  &
+                  CALL xsf_datagrid_3d ( rstates_out(nrxl:nrxh, nryl:nryh, nrzl:nrzh),  &
                                          nrxh-nrxl+1, nryh-nryl+1, nrzh-nrzl+1,    &
                                          r0, avecl(:,1), avecl(:,2), avecl(:,3), aux_unit )
                   !
@@ -1288,8 +1412,8 @@ END PROGRAM plot_main
 !
 ! ... Clean up memory
 !
-      DEALLOCATE( iwann, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating iwann', ABS(ierr) )
+      DEALLOCATE( istates, STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating istates', ABS(ierr) )
       !
       DEALLOCATE( tautot, STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'deallocating tautot', ABS(ierr) )
@@ -1309,16 +1433,16 @@ END PROGRAM plot_main
       DEALLOCATE( cutot, STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'deallocating cutot ', ABS(ierr) )
       !
-      DEALLOCATE( rwann_out, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating rwann_out', ABS(ierr) )
+      DEALLOCATE( rstates_out, STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating rstates_out', ABS(ierr) )
       !
-      DEALLOCATE( cwann, STAT=ierr)
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating cwann', ABS(ierr) )
+      DEALLOCATE( cstates, STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating cstates', ABS(ierr) )
       !
       IF ( uspp_augmentation ) THEN
           !
-          DEALLOCATE( cwann_aug, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(subname, 'deallocating cwann_aug', ABS(ierr) )
+          DEALLOCATE( cstates_aug, STAT=ierr)
+          IF( ierr /=0 ) CALL errore(subname, 'deallocating cstates_aug', ABS(ierr) )
           !
       ENDIF
       !

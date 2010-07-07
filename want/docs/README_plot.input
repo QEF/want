@@ -33,7 +33,17 @@ wann          STRING
               specifies the indexes of the Wannier functions to be plotted.
               It is a string of format e.g "1-3,5,7-9" (analogous to the fmt used
               to specify pages to very common print tools)
-              DEFAULT: mandatory
+              DEFAULT: mandatory to plot WFs
+
+eigchn        STRING       
+              as "wann", but used to specify eigenchannel indexes.
+              The format is the same used in "wann".
+              DEFAULT: mandatory to plot eigenchannels
+
+datafile_eigchn   STRING
+              provied the file written by conductor.x with the coefficients of
+              the eigenchannels to be plotted. 
+              DEFAULT: mandatory to plot eigenchannels
 
 datatype      STRING
               ("modulus" | "real" | "imaginary")

@@ -23,7 +23,7 @@ MANUAL=" Usage
  disentangle     select the optimal subspace on which perform
                  the wannier minimization
  wannier         perform the above cited minimization
- plot            compute WFs on real space for plotting
+ plot            compute WFs in real space for plotting
 
  disentangle_bulk1
  wannier_bulk1
@@ -45,6 +45,7 @@ MANUAL=" Usage
  conductor_bulk4 evaluate the bulk transmittance for the leads (4 atoms)
  current_lead1   compute the current from the results of conductor_lead1
  current_lead4   compute the current from the results of conductor_lead4
+ plot_eigchn     compute Eigenchannels in real space for plotting
 
  want            all WanT calculations for the conductor region
  want_bulk1      all WanT bulk1 calculations 
@@ -81,6 +82,7 @@ NSCF_BULK4=
 DISENTANGLE=
 WANNIER=
 PLOT=
+PLOT_EIGCHN=
 
 DISENTANGLE_BULK1=
 WANNIER_BULK1=
@@ -121,6 +123,7 @@ case $INPUT in
    (disentangle)    DISENTANGLE=yes ;;
    (wannier)        WANNIER=yes ;;
    (plot)           PLOT=yes ;;
+   (plot_eigchn)    PLOT_EIGCHN=yes ;;
 
    (disentangle_bulk1)    DISENTANGLE_BULK1=yes ;;
    (wannier_bulk1)        WANNIER_BULK1=yes ;;
@@ -155,7 +158,8 @@ case $INPUT in
                     DOS_BULK4=yes ; BANDS_BULK4=yes; CONDUCTOR_BULK4=yes ; 
                     CONDUCTOR_LEAD1=yes ; CONDUCTOR_LEAD4=yes ; 
                     CONDUCTOR_AUTO=yes ; CONDUCTOR_BULK=yes ; 
-                    CURRENT_LEAD1=yes ; CURRENT_LEAD4=yes ;; 
+                    CURRENT_LEAD1=yes ; CURRENT_LEAD4=yes ;
+                    PLOT_EIGCHN=yes ;; 
 
    (all)            SCF=yes ; NSCF=yes ; 
                     SCF_BULK1=yes ; NSCF_BULK1=yes ;
@@ -167,7 +171,8 @@ case $INPUT in
                     DOS_BULK4=yes ; BANDS_BULK4=yes; CONDUCTOR_BULK4=yes ; 
                     CONDUCTOR_LEAD1=yes ; CONDUCTOR_LEAD4=yes ; 
                     CONDUCTOR_AUTO=yes ; CONDUCTOR_BULK=yes ; 
-                    CURRENT_LEAD1=yes ; CURRENT_LEAD4=yes ;; 
+                    CURRENT_LEAD1=yes ; CURRENT_LEAD4=yes ;
+                    PLOT_EIGCHN=yes ;; 
 
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
@@ -177,7 +182,10 @@ esac
 #
 # switches
 #
-if [ "$PLOT_SWITCH" = "no" ] ; then PLOT=".FALSE." ; fi
+if [ "$PLOT_SWITCH" = "no" ] ; then 
+   PLOT=".FALSE." 
+   PLOT_EIGCHN=".FALSE." 
+fi
 
 
 #
@@ -236,7 +244,7 @@ run_disentangle  SUFFIX=$SUFFIX  RUN=$DISENTANGLE
 run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER
 
 #
-# running PLOT
+# running PLOT (WFs)
 #
 run_plot  SUFFIX=$SUFFIX  RUN=$PLOT
 
@@ -312,6 +320,11 @@ run_current NAME=CURRENT_LEAD4  SUFFIX=${SUFFIX}_lead4  RUN=$CURRENT_LEAD4
 if [ -e eigchn_lead1.dat ] ; then mv eigchn_lead1.dat ./SCRATCH ; fi
 if [ -e eigchn_lead4.dat ] ; then mv eigchn_lead4.dat ./SCRATCH ; fi
 
+
+#
+# running PLOT_EIGCHN
+#
+run_plot  NAME=PLOT_EIGCHN  SUFFIX=${SUFFIX}_eigchn_auto  RUN=$PLOT_EIGCHN
 
 
 #
