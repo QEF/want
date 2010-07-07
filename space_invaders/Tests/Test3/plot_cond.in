@@ -1,9 +1,0 @@
-
- &INPUT
-   prefix = 'chain8'
-   postfix = '_WanT'
-   work_dir = './COND/'
-   datatype = 'modulus'
-   output_fmt = 'plt'
-   wann = '1-2'
- /
