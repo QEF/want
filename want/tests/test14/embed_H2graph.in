@@ -1,0 +1,29 @@
+
+&INPUT
+   postfix = "_H2embed"
+   dim_tot = 46
+   dim_emb =  1
+   ne   = 1000
+   emin =  -5.0
+   emax =   5.0
+   datafile_tot = "./SCRATCH/H2graph_WanT.ham"
+   datafile_emb = "./SCRATCH/H2embed_WanT.ham"
+   datafile_sgm_emb = "./SCRATCH/sgm_H2embed_WanT.sgm"
+   delta = 0.001
+   transport_dir = 3
+   smearing_type = "lorentzian"
+   use_symm = .TRUE.
+   nk(1) = 30
+   nk(2) = 30
+/
+
+<HAMILTONIAN_DATA>
+
+   <H_T   rows="ALL"    cols="ALL" />
+   <H_E   rows="1"      cols="1" />
+   <H_B   rows="2-46"   cols="2-46" />
+   <H_EB  rows="1"      cols="2-46" />
+   <H_BE  rows="2-46"   cols="1" />
+
+</HAMILTONIAN_DATA>
+

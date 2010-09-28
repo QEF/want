@@ -3,7 +3,7 @@ Al plane + H2 molecule
    &CONTROL
       calculation = 'nscf',
       restart_mode='from_scratch',
-      prefix='cmplx',
+      prefix='H2Al',
       pseudo_dir = '../pseudo',
       outdir = './SCRATCH/'
       wf_collect = .TRUE.
@@ -18,15 +18,11 @@ Al plane + H2 molecule
       ecutwfc=25.0,
       ecutrho=150.0,
       occupations='smearing',
-      smearing='methfessel-paxton',
-      degauss=0.01,
-      nosym = .TRUE.
-      noinv = .TRUE.
-      nbnd  = 140 
+      smearing='gaussian',
+      degauss=0.002,
    /
    &ELECTRONS
       conv_thr =  1.0d-8,
-!      startingwfc='file'
    /
 ATOMIC_SPECIES
   Al 26.98 Al.pz-vbc.UPF
@@ -51,6 +47,6 @@ Al   0.75  0.75  0.0
 H    0.5   0.5   0.2
 H    0.5   0.5   0.325
 K_POINTS {automatic}
-4 4 1  0 0 0
+30 30 1  0 0 0
 
 

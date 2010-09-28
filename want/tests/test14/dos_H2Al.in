@@ -1,9 +1,9 @@
 
  &INPUT
-   prefix = 'cmplx'
+   prefix = 'H2Al'
    postfix = '_WanT'
    work_dir = './SCRATCH'
-   fileout = 'dos_cmplx.dat'
+   fileout = 'dos_H2Al.dat'
    nk(1) = 30
    nk(2) = 30
    nk(3) = 1

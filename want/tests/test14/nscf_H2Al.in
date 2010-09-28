@@ -1,11 +1,12 @@
 Al plane + H2 molecule
 
    &CONTROL
-      calculation = 'scf',
+      calculation = 'nscf',
       restart_mode='from_scratch',
-      prefix='cmplx',
+      prefix='H2Al',
       pseudo_dir = '../pseudo',
       outdir = './SCRATCH/'
+      wf_collect = .TRUE.
    /
    &SYSTEM
       ibrav=8,
@@ -19,9 +20,13 @@ Al plane + H2 molecule
       occupations='smearing',
       smearing='methfessel-paxton',
       degauss=0.01,
+      nosym = .TRUE.
+      noinv = .TRUE.
+      nbnd  = 140 
    /
    &ELECTRONS
       conv_thr =  1.0d-8,
+!      startingwfc='file'
    /
 ATOMIC_SPECIES
   Al 26.98 Al.pz-vbc.UPF
