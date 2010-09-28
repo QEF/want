@@ -13,16 +13,19 @@
    !     Read hamiltonian data from file
    !     Units: energies are supposed to be in eV
    !
-   USE kinds
+   USE kinds,                ONLY : dbl
+   USE constants,            ONLY : EPS_m8
    USE io_module,            ONLY : stdin, stdout, ionode, ionode_id
    USE log_module,           ONLY : log_push, log_pop
    USE timing_module,        ONLY : timing
    USE mp,                   ONLY : mp_bcast
+   USE util_module,          ONLY : zmat_is_herm
    !
    USE E_control_module,     ONLY : idir => transport_dir, datafile_tot
    USE E_hamiltonian_module, ONLY : hamiltonian_allocate, ispin, &
                                     blc_T, blc_E, blc_B, blc_EB, blc_BE
    !
+   USE T_kpoints_module,     ONLY : nkpts_par
    USE T_operator_blc_module
    USE iotk_module
    !
@@ -32,7 +35,8 @@
    ! local variables
    !
    CHARACTER(16) :: subname="hamiltonian_init"
-   INTEGER       :: ierr
+   INTEGER       :: i, ierr, ik_par
+   REAL(dbl)     :: toll
 
    !
    ! end of declarations
@@ -96,6 +100,40 @@
    CALL read_matrix( datafile_tot, ispin, idir, blc_B )
    CALL read_matrix( datafile_tot, ispin, idir, blc_EB )
    CALL read_matrix( datafile_tot, ispin, idir, blc_BE )
+
+   !
+   ! Few checks
+   !
+   DO ik_par = 1, nkpts_par
+       !
+       toll=EPS_m8
+       !
+       IF ( .NOT. zmat_is_herm(blc_T%dim1, blc_T%H(:,:,ik_par), TOLL=toll) ) &
+           CALL warning( subname, "blc_T%H not hermitean" )
+       IF ( .NOT. zmat_is_herm(blc_T%dim1, blc_T%S(:,:,ik_par), TOLL=toll) ) &
+           CALL warning( subname, "blc_T%S not hermitean" )
+    
+       IF ( .NOT. zmat_is_herm(blc_B%dim1, blc_B%H(:,:,ik_par), TOLL=toll) ) &
+           CALL warning( subname, "blc_B%H not hermitean" )
+       IF ( .NOT. zmat_is_herm(blc_B%dim1, blc_B%S(:,:,ik_par), TOLL=toll) ) &
+           CALL warning( subname, "blc_B%S not hermitean" )
+
+       IF ( .NOT. zmat_is_herm(blc_E%dim1, blc_E%H(:,:,ik_par), TOLL=toll) ) THEN
+           CALL warning( subname, "blc_E%H not hermitean" )
+           !
+           IF (ionode) THEN
+               DO i = 1, blc_E%dim1
+                   WRITE(stdout,"(2f15.9)") blc_E%H(i,i,ik_par)
+               ENDDO
+           ENDIF
+           !
+       ENDIF
+       !
+       IF ( .NOT. zmat_is_herm(blc_E%dim1, blc_E%S(:,:,ik_par), TOLL=toll) ) &
+           CALL warning( subname, "blc_E%S not hermitean" )
+       !
+       !
+   ENDDO
 
    
    CALL timing( subname, OPR='STOP' )

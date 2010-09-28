@@ -69,6 +69,7 @@ hamiltonian_setup.o : hamiltonian.o
 hamiltonian_setup.o : ../libs/kind.o
 hamiltonian_setup.o : ../libs/log_module.o
 hamiltonian_setup.o : ../libs/timing.o
+hamiltonian_setup.o : ../libs/util.o
 hamiltonian_setup.o : ../transport/egrid.o
 hamiltonian_setup.o : ../transport/operator_blc.o
 input.o : control.o
