@@ -92,6 +92,13 @@ debug_level   INTEGER
               level of debug report; values <= 0 switch the debug_mode off 
               DEFAULT: 0
 
+verbosity     STRING
+              ( "low" | "medium" | "high" )
+              the level of detail of the output. In particular the code writes more about
+              decay in stdout and also writes a data file in $work_dir/ containing the
+              whole information about decay.
+              DEFAULT: "medium"
+
 do_orthoovp   LOGICAL
               if dealing with a non-orthogonal basis set, orthogonalize
               the basis. Helps to improve the accuracy of the calculations,
