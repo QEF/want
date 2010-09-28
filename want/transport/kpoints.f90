@@ -86,9 +86,14 @@ CONTAINS
       CHARACTER(12)      :: subname="kpoints_init"
       CHARACTER(nstrx)   :: attr
       INTEGER            :: nr_(3), nrtot_, nkpts_par_x
-      INTEGER            :: ir, ik, i, j, l, ierr
+      INTEGER            :: nrtot_par_x
+      INTEGER            :: ir, ir2, ik, i, j, l, ierr
+      INTEGER            :: counter
       LOGICAL            :: lfound, lequiv
       REAL(dbl)          :: arg, vaux(2)
+      !
+      REAL(dbl), ALLOCATABLE :: wr_par_x(:)
+      INTEGER,   ALLOCATABLE :: ivr_par_x(:,:)
  
       CALL log_push( 'kpoints_init' )
 
@@ -131,7 +136,7 @@ CONTAINS
          ENDIF
       ENDDO
       !
-      nrtot_par = PRODUCT(nr_par)
+      nrtot_par_x = 2* PRODUCT(nr_par)
 
       !
       ! set the dimensions of the kpt_par mesh
@@ -150,12 +155,8 @@ CONTAINS
       !
       ! allocations
       !
-      ALLOCATE( ivr_par(2,nrtot_par), wr_par(nrtot_par), STAT=ierr)
-      IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_par, wr_par',ABS(ierr))
-      ALLOCATE( ivr_par3D(3,nrtot_par), STAT=ierr)
-      IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_par3D',ABS(ierr))
-      ALLOCATE( vr_par3D(3,nrtot_par), STAT=ierr)
-      IF( ierr /=0 ) CALL errore(subname, 'allocating vr_par3D',ABS(ierr))
+      ALLOCATE( ivr_par_x(2,nrtot_par_x), wr_par_x(nrtot_par_x), STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_par_x, wr_par_x',ABS(ierr))
       !
       ALLOCATE( vkpt_par(2,nkpts_par_x), wk_par(nkpts_par_x) , STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'allocating vkpt_par, wk_par',ABS(ierr))
@@ -168,23 +169,84 @@ CONTAINS
   
       !
       ! first the R grid
+      !
       ir = 0
       DO j = 1, nr_par(2)
       DO i = 1, nr_par(1)
           !
           ir = ir + 1
           !
-          ivr_par(1,ir) = i - ( nr_par(1) +1 ) / 2
-          ivr_par(2,ir) = j - ( nr_par(2) +1 ) / 2
+          ivr_par_x(1,ir) = i - ( nr_par(1) +1 ) / 2
+          ivr_par_x(2,ir) = j - ( nr_par(2) +1 ) / 2
           !
-          wr_par( ir ) = ONE
+          wr_par_x( ir ) = ONE
+          !
+      ENDDO
+      ENDDO
+      !
+      nrtot_par = ir
+      !
+      ! according to what is done in grids_get_rgrid, add -R vectors when
+      ! not given in the above list. This is useful to impose hermiticity
+      ! to the represented operators.
+      !
+      counter = nrtot_par
+      !
+      DO ir = 1, nrtot_par
+          !
+          lfound=.FALSE.
+          !
+          inner_r_loop: &
+          DO ir2 = 1, nrtot_par
+              !
+              IF ( ALL( ivr_par_x(:,ir2) == -ivr_par_x(:,ir)) ) THEN
+                  lfound=.TRUE.
+                  EXIT inner_r_loop
+              ENDIF
+              !
+          ENDDO inner_r_loop
+          !
+          IF ( .NOT. lfound ) THEN
+              !
+              counter=counter+1
+              ivr_par_x(:,counter)  = -ivr_par_x(:,ir)
+              wr_par_x(counter)     = 0.5_dbl * wr_par_x(ir)
+              wr_par_x(ir)          = 0.5_dbl * wr_par_x(ir)
+              !
+          ENDIF
+          !
+      ENDDO
+      !
+      nrtot_par = counter
+      !
+      ALLOCATE( ivr_par(2,nrtot_par), wr_par(nrtot_par), STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_par, wr_par',ABS(ierr))
+      !
+      ivr_par(:, 1:nrtot_par)   = ivr_par_x(:, 1:nrtot_par)
+      wr_par( 1:nrtot_par)      = wr_par_x( 1:nrtot_par)
+      !
+      DEALLOCATE( ivr_par_x, wr_par_x, STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating ivr_par_x, wr_par_x',ABS(ierr))
+      !
+      IF ( SUM(wr_par) /= REAL( PRODUCT(nr_par), dbl )  ) &
+          CALL errore(subname,'invalid r-weight sum-rule',10)
+
+      !
+      ! define 3D R-vectors
+      !
+      ALLOCATE( ivr_par3D(3,nrtot_par), STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_par3D',ABS(ierr))
+      ALLOCATE( vr_par3D(3,nrtot_par), STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'allocating vr_par3D',ABS(ierr))
+      !
+      DO ir = 1, nrtot_par
           !
           ivr_par3D(:,ir) = kpoints_imask( ivr_par(:,ir), 0, transport_dir )
           vr_par3D(:,ir)  = TPI * REAL( ivr_par3D(:,ir), dbl )
           !
       ENDDO
-      ENDDO
   
+
       !
       ! then the kpt grid
       !
@@ -258,6 +320,7 @@ CONTAINS
           !
       ENDDO
       ENDDO
+
 
       alloc = .TRUE.
       CALL log_pop( 'kpoints_init' )
