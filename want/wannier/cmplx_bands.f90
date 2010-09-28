@@ -20,7 +20,7 @@
    USE io_module,            ONLY : stdout, stdin
    USE io_module,            ONLY : prefix, postfix, work_dir
    USE io_module,            ONLY : datafile_dft => dftdata_file, datafile_sgm
-   USE control_module,       ONLY : debug_level, use_debug_mode
+   USE control_module,       ONLY : debug_level, use_debug_mode, verbosity
    USE correlation_module,   ONLY : lhave_sgm
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
@@ -55,7 +55,7 @@
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
                     nk, s, toll, idir, emin, emax, ne, ircut, fileout, nprint, &
-                    debug_level, do_orthoovp
+                    debug_level, verbosity, do_orthoovp
    !
    ! end of declariations
    !   
@@ -141,6 +141,7 @@ CONTAINS
       ircut(1:3)                  =  0
       nprint                      = 50
       debug_level                 =  0
+      verbosity                   = 'medium'
       do_orthoovp                 = .TRUE.
       
 
@@ -170,6 +171,7 @@ CONTAINS
       CALL mp_bcast( ircut,           ionode_id )      
       CALL mp_bcast( nprint,          ionode_id )      
       CALL mp_bcast( debug_level,     ionode_id )      
+      CALL mp_bcast( verbosity,       ionode_id )      
       CALL mp_bcast( do_orthoovp,     ionode_id )      
       !
       !

@@ -106,12 +106,16 @@
           ENDDO
           ENDDO
           !
+          ! impose hermiticity
+          kham(i,i,ik) = REAL( kham(i,i,ik), dbl)
+          !
       ENDDO
 
       ! 
       ! Fourier transform it: H_ij(k) --> H_ij(R) = (1/N_kpts) sum_k e^{-ikR} H_ij(k)
       !
       fact = ONE / REAL(nkpts_g, dbl)
+      !
       !
       DO ir = 1, nrtot
           !
@@ -133,6 +137,8 @@
           !    !
           !ENDDO
           !ENDDO
+          !
+          rham(:,:,ir) = ZERO
           !
           CALL compute_rham( dimwann, vr(:,ir), rham(:,:,ir), nkpts, vkpt, wk, kham ) 
           !

@@ -61,11 +61,11 @@
    DO ik = 1, nkpts
        !
        arg =   DOT_PRODUCT( vkpt(:,ik), vr(:) )
-       phase = CMPLX( COS(arg), -SIN(arg), dbl ) * wk(ik)
+       phase = CMPLX( COS(arg), -SIN(arg), dbl )
        !
        DO j = 1, dimwann
        DO i = 1, dimwann
-           rham(i,j) = rham(i,j) + phase * kham(i, j, ik)
+           rham(i,j) = rham(i,j) + phase * wk(ik) * kham(i, j, ik)
        ENDDO
        ENDDO
        !

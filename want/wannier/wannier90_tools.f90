@@ -21,6 +21,7 @@
    USE log_module,         ONLY : log_push, log_pop
    USE converters_module,  ONLY : cart2cry, cry2cart
    USE parser_module,      ONLY : change_case
+   USE grids_module,       ONLY : grids_get_rgrid
    USE iotk_module
    !
    IMPLICIT NONE 
@@ -708,7 +709,8 @@ END SUBROUTINE wannier90_tools_get_kpoints
    ! real-space lattice vectors
    !
    nr(1:3) = nk(1:3)
-   nrtot   = PRODUCT( nr ) 
+   !
+   CALL grids_get_rgrid(nr, NRTOT=nrtot )
    !
    ALLOCATE( ivr(3, nrtot), vr(3, nrtot), STAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'allocating ivr, vr', ABS(ierr) )
@@ -716,7 +718,7 @@ END SUBROUTINE wannier90_tools_get_kpoints
    ALLOCATE( wr(nrtot), STAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'allocating wr', ABS(ierr) )
    !
-   CALL get_rgrid(nr, nrtot, wr, ivr )
+   CALL grids_get_rgrid(nr, WR=wr, IVR=ivr )
 
    vr(:,:) = REAL( ivr, dbl)
    CALL cry2cart( vr, avec )

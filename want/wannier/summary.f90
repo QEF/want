@@ -18,8 +18,8 @@
 CONTAINS
 !
 !**********************************************************
-   SUBROUTINE summary(iunit, input,   lattice, ions,   windows, symmetry, &
-                             kpoints, bshells, pseudo, memory )
+   SUBROUTINE summary(iunit, input,   lattice, ions,    windows, symmetry, &
+                             kpoints, rgrid,   bshells, pseudo,  memory )
    !**********************************************************
    !
    ! Print out all the informnatins obtained from the 
@@ -35,6 +35,7 @@ CONTAINS
    !    - ions
    !    - symmetry
    !    - kpoints and bshells
+   !    - rgrid
    !    - windows (eigenvalues)
    !    - pseudo
    !    - memory usage
@@ -62,7 +63,8 @@ CONTAINS
    USE symmetry_module,   ONLY : symmetry_alloc => alloc, nsym, srot, strasl, sname, &
                                  symmetry_write
    USE kpoints_module,    ONLY : kpoints_alloc, nkpts, nkpts_g, vkpt_g, wk_g, &
-                                 nk, s, bshells_alloc, nb, vb, wb, wbtot
+                                 nk, s, bshells_alloc, nb, vb, wb, wbtot, &
+                                 rgrid_alloc, nrtot, nr, ivr, wr
    USE windows_module,    ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, &
                                  imin, imax, dimfroz, lfrozen, dimwinx, nspin, &
                                  spin_component, win_min, win_max, froz_min, froz_max, &
@@ -84,6 +86,7 @@ CONTAINS
    LOGICAL, OPTIONAL, INTENT(IN) :: windows   ! if TRUE summ eigenvalues (windows)
    LOGICAL, OPTIONAL, INTENT(IN) :: symmetry  ! if TRUE summ symmetries
    LOGICAL, OPTIONAL, INTENT(IN) :: kpoints   ! if TRUE summ kpoints
+   LOGICAL, OPTIONAL, INTENT(IN) :: rgrid     ! if TRUE summ kpoints
    LOGICAL, OPTIONAL, INTENT(IN) :: bshells   ! if TRUE summ bshells
    LOGICAL, OPTIONAL, INTENT(IN) :: pseudo    ! if TRUE summ pseudos
    LOGICAL, OPTIONAL, INTENT(IN) :: memory    ! if TRUE summ memory usage
@@ -97,14 +100,16 @@ CONTAINS
    LOGICAL                :: lwindows
    LOGICAL                :: lsymmetry
    LOGICAL                :: lkpoints
+   LOGICAL                :: lrgrid
    LOGICAL                :: lbshells
    LOGICAL                :: lpseudo
    LOGICAL                :: lmemory
    LOGICAL                :: ldft
 
-   INTEGER                :: ik, ia
+   INTEGER                :: ir, ik, ia
    INTEGER                :: i, j, is, nt, isym
-   REAL(dbl), ALLOCATABLE :: center_cart1(:,:), center_cart2(:,:), tau_cry(:,:)
+   REAL(dbl), ALLOCATABLE :: center_cart1(:,:), center_cart2(:,:)
+   REAL(dbl), ALLOCATABLE :: vkpt_cry(:,:), tau_cry(:,:)
    INTEGER                :: ierr
    CHARACTER(2)           :: str
    !
@@ -127,6 +132,7 @@ CONTAINS
    lwindows  = .TRUE. 
    lsymmetry = .TRUE. 
    lkpoints  = .TRUE. 
+   lrgrid    = .TRUE. 
    lpseudo   = .TRUE. 
    lmemory   = .FALSE. 
    !
@@ -136,6 +142,7 @@ CONTAINS
    IF ( PRESENT(windows) )  lwindows  = windows
    IF ( PRESENT(symmetry) ) lsymmetry = symmetry
    IF ( PRESENT(kpoints) )  lkpoints  = kpoints
+   IF ( PRESENT(rgrid) )    lrgrid    = rgrid
    lbshells  = lkpoints
    IF ( PRESENT(bshells) )  lbshells  = bshells
    IF ( PRESENT(pseudo) )   lpseudo   = pseudo
@@ -374,7 +381,7 @@ CONTAINS
            DEALLOCATE( tau_cry )
            !
        ENDIF
-            
+       !
        WRITE(iunit, " (  ' </IONS>',/)" )
    ENDIF
        
@@ -401,6 +408,7 @@ CONTAINS
 
    !
    ! ... kpoints
+   !
    IF ( kpoints_alloc .AND. lkpoints .AND. ionode ) THEN 
        WRITE(iunit, " (  ' <K-POINTS>')" )
        WRITE(iunit, "(2x, '       nproc = ',i5, '   (Parallelism over kpts)' ) " ) nproc
@@ -408,15 +416,56 @@ CONTAINS
        WRITE(iunit, "(2x, ' local nkpts = ',i5 ) " ) nkpts
        WRITE(iunit, "(2x, 'Monkhorst-Pack grid:      nk = (',3i4,' ),', &
                                          & 6x,'shift = (',3i4,' )' ) " ) nk(:), s(:) 
-       WRITE(iunit, "(/,2x, 'K-point calculation: (cart. coord. in Bohr^-1)' ) " )
+       WRITE(iunit, "(/,2x, 'K-point grid: (cart. coord. in Bohr^-1)' ) " )
        !
        DO ik=1,nkpts_g
-          WRITE(iunit, " (4x, 'k (', i5, ') =    ( ',3f12.7,' ),   weight = ', f14.7 )") &
-          ik, ( vkpt_g(i,ik), i=1,3 ), wk_g(ik)
+           !
+           WRITE(iunit, " (4x, 'k (', i5, ') =    ( ',3f12.7,' ),   weight = ', f14.7 )") &
+                      ik, ( vkpt_g(i,ik), i=1,3 ), wk_g(ik)
+           !
        ENDDO
+       !
+       IF ( TRIM(verbosity) == 'high') THEN
+           !
+           ALLOCATE( vkpt_cry(3,nkpts_g) )
+           !
+           vkpt_cry(:,:) = vkpt_g(:,:)
+           CALL cart2cry(vkpt_cry, bvec)
+           !
+           WRITE(iunit, " (/,2x,'K-point grid: (crystal coord.)' ) " )
+           DO ik = 1, nkpts_g
+               !
+               WRITE(iunit, " (4x, 'k (', i5, ') =    ( ',3f12.7,' ),   weight = ', f14.7 )") &
+                      ik, ( vkpt_cry(i,ik), i=1,3 ), wk_g(ik)
+               !
+           ENDDO
+           !
+           DEALLOCATE( vkpt_cry )
+           !
+       ENDIF
+       !
        WRITE(iunit, " (  ' </K-POINTS>',/)" )
    ENDIF
 
+   !
+   ! ... rgrid
+   !
+   IF ( rgrid_alloc .AND. lrgrid .AND. ionode ) THEN 
+       WRITE(iunit, " (  ' <R-GRID>')" )
+       WRITE(iunit, "(  2x, '       nrtot = ',i5 ) " ) nrtot
+       WRITE(iunit, "(  2x, 'R-grid generators:      nr = (',3i4,' )' ) " ) nr(:)
+       WRITE(iunit, "(/,2x, 'R-grid vectors:         (crystal units)' ) " )
+       !
+       DO ir=1,nrtot
+          WRITE(iunit, " (4x, 'R (', i5, ') =    ( ',3i7,' ),   wr = ', f14.7 )") &
+          ir, ( ivr(i,ir), i=1,3 ), wr(ir)
+       ENDDO
+       WRITE(iunit, " (  ' </R-GRID>',/)" )
+   ENDIF
+
+   ! 
+   ! ... bshells 
+   ! 
    IF ( bshells_alloc .AND. lbshells .AND. ionode ) THEN
        WRITE(iunit, " (  ' <B-SHELL>')" )
        !
@@ -429,8 +478,10 @@ CONTAINS
        WRITE(iunit, " (/,2x, 'Total weight = ' , f15.7) ") wbtot
        WRITE(iunit, " (  ' </B-SHELL>',/)" )
    ENDIF
+
    !
    ! ... eigs and windows
+   !
    IF ( windows_alloc .AND. lwindows ) THEN 
        !
        IF ( .NOT. kpoints_alloc ) CALL errore('summary','Unexpectedly kpts NOT alloc',1)

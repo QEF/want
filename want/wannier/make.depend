@@ -385,6 +385,7 @@ ions.o : ../libs/qexml.o
 ions.o : ../libs/qexpt.o
 kpoints.o : converters.o
 kpoints.o : etsf_io_data.o
+kpoints.o : get_rgrid.o
 kpoints.o : internal_tools.o
 kpoints.o : io_module.o
 kpoints.o : lattice.o
@@ -788,6 +789,7 @@ uspp.o : ../libs/random_numbers.o
 uspp.o : ../libs/util.o
 uspp.o : pseudo_types.o
 wannier90_tools.o : converters.o
+wannier90_tools.o : get_rgrid.o
 wannier90_tools.o : ../libs/constants.o
 wannier90_tools.o : ../libs/kind.o
 wannier90_tools.o : ../libs/log_module.o

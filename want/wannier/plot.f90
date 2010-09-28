@@ -17,7 +17,7 @@
    USE parameters,           ONLY : nstrx
    USE io_module,            ONLY : stdout, stdin
    USE io_module,            ONLY : prefix, postfix, work_dir
-   USE control_module,       ONLY : debug_level, use_debug_mode, read_pseudo
+   USE control_module,       ONLY : debug_level, use_debug_mode, verbosity, read_pseudo
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
    USE datafiles_module,     ONLY : datafiles_init
@@ -49,7 +49,8 @@
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, wann, eigchn, datafile_eigchn, &
                     datatype, assume_ncpp, uspp_augmentation, output_fmt, collect_wf,   &
-                    r1min, r1max, r2min, r2max, r3min, r3max, nr1, nr2, nr3, debug_level
+                    r1min, r1max, r2min, r2max, r3min, r3max, nr1, nr2, nr3, debug_level, &
+                    verbosity
 
 
 !
@@ -141,6 +142,7 @@ CONTAINS
       r2max                       =  0.5
       r3min                       = -0.5
       r3max                       =  0.5
+      verbosity                   = 'medium'
       !
       ! the following defaults will be set later after 
       ! FFT mesh is read
@@ -180,6 +182,7 @@ CONTAINS
       CALL mp_bcast( nr1,                  ionode_id )
       CALL mp_bcast( nr2,                  ionode_id )
       CALL mp_bcast( nr3,                  ionode_id )
+      CALL mp_bcast( verbosity,            ionode_id )
 
 
       !

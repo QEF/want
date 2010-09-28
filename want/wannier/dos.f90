@@ -21,7 +21,7 @@
    USE io_module,            ONLY : stdout, stdin
    USE io_module,            ONLY : prefix, postfix, work_dir
    USE io_module,            ONLY : datafile_dft => dftdata_file, datafile_sgm
-   USE control_module,       ONLY : debug_level, use_debug_mode
+   USE control_module,       ONLY : debug_level, use_debug_mode, verbosity
    USE correlation_module,   ONLY : lhave_sgm
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
@@ -54,7 +54,7 @@
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
                     nk, s, delta, smearing_type, fileout, debug_level,     &
-                    emin, emax, ne, ircut, projdos, nprint
+                    emin, emax, ne, ircut, projdos, nprint, verbosity
    !
    ! end of declariations
    !   
@@ -89,7 +89,7 @@
       ! do the main task
       !
       CALL do_dos( fileout, nk, s, delta, smearing_type, emin, emax, ne, &
-                   ircut, projdos, nprint )
+                   ircut, projdos, nprint, verbosity )
       !
       ! clean global memory
       !
@@ -142,6 +142,7 @@ CONTAINS
       projdos                     = .FALSE.
       nprint                      = 50
       debug_level                 = 0
+      verbosity                   = 'medium'
       
       CALL input_from_file ( stdin )
       !
@@ -170,6 +171,7 @@ CONTAINS
       CALL mp_bcast( projdos,         ionode_id )      
       CALL mp_bcast( nprint,          ionode_id )      
       CALL mp_bcast( debug_level,     ionode_id )      
+      CALL mp_bcast( verbosity,       ionode_id )      
 
       !
       ! Init
@@ -250,21 +252,21 @@ END PROGRAM dos_main
 
 !********************************************************
    SUBROUTINE do_dos( fileout, nk, s, delta, smearing_type, emin, emax, ne, &
-                      ircut, projdos, nprint )
+                      ircut, projdos, nprint, verbosity )
    !********************************************************
    !
    ! perform the main task of the calculation
    !
    USE kinds
    USE parameters,           ONLY : nstrx
-   USE constants,            ONLY : CZERO, ZERO, ONE, CI, TWO, PI, TPI, EPS_m4, EPS_m6
+   USE constants,            ONLY : CZERO, ZERO, ONE, CI, TWO, PI, TPI, EPS_m4, EPS_m6, EPS_m8
    USE io_module,            ONLY : stdout, stdin, ionode, ionode_id, aux_unit, sgm_unit
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE io_module,            ONLY : datafile_sgm
    USE mp,                   ONLY : mp_bcast, mp_sum
    USE mp_global,            ONLY : mpime, nproc
    USE files_module,         ONLY : file_open, file_close
-   USE util_module,          ONLY : mat_hdiag, zmat_herm
+   USE util_module,          ONLY : mat_hdiag, zmat_herm, zmat_is_herm
    USE converters_module,    ONLY : cry2cart, cart2cry
    USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nrtot, vr, wr 
@@ -293,6 +295,7 @@ END PROGRAM dos_main
       INTEGER,       INTENT(IN)    :: ircut(3)
       LOGICAL,       INTENT(IN)    :: projdos
       INTEGER,       INTENT(IN)    :: nprint
+      CHARACTER(*),  INTENT(IN)    :: verbosity
 
       !
       ! local vars
@@ -313,7 +316,7 @@ END PROGRAM dos_main
       COMPLEX(dbl), ALLOCATABLE :: GF(:,:), GF0(:,:)
       REAL(dbl),    ALLOCATABLE :: egrid(:)
       REAL(dbl),    ALLOCATABLE :: dos(:), dos0(:), pdos(:,:)
-      REAL(dbl),    ALLOCATABLE :: vkpt_int(:,:), wk(:)
+      REAL(dbl),    ALLOCATABLE :: vkpt_int(:,:), vkpt_int_cry(:,:), wk(:)
       REAL(dbl),    ALLOCATABLE :: eig_int(:,:)
       REAL(dbl),    ALLOCATABLE :: vr_cry(:,:), vr_nn(:,:), wr_nn(:), vr_sgm(:,:)
       CHARACTER(nstrx)          :: filename, analyticity_sgm
@@ -394,7 +397,7 @@ END PROGRAM dos_main
               CALL mp_bcast( vr_sgm,    ionode_id )
               CALL mp_bcast( omg_grid,  ionode_id )
               !
-           ELSE
+          ELSE
               !
               IF ( ionode ) THEN
                   !
@@ -508,10 +511,29 @@ END PROGRAM dos_main
               WRITE( stdout, " (4x, 'k (', i5, ') =    ( ',3f9.5,' ),   &
                                & weight = ', f11.7 )") &
                                ik, ( vkpt_int(i,ik), i=1,3 ), wk(ik)
-              !
           ENDDO
           !
           WRITE( stdout, "()" )
+          !
+          IF ( TRIM(verbosity) == 'high' ) THEN
+              !
+              ALLOCATE( vkpt_int_cry(3,nkpts_int) )
+              !
+              vkpt_int_cry = vkpt_int
+              CALL cart2cry( vkpt_int_cry, bvec)
+              ! 
+              WRITE( stdout, "(2x, 'Generated kpt mesh: (crystal units)',/)" )
+              DO ik=1,nkpts_int
+                  !
+                  WRITE( stdout, " (4x, 'k (', i5, ') =    ( ',3f9.5,' ),   &
+                               & weight = ', f11.7 )") &
+                               ik, ( vkpt_int_cry(i,ik), i=1,3 ), wk(ik)
+              ENDDO
+              !
+              WRITE( stdout, "()" )
+              DEALLOCATE( vkpt_int_cry )
+              !        
+          ENDIF
           !
       ENDIF
 
@@ -648,6 +670,9 @@ END PROGRAM dos_main
               CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rham_nn,  &
                                  vkpt_int(:,ik_g), kham)
 
+              IF ( .NOT. zmat_is_herm(dimwann, kham, TOLL=EPS_m8) ) &
+                  CALL errore(subname,'kham not herm',ik)
+
               IF ( lhave_overlap ) THEN
                   !
                   CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn,  &
@@ -663,7 +688,6 @@ END PROGRAM dos_main
                   ! symmetryze the static sgm in order to make it hermitean
                   !
                   CALL zmat_herm( ksgm, dimwann )
-                  ! 
                   ! 
                   kham(:,:) = kham(:,:) + ksgm(:,:)
                   !
