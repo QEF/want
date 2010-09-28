@@ -6,7 +6,8 @@
 
 Sep 28 2010      bug fixed: non-hermiticity of resulting hamiltonian 
                  on the wannier basis avoided. Verbosity added to all postprocs. 
-                 Documentation updated. Test14 added to check embed. (AF)
+                 Documentation updated. Test14 added to check embed. 
+                 Version updated to 2.4.0-alpha2. (AF)
 
 Jul 07 2010      bug fixed in the definition of eigenchannel orbitals.
                  plot procedure extended to eigenchannels. test11 updated. 
