@@ -1,8 +1,0 @@
-&inputpp
-  prefix='gold'
-  outdir='./'
-  pseudo_dir = './'
-  psfile(1) = 'Au11pw91.mt.UPF'
-  single_file = .FALSE.
-  ascii = .FALSE.
-/
