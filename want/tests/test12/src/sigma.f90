@@ -34,7 +34,7 @@
    emin     = -7.5
    emax     =  7.5
 
-   IF ( ldynam .AND. nomega /= 1 ) STOP "invalid nomega"
+   IF ( ldynam .AND. nomega == 1 ) STOP "invalid nomega"
 
    IF ( ldiag ) THEN
       ALLOCATE( sgm_diag(nbnd, nkpts, nomega), STAT=ierr )

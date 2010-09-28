@@ -6,5 +6,3 @@ To compile the code, iotk lib needs to be linked
 
 $(F90) -o sigma.x sigma.f90 -I ../../../iotk -L ../../../iotk -liotk
 
-should work (sort of)
-
