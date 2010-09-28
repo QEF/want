@@ -1,0 +1,9 @@
+
+&INPUT
+   prefix = 'H2graph'
+   postfix = '_WanT'
+   work_dir = './SCRATCH/'
+   filein = "sigma.xml"
+   fileout = "./SCRATCH/sigma_H2graph.sgm"
+   binary = .TRUE.
+/

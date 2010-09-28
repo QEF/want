@@ -1,9 +1,0 @@
-
-&INPUTPP
-   prefix = 'cmplx'
-   degauss = 0.01  ! Ryd
-   emin = -10.0
-   emax =  10.0
-   outdir = './SCRATCH/'
-   filpdos='./SCRATCH/cmplx
-/

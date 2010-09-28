@@ -1,0 +1,191 @@
+
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <blc2wan>  v. 2.4.0alpha1  starts ...
+  Date 27Sep2010 at 17:48:18 
+
+     Serial run.
+
+          BUILT :    Mon Sep 27 11:43:00 2010
+           HOST :    x86_64-unknown-linux-gnu
+           ARCH :    x86_64
+             CC :    icc
+            CPP :    cpp
+            F90 :    mpif90
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA -D__ETSF_IO -D__NETCDF
+      BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
+    LAPACK LIBS :    
+       FFT LIBS :    
+      MASS LIBS :    
+
+
+  checking for fmt internal... no
+  checking for fmt wannier90... no
+  checking for fmt crystal... no
+  checking for fmt qexml... ok
+
+  DFT-data fmt automaticaly detected: qexml
+
+  ======================================================================
+  =  INPUT Summary                                                     =
+  ======================================================================
+
+
+        Input file :   sigma.xml
+       Output file :   ./SCRATCH/sigma_H2graph.sgm
+        Output fmt :   binary
+    Spin component :   none
+
+  ======================================================================
+  =  Post Processing Init                                              =
+  ======================================================================
+
+  DFT-data read from file: H2graph.save/data-file.xml
+
+      Windows data read from file: H2graph_WanT.space
+     Subspace data read from file: H2graph_WanT.space
+  Hamiltonian data read from file: H2graph_WanT.ham
+      Wannier data read from file: H2graph_WanT.wan
+
+
+
+  ======================================================================
+  =  DFT data                                                          =
+  ======================================================================
+
+ <LATTICE>
+  Alat  =      13.7470325 (Bohr)
+  Alat  =       7.2746134 (Ang )
+  Omega =    4499.7408326 (Bohr^3)
+  Omega =     666.7919997 (Ang^3 )
+
+  Crystal axes:
+                in Bohr units                           in Alat units
+    a(1) = (   13.74703    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    a(2) = (   -6.87352   11.90528    0.00000 )    (   -0.50000    0.86603    0.00000 )
+    a(3) = (    0.00000    0.00000   27.49406 )    (    0.00000    0.00000    2.00000 )
+                in Ang units
+    a(1) = (    7.27461    0.00000    0.00000 )
+    a(2) = (   -3.63731    6.30000    0.00000 )
+    a(3) = (    0.00000    0.00000   14.54923 )
+
+   Reciprocal lattice vectors:
+                in Bohr^-1 units                        in 2Pi/Alat units
+    b(1) = (    0.45706    0.26388    0.00000 )    (    1.00000    0.57735    0.00000 )
+    b(2) = (    0.00000    0.52776    0.00000 )    (    0.00000    1.15470    0.00000 )
+    b(3) = (    0.00000    0.00000    0.22853 )    (    0.00000    0.00000    0.50000 )
+ </LATTICE>
+
+ <K-POINTS>
+         nproc =     1   (Parallelism over kpts)
+  global nkpts =    16
+   local nkpts =    16
+  Monkhorst-Pack grid:      nk = (   4   4   1 ),      shift = (   0   0   0 )
+
+  K-point calculation: (cart. coord. in Bohr^-1)
+    k (    1) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      0.0625000
+    k (    2) =    (    0.0000000   0.1319412   0.0000000 ),   weight =      0.0625000
+    k (    3) =    (    0.0000000  -0.2638823   0.0000000 ),   weight =      0.0625000
+    k (    4) =    (    0.0000000  -0.1319412   0.0000000 ),   weight =      0.0625000
+    k (    5) =    (    0.1142644   0.0659706   0.0000000 ),   weight =      0.0625000
+    k (    6) =    (    0.1142644   0.1979117   0.0000000 ),   weight =      0.0625000
+    k (    7) =    (    0.1142644  -0.1979117   0.0000000 ),   weight =      0.0625000
+    k (    8) =    (    0.1142644  -0.0659706   0.0000000 ),   weight =      0.0625000
+    k (    9) =    (   -0.2285288  -0.1319412   0.0000000 ),   weight =      0.0625000
+    k (   10) =    (   -0.2285288   0.0000000   0.0000000 ),   weight =      0.0625000
+    k (   11) =    (   -0.2285288  -0.3958235   0.0000000 ),   weight =      0.0625000
+    k (   12) =    (   -0.2285288  -0.2638823   0.0000000 ),   weight =      0.0625000
+    k (   13) =    (   -0.1142644  -0.0659706   0.0000000 ),   weight =      0.0625000
+    k (   14) =    (   -0.1142644   0.0659706   0.0000000 ),   weight =      0.0625000
+    k (   15) =    (   -0.1142644  -0.3298529   0.0000000 ),   weight =      0.0625000
+    k (   16) =    (   -0.1142644  -0.1979117   0.0000000 ),   weight =      0.0625000
+ </K-POINTS>
+
+ <R-GRID>
+         nrtot =    23
+  R-grid generators:      nr = (   4   4   1 )
+
+  R-grid vectors:         (crystal units)
+    k (    1) =    (      -1     -1      0 ),   wr =      1.0000000
+    k (    2) =    (       0     -1      0 ),   wr =      1.0000000
+    k (    3) =    (       1     -1      0 ),   wr =      1.0000000
+    k (    4) =    (       2     -1      0 ),   wr =      0.5000000
+    k (    5) =    (      -1      0      0 ),   wr =      1.0000000
+    k (    6) =    (       0      0      0 ),   wr =      1.0000000
+    k (    7) =    (       1      0      0 ),   wr =      1.0000000
+    k (    8) =    (       2      0      0 ),   wr =      0.5000000
+    k (    9) =    (      -1      1      0 ),   wr =      1.0000000
+    k (   10) =    (       0      1      0 ),   wr =      1.0000000
+    k (   11) =    (       1      1      0 ),   wr =      1.0000000
+    k (   12) =    (       2      1      0 ),   wr =      0.5000000
+    k (   13) =    (      -1      2      0 ),   wr =      0.5000000
+    k (   14) =    (       0      2      0 ),   wr =      0.5000000
+    k (   15) =    (       1      2      0 ),   wr =      0.5000000
+    k (   16) =    (       2      2      0 ),   wr =      0.5000000
+    k (   17) =    (      -2      1      0 ),   wr =      0.5000000
+    k (   18) =    (      -2      0      0 ),   wr =      0.5000000
+    k (   19) =    (      -2     -1      0 ),   wr =      0.5000000
+    k (   20) =    (       1     -2      0 ),   wr =      0.5000000
+    k (   21) =    (       0     -2      0 ),   wr =      0.5000000
+    k (   22) =    (      -1     -2      0 ),   wr =      0.5000000
+    k (   23) =    (      -2     -2      0 ),   wr =      0.5000000
+ </R-GRID>
+
+
+    Data from file
+
+              nbnd :     120
+             nkpts :      16
+             nspin :       1
+   dynam. operator :   FALSE
+    diag. on bands :   TRUE
+        ibnd_start :       1
+          ibnd_end :     120
+     extrapolation :   FALSE
+  energy reference :       0.0000
+
+
+  ======================================================================
+  =  Conversion to Wannier Function basis                              =
+  ======================================================================
+
+                              Total time spent up to now :     3.25 secs
+
+
+  Real space decay of OPR:
+
+     R [cry]     |R| [Bohr]      Norm of Opr(R) [eV]
+    0   0   0     0.0000000        0.250000000
+    1   0   0    13.7470325        0.000000000
+    2   0   0    27.4940649        0.000000000
+    0   1   0    13.7470325        0.000000000
+    1   1   0    13.7470325        0.000000000
+    2   1   0    23.8105587        0.000000000
+    0   2   0    27.4940649        0.000000000
+    1   2   0    23.8105587        0.000000000
+    2   2   0    27.4940649        0.000000000
+
+  ======================================================================
+
+   <global routines>
+             clock number :     8
+
+                  blc2wan :     3.00s CPU 
+
+            blc2wan_input :     0.16s CPU
+            postproc_init :     0.38s CPU
+             want_dftread :     0.07s CPU
+                want_init :     0.05s CPU
+             windows_read :     0.00s CPU
+            subspace_read :     0.01s CPU
+               do_blc2wan :     2.66s CPU
+
+

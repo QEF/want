@@ -1,0 +1,8 @@
+
+&INPUT
+   prefix = 'H2graph'
+   work_dir = './SCRATCH/'
+   rcut = 1.5
+/
+
+

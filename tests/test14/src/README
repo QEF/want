@@ -1,0 +1,8 @@
+
+The program sigma.f90 has been used to generate the sigma datafile
+sigma.xml
+
+To compile the code, iotk lib needs to be linked
+
+$(F90) -o sigma.x sigma.f90 -I ../../../iotk -L ../../../iotk -liotk
+

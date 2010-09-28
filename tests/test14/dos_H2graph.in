@@ -1,0 +1,18 @@
+
+ &INPUT
+   prefix = 'H2graph'
+   postfix = '_WanT'
+   work_dir = './SCRATCH'
+   fileout = 'dos_H2graph.dat'
+   verbosity='high'
+   emin  = -5.0
+   emax  =  5.0
+   ne    = 1000
+   nk(1) = 30
+   nk(2) = 30
+   nk(3) = 1
+   delta = 0.001
+   smearing_type = 'lorentzian'
+   projdos = .TRUE.
+ /
+
