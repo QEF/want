@@ -247,7 +247,7 @@
    IF ( ionode ) THEN
        !
        CALL iotk_scan_dat(aux_unit, "IVR", ivr, IERR=ierr)
-       IF (ierr/=0) CALL errore(subname, 'searching indxws', ABS(ierr) )
+       IF (ierr/=0) CALL errore(subname, 'searching IVR indxes', ABS(ierr) )
 
        !
        ! select the required spin component, if the case
@@ -425,7 +425,6 @@
    !
    CALL fourier_par( opr%H, dim1, dim2, A, dim1, dim2)
    CALL fourier_par( opr%S, dim1, dim2, S, dim1, dim2)
-
 
 
 !

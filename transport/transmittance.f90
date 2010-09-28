@@ -238,18 +238,6 @@
        
 
    ELSE IF ( do_eigenchannels .AND. do_eigplot ) THEN
-!! XXX
-!       !
-!       ! WORK  = gamma_L * G_adv
-!       !
-!       CALL mat_mul(work, gamma_L, 'N', G_ret, 'C', dimC, dimC, dimC)
-!
-!       !
-!       ! WORK2 = G_ret * gamma_L * G_adv
-!       !
-!       CALL mat_mul(work2, G_ret, 'N', work, 'N', dimC, dimC, dimC)
-!! XXX
-
        !
        ! here we follow the method given by: 
        !

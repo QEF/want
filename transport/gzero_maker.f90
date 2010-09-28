@@ -27,7 +27,7 @@
    USE constants,              ONLY : ONE, CONE, CZERO, CI, PI, EPS_m8
    USE timing_module,          ONLY : timing
    USE log_module,             ONLY : log_push, log_pop
-   USE util_module,            ONLY : mat_hdiag, mat_mul, mat_inv, zmat_is_herm
+   USE util_module,            ONLY : mat_hdiag, mat_mul, mat_inv, zmat_is_herm, zmat_herm
    USE T_smearing_module,      ONLY : smear_alloc => alloc, delta, smearing_type, g_smear, &
                                       xgrid_smear => xgrid, &
                                       nx_smear    => nx,    &
@@ -117,8 +117,16 @@
         ! This part is incompatible with having non-hermitean
         ! correlation. A check is performed and an in case an error is issued
         !
-        IF ( .NOT. zmat_is_herm( ndim, aux, TOLL=EPS_m8 ) ) &
+        IF ( .NOT. zmat_is_herm( ndim, aux, TOLL=EPS_m8 ) ) THEN
+            !
+            ! imposing hermiticity is not a very good way to go
+            ! better issue an error
+            !
+            !CALL zmat_herm( aux, ndim )
+            !
             CALL errore(subname,'non hermitean opr is incompatible',10)
+            !
+        ENDIF
         ! 
         !
         ! Numeric smearing:
