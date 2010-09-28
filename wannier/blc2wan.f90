@@ -41,8 +41,8 @@
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, filein, fileout, &
-                    binary, energy_ref, spin_component, nprint, verbosity, &
-                    debug_level, do_extrapolation
+                    binary, energy_ref, spin_component, nprint, &
+                    debug_level, do_extrapolation, verbosity
    !
    ! end of declariations
    !   

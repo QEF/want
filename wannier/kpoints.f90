@@ -23,6 +23,7 @@
    USE mp_global,         ONLY : mpime, nproc
    USE mp,                ONLY : mp_bcast
    USE paratools_module,  ONLY : para_get_poolindex
+   USE grids_module,      ONLY : grids_get_rgrid
    !
    USE qexml_module
    USE qexpt_module
@@ -286,11 +287,13 @@ CONTAINS
           !nr(1:3) = 2 * ( nk(1:3)/2 ) +1
           !
           nr(1:3) = nk(1:3)
-          nrtot = PRODUCT(nr)
+          !
+          ! get the grid simension
+          CALL grids_get_rgrid(nr, NRTOT=nrtot )
           !
           CALL rgrid_allocate( )
           !
-          CALL get_rgrid(nr, nrtot, wr, ivr )
+          CALL grids_get_rgrid(nr, WR=wr, IVR=ivr )
           !
           vr(:,:) = REAL( ivr, dbl)
           CALL cry2cart( vr, avec)

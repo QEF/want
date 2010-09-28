@@ -18,7 +18,7 @@
    USE io_module,            ONLY : stdout, stdin
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE io_module,            ONLY : datafile_dft => dftdata_file, datafile_sgm
-   USE control_module,       ONLY : debug_level, use_debug_mode
+   USE control_module,       ONLY : debug_level, use_debug_mode, verbosity
    USE datafiles_module,     ONLY : datafiles_init
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
@@ -42,7 +42,7 @@
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
-                    fileout, nkpts_in, nkpts_max, ircut, debug_level
+                    fileout, nkpts_in, nkpts_max, ircut, debug_level, verbosity
    !
    ! end of declariations
    !   
@@ -122,6 +122,7 @@ CONTAINS
       nkpts_max                   = 100
       ircut(1:3)                  = 0
       debug_level                 = 0
+      verbosity                   = 'medium'
       
       CALL input_from_file ( stdin )
       !
@@ -143,6 +144,7 @@ CONTAINS
       CALL mp_bcast( nkpts_max,       ionode_id )
       CALL mp_bcast( ircut,           ionode_id )
       CALL mp_bcast( debug_level,     ionode_id )
+      CALL mp_bcast( verbosity,       ionode_id )
 
       !
       ! init
