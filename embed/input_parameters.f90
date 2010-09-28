@@ -44,7 +44,7 @@
        ! WF number the reduced subspace
 
    INTEGER :: dim_tot = 0
-       ! WF number in the central conductor region
+       ! WF number in the complete region
 
    INTEGER :: ne = 1000  
        ! the dimension of the energy grid

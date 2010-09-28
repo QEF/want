@@ -208,10 +208,10 @@
           ! construct the embedding sgm
           !=================================== 
           ! 
-          ! work = (omg S -H_EB ) * gB
+          ! work = (omg S_EB -H_EB ) * gB
           CALL mat_mul( work(1:dimE, 1:dimB), blc_EB%aux, 'N', gB, 'N', dimE, dimB, dimB )
           ! 
-          ! sgmB = (omg S -H_EB ) * gB * (omg S -H_BE ) = work * (omg S -H_BE )^dag 
+          ! sgmB = (omg S_EB -H_EB ) * gB * (omg S -H_BE ) 
           !
           ! note that we do not use EB^dag because of the possiblity to have non-hermitean
           ! self-energies built into the hamiltonians
@@ -225,6 +225,7 @@
           ! gE = (omg -H_E -sgmB )^-1  (retarded)
           !=================================== 
           !
+          work = CZERO
           CALL gzero_maker ( dimE, blc_E, work(1:dimE, 1:dimE), 'inverse')
           !
           work(1:dimE, 1:dimE) = work(1:dimE, 1:dimE) -sgm_B(:,:,ik)

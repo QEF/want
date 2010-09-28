@@ -21,6 +21,7 @@
    USE kinds,                ONLY : dbl
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
+   USE util_module,          ONLY : zmat_herm
    !
    USE E_hamiltonian_module, ONLY : shift_T, blc_T, blc_E, blc_B, blc_EB, blc_BE
    !
@@ -62,6 +63,15 @@
    blc_B%aux(:,:)  =  (omg -shift_T) * blc_B%S(:,:,ik)  -blc_B%H(:,:,ik)
    blc_EB%aux(:,:) =  (omg -shift_T) * blc_EB%S(:,:,ik) -blc_EB%H(:,:,ik)
    blc_BE%aux(:,:) =  (omg -shift_T) * blc_BE%S(:,:,ik) -blc_BE%H(:,:,ik)
+
+!! XXX
+!   CALL zmat_herm( blc_T%aux, blc_T%dim1 )
+!   CALL zmat_herm( blc_E%aux, blc_E%dim1 )
+!   CALL zmat_herm( blc_B%aux, blc_B%dim1 )
+!   !
+!   blc_EB%aux(:,:) = 0.5 * ( blc_EB%aux(:,:) + CONJG( TRANSPOSE( blc_BE%aux(:,:) ) ) )
+!   blc_BE%aux(:,:) = CONJG( TRANSPOSE( blc_EB%aux(:,:) ) )
+! XXX
    
    !
    ! correlation
