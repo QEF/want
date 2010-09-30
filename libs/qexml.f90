@@ -2662,13 +2662,13 @@ CONTAINS
       !
       INTEGER,      OPTIONAL, INTENT(OUT) :: nbnd, num_k_points, nspin, natomwfc
       LOGICAL,      OPTIONAL, INTENT(OUT) :: noncolin
-      REAL(dbl),    OPTIONAL, INTENT(OUT) :: ef, nelec
+      REAL(dbl),    OPTIONAL, INTENT(OUT) :: ef(2), nelec
       CHARACTER(*), OPTIONAL, INTENT(OUT) :: energy_units, k_units
       INTEGER,                INTENT(OUT) :: ierr
       !
       INTEGER        :: nbnd_, num_k_points_, nspin_, natomwfc_
-      LOGICAL        :: noncolin_
-      REAL(dbl)      :: ef_, nelec_
+      LOGICAL        :: noncolin_, lfound, two_fermi_energies
+      REAL(dbl)      :: ef_(2), nelec_
       CHARACTER(256) :: energy_units_, k_units_
 
       ierr = 0
@@ -2705,8 +2705,25 @@ CONTAINS
       CALL iotk_scan_attr ( attr,   "UNITS", energy_units_, IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_dat  ( iunit, "FERMI_ENERGY", ef_ , IERR=ierr )
+      CALL iotk_scan_dat  ( iunit, "TWO_FERMI_ENERGIES", two_fermi_energies , FOUND=lfound, IERR=ierr )
       IF (ierr/=0) RETURN
+      IF (.NOT. lfound ) two_fermi_energies=.FALSE.
+      !
+      IF ( .NOT. two_fermi_energies ) THEN
+          !
+          CALL iotk_scan_dat  ( iunit, "FERMI_ENERGY", ef_(1) , IERR=ierr )
+          IF (ierr/=0) RETURN
+          !
+          ef_(2) = ef_(1)
+          !
+      ELSE
+          !
+          CALL iotk_scan_dat  ( iunit, "FERMI_ENERGY_UP", ef_(1) , IERR=ierr )
+          IF (ierr/=0) RETURN
+          CALL iotk_scan_dat  ( iunit, "FERMI_ENERGY_DOWN", ef_(2) , IERR=ierr )
+          IF (ierr/=0) RETURN
+          !
+      ENDIF
       !
       CALL iotk_scan_end( iunit, "BAND_STRUCTURE_INFO", IERR=ierr )
       IF (ierr/=0) RETURN
@@ -2718,7 +2735,7 @@ CONTAINS
       IF ( PRESENT( noncolin ) )         noncolin       = noncolin_
       IF ( PRESENT( natomwfc ) )         natomwfc       = natomwfc_
       IF ( PRESENT( nelec ) )            nelec          = nelec_
-      IF ( PRESENT( ef ) )               ef             = ef_
+      IF ( PRESENT( ef ) )               ef(1:2)        = ef_(1:2)
       IF ( PRESENT( energy_units ) )     energy_units   = TRIM( energy_units_ )
       IF ( PRESENT( k_units ) )          k_units        = TRIM( k_units_ )
       !

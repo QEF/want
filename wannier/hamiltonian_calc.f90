@@ -106,8 +106,8 @@
           ENDDO
           ENDDO
           !
-          ! impose hermiticity
-          kham(i,i,ik) = REAL( kham(i,i,ik), dbl)
+          !! impose hermiticity
+          !kham(i,i,ik) = REAL( kham(i,i,ik), dbl)
           !
       ENDDO
 

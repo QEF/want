@@ -515,7 +515,7 @@ CONTAINS
                    WRITE(iunit,"(1x,'!')")
                    WRITE(iunit,"(1x,'!',4x,'kpt = ',i5,' ( ',3f9.5,' )    dimwin = ',i4)") &
                                 ik, vkpt_g(:,ik), dimwin(ik)
-                   WRITE(iunit,"(1x,'!',39x,'imin = ',i4,'  imax = ',i4)") imin(ik), imax(ik)
+                   WRITE(iunit,"(1x,'!',39x,'imin = ',i5,'  imax = ',i4)") imin(ik), imax(ik)
                    WRITE(iunit,"(1x,'!',3x,'Eigenvalues:')"  )
                   WRITE(iunit,"(1x,'!',2x, 8f9.4)") ( eig(i,ik), i=1,nbnd )
                ENDDO
