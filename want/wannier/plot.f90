@@ -387,6 +387,8 @@ END PROGRAM plot_main
       !
       ! read auxiliary eigchn data
       !
+      dim2_ = dimwann
+      !
       IF ( do_eigchn ) THEN
           !
           CALL iotk_open_read( aux_unit, FILE=TRIM(datafile_eigchn), IERR=ierr )

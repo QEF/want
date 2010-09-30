@@ -4,6 +4,9 @@
 =======================================================
 
 
+Sep 29 2010      bug fixed in plot; bug fixed in hamiltonian_calc; qexml.f90
+                 lib updated to take into account a bug fixed in QE. (AF)
+
 Sep 28 2010      bug fixed: non-hermiticity of resulting hamiltonian 
                  on the wannier basis avoided. Verbosity added to all postprocs. 
                  Documentation updated. Test14 added to check embed. 
