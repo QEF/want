@@ -4,6 +4,9 @@
 =======================================================
 
 
+Oct 06 2010      plot.x program updated to deal with kpt when plotting 
+                 eigenchannels. (AF)
+
 Sep 29 2010      bug fixed in plot; bug fixed in hamiltonian_calc; qexml.f90
                  lib updated to take into account a bug fixed in QE. (AF)
 
