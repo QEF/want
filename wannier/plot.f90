@@ -242,7 +242,7 @@ END PROGRAM plot_main
    !
    USE kinds,                     ONLY : dbl
    USE constants,                 ONLY : ZERO, CZERO, ONE, TWO, CONE, CI, TPI, &
-                                         bohr => bohr_radius_angs, EPS_m6, EPS_m4
+                                         bohr => bohr_radius_angs, EPS_m6, EPS_m4, EPS_m10
    USE parameters,                ONLY : ntypx, natx, nstrx
    USE fft_scalar,                ONLY : cfft3d, good_fft_order
    USE timing_module,             ONLY : timing, timing_upto_now
@@ -250,6 +250,7 @@ END PROGRAM plot_main
    USE io_module,                 ONLY : prefix, postfix, work_dir, stdout, ionode
    USE io_module,                 ONLY : io_name, dftdata_fmt, aux_unit, aux1_unit 
    USE io_module,                 ONLY : io_open_dftdata, io_close_dftdata
+   USE mp_global,                 ONLY : mpime, nproc
    USE mp,                        ONLY : mp_sum
    USE control_module,            ONLY : use_uspp
    USE files_module,              ONLY : file_delete
@@ -259,7 +260,7 @@ END PROGRAM plot_main
    !
    USE lattice_module,            ONLY : avec, bvec, alat, tpiba, omega
    USE ions_module,               ONLY : symb, tau, nat
-   USE kpoints_module,            ONLY : nkpts, nkpts_g, vkpt_g, iks, ike
+   USE kpoints_module,            ONLY : nkpts, nkpts_g, vkpt_g, iks, ike, nk
    USE windows_module,            ONLY : imin, dimwin, dimwinx
    USE subspace_module,           ONLY : dimwann, eamp
    USE localization_module,       ONLY : cu, rave
@@ -304,23 +305,25 @@ END PROGRAM plot_main
       INTEGER :: nnrx, nnry, nnrz
       INTEGER :: nx, ny, nz, nzz, nyy, nxx
       !
-      INTEGER :: ia, ib, ik_g, ik, ig, ir
-      INTEGER :: natot, nplot
+      INTEGER :: ia, ib, ig, ir, i_aux
+      INTEGER :: ik_aux_g, ik_g
+      INTEGER :: natot, nplot 
+      INTEGER :: nkpts_aux_g, nkpts_aux, nk_aux(3)
       INTEGER :: m, n, i, j, ierr
       INTEGER :: zatom
       !
       !
       REAL(dbl)    :: tmaxx, tmax, xk(3)
       REAL(dbl)    :: avecl(3,3), raux(3), r0(3), r1(3), rmin(3), rmax(3)
-      REAL(dbl)    :: arg, cost, norm, norm_us
+      REAL(dbl)    :: arg, cost, norm, norm_us, rtmp
       REAL(dbl)    :: vkpt_eigchn(3)
       COMPLEX(dbl) :: phase
       COMPLEX(dbl) :: caux, cmod
       !
-      INTEGER,      ALLOCATABLE :: map(:), istates(:)
+      INTEGER,      ALLOCATABLE :: map(:), istates(:), kmap_aux(:)
       REAL(dbl),    ALLOCATABLE :: rstates_out(:,:,:)
       REAL(dbl),    ALLOCATABLE :: tautot(:,:), tau_cry(:,:)
-      REAL(dbl),    ALLOCATABLE :: vkpt_cry(:,:)
+      REAL(dbl),    ALLOCATABLE :: vkpt_cry(:,:), vkpt_aux_cry(:,:), vkpt_aux(:,:)
       REAL(dbl),    ALLOCATABLE :: rave_cry(:,:), rave_shift(:,:)
       CHARACTER(3), ALLOCATABLE :: symbtot(:)
       COMPLEX(dbl), ALLOCATABLE :: cstates(:,:,:,:), cstates_aug(:,:,:,:)
@@ -332,7 +335,7 @@ END PROGRAM plot_main
       CHARACTER( nstrx )  :: filename, attr
       CHARACTER( 20 )     :: str, aux_fmt
       LOGICAL             :: do_modulus, do_eigchn, do_wfs
-      LOGICAL             :: okp( 3 )
+      LOGICAL             :: okp( 3 ), lfound
       !
       ! end of declariations
       !
@@ -471,17 +474,17 @@ END PROGRAM plot_main
       ! may fail giving rise to out-of-bounds usage of arrays
       !
       IF ( uspp_augmentation ) THEN
-         !
-         IF ( nr1 < nfft(1) ) CALL errore(subname,'non-safe nr1 adopted', ABS(nr1) +1 )
-         IF ( nr2 < nfft(2) ) CALL errore(subname,'non-safe nr2 adopted', ABS(nr2) +1 )
-         IF ( nr3 < nfft(3) ) CALL errore(subname,'non-safe nr3 adopted', ABS(nr3) +1 )
-         !
+          !
+          IF ( nr1 < nfft(1) ) CALL errore(subname,'non-safe nr1 adopted', ABS(nr1) +1 )
+          IF ( nr2 < nfft(2) ) CALL errore(subname,'non-safe nr2 adopted', ABS(nr2) +1 )
+          IF ( nr3 < nfft(3) ) CALL errore(subname,'non-safe nr3 adopted', ABS(nr3) +1 )
+          !
       ELSE
-         !
-         IF ( nr1 < nffts(1) ) CALL errore(subname,'non-safe nr1 adopted', ABS(nr1) +1 )
-         IF ( nr2 < nffts(2) ) CALL errore(subname,'non-safe nr2 adopted', ABS(nr2) +1 )
-         IF ( nr3 < nffts(3) ) CALL errore(subname,'non-safe nr3 adopted', ABS(nr3) +1 )
-         !
+          !
+          IF ( nr1 < nffts(1) ) CALL errore(subname,'non-safe nr1 adopted', ABS(nr1) +1 )
+          IF ( nr2 < nffts(2) ) CALL errore(subname,'non-safe nr2 adopted', ABS(nr2) +1 )
+          IF ( nr3 < nffts(3) ) CALL errore(subname,'non-safe nr3 adopted', ABS(nr3) +1 )
+          !
       ENDIF
 
 
@@ -566,13 +569,13 @@ END PROGRAM plot_main
       ENDIF
       !
       IF ( uspp_augmentation .AND. .NOT. do_modulus .AND. ionode ) THEN
-         !
-         ! in this case we cannot perform the full PAW reconstruction:
-         ! a warning is given
-         !
-         WRITE(stdout, "(6x, 'data type: ', a )" ) TRIM(datatype)
-         CALL warning(subname,'USPP do not allow for a full PAW reconstruction.')
-         !
+          !
+          ! in this case we cannot perform the full PAW reconstruction:
+          ! a warning is given
+          !
+          WRITE(stdout, "(6x, 'data type: ', a )" ) TRIM(datatype)
+          CALL warning(subname,'USPP do not allow for a full PAW reconstruction.')
+          !
       ENDIF
 
       CALL flush_unit( stdout )
@@ -587,6 +590,25 @@ END PROGRAM plot_main
 
       
       !
+      ! reset kpt if plot eigchn
+      !
+      nkpts_aux_g = nkpts_g
+      nkpts_aux   = nkpts
+      !
+      IF ( do_eigchn ) THEN
+          !
+          nkpts_aux_g = nk(tdir)
+          !
+          ! re-init parallelism
+          !
+          CALL divide_et_impera( 1, nkpts_aux_g, iks, ike, mpime, nproc  )
+          !
+          nkpts_aux = ike - iks + 1
+          !
+      ENDIF
+
+
+      !
       ! allocate WF and local data
       !
       ALLOCATE ( cstates( nrxl:nrxh, nryl:nryh, nrzl:nrzh, nplot ), STAT=ierr ) 
@@ -595,8 +617,15 @@ END PROGRAM plot_main
       ALLOCATE( kstates( nr1*nr2*nr3, nplot ), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating kstates ', ABS(ierr) )
       !
-      ALLOCATE( vkpt_cry(3, nkpts_g), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'allocating vkpt_cry ', ABS(ierr) )
+      ALLOCATE( vkpt_aux_cry(3, nkpts_aux), STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname, 'allocating vkpt_aux_cry ', ABS(ierr) )
+      ALLOCATE( vkpt_aux( 3, nkpts_aux ), STAT=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,'allocating vkpt_aux',ABS(ierr))
+      ALLOCATE( vkpt_cry( 3, nkpts_g ), STAT=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,'allocating vkpt_cry',ABS(ierr))
+      !
+      ALLOCATE( kmap_aux( nkpts_aux_g ), STAT=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,'allocating nkpts_aux_g',ABS(ierr))
       !
       ALLOCATE( rave_cry(3, dimwann), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating rave_cry ', ABS(ierr) )
@@ -615,10 +644,66 @@ END PROGRAM plot_main
       ! convert vkpt from cart coord (bohr^-1) to cryst 
       ! the same for rave, from cart coord (bohr) to cryst
       !
-      vkpt_cry(:,:) = vkpt_g(:,:)
+      IF ( .NOT. do_eigchn ) THEN
+          !
+          vkpt_aux(:,1:nkpts_aux_g) = vkpt_g(:,1:nkpts_g)
+          vkpt_aux_cry = vkpt_aux
+          !
+          CALL cart2cry( vkpt_aux_cry, bvec )
+          !
+          DO ik_g = 1, nkpts_g
+              kmap_aux( ik_g ) = ik_g 
+          ENDDO
+          !
+      ELSE
+          !
+          nk_aux(1:3)  = 1
+          nk_aux(tdir) = nk(tdir)
+          !
+          CALL monkpack( nk_aux, (/0,0,0/), vkpt_aux_cry )
+          !
+          DO ik_g = 1, nkpts_aux
+              vkpt_aux_cry(:,ik_g) = vkpt_aux_cry(:,ik_g) + vkpt_eigchn(:) 
+          ENDDO
+          !
+          vkpt_aux = vkpt_aux_cry
+          CALL cry2cart( vkpt_aux, bvec)
+          !
+          vkpt_cry(:,1:nkpts_g) = vkpt_g(:,1:nkpts_g)
+          CALL cart2cry( vkpt_cry, bvec )
+
+          !
+          ! map vkpt_aux_cry on vkpt_cry
+          !
+          DO ik_aux_g = 1, nkpts_aux_g
+              !
+              lfound = .FALSE. 
+              i_aux  = 0
+              DO ik_g = 1, nkpts_g
+                  !
+                  rtmp = DOT_PRODUCT( vkpt_aux_cry(:,ik_aux_g)-vkpt_cry(:,ik_g), &
+                                      vkpt_aux_cry(:,ik_aux_g)-vkpt_cry(:,ik_g)  ) 
+                  IF ( rtmp < EPS_m10) THEN 
+                     lfound=.TRUE.
+                     i_aux = ik_g
+                  ENDIF
+                  !
+              ENDDO
+              !
+              IF ( lfound ) THEN 
+                  kmap_aux( ik_g ) = i_aux
+              ELSE
+                  CALL errore(subname,'vkpt_aux not found',ik_aux_g)
+              ENDIF
+              !
+          ENDDO
+          !
+      ENDIF
+      !
+      !
       rave_cry(:,:) = rave(:,:)
-      CALL cart2cry( vkpt_cry, bvec )
       CALL cart2cry( rave_cry, avec)
+
 
       !
       ! determine the shift to rave to set the WF in the selected plotting cell
@@ -628,18 +713,18 @@ END PROGRAM plot_main
       rave_shift(:,:) = ZERO
       !
       IF ( collect_wf .AND. do_wfs ) THEN
-         !
-         DO m=1,nplot
-            !
-            DO i=1,3
-               j = 0
-               IF ( rave_cry(i,istates(m)) -( rmin(i)+rmax(i)-ONE )/TWO < ZERO ) j = 1
-               rave_shift(i,istates(m))    = REAL( INT( rave_cry(i,istates(m)) &
-                                           -( rmin(i)+rmax(i)-ONE)/TWO ) -j ) 
-            ENDDO
-            !
-         ENDDO
-         !
+          !
+          DO m=1,nplot
+              !
+              DO i=1,3
+                  j = 0
+                  IF ( rave_cry(i,istates(m)) -( rmin(i)+rmax(i)-ONE )/TWO < ZERO ) j = 1
+                  rave_shift(i,istates(m))    = REAL( INT( rave_cry(i,istates(m)) &
+                                              -( rmin(i)+rmax(i)-ONE)/TWO ) -j ) 
+              ENDDO
+              !
+          ENDDO
+          !
       ENDIF
       !
       !
@@ -755,7 +840,7 @@ END PROGRAM plot_main
 !
 ! wfc allocations
 !
-      CALL wfc_info_allocate(npwkx, dimwinx, nkpts, dimwinx, evc_info)
+      CALL wfc_info_allocate(npwkx, dimwinx, nkpts_aux, dimwinx, evc_info)
       !
       ALLOCATE( evc(npwkx, dimwinx ), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating EVC',ABS(ierr))
@@ -822,11 +907,13 @@ END PROGRAM plot_main
       cstates( :, :, :, :) = CZERO
 
       kpoint_loop: &
-      DO ik_g = iks, ike
+      DO ik_aux_g = iks, ike
           !
-          ik = ik_g -iks +1
+          ik_g = kmap_aux( ik_aux_g ) 
+          !
+          !ik = ik_aux_g -iks +1
           ! 
-          IF (ionode) WRITE(stdout, "(4x,'Wfc Fourier Transf. for k-point ',i4 )") ik
+          IF (ionode) WRITE(stdout, "(4x,'Wfc Fourier Transf. for k-point ',i4 )") ik_g
 
           !
           ! getting wfc 
@@ -870,25 +957,25 @@ END PROGRAM plot_main
               !
               ! apply a global shift to set the WF in the required cell
               !
-              arg = TPI * DOT_PRODUCT( vkpt_cry(:,ik_g), rave_shift(:,istates(m)) )
+              arg = TPI * DOT_PRODUCT( vkpt_aux_cry(:,ik_aux_g), rave_shift(:,istates(m)) )
               phase = CMPLX( COS(arg), SIN(arg), dbl )
 
 
               kstates( :, m ) = CZERO
               !
               DO ig = 1, npwk(ik_g)
-                 !
-                 DO n = 1, dimwin(ik_g)
+                  !
+                  DO n = 1, dimwin(ik_g)
      
-                     ib =  wfc_info_getindex(imin(ik_g)+n-1, ik_g, "IK", evc_info )
-                     !
-                     kstates( map(ig), m ) = kstates( map(ig), m ) + &
-                                             cutot(n, istates(m) ) * evc( ig, ib )
-                 ENDDO
-                 !
-                 ! apply the translation phase
-                 kstates( map(ig) ,m) = kstates( map(ig) ,m) * phase 
-                 !
+                      ib =  wfc_info_getindex(imin(ik_g)+n-1, ik_g, "IK", evc_info )
+                      !
+                      kstates( map(ig), m ) = kstates( map(ig), m ) + &
+                                              cutot(n, istates(m) ) * evc( ig, ib )
+                  ENDDO
+                  !
+                  ! apply the translation phase
+                  kstates( map(ig) ,m) = kstates( map(ig) ,m) * phase 
+                  !
               ENDDO
               !
               CALL timing('kstates_calc',OPR='stop')
@@ -901,7 +988,7 @@ END PROGRAM plot_main
           !
           IF ( uspp_augmentation ) THEN
               ! 
-              xk(:) = vkpt_g(:,ik_g) / tpiba
+              xk(:) = vkpt_aux(:,ik_aux_g) / tpiba
               CALL init_us_2( npwk(ik_g), igsort(1,ik_g), xk, 1, nkb, vkb )
               !
               vkb_ik = ik_g
@@ -944,9 +1031,9 @@ END PROGRAM plot_main
           nnrz = ABS( nrzl / nr3 ) + 2
           !
           !
-          raux(1) = vkpt_cry(1,ik_g) / REAL( nr1, dbl)
-          raux(2) = vkpt_cry(2,ik_g) / REAL( nr2, dbl)
-          raux(3) = vkpt_cry(3,ik_g) / REAL( nr3, dbl)
+          raux(1) = vkpt_aux_cry(1,ik_aux_g) / REAL( nr1, dbl)
+          raux(2) = vkpt_aux_cry(2,ik_aux_g) / REAL( nr2, dbl)
+          raux(3) = vkpt_aux_cry(3,ik_aux_g) / REAL( nr3, dbl)
 
           ! 
           ! FFT call and real-space loop
@@ -1004,7 +1091,9 @@ END PROGRAM plot_main
                          cstates( nxx, nyy, nzz, m) = cstates( nxx, nyy, nzz, m) + caux
                          !
                      ENDDO
+                     !
                  ENDDO
+                 !
              ENDDO
              !
              CALL timing('cstates_calc',OPR='stop')
@@ -1040,8 +1129,10 @@ END PROGRAM plot_main
       DEALLOCATE( map, STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'deallocating map', ABS(ierr) )
       !
-      DEALLOCATE( vkpt_cry, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating vkpt_cry', ABS(ierr) )
+      DEALLOCATE( vkpt_aux_cry, vkpt_cry, STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating vkpt_aux_cry, vkpt_cry', ABS(ierr) )
+      DEALLOCATE( vkpt_aux, kmap_aux, STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating vkpt_aux, kmap_aux', ABS(ierr) )
       !
       CALL wfc_data_deallocate()
       !
