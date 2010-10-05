@@ -143,7 +143,8 @@ case $INPUT in
    (current_lead1)        CURRENT_LEAD1=yes ;;
    (current_lead4)        CURRENT_LEAD4=yes ;;
  
-   (want)           DISENTANGLE=yes ; WANNIER=yes ; PLOT=yes ;;
+   (want)           DISENTANGLE=yes ; WANNIER=yes ; PLOT=yes ; 
+                    CONDUCTOR_AUTO=yes ; PLOT_EIGCHN=yes ;;
 
    (want_bulk1)     DISENTANGLE_BULK1=yes ; WANNIER_BULK1=yes ; 
                     DOS_BULK1=yes ; BANDS_BULK1=yes; CONDUCTOR_BULK1=yes ;; 
