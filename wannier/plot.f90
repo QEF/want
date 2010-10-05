@@ -308,7 +308,7 @@ END PROGRAM plot_main
       INTEGER :: ia, ib, ig, ir, i_aux
       INTEGER :: ik_aux_g, ik_g
       INTEGER :: natot, nplot 
-      INTEGER :: nkpts_aux_g, nkpts_aux, nk_aux(3)
+      INTEGER :: nkpts_aux_g, nkpts_aux, nk_aux(3), s_aux(3)
       INTEGER :: m, n, i, j, ierr
       INTEGER :: zatom
       !
@@ -316,7 +316,7 @@ END PROGRAM plot_main
       REAL(dbl)    :: tmaxx, tmax, xk(3)
       REAL(dbl)    :: avecl(3,3), raux(3), r0(3), r1(3), rmin(3), rmax(3)
       REAL(dbl)    :: arg, cost, norm, norm_us, rtmp
-      REAL(dbl)    :: vkpt_eigchn(3)
+      REAL(dbl)    :: vkpt_eigchn(3), vk_aux(3)
       COMPLEX(dbl) :: phase
       COMPLEX(dbl) :: caux, cmod
       !
@@ -617,9 +617,9 @@ END PROGRAM plot_main
       ALLOCATE( kstates( nr1*nr2*nr3, nplot ), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating kstates ', ABS(ierr) )
       !
-      ALLOCATE( vkpt_aux_cry(3, nkpts_aux), STAT=ierr )
+      ALLOCATE( vkpt_aux_cry(3, nkpts_aux_g ), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating vkpt_aux_cry ', ABS(ierr) )
-      ALLOCATE( vkpt_aux( 3, nkpts_aux ), STAT=ierr )
+      ALLOCATE( vkpt_aux( 3, nkpts_aux_g ), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,'allocating vkpt_aux',ABS(ierr))
       ALLOCATE( vkpt_cry( 3, nkpts_g ), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,'allocating vkpt_cry',ABS(ierr))
@@ -657,47 +657,74 @@ END PROGRAM plot_main
           !
       ELSE
           !
-          nk_aux(1:3)  = 1
-          nk_aux(tdir) = nk(tdir)
-          !
-          CALL monkpack( nk_aux, (/0,0,0/), vkpt_aux_cry )
-          !
-          DO ik_g = 1, nkpts_aux
-              vkpt_aux_cry(:,ik_g) = vkpt_aux_cry(:,ik_g) + vkpt_eigchn(:) 
-          ENDDO
-          !
-          vkpt_aux = vkpt_aux_cry
-          CALL cry2cart( vkpt_aux, bvec)
-          !
+!          nk_aux(1:3)  = 1
+!          nk_aux(tdir) = nk(tdir)
+!          s_aux(1:3)   = 0
+!          !
+!          CALL monkpack( nk_aux, s_aux, vkpt_aux_cry )
+!          !
+!          DO ik_g = 1, nkpts_aux_g
+!              vkpt_aux_cry(:,ik_g) = vkpt_aux_cry(:,ik_g) + vkpt_eigchn(:) 
+!          ENDDO
+!          !
+!          vkpt_aux = vkpt_aux_cry
+!          CALL cry2cart( vkpt_aux, bvec)
+!          !
           vkpt_cry(:,1:nkpts_g) = vkpt_g(:,1:nkpts_g)
           CALL cart2cry( vkpt_cry, bvec )
 
-          !
-          ! map vkpt_aux_cry on vkpt_cry
-          !
-          DO ik_aux_g = 1, nkpts_aux_g
+          ik_aux_g = 0
+          DO ik_g  = 1, nkpts_g
               !
-              lfound = .FALSE. 
-              i_aux  = 0
-              DO ik_g = 1, nkpts_g
-                  !
-                  rtmp = DOT_PRODUCT( vkpt_aux_cry(:,ik_aux_g)-vkpt_cry(:,ik_g), &
-                                      vkpt_aux_cry(:,ik_aux_g)-vkpt_cry(:,ik_g)  ) 
-                  IF ( rtmp < EPS_m10) THEN 
-                     lfound=.TRUE.
-                     i_aux = ik_g
-                  ENDIF
-                  !
-              ENDDO
+              vk_aux(1:3)  = vkpt_cry(:,ik_g) -vkpt_eigchn(:)
+              vk_aux(tdir) = 0
+              vk_aux(:)    = ABS( MOD( vk_aux(:), ONE ) )
               !
-              IF ( lfound ) THEN 
-                  kmap_aux( ik_g ) = i_aux
-              ELSE
-                  CALL errore(subname,'vkpt_aux not found',ik_aux_g)
+              IF ( ALL( vk_aux(:) < EPS_m10 ) ) THEN 
+                  !
+                  ik_aux_g = ik_aux_g+1
+                  IF ( ik_aux_g > nkpts_aux_g ) CALL errore(subname,'ik_aux_g too big',10)
+                  !
+                  vkpt_aux_cry(:,ik_aux_g) = vkpt_cry(:,ik_g)
+                  !
+                  kmap_aux( ik_aux_g ) = ik_g
+                  !
               ENDIF
               !
           ENDDO
           !
+          IF ( ik_aux_g /= nkpts_aux_g ) CALL errore(subname,'invalid nkpts_aux_g',11)
+
+          vkpt_aux = vkpt_aux_cry
+          CALL cry2cart( vkpt_aux, bvec)
+
+
+!          !
+!          ! map vkpt_aux_cry on vkpt_cry
+!          !
+!          DO ik_aux_g = 1, nkpts_aux_g
+!              !
+!              lfound = .FALSE. 
+!              i_aux  = 0
+!              DO ik_g = 1, nkpts_g
+!                  !
+!                  rtmp = DOT_PRODUCT( vkpt_aux_cry(:,ik_aux_g)-vkpt_cry(:,ik_g), &
+!                                      vkpt_aux_cry(:,ik_aux_g)-vkpt_cry(:,ik_g)  ) 
+!                  IF ( MOD(rtmp, ONE)  < EPS_m10 ) THEN 
+!                     lfound=.TRUE.
+!                     i_aux = ik_g
+!                  ENDIF
+!                  !
+!              ENDDO
+!              !
+!              IF ( lfound ) THEN 
+!                  kmap_aux( ik_aux_g ) = i_aux
+!              ELSE
+!                  CALL errore(subname,'vkpt_aux not found',ik_aux_g)
+!              ENDIF
+!              !
+!          ENDDO
+!          !
       ENDIF
       !
       !
@@ -1259,7 +1286,7 @@ END PROGRAM plot_main
                                 m, ABS(cmod), norm
               ENDIF
               !
-              IF ( do_wfs ) WRITE( stdout, "(4x, 16x, 2f12.6, ' (phase)' )" ) cmod
+              IF ( do_wfs ) WRITE( stdout, "(4x, 16x, f12.6, 2x, f12.6, ' (phase)' )" ) cmod
               !
           ENDIF
           !
