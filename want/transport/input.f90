@@ -92,6 +92,7 @@ CONTAINS
                                            debug_level,       &
                                            use_debug_mode,    &
                                            do_eigenchannels,  &
+                                           neigchnx,          &
                                            do_eigplot,        &
                                            ie_eigplot,        &
                                            ik_eigplot,        &
@@ -111,6 +112,7 @@ CONTAINS
                                            write_lead_sgm_    => write_lead_sgm, &
                                            debug_level_       => debug_level, &
                                            do_eigenchannels_  => do_eigenchannels, &
+                                           neigchnx_          => neigchnx, &
                                            do_eigplot_        => do_eigplot, &
                                            ie_eigplot_        => ie_eigplot, &
                                            ik_eigplot_        => ik_eigplot, &
@@ -132,6 +134,7 @@ CONTAINS
       write_lead_sgm      = write_lead_sgm_
       debug_level         = debug_level_
       do_eigenchannels    = do_eigenchannels_
+      neigchnx            = neigchnx_
       do_eigplot          = do_eigplot_
       ie_eigplot          = ie_eigplot_
       ik_eigplot          = ik_eigplot_

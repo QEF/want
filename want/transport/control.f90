@@ -40,6 +40,7 @@
    !
    INTEGER                   :: niterx
    INTEGER                   :: nfailx
+   INTEGER                   :: neigchnx, neigchn
    INTEGER                   :: nfail = 0
    !
    INTEGER                   :: nprint
@@ -59,6 +60,7 @@
    PUBLIC :: debug_level
    !
    PUBLIC :: do_eigenchannels
+   PUBLIC :: neigchnx, neigchn
    PUBLIC :: do_eigplot
    PUBLIC :: ie_eigplot, ik_eigplot
    !

@@ -125,7 +125,8 @@ END PROGRAM conductor
                                     operator_write_aux, operator_write_data
    USE T_control_module,     ONLY : conduct_formula, nprint, datafile_sgm,  &
                                     write_kdata, write_lead_sgm, transport_dir, &
-                                    do_eigenchannels, do_eigplot, ie_eigplot, ik_eigplot
+                                    do_eigenchannels, neigchn, neigchnx, &
+                                    do_eigplot, ie_eigplot, ik_eigplot
    USE T_egrid_module,       ONLY : ne, egrid
    USE T_kpoints_module,     ONLY : nkpts_par, vkpt_par3D, wk_par, ivr_par3D, &
                                     vr_par3D, nrtot_par
@@ -146,14 +147,15 @@ END PROGRAM conductor
    !
    CHARACTER(12)    :: subname="do_conductor"
    !
-   INTEGER          :: i, ie, ir, ik, idim, ierr, niter
+   INTEGER          :: i, ir, ik, ierr, niter
+   INTEGER          :: ie_g
    INTEGER          :: iomg_s, iomg_e
    LOGICAL          :: write_eigchn
    REAL(dbl)        :: avg_iter
    CHARACTER(4)     :: ctmp
    CHARACTER(nstrx) :: filename
    !   
-   REAL(dbl),    ALLOCATABLE :: conduct_k(:,:), conduct(:,:)
+   REAL(dbl),    ALLOCATABLE :: conduct_k(:,:,:), conduct(:,:)
    REAL(dbl),    ALLOCATABLE :: dos_k(:,:), dos(:), cond_aux(:)
    COMPLEX(dbl), ALLOCATABLE :: z_eigplot(:,:)
    COMPLEX(dbl), ALLOCATABLE :: work(:,:)
@@ -181,21 +183,27 @@ END PROGRAM conductor
    ALLOCATE ( dos(ne), STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'allocating dos', ABS(ierr) )
    !
-   ALLOCATE ( conduct_k(ne,nkpts_par), STAT=ierr )
-   IF( ierr /=0 ) CALL errore(subname,'allocating conduct_k', ABS(ierr) )
    !
    IF ( do_eigenchannels ) THEN
-       ALLOCATE ( conduct(ne,1+MIN(dimC,dimR,dimL)), STAT=ierr )
+       !
+       neigchn = MIN( dimC,dimR,dimL,  neigchnx )
+       !
    ELSE
-       ALLOCATE ( conduct(ne,1), STAT=ierr )
+       !
+       neigchn = 0
+       !
    ENDIF
+   !
+   ALLOCATE ( conduct(ne,1+neigchn), STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'allocating conduct', ABS(ierr) )
+   !
+   ALLOCATE ( conduct_k(ne, 1+neigchn, nkpts_par), STAT=ierr )
+   IF( ierr /=0 ) CALL errore(subname,'allocating conduct_k', ABS(ierr) )
+   !
    !
    IF ( do_eigenchannels .AND. do_eigplot ) THEN
        !
-       idim = MIN(dimC,dimR,dimL)
-       !
-       ALLOCATE ( z_eigplot(dimC, idim ), STAT=ierr )
+       ALLOCATE ( z_eigplot(dimC, neigchn ), STAT=ierr )
        IF( ierr /=0 ) CALL errore(subname,'allocating z_eigplot', ABS(ierr) )
        !
    ENDIF
@@ -250,18 +258,21 @@ END PROGRAM conductor
    dos(:)           = ZERO
    dos_k(:,:)       = ZERO
    conduct(:,:)     = ZERO
-   conduct_k(:,:)   = ZERO
+   conduct_k(:,:,:) = ZERO
    !
    energy_loop: &
-   DO ie = iomg_s, iomg_e
+   DO ie_g = iomg_s, iomg_e
+
+      ! XXX
+      !ie = ie_g -iomg_s+1
       
       !
       ! grids and misc
       !
-      IF ( (MOD( ie, nprint) == 0 .OR. ie == iomg_s .OR. ie == iomg_e ) &
+      IF ( (MOD( ie_g, nprint) == 0 .OR. ie_g == iomg_s .OR. ie_g == iomg_e ) &
            .AND. ionode ) THEN
            WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f12.5, ' eV' )") &
-                         ie, egrid(ie)
+                         ie_g, egrid(ie_g)
       ENDIF
 
 
@@ -270,7 +281,7 @@ END PROGRAM conductor
       !
       IF ( lhave_corr .AND. ldynam_corr ) THEN
           !
-          CALL correlation_read( IE=ie )
+          CALL correlation_read( IE=ie_g )
           !
       ENDIF
 
@@ -288,7 +299,7 @@ END PROGRAM conductor
           !
           ! define aux quantities for each data block
           !
-          CALL hamiltonian_setup( ik, ie )
+          CALL hamiltonian_setup( ik, ie_g )
 
  
           ! 
@@ -341,10 +352,10 @@ END PROGRAM conductor
           ! Compute density of states for the conductor layer
           !
           DO i = 1, dimC
-             dos_k(ie,ik) = dos_k(ie,ik) - wk_par(ik) * AIMAG( gC(i,i) ) / PI
+             dos_k(ie_g,ik) = dos_k(ie_g,ik) - wk_par(ik) * AIMAG( gC(i,i) ) / PI
           ENDDO
           !
-          dos(ie) = dos(ie) + dos_k(ie,ik)
+          dos(ie_g) = dos(ie_g) + dos_k(ie_g,ik)
 
 
           !
@@ -362,8 +373,8 @@ END PROGRAM conductor
           ! get the total trace
           DO i=1,dimC
               !
-              conduct(ie,1)    = conduct(ie,1)    + wk_par(ik) * cond_aux(i)
-              conduct_k(ie,ik) = conduct_k(ie,ik) + wk_par(ik) * cond_aux(i)
+              conduct(ie_g,1)       = conduct(ie_g,1)      + wk_par(ik) * cond_aux(i)
+              conduct_k(ie_g,1,ik)  = conduct_k(ie_g,1,ik) + wk_par(ik) * cond_aux(i)
               !
           ENDDO
           !
@@ -372,15 +383,18 @@ END PROGRAM conductor
           !
           IF ( do_eigenchannels ) THEN
               !
-              conduct( ie, 2:MIN(dimC,dimR,dimL)+1 ) = conduct( ie, 2:MIN(dimC,dimR,dimL)+1 ) &
-                                                     + wk_par(ik) * cond_aux( 1:MIN(dimC,dimR,dimL) )
+              conduct( ie_g, 2:neigchn+1 )   = conduct( ie_g, 2:neigchn+1 ) &
+                                                  + wk_par(ik) * cond_aux( 1:neigchn )
+              !
+              conduct_k(ie_g,2:neigchn+1,ik) = conduct_k(ie_g,2:neigchn+1,ik) &
+                                                  + wk_par(ik) * cond_aux( 1:neigchn )
               !
           ENDIF
           !
           IF ( do_eigenchannels .AND. do_eigplot .AND. &
-               ik == ik_eigplot .AND. ie == ie_eigplot ) THEN
+               ik == ik_eigplot .AND. ie_g == ie_eigplot ) THEN
               !
-              z_eigplot = work( 1:dimC, 1:MIN(dimC,dimR,dimL) )
+              z_eigplot = work( 1:dimC, 1:neigchn )
               write_eigchn = .TRUE.
               !
           ELSE
@@ -394,10 +408,8 @@ END PROGRAM conductor
           !
           IF ( write_eigchn ) THEN
               !
-              idim = MIN(dimC,dimR,dimL)
-              !
               CALL wd_write_eigchn( aux_unit, ie_eigplot, ik_eigplot, vkpt_par3D(:,ik) , &
-                                    transport_dir, dimC, idim, z_eigplot)
+                                    transport_dir, dimC, neigchn, z_eigplot)
               !
           ENDIF
           ! 
@@ -415,8 +427,8 @@ END PROGRAM conductor
               !
           ENDDO
           !
-          CALL operator_write_data( sgmL_unit, rsgm_L, .TRUE., ie )
-          CALL operator_write_data( sgmR_unit, rsgm_R, .TRUE., ie )
+          CALL operator_write_data( sgmL_unit, rsgm_L, .TRUE., ie_g )
+          CALL operator_write_data( sgmR_unit, rsgm_R, .TRUE., ie_g )
           !
       ENDIF
  
@@ -425,7 +437,7 @@ END PROGRAM conductor
       !
       avg_iter = avg_iter/REAL(2*nkpts_par)
       !
-      IF ( MOD( ie, nprint) == 0 .OR.  ie == iomg_s .OR. ie == iomg_e ) THEN
+      IF ( MOD( ie_g, nprint) == 0 .OR.  ie_g == iomg_s .OR. ie_g == iomg_e ) THEN
           !
           IF ( ionode ) WRITE(stdout,"(2x,'T matrix converged after avg. # of iterations ',&
                                       & f8.3,/)") avg_iter
@@ -493,8 +505,8 @@ END PROGRAM conductor
          !
          WRITE( aux_unit, *) "# E (eV)   cond(E)"
          !
-         DO ie = 1, ne
-              WRITE( aux_unit, '(2(f15.9))') egrid(ie), conduct_k(ie,ik) 
+         DO ie_g = 1, ne
+             WRITE( aux_unit, '(2000(f15.9))') egrid(ie_g), conduct_k(ie_g,:,ik) 
          ENDDO
          !
          CLOSE( aux_unit )         
@@ -514,8 +526,8 @@ END PROGRAM conductor
          !
          WRITE( aux_unit, *) "# E (eV)   doscond(E)"
          !
-         DO ie = 1, ne
-             WRITE( aux_unit, '(2(f15.9))') egrid(ie), dos_k(ie,ik) 
+         DO ie_g = 1, ne
+             WRITE( aux_unit, '(2(f15.9))') egrid(ie_g), dos_k(ie_g,ik) 
          ENDDO
          !
          CLOSE( aux_unit )         

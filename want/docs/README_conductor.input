@@ -192,6 +192,11 @@ do_eigenchannels    LOGICAL
             is written (columns 3+) in the conductance file
             DEFAULT : .FALSE.
 
+neigchnx    INTEGER
+            Maximum number of eigenchannels printed out.
+            Let unset means all of them are written
+            DEFAULT : Unset
+
 do_eigplot  LOGICAL
             If true, the eigenchannel eigenvectors are written for
             selected energies and kpoints (see ie_eigplot and ik_eigplot).
@@ -207,6 +212,9 @@ ie_eigplot  INTEGER
 ik_eigplot  INTEGER
             The index of the kpt for which the eigenchannels are
             dumped to disk.
+            Note: in order to do the plot, the kpt must be chosen
+                  from the set of the original kpt mesh (out of disentangle).
+                  In other words, the kpt interpolation is not implemented.
             DEFAULT : unset
 
 
