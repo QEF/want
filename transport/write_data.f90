@@ -57,7 +57,7 @@ CONTAINS
       !
       IF ( ionode ) THEN 
           !
-          CALL io_name( TRIM(data_type), filename )
+          CALL io_name( TRIM(data_type), filename, LPATH=.FALSE. )
           !
           OPEN ( iunit, FILE=TRIM(filename), FORM='formatted' )
           !

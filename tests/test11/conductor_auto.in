@@ -18,6 +18,7 @@
    do_eigplot = .TRUE.
    ie_eigplot = 800
    ik_eigplot = 1
+!   write_kdata = .TRUE.
 /
 
 <HAMILTONIAN_DATA>

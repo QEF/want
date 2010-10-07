@@ -134,6 +134,10 @@
    LOGICAL :: do_eigenchannels = .FALSE.
        ! compute eigenchannels
 
+   INTEGER :: neigchnx = 200000
+       ! maximum number of eigenchannels printed out
+       ! Let unset means all of them are written.
+
    LOGICAL :: do_eigplot = .FALSE.
        ! compute and write auxiliary data to plot the eigenchannels
  
@@ -194,7 +198,7 @@
                  conduct_formula, niterx, ne, emin, emax, nprint, delta, bias,  &
                  datafile_L, datafile_C, datafile_R, datafile_sgm,              &
                  transport_dir, smearing_type, do_eigenchannels, do_eigplot,    &
-                 ie_eigplot, ik_eigplot,                                        &
+                 ie_eigplot, ik_eigplot, neigchnx,                              &
                  delta_ratio, xmax, nk, s, use_symm, debug_level,               &
                  work_dir, prefix, postfix, write_kdata, write_lead_sgm, ispin, &
                  shift_L, shift_C, shift_R, shift_corr, nfailx 
@@ -205,7 +209,7 @@
    PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
    PUBLIC :: nk, s, use_symm, debug_level
    PUBLIC :: work_dir, prefix, postfix, ispin, write_kdata, write_lead_sgm 
-   PUBLIC :: do_eigenchannels, do_eigplot, ie_eigplot, ik_eigplot
+   PUBLIC :: do_eigenchannels, neigchnx, do_eigplot, ie_eigplot, ik_eigplot
    PUBLIC :: shift_L, shift_C, shift_R, shift_corr, nfailx
    PUBLIC :: INPUT_CONDUCTOR
 
@@ -266,6 +270,7 @@ CONTAINS
       CALL mp_bcast( use_symm,           ionode_id)      
       CALL mp_bcast( debug_level,        ionode_id)      
       CALL mp_bcast( do_eigenchannels,   ionode_id)      
+      CALL mp_bcast( neigchnx,           ionode_id)      
       CALL mp_bcast( do_eigplot,         ionode_id)      
       CALL mp_bcast( ie_eigplot,         ionode_id)      
       CALL mp_bcast( ik_eigplot,         ionode_id)      
@@ -374,6 +379,8 @@ CONTAINS
 
       IF ( do_eigplot .AND. .NOT. do_eigenchannels ) &
           CALL errore(subname,'eigplot needs eigchannels',1)
+
+      IF ( neigchnx < 0 )   CALL errore(subname,'invalid eigchnx < 0',1)
 
       IF ( ie_eigplot < 0 ) CALL errore(subname,'invalid ie_eigplot < 0',1)
       IF ( ik_eigplot < 0 ) CALL errore(subname,'invalid ik_eigplot < 0',1)
