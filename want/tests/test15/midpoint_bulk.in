@@ -1,0 +1,6 @@
+ 
+    &INPUT
+       prefix = 'au_bulk'
+       work_dir = './SCRATCH/'
+       rcut = 2.6
+    /

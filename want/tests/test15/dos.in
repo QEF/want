@@ -1,0 +1,14 @@
+
+ &INPUT
+   prefix = 'au_bda'
+   postfix = '_WanT'
+   work_dir = './SCRATCH'
+   fileout = 'dos.dat'
+   nk(1) = 1
+   nk(2) = 1
+   nk(3) = 100
+   delta = 0.15
+   smearing_type = 'gaussian'
+   projdos = .TRUE.
+ /
+
