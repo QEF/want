@@ -3,6 +3,9 @@
             WanT code:  Log of Changes 
 =======================================================
 
+
+Oct 08 2010      test15 added. bug fixed in sumpdos.f90. (AF)
+
 Oct 07 2010      conductor writes kdata also resolved wrt eigenchannels. (AF)
 
 Oct 06 2010      plot.x program updated to deal with kpt when plotting 

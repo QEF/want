@@ -1,0 +1,6 @@
+ 
+    &INPUT
+       prefix = 'au_bda'
+       work_dir = './SCRATCH/'
+       rcut = 2.6
+    /

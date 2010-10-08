@@ -1,0 +1,17 @@
+
+==============================================================================
+@title@   Au-BDA-Au junction: eigenchannel plotting
+==============================================================================
+
+  DESCRIPTION:
+
+  This test shows how to perform a transport calculation
+  on a molecular jucntion made by 1D gold atomic chains connected to
+  the BDA molecule.
+  This test is meant to show a very classical example of transport
+  calculation, focusing on the plotting of transmittance and eigenchannels.
+
+  RESULTS discussion:
+
+
+

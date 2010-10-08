@@ -1,0 +1,16 @@
+
+ &INPUT
+   prefix = 'au_bda'
+   postfix = '_WanT'
+   work_dir = './SCRATCH/'
+   datatype = 'modulus'
+   datafile_eigchn = './SCRATCH/eigchn.dat'
+   output_fmt = 'plt'
+   eigchn = '1-2'
+   r1min = -0.5
+   r1max =  0.5
+   r2min = -0.5
+   r2max =  0.5
+   r3min =  -0.5
+   r3max =   0.5
+ /

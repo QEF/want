@@ -1,0 +1,13 @@
+
+ &INPUT
+   prefix = 'au_bulk'
+   postfix = '_WanT'
+   work_dir = './SCRATCH'
+   fileout = 'dos_bulk.dat'
+   nk(1) = 1
+   nk(2) = 1
+   nk(3) = 200
+   delta = 0.15
+   smearing_type = 'gaussian'
+ /
+
