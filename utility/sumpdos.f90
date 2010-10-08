@@ -76,7 +76,7 @@ PROGRAM sumpdos
       !
       CALL getarg ( 2, filein )
       IF ( LEN_TRIM(filein) == 0 ) CALL errore('sumpdos','provide filein name',2)
-  
+
       INQUIRE( FILE=TRIM(filein), EXIST=lexist )
       IF (.NOT. lexist) CALL errore('sumpdos','file '//TRIM(filein)//' does not exist',3)
       OPEN( 10, FILE=TRIM(filein), IOSTAT=ios ) 
@@ -107,7 +107,7 @@ PROGRAM sumpdos
       DO i = 1, nfile
          file(i) = ' '
          DO WHILE( LEN_TRIM(file(i)) == 0 )
-            READ(10,*, IOSTAT=ios) file(i)
+            READ(10,"(A256)", IOSTAT=ios) file(i)
             IF (ios /=0 ) CALL errore('sumpdos','reading from '//TRIM(filein),i)
          ENDDO
       ENDDO
