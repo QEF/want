@@ -1,0 +1,134 @@
+
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <midpoint>  v. 2.4.0alpha2  starts ...
+  Date  8Oct2010 at 19:42:26 
+
+     Serial run.
+
+          BUILT :    Tue Oct  5 05:18:51 2010
+           HOST :    x86_64-unknown-linux-gnu
+           ARCH :    x86_64
+             CC :    icc
+            CPP :    cpp
+            F90 :    mpif90
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA -D__ETSF_IO -D__NETCDF
+      BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
+    LAPACK LIBS :    
+       FFT LIBS :    
+      MASS LIBS :    
+
+
+  checking for fmt internal... no
+  checking for fmt wannier90... no
+  checking for fmt crystal... no
+  checking for fmt qexml... ok
+
+  DFT-data fmt automaticaly detected: qexml
+  DFT-data read from file: au_bulk.save/data-file.xml
+
+
+  ======================================================================
+  =  DFT data                                                          =
+  ======================================================================
+
+ <LATTICE>
+  Alat  =      15.0000000 (Bohr)
+  Alat  =       7.9376550 (Ang )
+  Omega =    4251.8854750 (Bohr^3)
+  Omega =     630.0636690 (Ang^3 )
+
+  Crystal axes:
+                in Bohr units                           in Alat units
+    a(1) = (   15.00000    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    a(2) = (    0.00000   15.00000    0.00000 )    (    0.00000    1.00000    0.00000 )
+    a(3) = (    0.00000    0.00000   18.89727 )    (    0.00000    0.00000    1.25982 )
+                in Ang units
+    a(1) = (    7.93766    0.00000    0.00000 )
+    a(2) = (    0.00000    7.93766    0.00000 )
+    a(3) = (    0.00000    0.00000   10.00000 )
+
+   Reciprocal lattice vectors:
+                in Bohr^-1 units                        in 2Pi/Alat units
+    b(1) = (    0.41888    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    b(2) = (    0.00000    0.41888    0.00000 )    (    0.00000    1.00000    0.00000 )
+    b(3) = (    0.00000    0.00000    0.33249 )    (    0.00000    0.00000    0.79377 )
+ </LATTICE>
+
+ <IONS>
+  Number of chemical species =  1
+
+  Atomic positions: (cart. coord. in Bohr)
+     Au   tau(   1 ) = (   0.0000000   0.0000000  -9.4486307 )
+     Au   tau(   2 ) = (   0.0000000   0.0000000  -4.7243153 )
+     Au   tau(   3 ) = (   0.0000000   0.0000000   0.0000000 )
+     Au   tau(   4 ) = (   0.0000000   0.0000000   4.7243153 )
+ </IONS>
+
+
+  ======================================================================
+  =  Computing mid points of bonds                                     =
+  ======================================================================
+
+        Output fmt :   angstrom
+    Bond len. toll :      0.1000
+     Cutoff radius :      2.6000 [Ang]
+
+
+  # Valid bond types:     1
+  Minimum bond length [Ang]:
+
+    Au -- Au   :  2.499999
+
+
+  ======================================================================
+  Atomic positions [angstrom]:
+
+    4
+
+  Au       0.000000000    0.000000000   -4.999998029
+  Au       0.000000000    0.000000000   -2.499999015
+  Au       0.000000000    0.000000000    0.000000000
+  Au       0.000000000    0.000000000    2.499999015
+
+  ======================================================================
+  Bond mid points [angstrom]:
+
+    4
+
+  H        0.000000000    0.000000000    1.249999507   Au -- Au 
+  H        0.000000000    0.000000000   -1.249999507   Au -- Au 
+  H        0.000000000    0.000000000   -6.249999507   Au -- Au 
+  H        0.000000000    0.000000000   -3.749998522   Au -- Au 
+
+
+  ======================================================================
+  Bond atomic coordinates[angstrom]:
+
+    4
+
+  Au -- Au       0.000000000    0.000000000    0.000000000    0.000000000    0.000000000    2.499999015
+  Au -- Au       0.000000000    0.000000000   -2.499999015    0.000000000    0.000000000    0.000000000
+  Au -- Au       0.000000000    0.000000000   -4.999998029    0.000000000    0.000000000   -7.500000985
+  Au -- Au       0.000000000    0.000000000   -4.999998029    0.000000000    0.000000000   -2.499999015
+
+
+  ======================================================================
+
+   <global routines>
+             clock number :     3
+
+                 midpoint :     0.00s CPU 
+
+             want_dftread :     0.02s CPU
+                want_init :     0.00s CPU
+
+

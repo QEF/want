@@ -1,0 +1,188 @@
+
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <conductor>  v. 2.4.0alpha2  starts ...
+  Date  8Oct2010 at 20: 5: 3 
+
+     Parallel run, # proc:    6
+
+          BUILT :    Tue Oct  5 05:18:51 2010
+           HOST :    x86_64-unknown-linux-gnu
+           ARCH :    x86_64
+             CC :    icc
+            CPP :    cpp
+            F90 :    mpif90
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA -D__ETSF_IO -D__NETCDF
+      BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
+    LAPACK LIBS :    
+       FFT LIBS :    
+      MASS LIBS :    
+
+
+
+  ======================================================================
+  =  Conductor Init                                                    =
+  ======================================================================
+
+
+  ======================================================================
+  =  INPUT Summary                                                     =
+  ======================================================================
+
+  <INPUT>
+          Calculation Type :     conductor
+                    prefix :     
+                   postfix :     
+                  work_dir :     ./SCRATCH
+               L-lead dim. :        24
+            conductor dim. :        77
+               R-lead dim. :        24
+       Conductance Formula :     landauer
+       Transport Direction :         3
+          Have Correlation :     FALSE
+              Write k-data :     FALSE
+       Max iteration number:       200
+
+                    nprint :        20
+
+        Conductor datafile :     ./SCRATCH/au_bda_WanT.ham
+           L-lead datafile :     ./SCRATCH/au_bulk_WanT.ham
+           R-lead datafile :     ./SCRATCH/au_bulk_WanT.ham
+  </INPUT>
+
+
+  <ENERGY_GRID>
+                 Dimension :       1200
+                Min Energy :       -8.00000
+                Max Energy :        4.00000
+               Energy Step :        0.01001
+                     Delta :        0.00050
+             Smearing Type :     lorentzian
+             Smearing grid :      20000
+             Smearing gmax :       25.00000
+                   Shift_L :        0.00000
+                   Shift_C :        0.00000
+                   Shift_R :        0.00000
+                Shift_corr :        0.00000
+  </ENERGY_GRID>
+
+
+  <K-POINTS>
+       nkpts_par =    1
+       nrtot_par =    1
+        use_symm = TRUE
+
+       Parallel kpoints grid:        nk = (  1  1  1 )   s = (  0  0  0 )
+       k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+
+       Parallel R vector grid:       nr = (  1  1  1 )
+       R (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+  </K-POINTS>
+
+
+  <PARALLELISM>
+       Paralellization over frequencies
+       # of processes:     6
+  </PARALLELISM>
+
+
+  ======================================================================
+  =  Frequency Loop                                                    =
+  ======================================================================
+
+  Computing E(     1 ) =     -8.00000 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     0.08 secs
+
+  Computing E(    20 ) =     -7.80984 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     0.42 secs
+
+  Computing E(    40 ) =     -7.60967 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     0.76 secs
+
+  Computing E(    60 ) =     -7.40951 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     0.95 secs
+
+  Computing E(    80 ) =     -7.20934 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     1.14 secs
+
+  Computing E(   100 ) =     -7.00917 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     1.42 secs
+
+  Computing E(   120 ) =     -6.80901 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     1.78 secs
+
+  Computing E(   140 ) =     -6.60884 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     2.00 secs
+
+  Computing E(   160 ) =     -6.40867 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     2.18 secs
+
+  Computing E(   180 ) =     -6.20851 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     2.44 secs
+
+  Computing E(   200 ) =     -6.00834 eV
+  T matrix converged after avg. # of iterations    2.000
+
+                              Total time spent up to now :     2.80 secs
+
+
+  eigchn.datEigenchannels written on file: 
+
+  ======================================================================
+  =  Writing data                                                      =
+  ======================================================================
+
+
+  conductance written on file:    cond.dat
+
+  doscond written on file:    doscond.dat
+
+  ======================================================================
+
+   <global routines>
+             clock number :    13
+
+                conductor :     5.00s CPU 
+
+           datafiles_init :     0.00s CPU
+            smearing_init :     0.03s CPU
+                   cft_1z :     0.01s CPU (       2 calls,   0.007 s avg)
+         hamiltonian_init :     0.03s CPU
+              read_matrix :     0.03s CPU (       7 calls,   0.004 s avg)
+              fourier_par :     0.00s CPU (      14 calls,   0.000 s avg)
+             do_conductor :     5.38s CPU
+        hamiltonian_setup :     0.04s CPU (     200 calls,   0.000 s avg)
+            transfer_mtrx :     0.26s CPU (     400 calls,   0.001 s avg)
+                    green :     0.03s CPU (     400 calls,   0.000 s avg)
+              gzero_maker :     0.03s CPU (     600 calls,   0.000 s avg)
+            transmittance :     2.07s CPU (     200 calls,   0.010 s avg)
+
+
