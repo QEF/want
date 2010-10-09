@@ -27,9 +27,11 @@ MANUAL=" Usage
  wannier_bulk
  dos_bulk        want calculations for Au bulk (4 atoms per cell)
 
- conductor       evaluate the transmittance across the junction
  conductor_bulk  evaluate the bulk transmittance for the leads
- plot_eigchn     compute and plot eigenchannels in real space
+ conductor       evaluate the transmittance across the junction
+ conductor_sgm   as before, but including a correlation sgm on the molecule
+ plot_eigchn     plot eigenchannels in real space
+ plot_eigchn_sgm eigenchannels for the sgm corrected case
 
  want            perform all WanT calculations
  all             perform all the above described steps
@@ -67,8 +69,10 @@ WANNIER_BULK=
 DOS_BULK=
 
 CONDUCTOR=
+CONDUCTOR_sgm=
 CONDUCTOR_BULK=
 PLOT_EIGCHN=
+PLOT_EIGCHN_SGM=
 
 CHECK=
 CLEAN=
@@ -94,8 +98,10 @@ case $INPUT in
    (dos_bulk)            DOS_BULK=yes ;;
 
    (conductor)      CONDUCTOR=yes ;;
+   (conductor_sgm)  CONDUCTOR_SGM=yes ;;
    (conductor_bulk) CONDUCTOR_BULK=yes ;;
    (plot_eigchn)    PLOT_EIGCHN=yes ;;
+   (plot_eigchn_sgm)     PLOT_EIGCHN_SGM=yes ;;
 
    (want)           DISENTANGLE=yes ; WANNIER=yes ; DOS=yes ; 
                     DISENTANGLE_BULK=yes ; WANNIER_BULK=yes ; DOS_BULK=yes ;
@@ -208,9 +214,20 @@ run_conductor NAME=CONDUCTOR  SUFFIX=${SUFFIX}  RUN=$CONDUCTOR
 if [ -e eigchn.dat ] ; then mv eigchn.dat ./SCRATCH ; fi
 
 #
+# running CONDUCTOR_SGM
+#
+run_conductor NAME=CONDUCTOR_SGM  SUFFIX=${SUFFIX}_sgm  RUN=$CONDUCTOR_SGM
+if [ -e eigchn_sgm.dat ] ; then mv eigchn_sgm.dat ./SCRATCH ; fi
+
+#
 # running PLOT_EIGCHN
 #
 run_plot  NAME=PLOT_EIGCHN  SUFFIX=${SUFFIX}_eigchn  RUN=$PLOT_EIGCHN
+
+#
+# running PLOT_EIGCHN_SGM
+#
+run_plot  NAME=PLOT_EIGCHN_SGM  SUFFIX=${SUFFIX}_eigchn_sgm  RUN=$PLOT_EIGCHN_SGM
 
 
 #
@@ -235,6 +252,11 @@ fi
 # eventually clean
 #
 run_clean  RUN=$CLEAN
+#
+if [ "$CLEAN" = "yes" -a -d src ] ; then
+   cd src ; make clean; cd ..
+fi
+
 
 
 #
