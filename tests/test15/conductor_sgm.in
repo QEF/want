@@ -1,0 +1,35 @@
+
+&INPUT_CONDUCTOR
+   postfix="_sgm"
+   dimL = 24
+   dimC = 77
+   dimR = 24
+   ne = 1200
+   emin = -8.0
+   emax =  4.0
+   datafile_L = "./SCRATCH/au_bulk_WanT.ham"
+   datafile_C = "./SCRATCH/au_bda_WanT.ham"
+   datafile_R = "./SCRATCH/au_bulk_WanT.ham"
+   datafile_sgm = "./sigma_mol.sgm"
+   transport_dir = 3
+   delta = 0.0005
+   work_dir = './SCRATCH'
+   do_eigenchannels = .TRUE.
+   neigchnx = 4
+   do_eigplot = .TRUE.
+   ie_eigplot = 800 
+   ik_eigplot = 1
+/
+
+<HAMILTONIAN_DATA>
+
+   <H00_C   rows="ALL"   cols="ALL" />
+   <H_CR    rows="ALL"   cols="1-24"  />
+   <H_LC    rows="54-77" cols="ALL" />
+   <H00_L   rows="ALL"   cols="ALL"  />
+   <H01_L   rows="ALL"   cols="ALL" />
+   <H00_R   rows="ALL"   cols="ALL"  />
+   <H01_R   rows="ALL"   cols="ALL" />
+
+</HAMILTONIAN_DATA>
+

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<?iotk version="1.2.0"?>
+<?iotk file_version="1.0"?>
+<?iotk binary="F"?>
+<Root>
+    <DATA  nrtot="5"/>
+    <IVR type="integer" size="15" columns="3" units="crystal">
+         0          0         -1
+         0          0          0
+         0          0          1
+         0          0          2
+         0          0         -2
+    </IVR>
+    <WR type="real" size="5">
+ 1.000000000000000E+000
+ 1.000000000000000E+000
+ 1.000000000000000E+000
+ 5.000000000000000E-001
+ 5.000000000000000E-001
+    </WR>
+</Root>
