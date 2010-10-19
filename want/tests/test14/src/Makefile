@@ -24,7 +24,7 @@ sigma.x: sigma.o
 	$(F90) $(F90FLAGS) -o $@ sigma.f90  $(IOTK_INCLUDE) $(IOTK_LIBS)
 
 clean:
-	- rm sigma.x 
+	- rm sigma.x *.o *.a
 
 
 
