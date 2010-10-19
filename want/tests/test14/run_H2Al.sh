@@ -167,6 +167,11 @@ fi
 # eventually clean
 #
 run_clean  RUN=$CLEAN
+#
+if [ "$CLEAN" = "yes" -a -d src ] ; then
+   cd src ; make clean; cd ..
+fi
+   
 
 
 #
