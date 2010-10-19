@@ -194,10 +194,10 @@ END PROGRAM conductor
        !
    ENDIF
    !
-   ALLOCATE ( conduct(ne,1+neigchn), STAT=ierr )
+   ALLOCATE ( conduct(1+neigchn,ne), STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'allocating conduct', ABS(ierr) )
    !
-   ALLOCATE ( conduct_k(ne, 1+neigchn, nkpts_par), STAT=ierr )
+   ALLOCATE ( conduct_k(1+neigchn, nkpts_par,ne), STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'allocating conduct_k', ABS(ierr) )
    !
    !
@@ -373,8 +373,8 @@ END PROGRAM conductor
           ! get the total trace
           DO i=1,dimC
               !
-              conduct(ie_g,1)       = conduct(ie_g,1)      + wk_par(ik) * cond_aux(i)
-              conduct_k(ie_g,1,ik)  = conduct_k(ie_g,1,ik) + wk_par(ik) * cond_aux(i)
+              conduct(1,ie_g)       = conduct(1,ie_g)      + wk_par(ik) * cond_aux(i)
+              conduct_k(1,ik,ie_g)  = conduct_k(1,ik,ie_g) + wk_par(ik) * cond_aux(i)
               !
           ENDDO
           !
@@ -383,10 +383,10 @@ END PROGRAM conductor
           !
           IF ( do_eigenchannels ) THEN
               !
-              conduct( ie_g, 2:neigchn+1 )   = conduct( ie_g, 2:neigchn+1 ) &
+              conduct( 2:neigchn+1, ie_g )   = conduct( 2:neigchn+1, ie_g ) &
                                                   + wk_par(ik) * cond_aux( 1:neigchn )
               !
-              conduct_k(ie_g,2:neigchn+1,ik) = conduct_k(ie_g,2:neigchn+1,ik) &
+              conduct_k(2:neigchn+1,ik,ie_g) = conduct_k(2:neigchn+1,ik,ie_g) &
                                                   + wk_par(ik) * cond_aux( 1:neigchn )
               !
           ENDIF
@@ -484,7 +484,7 @@ END PROGRAM conductor
    CALL write_header( stdout, "Writing data" )
    CALL flush_unit( stdout )
    ! 
-   CALL wd_write_data(aux_unit, ne, egrid, SIZE(conduct,2), conduct, 'conductance' ) 
+   CALL wd_write_data(aux_unit, ne, egrid, SIZE(conduct,1), conduct, 'conductance' ) 
    !
    CALL wd_write_data(aux_unit, ne, egrid, 1, dos, 'doscond' ) 
                             
@@ -506,7 +506,7 @@ END PROGRAM conductor
          WRITE( aux_unit, *) "# E (eV)   cond(E)"
          !
          DO ie_g = 1, ne
-             WRITE( aux_unit, '(2000(f15.9))') egrid(ie_g), conduct_k(ie_g,:,ik) 
+             WRITE( aux_unit, '(2000(f15.9))') egrid(ie_g), conduct_k(:,ik,ie_g) 
          ENDDO
          !
          CLOSE( aux_unit )         

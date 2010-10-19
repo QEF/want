@@ -175,11 +175,17 @@
       IF ( i_end == 0 .OR. i_end == ne ) CALL errore('current','invalid i_end',5)
 
       !
-      !
-      ! simpson routine requires that ndim is an odd number
-      IF ( MOD(ndim, 2) == 0 ) i_end = i_end - 1
+      ! egrid
       !
       ndim = i_end - i_start + 1
+      !
+      ! simpson routine requires that ndim is an odd number
+      !
+      IF ( MOD(ndim, 2) == 0 ) THEN
+          i_end = i_end - 1
+          ndim  = ndim -1
+      ENDIF
+      !
       de = (egrid(i_end) - egrid(i_start))/REAL(ndim-1, dbl)
 
       !
