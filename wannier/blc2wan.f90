@@ -97,7 +97,8 @@ CONTAINS
    !
    ! Read INPUT namelist from stdin
    !
-   USE io_module,     ONLY : io_init
+   USE mp,            ONLY : mp_bcast
+   USE io_module,     ONLY : io_init, ionode, ionode_id
    !
    IMPLICIT NONE
 
@@ -128,8 +129,26 @@ CONTAINS
 
       CALL input_from_file ( stdin )
       !
-      READ(stdin, INPUT, IOSTAT=ierr)
+      IF (ionode) READ(stdin, INPUT, IOSTAT=ierr)
+      !
+      CALL mp_bcast( ierr, ionode_id )
       IF ( ierr /= 0 )  CALL errore(subname,'Unable to read namelist INPUT',ABS(ierr))
+
+      !
+      ! broadcast
+      !
+      CALL mp_bcast( prefix,            ionode_id )
+      CALL mp_bcast( postfix,           ionode_id )
+      CALL mp_bcast( work_dir,          ionode_id )
+      CALL mp_bcast( filein,            ionode_id )
+      CALL mp_bcast( fileout,           ionode_id )
+      CALL mp_bcast( binary,            ionode_id )
+      CALL mp_bcast( energy_ref,        ionode_id )
+      CALL mp_bcast( spin_component,    ionode_id )
+      CALL mp_bcast( nprint,            ionode_id )
+      CALL mp_bcast( debug_level,       ionode_id )
+      CALL mp_bcast( do_extrapolation,  ionode_id )
+      CALL mp_bcast( verbosity,         ionode_id )      
 
       !
       ! Init
@@ -166,17 +185,20 @@ CONTAINS
       !
       CALL write_header( stdout, "INPUT Summary" )
       !
-      WRITE( stdout,"(/,2x,'      Input file :',3x,a)") TRIM(filein)
-      WRITE( stdout,"(  2x,'     Output file :',3x,a)") TRIM(fileout)
-      !
-      IF ( binary ) THEN
-         WRITE( stdout,"(  2x,'      Output fmt :',3x,a)") "binary"
-      ELSE
-         WRITE( stdout,"(  2x,'      Output fmt :',3x,a)") "textual"
+      IF ( ionode ) THEN
+          !
+          WRITE( stdout,"(/,2x,'      Input file :',3x,a)") TRIM(filein)
+          WRITE( stdout,"(  2x,'     Output file :',3x,a)") TRIM(fileout)
+          !
+          IF ( binary ) THEN
+             WRITE( stdout,"(  2x,'      Output fmt :',3x,a)") "binary"
+          ELSE
+             WRITE( stdout,"(  2x,'      Output fmt :',3x,a)") "textual"
+          ENDIF
+          !
+          WRITE( stdout,"(  2x,'  Spin component :',3x,a)") TRIM(spin_component)
+          !
       ENDIF
-      !
-      WRITE( stdout,"(  2x,'  Spin component :',3x,a)") TRIM(spin_component)
-      !
       !
       CALL timing(subname,OPR='stop')
       !
@@ -195,13 +217,16 @@ END PROGRAM blc2wan
    USE kinds
    USE constants,            ONLY : ZERO, CZERO, TWO, RYD, EPS_m6, EPS_m8
    USE parameters,           ONLY : nstrx
+   USE io_module,            ONLY : ionode, ionode_id
    USE io_module,            ONLY : stdout, work_dir, prefix, postfix
    USE io_module,            ONLY : in_unit => aux1_unit, out_unit => aux2_unit
+   USE mp,                   ONLY : mp_bcast, mp_sum
+   USE mp_global,            ONLY : mpime, nproc
    USE parser_module,        ONLY : log2char, change_case
    USE converters_module,    ONLY : cry2cart
    USE lattice_module,       ONLY : bvec, tpiba
    USE windows_module,       ONLY : nbnd, imin, imax, dimwin, dimwinx
-   USE kpoints_module,       ONLY : nrtot, nkpts, vkpt, ivr, vr
+   USE kpoints_module,       ONLY : nrtot, nkpts_g, vkpt_g, ivr, vr
    USE subspace_module,      ONLY : eamp
    USE localization_module,  ONLY : cu, rave
    USE hamiltonian_module,   ONLY : dimwann, rham
@@ -244,7 +269,7 @@ END PROGRAM blc2wan
       CHARACTER(nstrx)          :: attr, str, grid_units, analyticity
       !
       INTEGER :: ierr
-      INTEGER :: i, j, m, ie, ik, ir, isup, iinf
+      INTEGER :: i, j, m, ie, ik_g, ir, isup, iinf
       INTEGER :: nbnd_file, nkpts_file, nspin_file, nomega
       INTEGER :: ibnd_start, ibnd_end, ispin
       LOGICAL :: lfound, ldynam, lband_diag
@@ -319,7 +344,7 @@ END PROGRAM blc2wan
       IF ( nbnd < nbnd_file )     CALL errore(subname,'nbnd_file too large',3)
       IF ( nkpts_file <= 0  )     CALL errore(subname,'invalid nkpts from file',3)
       !
-      IF ( .NOT. lband_diag .AND. nkpts /= nkpts_file ) &
+      IF ( .NOT. lband_diag .AND. nkpts_g /= nkpts_file ) &
                                   CALL errore(subname,'symmetries not allowed when'//&
                                                       ' opr not diagonal',10)
       !
@@ -339,13 +364,13 @@ END PROGRAM blc2wan
       ALLOCATE( opr_in(nbnd,nbnd), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating opr_in',ABS(ierr))
       !
-      ALLOCATE( oprk(dimwann,dimwann,nkpts), STAT=ierr )
+      ALLOCATE( oprk(dimwann,dimwann,nkpts_g), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating oprk',ABS(ierr))
       !
       ALLOCATE( opr_out(dimwann,dimwann,nrtot), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating opr_out',ABS(ierr))
       !
-      ALLOCATE( cutot(dimwinx,dimwann,nkpts), STAT=ierr )
+      ALLOCATE( cutot(dimwinx,dimwann,nkpts_g), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating opr_out',ABS(ierr))
       !
       ALLOCATE( aux(nbnd_file), STAT=ierr )
@@ -357,10 +382,10 @@ END PROGRAM blc2wan
       ALLOCATE( vkpt_file(3,nkpts_file), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating vkpt_file',ABS(ierr))
       !
-      ALLOCATE( ikmap(nkpts), STAT=ierr )
+      ALLOCATE( ikmap(nkpts_g), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating vkpt_file',ABS(ierr))
       !
-      ALLOCATE( phase(nkpts,nrtot), STAT=ierr )
+      ALLOCATE( phase(nkpts_g,nrtot), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating phase',ABS(ierr))
       !
       ALLOCATE( norms(nrtot), STAT=ierr )     
@@ -406,7 +431,7 @@ END PROGRAM blc2wan
       ! define a mapping between kpts in WanT and kpts from filein
       ! kpts are given in cartesian units (bohr^-1)
       !
-      CALL get_vectmap( nkpts, vkpt, nkpts_file, vkpt_file, .TRUE., EPS_m8, ikmap ) 
+      CALL get_vectmap( nkpts_g, vkpt_g, nkpts_file, vkpt_file, .TRUE., EPS_m8, ikmap ) 
       !
       IF ( ANY( ikmap(:) == 0) ) CALL errore(subname,'invalid ikmap value',10)
       !
@@ -432,23 +457,29 @@ END PROGRAM blc2wan
       !
       ! report data from file
       !
-      WRITE( stdout,"(/,2x,'  Data from file',/)")
-      WRITE( stdout,"(  2x,'            nbnd :',3x,i5)") nbnd_file
-      WRITE( stdout,"(  2x,'           nkpts :',3x,i5)") nkpts_file
-      WRITE( stdout,"(  2x,'           nspin :',3x,i5)") nspin_file
-      WRITE( stdout,"(  2x,' dynam. operator :',3x,a)") TRIM( log2char(ldynam) )
-      IF ( ldynam ) THEN
-         WRITE( stdout,"(  2x,'          nomega :',3x,i5)") nomega
-         WRITE( stdout,"(  2x,'     analitycity :',3x,a)") TRIM(analyticity)
-      ENDIF
-      WRITE( stdout,"(  2x,'  diag. on bands :',3x,a)") TRIM( log2char(lband_diag) )
-      WRITE( stdout,"(  2x,'      ibnd_start :',3x,i5)") ibnd_start
-      WRITE( stdout,"(  2x,'        ibnd_end :',3x,i5)") ibnd_end
-      WRITE( stdout,"(  2x,'   extrapolation :',3x,a)") &
+      IF ( ionode ) THEN
+          !
+          WRITE( stdout,"(/,2x,'  Data from file',/)")
+          WRITE( stdout,"(  2x,'            nbnd :',3x,i5)") nbnd_file
+          WRITE( stdout,"(  2x,'           nkpts :',3x,i5)") nkpts_file
+          WRITE( stdout,"(  2x,'           nspin :',3x,i5)") nspin_file
+          WRITE( stdout,"(  2x,' dynam. operator :',3x,a)") TRIM( log2char(ldynam) )
+          !
+          IF ( ldynam ) THEN
+             WRITE( stdout,"(  2x,'          nomega :',3x,i5)") nomega
+             WRITE( stdout,"(  2x,'     analitycity :',3x,a)") TRIM(analyticity)
+          ENDIF
+          !
+          WRITE( stdout,"(  2x,'  diag. on bands :',3x,a)") TRIM( log2char(lband_diag) )
+          WRITE( stdout,"(  2x,'      ibnd_start :',3x,i5)") ibnd_start
+          WRITE( stdout,"(  2x,'        ibnd_end :',3x,i5)") ibnd_end
+          WRITE( stdout,"(  2x,'   extrapolation :',3x,a)") &
                     TRIM( log2char(do_extrapolation) )
-      WRITE( stdout,"(  2x,'energy reference :',3x,f10.4)") energy_ref
-      !
-      WRITE( stdout, "()")
+          WRITE( stdout,"(  2x,'energy reference :',3x,f10.4)") energy_ref
+          !
+          WRITE( stdout, "()")
+          !
+      ENDIF
 
 
 !
@@ -463,7 +494,9 @@ END PROGRAM blc2wan
       !
       filename = TRIM(fileout)
       !
-      CALL operator_write_init(out_unit, TRIM(filename), BINARY=binary)
+      IF ( ionode ) THEN
+          CALL operator_write_init(out_unit, TRIM(filename), BINARY=binary)
+      ENDIF
 
       !
       ! apply energy ref (whatever units)
@@ -472,48 +505,27 @@ END PROGRAM blc2wan
           !
           grid(:) = grid(:) - energy_ref
           !
-          CALL operator_write_aux(out_unit, dimwann, ldynam, nomega, 1, nomega, grid, &
-                                  grid_units, analyticity, nrtot, vr, ivr)
+          IF (ionode)  CALL operator_write_aux(out_unit, dimwann, ldynam, nomega, 1, &
+                                               nomega, grid, grid_units, analyticity, &
+                                               nrtot, vr, ivr)
           !
       ELSE
           !
-          CALL operator_write_aux(out_unit, dimwann, ldynam, NOMEGA=nomega, &
-                                  NRTOT=nrtot, VR=vr, IVR=ivr)
+          IF (ionode) CALL operator_write_aux(out_unit, dimwann, ldynam, NOMEGA=nomega, &
+                                              NRTOT=nrtot, VR=vr, IVR=ivr)
           !
       ENDIF
-
-      !CALL iotk_open_write(out_unit, TRIM(filename), BINARY=binary)
-      !
-      !CALL iotk_write_attr(attr,"dimwann", dimwann, FIRST=.TRUE.)
-      !CALL iotk_write_attr(attr,"nrtot",nrtot)
-      !CALL iotk_write_attr(attr,"dynamical", ldynam)
-      !CALL iotk_write_attr(attr,"nomega",nomega)
-      !!
-      !IF ( ldynam ) CALL iotk_write_attr(attr,"analyticity", TRIM(analyticity) )
-      !!
-      !CALL iotk_write_empty(out_unit,"DATA",ATTR=attr)
-      !CALL iotk_write_dat(out_unit,"VR",vr, COLUMNS=3)
-      !CALL iotk_write_dat(out_unit,"IVR",ivr, COLUMNS=3)
-      !!
-      !IF ( ldynam ) THEN
-      !   !
-      !   IF ( LEN_TRIM(grid_units) /= 0 ) THEN
-      !      CALL iotk_write_attr( attr, "units", TRIM(grid_units), FIRST=.TRUE. )
-      !      CALL iotk_write_dat(out_unit,"GRID",grid, ATTR=attr)
-      !   ELSE
-      !      CALL iotk_write_dat(out_unit,"GRID",grid)
-      !   ENDIF
-      !ENDIF
-
 
       !
       ! set the phase factors
       !
       DO ir = 1, nrtot
           !
-          DO ik=1,nkpts
-              arg = DOT_PRODUCT( vkpt(:,ik), vr(:,ir) )
-              phase(ik,ir) = CMPLX( COS(arg), -SIN(arg), dbl )
+          DO ik_g = 1, nkpts_g
+              !
+              arg = DOT_PRODUCT( vkpt_g(:,ik_g), vr(:,ir) )
+              phase(ik_g,ir) = CMPLX( COS(arg), -SIN(arg), dbl )
+              !
           ENDDO
           !
           ! compute also the norms of the vr vectors
@@ -526,12 +538,12 @@ END PROGRAM blc2wan
       !
       ! set the full rotation in k-space
       !
-      DO ik=1,nkpts
+      DO ik_g = 1, nkpts_g
           !
-          cutot(:,:,ik) = CZERO
+          cutot(:,:,ik_g) = CZERO
           !
-          CALL mat_mul( cutot(:,:,ik), eamp(:,:,ik), 'N', cu(:,:,ik), 'N' ,  &
-                        dimwin(ik), dimwann, dimwann)
+          CALL mat_mul( cutot(:,:,ik_g), eamp(:,:,ik_g), 'N', cu(:,:,ik_g), 'N' ,  &
+                        dimwin(ik_g), dimwann, dimwann)
       ENDDO
 
   
@@ -564,7 +576,7 @@ END PROGRAM blc2wan
           !
           ! a brief report
           !
-          IF ( ldynam .AND. ( MOD( ie, nprint) == 0 .OR. ie == 1 )  ) THEN
+          IF ( ionode .AND. ldynam .AND. ( MOD( ie, nprint) == 0 .OR. ie == 1 )  ) THEN
               !
               WRITE( stdout ,"(2x, 'Converting OPR for E( ',i5,' ) = ', f9.5 )") &
                                ie, grid(ie)
@@ -582,9 +594,6 @@ END PROGRAM blc2wan
           CALL iotk_scan_begin(in_unit, TRIM(str), IERR=ierr)
           IF (ierr/=0) CALL errore(subname,'searching for '//TRIM(str),ABS(ierr))
           !
-          !CALL iotk_write_begin(out_unit, TRIM(str), IERR=ierr)
-          !IF (ierr/=0) CALL errore(subname,'writing '//TRIM(str),ABS(ierr))
-          !
           ! spin stuff 
           !
           IF ( nspin_file == 2 ) THEN
@@ -595,7 +604,7 @@ END PROGRAM blc2wan
           ENDIF
 
           kpoints: &
-          DO ik =1, nkpts
+          DO ik_g = 1, nkpts_g
                
                !
                ! reading data from filein
@@ -604,8 +613,8 @@ END PROGRAM blc2wan
                !
                IF ( lband_diag ) THEN 
                    !
-                   CALL iotk_scan_dat(in_unit, "KPT"//TRIM(iotk_index( ikmap(ik) ) ), aux(:), IERR=ierr)
-                   IF (ierr/=0) CALL errore(subname,'reading diag KPT' , ikmap(ik) )
+                   CALL iotk_scan_dat(in_unit, "KPT"//TRIM(iotk_index( ikmap(ik_g) ) ), aux(:), IERR=ierr)
+                   IF (ierr/=0) CALL errore(subname,'reading diag KPT' , ikmap(ik_g) )
                    !
                    DO m = ibnd_start, ibnd_end
                        !
@@ -629,25 +638,20 @@ END PROGRAM blc2wan
                    !
                ELSE
                    ! 
-                   CALL iotk_scan_dat(in_unit,"KPT"//TRIM(iotk_index( ikmap(ik) )),  &
+                   CALL iotk_scan_dat(in_unit,"KPT"//TRIM(iotk_index( ikmap(ik_g) )),  &
                                       opr_in(ibnd_start:ibnd_end, ibnd_start:ibnd_end), &
                                       IERR=ierr)
-                   IF (ierr/=0) CALL errore(subname,'reading full KPT' ,ikmap(ik) )
+                   IF (ierr/=0) CALL errore(subname,'reading full KPT' ,ikmap(ik_g) )
                    !
                ENDIF
 
                !
                ! converting data to oprk(ik) = cutot^dag(ik) * opr_in(ik) * cutot(ik)
                !
-               CALL mat_mul( work, opr_in( imin(ik):imax(ik), imin(ik):imax(ik)), 'N', &
-                             cutot(:,:,ik), 'N', dimwin(ik), dimwann, dimwin(ik) )
-               CALL mat_mul( oprk(:,:,ik), cutot(:,:,ik), 'C', &
-                             work(:,:), 'N', dimwann, dimwann, dimwin(ik) )
-
-               !!
-               !! eventually this writing call may be eliminated
-               !!
-               !CALL iotk_write_dat(out_unit,"KPT"//TRIM(iotk_index(ik)), oprk(:,:,ik))
+               CALL mat_mul( work, opr_in( imin(ik_g):imax(ik_g), imin(ik_g):imax(ik_g)), 'N', &
+                             cutot(:,:,ik_g), 'N', dimwin(ik_g), dimwann, dimwin(ik_g) )
+               CALL mat_mul( oprk(:,:,ik_g), cutot(:,:,ik_g), 'C', &
+                             work(:,:), 'N', dimwann, dimwann, dimwin(ik_g) )
                !
           ENDDO kpoints
           
@@ -672,22 +676,18 @@ END PROGRAM blc2wan
                ! 
                opr_out(:,:,ir) = CZERO
                !
-               DO ik = 1, nkpts
+               DO ik_g = 1, nkpts_g
                    !
                    DO j=1,dimwann
                    DO i=1,dimwann
-                        opr_out(i,j,ir) = opr_out(i,j,ir) + phase(ik,ir) * oprk(i,j,ik)
+                        opr_out(i,j,ir) = opr_out(i,j,ir) + phase(ik_g,ir) * oprk(i,j,ik_g)
                    ENDDO
                    ENDDO
                    !
                ENDDO
                !
-               opr_out(:,:,ir) = opr_out(:,:,ir) / REAL(nkpts, dbl)
+               opr_out(:,:,ir) = opr_out(:,:,ir) / REAL(nkpts_g, dbl)
 
-               !!
-               !! write to file
-               !!
-               !CALL iotk_write_dat(out_unit,"VR"//TRIM(iotk_index(ir)), opr_out(:,:,ir))
 
                !
                ! add the contribution to the localization measure
@@ -706,16 +706,13 @@ END PROGRAM blc2wan
           !
           ! writing to file
           !
-          CALL operator_write_data( out_unit, opr_out, ldynam, IE=ie)
+          IF (ionode) CALL operator_write_data( out_unit, opr_out, ldynam, IE=ie)
 
           !
           ! ending the sections
           !
           CALL iotk_scan_end(in_unit, TRIM(str), IERR=ierr)
           IF (ierr/=0) CALL errore(subname,'ending '//TRIM(str),ABS(ierr))
-          !
-          !CALL iotk_write_end(out_unit, TRIM(str), IERR=ierr)
-          !IF (ierr/=0) CALL errore(subname,'writing end '//TRIM(str),ABS(ierr))
 
           !
           IF ( (MOD( ie, nprint) ==0 .OR. ie == 1) ) THEN
@@ -734,37 +731,41 @@ END PROGRAM blc2wan
       CALL iotk_close_read(in_unit, IERR=ierr)
       IF (ierr/=0) CALL errore(subname,'closing IN_UNIT',ABS(ierr))
       !
-      CALL operator_write_close( out_unit )
+      IF (ionode) CALL operator_write_close( out_unit )
 
 
 !
 ! ... print the localization measure 
 !
       !
-      WRITE(stdout,"(/,2x,'Real space decay of OPR:',/)")
-      WRITE(stdout,"(  5x,'R [cry]     |R| [Bohr]      Norm of Opr(R) [eV]')")
-      !
-      isup = 3    
-      IF ( TRIM(verbosity) == "high" ) isup = MAXVAL( ivr(:,:) ) 
-      !
-      iinf = 0
-      IF ( TRIM(verbosity) == "high" ) iinf = MINVAL( ivr(:,:) ) 
-      !
-      DO ir = 1, nrtot
+      IF ( ionode ) THEN 
           !
-          IF ( ALL( ivr(:,ir) >= iinf .AND. ivr(:,ir) <= isup )  ) THEN
+          WRITE(stdout,"(/,2x,'Real space decay of OPR:',/)")
+          WRITE(stdout,"(  5x,'R [cry]     |R| [Bohr]      Norm of Opr(R) [eV]')")
+          !
+          isup = 3    
+          IF ( TRIM(verbosity) == "high" ) isup = MAXVAL( ivr(:,:) ) 
+          !
+          iinf = 0
+          IF ( TRIM(verbosity) == "high" ) iinf = MINVAL( ivr(:,:) ) 
+          !
+          DO ir = 1, nrtot
               !
-              WRITE(stdout,"(1x,3i4,3x,f11.7,4x,f15.9)") &
-                            ivr(:,ir), vrr(ir), SQRT(  norms(ir) / REAL(dimwann*nomega, dbl) )
-          ENDIF
+              IF ( ALL( ivr(:,ir) >= iinf .AND. ivr(:,ir) <= isup )  ) THEN
+                  !
+                  WRITE(stdout,"(1x,3i4,3x,f11.7,4x,f15.9)") &
+                                ivr(:,ir), vrr(ir), SQRT(  norms(ir) / REAL(dimwann*nomega, dbl) )
+              ENDIF
+              !
+          ENDDO
           !
-      ENDDO
+      ENDIF
       
 
       !
       ! write full information if the case
       !
-      IF ( TRIM(verbosity) == "high" .AND. .NOT. ldynam ) THEN
+      IF ( ionode .AND. TRIM(verbosity) == "high" .AND. .NOT. ldynam ) THEN
           !
           filename = TRIM(work_dir) // '/' // TRIM(prefix) // TRIM(postfix) // &
                      '_decay_opr.dat'
