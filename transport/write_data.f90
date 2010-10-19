@@ -46,7 +46,7 @@ CONTAINS
       !
       INTEGER,      INTENT(IN) :: iunit
       INTEGER,      INTENT(IN) :: ne, dim
-      REAL(dbl),    INTENT(IN) :: mydata(ne,dim)
+      REAL(dbl),    INTENT(IN) :: mydata(dim,ne)
       REAL(dbl),    INTENT(IN) :: egrid(ne)
       CHARACTER(*), INTENT(IN) :: data_type
       !
@@ -63,7 +63,7 @@ CONTAINS
           !
           str = TRIM( int2char(dim+1) )
           DO ie = 1, ne
-              WRITE ( iunit, '('//TRIM(str)//'(f15.9))' ) egrid(ie), mydata(ie,:)
+              WRITE ( iunit, '('//TRIM(str)//'(f15.9))' ) egrid(ie), mydata(:,ie)
           ENDDO
           !
           CLOSE( iunit )
