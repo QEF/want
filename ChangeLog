@@ -4,6 +4,9 @@
 =======================================================
 
 
+Oct 20 2010      Problem (bug?) in g95 when linking ZDOTC. Workaround added to
+                 precompiler by using -D__WORKAROUND_ZDOTC. (AF)
+
 Oct 19 2010      plot.f90 cleaned up (no ifort warninf msgs when writing cube data). 
                  cleanup in writing data and managing arrays in conductor.f90 .
                  Bug fixed in current.f90 . Cleanup in many parts of the code

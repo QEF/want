@@ -201,7 +201,11 @@
               !
               ! last position for ig is dummy
               !
-              Mkb( j1, j2) = ZDOTC ( npwx_g -1, aux1, 1, aux2, 1) 
+#ifdef __WORKAROUND_ZDOTC
+              Mkb( j1, j2) = DOT_PRODUCT( aux1(1:npwx_g-1), aux2(1:npwx_g-1) ) 
+#else
+              Mkb( j1, j2) = ZDOTC( npwx_g -1, aux1, 1, aux2, 1) 
+#endif
               !
           ENDDO
           !
@@ -259,7 +263,11 @@
                   ! first and last positions for ig are dummy
                   ! The first comes as well because G < 0 (instead of being G<=0 )
                   !
+#ifdef __WORKAROUND_ZDOTC
+                  Mkb( j1, j2) = Mkb( j1, j2) + CONJG ( DOT_PRODUCT(aux1(2:npwx_g-1), aux2(2:npwx_g-1) ) )
+#else
                   Mkb( j1, j2) = Mkb( j1, j2) + CONJG ( ZDOTC ( npwx_g -2, aux1(2), 1, aux2(2), 1) )
+#endif
                   !
               ENDDO
               !
