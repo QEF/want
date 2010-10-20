@@ -19,6 +19,7 @@ files.o \
 flush_unit.o \
 input_from_file.o \
 io_global.o \
+iotk_cleanup.o \
 kind.o \
 locate.o \
 log_module.o \

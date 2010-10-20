@@ -61,6 +61,7 @@
                             CALL uspp_deallocate()
                             CALL uspp_param_deallocate()
                             CALL atom_deallocate()
+                            CALL iotk_cleanup()
 
 END SUBROUTINE cleanup
 
