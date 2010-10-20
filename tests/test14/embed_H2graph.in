@@ -12,6 +12,7 @@
    delta = 0.001
    transport_dir = 3
    smearing_type = "lorentzian"
+!   smearing_type = "gaussian"
    use_symm = .TRUE.
    nk(1) = 30
    nk(2) = 30
