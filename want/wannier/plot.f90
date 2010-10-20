@@ -321,7 +321,7 @@ END PROGRAM plot_main
       COMPLEX(dbl) :: caux, cmod
       !
       INTEGER,      ALLOCATABLE :: map(:), istates(:), kmap_aux(:)
-      REAL(dbl),    ALLOCATABLE :: rstates_out(:,:,:)
+      REAL(dbl),    ALLOCATABLE :: rstates_out(:,:,:), rstates_aux(:)
       REAL(dbl),    ALLOCATABLE :: tautot(:,:), tau_cry(:,:)
       REAL(dbl),    ALLOCATABLE :: vkpt_cry(:,:), vkpt_aux_cry(:,:), vkpt_aux(:,:)
       REAL(dbl),    ALLOCATABLE :: rave_cry(:,:), rave_shift(:,:)
@@ -1402,6 +1402,9 @@ END PROGRAM plot_main
 
           SELECT CASE ( TRIM(output_fmt) )
           CASE( "cube", "plt" )
+              !
+              ALLOCATE( rstates_aux( nrzl:nrzh ), STAT=ierr ) 
+              IF (ierr/=0) CALL errore(subname,'allocating rstates_aux',ABS(ierr))
 
               ! 
               ! bohr
@@ -1425,11 +1428,17 @@ END PROGRAM plot_main
     
                   DO nx = nrxl, nrxh
                   DO ny = nryl, nryh
-                      WRITE( aux_unit, "(6e13.5)" ) rstates_out( nx, ny, : )
+                      !
+                      rstates_aux(nrzl:nrzh) = rstates_out( nx, ny, nrzl:nrzh )
+                      WRITE( aux_unit, "(6e13.5)" ) rstates_aux
+                      !
                   ENDDO
                   ENDDO
                   !
               ENDIF
+              !
+              DEALLOCATE( rstates_aux, STAT=ierr ) 
+              IF (ierr/=0) CALL errore(subname,'deallocating rstates_aux',ABS(ierr))
 
           CASE( "txt" )
 

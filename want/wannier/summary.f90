@@ -300,8 +300,18 @@ CONTAINS
        WRITE(iunit, " (  ' <LATTICE>')" )
        WRITE(iunit, " (2x,'Alat  = ', F15.7, ' (Bohr)' )" ) alat
        WRITE(iunit, " (2x,'Alat  = ', F15.7, ' (Ang )' )" ) alat * BOHR
-       WRITE(iunit, " (2x,'Omega = ', F15.7, ' (Bohr^3)' )" ) omega
-       WRITE(iunit, " (2x,'Omega = ', F15.7, ' (Ang^3 )',/ )" ) omega * BOHR**3
+       IF ( omega < 500000 ) THEN
+           !
+           WRITE(iunit, " (2x,'Omega = ', F15.7, ' (Bohr^3)' )" ) omega
+           WRITE(iunit, " (2x,'Omega = ', F15.7, ' (Ang^3 )',/ )" ) omega * BOHR**3
+           !
+       ELSE
+           !
+           WRITE(iunit, " (2x,'Omega = ', E15.7, ' (Bohr^3)' )" ) omega
+           WRITE(iunit, " (2x,'Omega = ', E15.7, ' (Ang^3 )',/ )" ) omega * BOHR**3
+           !
+       ENDIF
+       !
        WRITE(iunit, " (2x, 'Crystal axes:' ) ")
        WRITE(iunit, " (16x,'in Bohr units',27x,'in Alat units' )")
        DO j=1,3

@@ -113,7 +113,7 @@
             ENDDO
             ENDDO
             !
-            CALL gzero_maker( hdim, haux, s00, haux_eff, 'inverse', TRIM(smearing_type) )
+            CALL gzero_maker( hdim, haux, s00, hdim, haux_eff, 'inverse', TRIM(smearing_type) )
             !
             !
             ! now FT back khaux(k) to c00_eff c01_eff

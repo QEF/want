@@ -341,7 +341,7 @@ END PROGRAM conductor
           ! gC = work^-1  (retarded)
           !=================================== 
           !
-          CALL gzero_maker ( dimC, blc_00C, work(1:dimC,1:dimC), 'inverse')
+          CALL gzero_maker ( dimC, blc_00C, dimx, work, 'inverse')
           !
           work(1:dimC,1:dimC) = work(1:dimC,1:dimC) -sgm_L(:,:,ik) -sgm_R(:,:,ik)
           !
@@ -440,7 +440,7 @@ END PROGRAM conductor
       IF ( MOD( ie_g, nprint) == 0 .OR.  ie_g == iomg_s .OR. ie_g == iomg_e ) THEN
           !
           IF ( ionode ) WRITE(stdout,"(2x,'T matrix converged after avg. # of iterations ',&
-                                      & f8.3,/)") avg_iter
+                                      & f10.3,/)") avg_iter
           !
           CALL timing_upto_now(stdout)
           !
