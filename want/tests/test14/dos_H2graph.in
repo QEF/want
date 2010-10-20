@@ -12,7 +12,8 @@
    nk(2) = 30
    nk(3) = 1
    delta = 0.001
-   smearing_type = 'lorentzian'
+!   smearing_type = 'lorentzian'
+   smearing_type = 'gaussian'
    projdos = .TRUE.
  /
 
