@@ -54,10 +54,13 @@ embed.o : ../wannier/version.o
 embed.o : workspace.o
 hamiltonian_init.o : control.o
 hamiltonian_init.o : hamiltonian.o
+hamiltonian_init.o : ../libs/constants.o
 hamiltonian_init.o : ../libs/kind.o
 hamiltonian_init.o : ../libs/log_module.o
 hamiltonian_init.o : ../libs/mp.o
 hamiltonian_init.o : ../libs/timing.o
+hamiltonian_init.o : ../libs/util.o
+hamiltonian_init.o : ../transport/kpoints.o
 hamiltonian_init.o : ../transport/operator_blc.o
 hamiltonian_init.o : ../wannier/io_module.o
 hamiltonian.o : ../libs/kind.o
