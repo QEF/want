@@ -57,6 +57,8 @@ blc2wan.o : ../libs/constants.o
 blc2wan.o : ../libs/files.o
 blc2wan.o : ../libs/kind.o
 blc2wan.o : ../libs/log_module.o
+blc2wan.o : ../libs/mp_global.o
+blc2wan.o : ../libs/mp.o
 blc2wan.o : ../libs/parameters.o
 blc2wan.o : ../libs/parser.o
 blc2wan.o : ../libs/timing.o
@@ -552,6 +554,7 @@ plot.o : ../libs/fft_scalar.o
 plot.o : ../libs/files.o
 plot.o : ../libs/kind.o
 plot.o : ../libs/log_module.o
+plot.o : ../libs/mp_global.o
 plot.o : ../libs/mp.o
 plot.o : ../libs/parameters.o
 plot.o : ../libs/parser.o
