@@ -68,6 +68,8 @@ case $INPUT in
    (dos_hf)         DOS_HF=yes ;;
    (conductor_hf)   CONDUCTOR_HF=yes ;;
    (want_hf)        BANDS_HF=yes ;  DOS_HF=yes ;  CONDUCTOR_HF=yes ;;
+   (want)           BANDS_LDA=yes ; DOS_LDA=yes ; CONDUCTOR_LDA=yes ;
+                    BANDS_HF=yes ;  DOS_HF=yes ;  CONDUCTOR_HF=yes ;;
    (all)            BANDS_LDA=yes ; DOS_LDA=yes ; CONDUCTOR_LDA=yes ;
                     BANDS_HF=yes ;  DOS_HF=yes ;  CONDUCTOR_HF=yes ;;
    (check)          CHECK=yes ;;
