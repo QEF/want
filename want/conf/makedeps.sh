@@ -11,7 +11,7 @@ BINDIR=$TOPDIR/conf
 
 DIR_LIST="libs wannier transport utility embed"
 SPECIAL_MODULES="etsf_io  etsf_io_tools  etsf_io_low_level \
-                 mkl_dfti.f90  iotk_module "
+                 mkl_dfti.f90  iotk_module  iotk_base  iotk_error_interf"
 
 for DIR in $DIR_LIST
 do
