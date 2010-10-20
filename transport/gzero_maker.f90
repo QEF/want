@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 !
 !*****************************************************************
-   SUBROUTINE gzero_maker( ndim, opr, gzero, calc )
+   SUBROUTINE gzero_maker( ndim, opr, ldgzero, gzero, calc )
    !*****************************************************************
    !
    ! Given \omega S - H, the routine compute the non-interacting 
@@ -41,7 +41,8 @@
    !  
    INTEGER,             INTENT(IN)  :: ndim
    TYPE( operator_blc), INTENT(IN)  :: opr
-   COMPLEX(dbl),        INTENT(OUT) :: gzero(ndim,ndim)
+   INTEGER,             INTENT(IN)  :: ldgzero
+   COMPLEX(dbl),        INTENT(OUT) :: gzero(ldgzero,*)
    CHARACTER(*),        INTENT(IN)  :: calc
    !
    ! local variables
@@ -51,7 +52,7 @@
    REAL(dbl)       :: dx
    COMPLEX(dbl)    :: g1, g2
    REAL(dbl),    ALLOCATABLE :: w(:)
-   COMPLEX(dbl), ALLOCATABLE :: aux(:,:), z(:,:), gw(:)
+   COMPLEX(dbl), ALLOCATABLE :: aux(:,:), z(:,:), gw(:), gzero_(:,:)
    !
    ! end of declarations 
    !
@@ -71,6 +72,9 @@
    IF (ierr/=0) CALL errore(subname,'allocating aux, z',ABS(ierr))
    ALLOCATE( w(ndim), gw(ndim), STAT=ierr )
    IF (ierr/=0) CALL errore(subname,'allocating w, gw',ABS(ierr))
+   !
+   ALLOCATE( gzero_(ndim,ndim), STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,'allocating gzero_',ABS(ierr))
 
 
 
@@ -94,13 +98,13 @@
         CASE ("direct")
             ! calculate the gzero function
             !
-            CALL mat_inv( ndim, aux, gzero, IERR=ierr)
+            CALL mat_inv( ndim, aux, gzero_, IERR=ierr)
             IF (ierr/=0) CALL errore(subname,'inverting aux for lorentzian smearing',ABS(ierr))
             !
         CASE ("inverse")
             ! calculate the gzero^{-1} function
             !
-            gzero = aux
+            gzero_ = aux
             !
         CASE DEFAULT
             CALL errore(subname, 'invalid calculation = '//TRIM(calc), 5)
@@ -209,9 +213,13 @@
         ENDDO
         ENDDO
         !
-        CALL mat_mul( gzero, aux, 'N', z, 'C', ndim, ndim, ndim)
+        CALL mat_mul( gzero_, aux, 'N', z, 'C', ndim, ndim, ndim)
 
    END SELECT
+   !
+   gzero(1:ldgzero,1:ndim) = CZERO
+   gzero(1:ndim, 1:ndim) = gzero_
+
    !
    ! clean up
    !
@@ -219,6 +227,8 @@
    IF (ierr/=0) CALL errore(subname,'deallocating aux, z',ABS(ierr))
    DEALLOCATE( w, gw, STAT=ierr )
    IF (ierr/=0) CALL errore(subname,'deallocating w, gw',ABS(ierr))
+   DEALLOCATE( gzero_, STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,'deallocating gzero_',ABS(ierr))
 
    CALL timing(subname,OPR='stop')
    CALL log_pop(subname)
