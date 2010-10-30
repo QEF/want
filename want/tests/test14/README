@@ -1,20 +1,27 @@
 
 ==============================================================================
-@title@   H2 molecule @ graphene and Al standing layer
+@title@   H2 molecule @ graphene standing layer
 ==============================================================================
 
   DESCRIPTION:
 
   This test shows how to perform a calculation using embed.x
-  First we compute WFs for a layer of graphene or Al atoms with an adsorbed H2 molecule.
-  Then the DOS and pDOS are evaluated using dos.x .
-  At this point, we just focus on the H2 molecule, and treat the Al as a bath,
-  giving rise to an embedding self-energy. The DOS projected on the H2 molecule
+  First we compute WFs for a layer of graphene with an adsorbed H2 molecule.
+  Then the DOS and pDOS are evaluated using dos.x (also including a model self-energy) .
+  At this point, we just focus on the H2 molecule, and treat the graphene layer as a bath,
+  thereby defining an embedding self-energy. The DOS projected on the H2 molecule
   is then evaluated using this special technique, with and without the inclusion
   of a simple (but non-hermitean) static self-energy (just providing a further 
   smearing term).
+  The use of gaussian smearing is also considered.
 
-  RESULTS discussion:
+  The dos files provided by embed.x can be compared with the projdos files generated
+  by dos.x, according to the following:
+
+  dos_H2embed.dat           <-->   SCRATCH/lorentzian_H2graph_WanT_dos-0001.dat 
+  dos_gau_H2embed.dat       <-->   SCRATCH/gaussian_H2graph_WanT_dos-0001.dat 
+  dos_sgm_H2embed.dat       <-->   SCRATCH/sigma_H2graph_WanT_dos-0001.dat 
+
 
 
 
