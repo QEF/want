@@ -28,6 +28,7 @@
    ! ... general parameters
    CHARACTER(30)             :: smearing_type    ! ("lorentzian" | "gaussian" | "fermi-dirac"  |
                                                  !  "marzari-vanderbilt" | "methfessel-paxton" )
+   CHARACTER(30)             :: smearing_type_null 
    REAL(dbl)                 :: delta            ! actual smearing parameter
    REAL(dbl)                 :: delta_ratio      ! delta_pole / delta
                                                  ! (eg 10^-3)
@@ -45,7 +46,8 @@
 !
 
    PUBLIC :: alloc
-   PUBLIC :: delta, delta_ratio, smearing_type
+   PUBLIC :: delta, delta_ratio
+   PUBLIC :: smearing_type, smearing_type_null
    PUBLIC :: nx, dx, xmax, xgrid
    PUBLIC :: g_smear
    !
@@ -114,7 +116,7 @@ CONTAINS
        ! Tmax (FFT extr) = xmax + 2*eps_sx 
        !
 
-       ! define eps_sx  (half of thewidth of the smearing function)
+       ! define eps_sx  (half of the width of the smearing function)
        eps_sx = 15.0_dbl
        !
        eps_px = xmax + eps_sx

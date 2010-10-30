@@ -166,6 +166,7 @@ CONTAINS
    !**********************************************************
       USE T_smearing_module,        ONLY : delta,         &
                                            smearing_type, &
+                                           smearing_type_null, &
                                            delta_ratio, xmax
 
       USE E_input_parameters_module,ONLY : delta_         => delta,         &
@@ -175,10 +176,16 @@ CONTAINS
 
       IMPLICIT NONE
 
-      delta         = delta_
-      smearing_type = smearing_type_
-      delta_ratio   = delta_ratio_
-      xmax          = xmax_
+      delta              = delta_
+      smearing_type      = smearing_type_
+      !
+      smearing_type_null = "lorentzian"
+      IF ( TRIM(smearing_type) /= "lorentzian" ) THEN
+          smearing_type_null = "none"
+      ENDIF
+      !
+      delta_ratio        = delta_ratio_
+      xmax               = xmax_
 
    END SUBROUTINE setup_smearing
 

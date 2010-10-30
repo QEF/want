@@ -60,7 +60,7 @@
    !
    ! opr00%aux = ene * s00 - h00
    !
-   CALL gzero_maker(ndim, opr00, ndim, g0inv, 'inverse')
+   CALL gzero_maker(ndim, opr00, ndim, g0inv, 'inverse', ' ')
 
    SELECT CASE ( igreen )
 

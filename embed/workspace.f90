@@ -24,6 +24,7 @@
    ! 
    COMPLEX(dbl), ALLOCATABLE :: sgm_B(:,:,:)
    COMPLEX(dbl), ALLOCATABLE :: rsgm_B(:,:,:)
+   COMPLEX(dbl), ALLOCATABLE :: gT(:,:)
    COMPLEX(dbl), ALLOCATABLE :: gB(:,:)
    COMPLEX(dbl), ALLOCATABLE :: gE(:,:)
    !
@@ -36,7 +37,7 @@
 
    PUBLIC :: dimT, dimE
    !
-   PUBLIC :: gB, gE
+   PUBLIC :: gT, gB, gE
    PUBLIC :: sgm_B
    PUBLIC :: rsgm_B
    !
@@ -68,6 +69,8 @@ CONTAINS
       ALLOCATE ( rsgm_B(dimE,dimE,nrtot_par), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating rsgm_B', ABS(ierr) )
       !
+      ALLOCATE ( gT(dimT,dimT), STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname,'allocating gT', ABS(ierr) )
       ALLOCATE ( gB(dimB,dimB), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating gB', ABS(ierr) )
       ALLOCATE ( gE(dimE,dimE), STAT=ierr )
@@ -90,8 +93,8 @@ CONTAINS
       DEALLOCATE ( sgm_B, rsgm_B, STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'deallocating sgm_B, rsgm_B', ABS(ierr) )
       !
-      DEALLOCATE ( gB, gE, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'deallocating gB, gE', ABS(ierr) )
+      DEALLOCATE ( gT, gB, gE, STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname,'deallocating gT, gB, gE', ABS(ierr) )
       !
       alloc = .FALSE.   
       !

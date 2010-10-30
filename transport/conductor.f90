@@ -341,7 +341,7 @@ END PROGRAM conductor
           ! gC = work^-1  (retarded)
           !=================================== 
           !
-          CALL gzero_maker ( dimC, blc_00C, dimx, work, 'inverse')
+          CALL gzero_maker ( dimC, blc_00C, dimx, work, 'inverse', ' ')
           !
           work(1:dimC,1:dimC) = work(1:dimC,1:dimC) -sgm_L(:,:,ik) -sgm_R(:,:,ik)
           !

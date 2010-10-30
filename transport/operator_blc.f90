@@ -38,6 +38,7 @@
         INTEGER                 :: nrtot        ! number of 3D R-vects for H and S
         INTEGER                 :: nrtot_sgm    ! number of 3D R-vects for SGM
         LOGICAL                 :: lhave_aux    ! have aux workspace
+        LOGICAL                 :: lhave_sgm_aux! have sgm_aux workspace
         LOGICAL                 :: lhave_ham    ! have hamiltonian
         LOGICAL                 :: lhave_ovp    ! have overlap
         LOGICAL                 :: lhave_corr   ! have correlation
@@ -58,6 +59,7 @@
         COMPLEX(dbl), POINTER   :: S(:,:,:)     ! overlaps
         COMPLEX(dbl), POINTER   :: sgm(:,:,:)   ! correlation self-energy
         COMPLEX(dbl), POINTER   :: aux(:,:)     ! correlation self-energy
+        COMPLEX(dbl), POINTER   :: sgm_aux(:,:) ! auxiliary (smearing) self-energy
         !
         LOGICAL                 :: alloc
         !
@@ -94,6 +96,7 @@ CONTAINS
       obj%nrtot=0
       obj%nrtot_sgm=0
       obj%lhave_aux=.FALSE.
+      obj%lhave_sgm_aux=.FALSE.
       obj%lhave_ovp=.FALSE.
       obj%lhave_corr=.FALSE.
       obj%ldynam_corr=.FALSE.
@@ -108,6 +111,7 @@ CONTAINS
       NULLIFY( obj%S )
       NULLIFY( obj%sgm )
       NULLIFY( obj%aux )
+      NULLIFY( obj%sgm_aux )
       NULLIFY( obj%ivr )
       NULLIFY( obj%ivr_sgm )
       obj%alloc=.FALSE.
@@ -136,7 +140,8 @@ CONTAINS
       !
       CALL operator_blc_allocate( obj1%dim1, obj1%dim2, obj1%nkpts, &
                                   NRTOT=obj1%nrtot, NRTOT_SGM=obj1%nrtot_sgm, &
-                                  LHAVE_AUX=obj1%lhave_aux, LHAVE_HAM=obj1%lhave_ham, &
+                                  LHAVE_AUX=obj1%lhave_aux, LHAVE_SGM_AUX=obj1%lhave_sgm_aux, &
+                                  LHAVE_HAM=obj1%lhave_ham, &
                                   LHAVE_OVP=obj1%lhave_ovp, LHAVE_CORR=obj1%lhave_corr, &
                                   BLC_NAME=TRIM(obj1%blc_name), OBJ=obj2 )
       !
@@ -153,6 +158,7 @@ CONTAINS
       IF ( ASSOCIATED( obj1%S ) )          obj2%S = obj1%S
       IF ( ASSOCIATED( obj1%sgm ) )        obj2%sgm = obj1%sgm
       IF ( ASSOCIATED( obj1%aux ) )        obj2%aux = obj1%aux
+      IF ( ASSOCIATED( obj1%sgm_aux ) )    obj2%sgm_aux = obj1%sgm_aux
       IF ( ASSOCIATED( obj1%ivr ) )        obj2%ivr = obj1%ivr
       IF ( ASSOCIATED( obj1%ivr_sgm ) )    obj2%ivr_sgm = obj1%ivr_sgm
       !
@@ -203,39 +209,40 @@ CONTAINS
       INTEGER,              INTENT(IN)    :: ounit
       TYPE(operator_blc),   INTENT(IN)    :: obj
       !
-      WRITE( ounit, "(/,2x,'     name : ',a)") TRIM(obj%blc_name)
-      WRITE( ounit, "(  2x,'     dim1 : ',i5)") obj%dim1
-      WRITE( ounit, "(  2x,'     dim2 : ',i5)") obj%dim2
-      WRITE( ounit, "(  2x,'    nkpts : ',i5)") obj%nkpts
-      WRITE( ounit, "(  2x,'    nrtot : ',i5)") obj%nrtot
-      WRITE( ounit, "(  2x,'nrtot_sgm : ',i5)") obj%nrtot_sgm
-      WRITE( ounit, "(  2x,' have_aux : ',a)") TRIM( log2char(obj%lhave_aux) )
-      WRITE( ounit, "(  2x,' have_ham : ',a)") TRIM( log2char(obj%lhave_ham) )
-      WRITE( ounit, "(  2x,' have_ovp : ',a)") TRIM( log2char(obj%lhave_ovp) )
-      WRITE( ounit, "(  2x,'have_corr : ',a)") TRIM( log2char(obj%lhave_corr) )
-      WRITE( ounit, "(  2x,' dyn_corr : ',a)") TRIM( log2char(obj%ldynam_corr) )
-      WRITE( ounit, "(  2x,'       ie : ',i5)") obj%ie
-      WRITE( ounit, "(  2x,'       ik : ',i5)") obj%ik
-      WRITE( ounit, "(  2x,'      tag : ',a)") TRIM(obj%tag)
+      WRITE( ounit, "(/,2x,'         name : ',a)") TRIM(obj%blc_name)
+      WRITE( ounit, "(  2x,'         dim1 : ',i5)") obj%dim1
+      WRITE( ounit, "(  2x,'         dim2 : ',i5)") obj%dim2
+      WRITE( ounit, "(  2x,'        nkpts : ',i5)") obj%nkpts
+      WRITE( ounit, "(  2x,'        nrtot : ',i5)") obj%nrtot
+      WRITE( ounit, "(  2x,'    nrtot_sgm : ',i5)") obj%nrtot_sgm
+      WRITE( ounit, "(  2x,'     have_aux : ',a)") TRIM( log2char(obj%lhave_aux) )
+      WRITE( ounit, "(  2x,' have_sgm_aux : ',a)") TRIM( log2char(obj%lhave_sgm_aux) )
+      WRITE( ounit, "(  2x,'     have_ham : ',a)") TRIM( log2char(obj%lhave_ham) )
+      WRITE( ounit, "(  2x,'     have_ovp : ',a)") TRIM( log2char(obj%lhave_ovp) )
+      WRITE( ounit, "(  2x,'    have_corr : ',a)") TRIM( log2char(obj%lhave_corr) )
+      WRITE( ounit, "(  2x,'     dyn_corr : ',a)") TRIM( log2char(obj%ldynam_corr) )
+      WRITE( ounit, "(  2x,'           ie : ',i5)") obj%ie
+      WRITE( ounit, "(  2x,'           ik : ',i5)") obj%ik
+      WRITE( ounit, "(  2x,'          tag : ',a)") TRIM(obj%tag)
       !
    END SUBROUTINE operator_blc_write
 
 
 !****************************************************
    SUBROUTINE operator_blc_allocate(dim1, dim2, nkpts, nrtot, nrtot_sgm, &
-                                    lhave_aux, lhave_ham, lhave_ovp, lhave_corr, &
-                                    blc_name, obj)
+                                    lhave_aux, lhave_sgm_aux, lhave_ham, &
+                                    lhave_ovp, lhave_corr, blc_name, obj)
    !****************************************************
    IMPLICIT NONE
       !
       INTEGER,                 INTENT(IN) :: dim1, dim2, nkpts 
       INTEGER,       OPTIONAL, INTENT(IN) :: nrtot, nrtot_sgm
-      LOGICAL,       OPTIONAL, INTENT(IN) :: lhave_aux, lhave_ham, lhave_ovp, lhave_corr
+      LOGICAL,       OPTIONAL, INTENT(IN) :: lhave_aux, lhave_sgm_aux, lhave_ham, lhave_ovp, lhave_corr
       CHARACTER(*),  OPTIONAL, INTENT(IN) :: blc_name
       TYPE(operator_blc),   INTENT(INOUT) :: obj
       !
       CHARACTER(21) :: subname='operator_blc_allocate'
-      LOGICAL       :: lhave_aux_, lhave_ham_, lhave_ovp_, lhave_corr_
+      LOGICAL       :: lhave_aux_, lhave_sgm_aux_, lhave_ham_, lhave_ovp_, lhave_corr_
       INTEGER       :: ierr
    
       CALL log_push(subname)
@@ -273,15 +280,17 @@ CONTAINS
           !
       ENDIF
       !
-      lhave_aux_   = .TRUE.
-      lhave_ham_   = .TRUE.
-      lhave_ovp_   = .TRUE.
-      lhave_corr_  = .FALSE.
+      lhave_aux_     = .TRUE.
+      lhave_sgm_aux_ = .FALSE.
+      lhave_ham_     = .TRUE.
+      lhave_ovp_     = .TRUE.
+      lhave_corr_    = .FALSE.
       !
-      IF ( PRESENT( lhave_aux ) )    lhave_aux_ = lhave_aux
-      IF ( PRESENT( lhave_ham ) )    lhave_ham_ = lhave_ham
-      IF ( PRESENT( lhave_ovp ) )    lhave_ovp_ = lhave_ovp 
-      IF ( PRESENT( lhave_corr ) )  lhave_corr_ = lhave_corr
+      IF ( PRESENT( lhave_aux ) )          lhave_aux_ = lhave_aux
+      IF ( PRESENT( lhave_sgm_aux ) )  lhave_sgm_aux_ = lhave_sgm_aux
+      IF ( PRESENT( lhave_ham ) )          lhave_ham_ = lhave_ham
+      IF ( PRESENT( lhave_ovp ) )          lhave_ovp_ = lhave_ovp 
+      IF ( PRESENT( lhave_corr ) )        lhave_corr_ = lhave_corr
       !
       IF ( PRESENT( blc_name ) ) obj%blc_name = TRIM( blc_name )
  
@@ -314,6 +323,15 @@ CONTAINS
           IF ( ierr/=0 ) CALL errore(subname,'allocating aux',ABS(ierr))
           !
           obj%lhave_aux = .TRUE.
+          !
+      ENDIF
+      !
+      IF ( lhave_sgm_aux_ .AND. .NOT. ASSOCIATED( obj%sgm_aux ) ) THEN
+          !
+          ALLOCATE( obj%sgm_aux(dim1,dim2), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating sgm_aux',ABS(ierr))
+          !
+          obj%lhave_sgm_aux = .TRUE.
           !
       ENDIF
       !
@@ -402,6 +420,10 @@ CONTAINS
       IF ( ASSOCIATED( obj%aux ) ) THEN
           DEALLOCATE( obj%aux, STAT=ierr)
           IF ( ierr/=0 ) CALL errore(subname,'deallocating aux',ABS(ierr))
+      ENDIF
+      IF ( ASSOCIATED( obj%sgm_aux ) ) THEN
+          DEALLOCATE( obj%sgm_aux, STAT=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,'deallocating sgm_aux',ABS(ierr))
       ENDIF
       IF ( ASSOCIATED( obj%H ) ) THEN
           DEALLOCATE( obj%H, STAT=ierr)

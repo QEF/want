@@ -28,7 +28,7 @@
                                     operator_write_aux, operator_write_data
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid, egrid_alloc => alloc
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, vkpt_par3D, wk_par, ivr_par3D, vr_par3D, nrtot_par
-   USE T_smearing_module,    ONLY : smearing_init
+   USE T_smearing_module,    ONLY : smearing_init, smearing_type_null
    USE T_operator_blc_module
    !
    USE E_input_module,       ONLY : input_manager
@@ -36,7 +36,7 @@
    USE E_hamiltonian_module, ONLY : dimx, dimT, dimE, dimB, blc_T, blc_E, blc_B, blc_EB, blc_BE
    USE E_correlation_module, ONLY : lhave_corr, ldynam_corr, correlation_init, correlation_read
    USE E_datafiles_module,   ONLY : datafiles_init
-   USE E_workspace_module,   ONLY : gB, gE, sgm_B, rsgm_B, workspace_allocate
+   USE E_workspace_module,   ONLY : gB, gE, gT, sgm_B, rsgm_B, workspace_allocate
    !
    IMPLICIT NONE
 
@@ -50,6 +50,7 @@
    INTEGER          :: iomg_s, iomg_e
    !   
    REAL(dbl),    ALLOCATABLE :: dos(:)
+   REAL(dbl),    ALLOCATABLE :: dos_T(:)
    COMPLEX(dbl), ALLOCATABLE :: work(:,:)
 
 !
@@ -121,8 +122,8 @@
    !
    CALL workspace_allocate()
 
-   ALLOCATE ( dos(ne), STAT=ierr )
-   IF( ierr /=0 ) CALL errore(subname,'allocating dos', ABS(ierr) )
+   ALLOCATE ( dos(ne), dos_T(ne), STAT=ierr )
+   IF( ierr /=0 ) CALL errore(subname,'allocating dos, dos_T', ABS(ierr) )
    !
    ALLOCATE ( work(dimx,dimx), STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'allocating work', ABS(ierr) )
@@ -200,8 +201,7 @@
           ! gB = (omg -H_B +id )^-1  (retarded)
           !=================================== 
           !
-          CALL gzero_maker ( dimB, blc_B, gB, 'direct')
-          
+          CALL gzero_maker ( dimB, blc_B, dimB, gB, 'direct', smearing_type_null )
 
           ! 
           !=================================== 
@@ -209,14 +209,14 @@
           !=================================== 
           ! 
           ! work = (omg S_EB -H_EB ) * gB
-          CALL mat_mul( work(1:dimE, 1:dimB), blc_EB%aux, 'N', gB, 'N', dimE, dimB, dimB )
+          CALL mat_mul( work, blc_EB%aux, 'N', gB, 'N', dimE, dimB, dimB )
           ! 
           ! sgmB = (omg S_EB -H_EB ) * gB * (omg S -H_BE ) 
           !
           ! note that we do not use EB^dag because of the possiblity to have non-hermitean
           ! self-energies built into the hamiltonians
           !
-          CALL mat_mul( sgm_B(:,:,ik), work(1:dimE, 1:dimB), 'N', blc_BE%aux, 'N', dimE, dimE, dimB )
+          CALL mat_mul( sgm_B(:,:,ik), work, 'N', blc_BE%aux, 'N', dimE, dimE, dimB )
  
 
           ! 
@@ -226,23 +226,35 @@
           !=================================== 
           !
           work = CZERO
-          CALL gzero_maker ( dimE, blc_E, work(1:dimE, 1:dimE), 'inverse')
+          CALL gzero_maker ( dimE, blc_E, dimx, work, 'inverse', smearing_type_null )
           !
           work(1:dimE, 1:dimE) = work(1:dimE, 1:dimE) -sgm_B(:,:,ik)
           !
-          CALL mat_inv( dimE, work(1:dimE, 1:dimE), gE)
+          CALL mat_inv( dimE, work, gE)
+          ! 
+          ! Compute density of states for the conductor layer
+          !
+          DO i = 1, dimE
+              dos(ie) = dos(ie) - wk_par(ik) * AIMAG( gE(i,i) ) / PI
+          ENDDO
 
 
           ! 
           !=================================== 
-          ! Verify data
+          ! construct the overall GF and compute the total DOS
+          ! gT = (omg -H_T )^-1  (retarded)
           !=================================== 
           !
-          ! Compute density of states for the conductor layer
+          work = CZERO
           !
-          DO i = 1, dimE
-             dos(ie) = dos(ie) - wk_par(ik) * AIMAG( gE(i,i) ) / PI
+          work(1:dimT, 1:dimT) = blc_T%aux(:,:)
+          !
+          CALL mat_inv( dimT, work, gT)
+          ! 
+          DO i = 1, dimT
+              dos_T(ie) = dos_T(ie) - wk_par(ik) * AIMAG( gT(i,i) ) / PI
           ENDDO
+
           ! 
       ENDDO kpt_loop 
 
@@ -276,6 +288,7 @@
    ! recover over frequencies
    !
    CALL mp_sum( dos )
+   CALL mp_sum( dos_T )
 
 
    !
@@ -307,8 +320,9 @@
        !
        OPEN ( dos_unit, FILE=TRIM(filename), FORM='formatted' )
        !
+       WRITE( dos_unit, "('# Energy [eV]    dos_E    dos_T')") 
        DO ie = 1, ne
-           WRITE ( dos_unit, '(2(f15.9))' ) egrid(ie), dos(ie)
+           WRITE ( dos_unit, '(3(f15.9))' ) egrid(ie), dos(ie), dos_T(ie)
        ENDDO
        !
        CLOSE( dos_unit )
@@ -327,8 +341,8 @@
    !
    ! clean local memory
    !
-   DEALLOCATE ( dos, STAT=ierr )
-   IF( ierr /=0 ) CALL errore(subname,'deallocating dos', ABS(ierr) )
+   DEALLOCATE ( dos, dos_T, STAT=ierr )
+   IF( ierr /=0 ) CALL errore(subname,'deallocating dos, dos_T', ABS(ierr) )
    !
    DEALLOCATE ( work, STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'deallocating work', ABS(ierr) )
