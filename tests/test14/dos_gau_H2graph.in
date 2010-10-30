@@ -3,16 +3,16 @@
    prefix = 'H2graph'
    postfix = '_WanT'
    work_dir = './SCRATCH'
-   fileout = 'dos_sgm_H2graph.dat'
-   datafile_sgm = './SCRATCH/sigma_H2graph.sgm'
+   fileout = 'dos_H2graph_gaussian.dat'
+   verbosity='high'
    emin  = -5.0
    emax  =  5.0
    ne    = 1000
    nk(1) = 30
    nk(2) = 30
    nk(3) = 1
-   delta = 0.001
-   smearing_type = 'lorentzian'
+   delta = 0.050
+   smearing_type = 'gaussian'
    projdos = .TRUE.
  /
 

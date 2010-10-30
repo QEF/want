@@ -20,9 +20,11 @@ MANUAL=" Usage
  disentangle     select the optimal subspace on which perform the wannier minimization 
  wannier         perform the above cited minimization 
  blc2wan         convert sigma from bloch to WF representation
- dos             projected DOS from WFs
+ dos             projected DOS on WFs (lorentzian smearing)
+ dos_gau         projected DOS on WFs (gaussian smearing)
  dos_sgm         projected DOS from WFs including sigma
- embed           perform the embedding procedure on the H2 molecule
+ embed           perform the embedding procedure on the H2 molecule (lorentzian smearing)
+ embed_gau       perform the embedding procedure with gaussian smearing
  embed_sgm       perform the embedding procedure including sigma
  want            perform ALL want calculations
  all             perform all the above described steps
@@ -56,8 +58,10 @@ DISENTANGLE=
 WANNIER=
 BLC2WAN=
 EMBED=
+EMBED_GAU=
 EMBED_SGM=
 DOS=
+DOS_GAU=
 DOS_SGM=
 CHECK=
 CLEAN=
@@ -75,14 +79,20 @@ case $INPUT in
    (wannier)        WANNIER=yes ;;
    (blc2wan)        BLC2WAN=yes ;;
    (embed)          EMBED=yes ;;
+   (embed_gau)      EMBED_GAU=yes ;;
    (embed_sgm)      EMBED_SGM=yes ;;
    (dos)            DOS=yes ;;
+   (dos_gau)        DOS_GAU=yes ;;
    (dos_sgm)        DOS_SGM=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ; BLC2WAN=yes ;
-                    EMBED=yes ; DOS=yes ;;
+                    EMBED=yes ; DOS=yes ;
+                    EMBED_GAU=yes ; DOS_GAU=yes ;
+                    EMBED_SGM=yes ; DOS_SGM=yes ;;
    (all)            SCF=yes ;   NSCF=yes ;
                     DISENTANGLE=yes ; WANNIER=yes ; BLC2WAN=yes ;
-                    EMBED=yes ; DOS=yes ;;
+                    EMBED=yes ; DOS=yes ;
+                    EMBED_GAU=yes ; DOS_GAU=yes ;
+                    EMBED_SGM=yes ; DOS_SGM=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -149,13 +159,45 @@ run_blc2wan  SUFFIX=$SUFFIX  RUN=$BLC2WAN  PARALLEL=yes
 # running EMBED
 #
 run_embed  SUFFIX=$SUFFIX        RUN=$EMBED      PARALLEL=yes
+run_embed  SUFFIX=_gau${SUFFIX}  RUN=$EMBED_GAU  PARALLEL=yes
 run_embed  SUFFIX=_sgm${SUFFIX}  RUN=$EMBED_SGM  PARALLEL=yes
 
 #
 # running DOS
 #
 run_dos  SUFFIX=$SUFFIX        RUN=$DOS      PARALLEL=yes
+#
+# rename projdos files
+#
+if [ "$DOS" = "yes" ] ; then
+   list=`ls SCRATCH/*H2graph_WanT_dos* 2> /dev/null`
+   for file in $list ; do
+      mv $file lorentzian_$file      
+   done
+fi
+
+run_dos  SUFFIX=_gau${SUFFIX}  RUN=$DOS_GAU  PARALLEL=yes
+#
+# rename projdos files
+#
+if [ "$DOS_GAU" = "yes" ] ; then
+   list=`ls SCRATCH/*H2graph_WanT_dos* 2> /dev/null`
+   for file in $list ; do
+      mv $file gaussian_$file      
+   done
+fi
+
 run_dos  SUFFIX=_sgm${SUFFIX}  RUN=$DOS_SGM  PARALLEL=yes
+#
+# rename projdos files
+#
+if [ "$DOS_GAU" = "yes" ] ; then
+   list=`ls SCRATCH/*H2graph_WanT_dos* 2> /dev/null`
+   for file in $list ; do
+      mv $file sigma_$file      
+   done
+fi
+
 
 
 
