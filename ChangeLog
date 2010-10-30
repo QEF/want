@@ -4,6 +4,11 @@
 =======================================================
 
 
+Oct 30 2010      Bug fixed in embed when using smearing different from lorentzian.
+                 Test14 updated with an example of gaussian smearing. (AF)
+
+Oct 24 2010      Further cleanup in embed.f90 and util.f90 . (AF)
+
 Oct 20 2010      Problem (bug?) in g95 when linking ZDOTC. Workaround added to
                  precompiler by using -D__WORKAROUND_ZDOTC. iotk_cleanup added. (AF)
 
