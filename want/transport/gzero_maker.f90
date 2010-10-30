@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 !
 !*****************************************************************
-   SUBROUTINE gzero_maker( ndim, opr, ldgzero, gzero, calc )
+   SUBROUTINE gzero_maker( ndim, opr, ldgzero, gzero, calc, smearing_type_ )
    !*****************************************************************
    !
    ! Given \omega S - H, the routine compute the non-interacting 
@@ -28,7 +28,8 @@
    USE timing_module,          ONLY : timing
    USE log_module,             ONLY : log_push, log_pop
    USE util_module,            ONLY : mat_hdiag, mat_mul, mat_inv, zmat_is_herm, zmat_herm
-   USE T_smearing_module,      ONLY : smear_alloc => alloc, delta, smearing_type, g_smear, &
+   USE T_smearing_module,      ONLY : smear_alloc => alloc, delta, delta_ratio, &
+                                      built_smearing_type => smearing_type, g_smear, &
                                       xgrid_smear => xgrid, &
                                       nx_smear    => nx,    &
                                       dx_smear    => dx
@@ -44,12 +45,14 @@
    INTEGER,             INTENT(IN)  :: ldgzero
    COMPLEX(dbl),        INTENT(OUT) :: gzero(ldgzero,*)
    CHARACTER(*),        INTENT(IN)  :: calc
+   CHARACTER(*),        INTENT(IN)  :: smearing_type_
    !
    ! local variables
    !
    INTEGER         :: i, j, ig, ik, ierr
    CHARACTER(11)   :: subname = 'gzero_maker'
-   REAL(dbl)       :: dx
+   CHARACTER(256)  :: smearing_type
+   REAL(dbl)       :: dx, delta0
    COMPLEX(dbl)    :: g1, g2
    REAL(dbl),    ALLOCATABLE :: w(:)
    COMPLEX(dbl), ALLOCATABLE :: aux(:,:), z(:,:), gw(:), gzero_(:,:)
@@ -67,6 +70,22 @@
       
    IF ( .NOT. smear_alloc ) CALL errore(subname,'smearing module not allocated',1)
    IF ( .NOT. opr%alloc )   CALL errore(subname,'opr not alloc',1)
+   !
+   ! only lorenztian and built_smearing_type are allowed
+   ! smearing_type_ empty means default
+   !
+   smearing_type = TRIM(smearing_type_)
+   !
+   IF ( LEN_TRIM(smearing_type) == 0 ) smearing_type = TRIM( built_smearing_type )
+   !
+   IF ( TRIM( smearing_type ) /= "lorentzian" .AND. &
+        TRIM( smearing_type ) /= "none"       .AND. &
+        TRIM( smearing_type ) /=  TRIM( built_smearing_type )  ) THEN
+       !
+       CALL errore( subname, 'invalid smearing_type: '//TRIM(smearing_type), 10 )
+       !
+   ENDIF
+  
    !
    ALLOCATE( aux(ndim,ndim), z(ndim,ndim), STAT=ierr )
    IF (ierr/=0) CALL errore(subname,'allocating aux, z',ABS(ierr))
@@ -87,12 +106,18 @@
    ik = opr%ik
    !
    SELECT CASE ( TRIM(smearing_type) )
-   CASE ( 'lorentzian' )
+   CASE ( 'lorentzian', 'none' )
+
+        IF ( TRIM(smearing_type) == 'none' ) THEN
+            delta0 = delta * delta_ratio
+        ELSE
+            delta0 = delta
+        ENDIF
         
         !
         ! gzero = ( omega S - H + i delta S)^-1
         !
-        aux(:,:) = opr%aux(:,:) + CI * delta * opr%S(:,:,ik)
+        aux(:,:) = opr%aux(:,:) + CI * delta0 * opr%S(:,:,ik)
         !
         SELECT CASE (TRIM(calc))
         CASE ("direct")

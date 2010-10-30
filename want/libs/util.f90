@@ -1150,8 +1150,8 @@ END SUBROUTINE zmat_diag
    !
    IMPLICIT NONE
    INTEGER,                INTENT(IN)  :: n
-   COMPLEX(dbl),           INTENT(IN)  :: a(n,n)
-   COMPLEX(dbl),           INTENT(OUT) :: z(n,n)
+   COMPLEX(dbl),           INTENT(IN)  :: a(:,:)
+   COMPLEX(dbl),           INTENT(OUT) :: z(:,:)
    COMPLEX(dbl), OPTIONAL, INTENT(OUT) :: det_a
    INTEGER,      OPTIONAL, INTENT(OUT) :: ierr
    !
@@ -1165,7 +1165,7 @@ END SUBROUTINE zmat_diag
    !
    IF ( PRESENT( ierr ) ) ierr=0
    !
-   ldz = n
+   ldz = SIZE(z,1)
    z(1:n,1:n) = a(1:n,1:n)
 
    !
@@ -1325,8 +1325,8 @@ END SUBROUTINE zmat_bnd_inv
    !
    IMPLICIT NONE
    INTEGER,             INTENT(IN)    :: n
-   REAL(dbl),           INTENT(IN)    :: a(n,n)
-   REAL(dbl),           INTENT(OUT)   :: z(n,n)
+   REAL(dbl),           INTENT(IN)    :: a(:,:)
+   REAL(dbl),           INTENT(OUT)   :: z(:,:)
    REAL(dbl), OPTIONAL, INTENT(OUT)   :: det_a
    INTEGER,   OPTIONAL, INTENT(OUT)   :: ierr
    !
@@ -1339,8 +1339,8 @@ END SUBROUTINE zmat_bnd_inv
    !
    !
    IF ( PRESENT( ierr ) ) ierr = 0
-   ldz = n
    !
+   ldz = SIZE(z,1)
    z(1:n,1:n) = a(1:n,1:n)
    !
    ! perform matrix inversion according to LAPACK

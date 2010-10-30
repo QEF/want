@@ -14,6 +14,7 @@
    USE parameters,             ONLY : nstrx
    USE log_module,             ONLY : log_push, log_pop
    !
+   USE T_smearing_module,      ONLY : smearing_type
    USE T_kpoints_module,       ONLY : nkpts_par
    USE T_operator_blc_module
    !
@@ -76,6 +77,7 @@ CONTAINS
    !**********************************************************
    IMPLICIT NONE
       CHARACTER(20)      :: subname="hamiltonian_allocate"
+      LOGICAL            :: lsgm_aux
 
       CALL log_push( subname )
 
@@ -90,6 +92,9 @@ CONTAINS
       !
       dimx = dimT
 
+      lsgm_aux = .FALSE.
+      IF ( TRIM(smearing_type) /= "lorentzian" ) lsgm_aux=.TRUE. 
+
       !
       ! init data
       !
@@ -102,11 +107,11 @@ CONTAINS
       !
       ! allocations
       !
-      CALL operator_blc_allocate( dimT, dimT, nkpts_par, OBJ=blc_T )
-      CALL operator_blc_allocate( dimE, dimE, nkpts_par, OBJ=blc_E )
-      CALL operator_blc_allocate( dimB, dimB, nkpts_par, OBJ=blc_B )
-      CALL operator_blc_allocate( dimE, dimB, nkpts_par, OBJ=blc_EB )
-      CALL operator_blc_allocate( dimB, dimE, nkpts_par, OBJ=blc_BE )
+      CALL operator_blc_allocate( dimT, dimT, nkpts_par, LHAVE_SGM_AUX=lsgm_aux, OBJ=blc_T )
+      CALL operator_blc_allocate( dimE, dimE, nkpts_par, LHAVE_SGM_AUX=lsgm_aux, OBJ=blc_E )
+      CALL operator_blc_allocate( dimB, dimB, nkpts_par, LHAVE_SGM_AUX=lsgm_aux, OBJ=blc_B )
+      CALL operator_blc_allocate( dimE, dimB, nkpts_par, LHAVE_SGM_AUX=lsgm_aux, OBJ=blc_EB )
+      CALL operator_blc_allocate( dimB, dimE, nkpts_par, LHAVE_SGM_AUX=lsgm_aux, OBJ=blc_BE )
       !
       alloc = .TRUE.
 
