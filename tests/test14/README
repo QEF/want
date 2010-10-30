@@ -18,9 +18,9 @@
   The dos files provided by embed.x can be compared with the projdos files generated
   by dos.x, according to the following:
 
-  dos_H2embed.dat           <-->   SCRATCH/lorentzian_H2graph_WanT_dos-0001.dat 
-  dos_gau_H2embed.dat       <-->   SCRATCH/gaussian_H2graph_WanT_dos-0001.dat 
-  dos_sgm_H2embed.dat       <-->   SCRATCH/sigma_H2graph_WanT_dos-0001.dat 
+  dos_H2embed.dat           <-->   SCRATCH/H2graph_WanT_dos-0001.dat.lor 
+  dos_gau_H2embed.dat       <-->   SCRATCH/H2graph_WanT_dos-0001.dat.gau 
+  dos_sgm_H2embed.dat       <-->   SCRATCH/H2graph_WanT_dos-0001.dat.sgm 
 
 
 

@@ -1,14 +1,14 @@
 
 &INPUT
-   postfix = "_H2embed_gaussian"
+   postfix = "_gau_H2embed"
    dim_tot = 46
    dim_emb =  1
    ne   = 1000
    emin =  -5.0
    emax =   5.0
    datafile_tot = "./SCRATCH/H2graph_WanT.ham"
-   datafile_emb = "./SCRATCH/H2embed_gaussian_WanT.ham"
-   datafile_sgm_emb = "./SCRATCH/sgm_H2embed_gaussian_WanT.sgm"
+   datafile_emb = "./SCRATCH/gau_H2embed_WanT.ham"
+   datafile_sgm_emb = "./SCRATCH/gau_H2embed_WanT.sgm"
    delta = 0.050
    transport_dir = 3
    smearing_type = "gaussian"

@@ -3,7 +3,7 @@
    prefix = 'H2graph'
    postfix = '_WanT'
    work_dir = './SCRATCH'
-   fileout = 'dos_H2graph_gaussian.dat'
+   fileout = 'dos_gau_H2graph.dat'
    verbosity='high'
    emin  = -5.0
    emax  =  5.0
