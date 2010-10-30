@@ -8,7 +8,7 @@
    emax =   5.0
    datafile_tot = "./SCRATCH/H2graph_WanT.ham"
    datafile_emb = "./SCRATCH/H2embed_WanT.ham"
-   datafile_sgm_emb = "./SCRATCH/sgm_H2embed_WanT.sgm"
+   datafile_sgm_emb = "./SCRATCH/H2embed_WanT.sgm"
    delta = 0.050
    transport_dir = 3
    smearing_type = "lorentzian"

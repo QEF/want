@@ -158,43 +158,43 @@ run_blc2wan  SUFFIX=$SUFFIX  RUN=$BLC2WAN  PARALLEL=yes
 #
 # running EMBED
 #
-run_embed  SUFFIX=$SUFFIX        RUN=$EMBED      PARALLEL=yes
-run_embed  SUFFIX=_gau${SUFFIX}  RUN=$EMBED_GAU  PARALLEL=yes
-run_embed  SUFFIX=_sgm${SUFFIX}  RUN=$EMBED_SGM  PARALLEL=yes
+run_embed  NAME=EMBED       SUFFIX=$SUFFIX        RUN=$EMBED      PARALLEL=yes
+run_embed  NAME=EMBED_GAU   SUFFIX=_gau${SUFFIX}  RUN=$EMBED_GAU  PARALLEL=yes
+run_embed  NAME=EMBED_SGM   SUFFIX=_sgm${SUFFIX}  RUN=$EMBED_SGM  PARALLEL=yes
 
 #
 # running DOS
 #
-run_dos  SUFFIX=$SUFFIX        RUN=$DOS      PARALLEL=yes
+run_dos  NAME=DOS      SUFFIX=$SUFFIX        RUN=$DOS      PARALLEL=yes
 #
 # rename projdos files
 #
 if [ "$DOS" = "yes" ] ; then
-   list=`ls SCRATCH/*H2graph_WanT_dos* 2> /dev/null`
+   list=`ls SCRATCH/*H2graph_WanT_dos*.dat 2> /dev/null`
    for file in $list ; do
-      mv $file lorentzian_$file      
+      mv $file ${file}.lor      
    done
 fi
 
-run_dos  SUFFIX=_gau${SUFFIX}  RUN=$DOS_GAU  PARALLEL=yes
+run_dos  NAME=DOS_GAU  SUFFIX=_gau${SUFFIX}  RUN=$DOS_GAU  PARALLEL=yes
 #
 # rename projdos files
 #
 if [ "$DOS_GAU" = "yes" ] ; then
-   list=`ls SCRATCH/*H2graph_WanT_dos* 2> /dev/null`
+   list=`ls SCRATCH/*H2graph_WanT_dos*.dat 2> /dev/null`
    for file in $list ; do
-      mv $file gaussian_$file      
+      mv $file ${file}.gau      
    done
 fi
 
-run_dos  SUFFIX=_sgm${SUFFIX}  RUN=$DOS_SGM  PARALLEL=yes
+run_dos  NAME=DOS_SGM  SUFFIX=_sgm${SUFFIX}  RUN=$DOS_SGM  PARALLEL=yes
 #
 # rename projdos files
 #
-if [ "$DOS_GAU" = "yes" ] ; then
-   list=`ls SCRATCH/*H2graph_WanT_dos* 2> /dev/null`
+if [ "$DOS_SGM" = "yes" ] ; then
+   list=`ls SCRATCH/*H2graph_WanT_dos*.dat 2> /dev/null`
    for file in $list ; do
-      mv $file sigma_$file      
+      mv $file ${file}.sgm
    done
 fi
 

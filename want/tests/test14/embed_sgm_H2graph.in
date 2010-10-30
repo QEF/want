@@ -1,13 +1,13 @@
 
 &INPUT
-   postfix = "_H2embed_sgm"
+   postfix = "_sgm_H2embed"
    dim_tot = 46
    dim_emb =  1
    ne   = 1000
    emin =  -5.0
    emax =   5.0
    datafile_tot = "./SCRATCH/H2graph_WanT.ham"
-   datafile_emb = "./SCRATCH/H2embed_WanT.ham"
+   datafile_emb = "./SCRATCH/sgm_H2embed_WanT.ham"
    datafile_sgm_emb = "./SCRATCH/sgm_H2embed_WanT.sgm"
    datafile_sgm     = "./SCRATCH/sigma_H2graph.sgm"
    delta = 0.001
