@@ -11,7 +11,7 @@
    nk(1) = 30
    nk(2) = 30
    nk(3) = 1
-   delta = 0.050
+   delta = 0.150
    smearing_type = 'gaussian'
    projdos = .TRUE.
  /
