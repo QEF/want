@@ -28,7 +28,7 @@
                                     operator_write_aux, operator_write_data
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid, egrid_alloc => alloc
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, vkpt_par3D, wk_par, ivr_par3D, vr_par3D, nrtot_par
-   USE T_smearing_module,    ONLY : smearing_init, smearing_type_null
+   USE T_smearing_module,    ONLY : smearing_init, smearing_type, smearing_type_null
    USE T_operator_blc_module
    !
    USE E_input_module,       ONLY : input_manager
@@ -49,8 +49,7 @@
    INTEGER          :: i, ie, ir, ik, ierr
    INTEGER          :: iomg_s, iomg_e
    !   
-   REAL(dbl),    ALLOCATABLE :: dos(:)
-   REAL(dbl),    ALLOCATABLE :: dos_T(:)
+   REAL(dbl),    ALLOCATABLE :: dos_E(:), gamma_E(:), dos_T(:)
    COMPLEX(dbl), ALLOCATABLE :: work(:,:)
 
 !
@@ -122,8 +121,8 @@
    !
    CALL workspace_allocate()
 
-   ALLOCATE ( dos(ne), dos_T(ne), STAT=ierr )
-   IF( ierr /=0 ) CALL errore(subname,'allocating dos, dos_T', ABS(ierr) )
+   ALLOCATE ( dos_E(ne), gamma_E(ne), dos_T(ne), STAT=ierr )
+   IF( ierr /=0 ) CALL errore(subname,'allocating dos_E, gamma_E, dos_T', ABS(ierr) )
    !
    ALLOCATE ( work(dimx,dimx), STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'allocating work', ABS(ierr) )
@@ -158,7 +157,9 @@
                             ANALYTICITY="retarded", EUNITS="eV" )
 
 
-   dos(:) = ZERO
+   dos_E(:)   = ZERO
+   dos_T(:)   = ZERO
+   gamma_E(:) = ZERO
    !
    energy_loop: &
    DO ie = iomg_s, iomg_e
@@ -235,7 +236,8 @@
           ! Compute density of states for the conductor layer
           !
           DO i = 1, dimE
-              dos(ie) = dos(ie) - wk_par(ik) * AIMAG( gE(i,i) ) / PI
+              dos_E(ie)   = dos_E(ie)   - wk_par(ik) * AIMAG( gE(i,i) ) / PI
+              gamma_E(ie) = gamma_E(ie) + wk_par(ik) * AIMAG( work(i, i) -sgm_B(i,i,ik) )  
           ENDDO
 
 
@@ -245,16 +247,11 @@
           ! gT = (omg -H_T )^-1  (retarded)
           !=================================== 
           !
-          work = CZERO
-          !
-          work(1:dimT, 1:dimT) = blc_T%aux(:,:)
-          !
-          CALL mat_inv( dimT, work, gT)
+          CALL gzero_maker ( dimT, blc_T, dimT, gT, 'direct', smearing_type_null )
           ! 
           DO i = 1, dimT
               dos_T(ie) = dos_T(ie) - wk_par(ik) * AIMAG( gT(i,i) ) / PI
           ENDDO
-
           ! 
       ENDDO kpt_loop 
 
@@ -287,8 +284,9 @@
    !
    ! recover over frequencies
    !
-   CALL mp_sum( dos )
+   CALL mp_sum( dos_E )
    CALL mp_sum( dos_T )
+   CALL mp_sum( gamma_E )
 
 
    !
@@ -320,9 +318,9 @@
        !
        OPEN ( dos_unit, FILE=TRIM(filename), FORM='formatted' )
        !
-       WRITE( dos_unit, "('# Energy [eV]    dos_E    dos_T')") 
+       WRITE( dos_unit, "('# Energy [eV]    dos_E    gamma_E    dos_T')") 
        DO ie = 1, ne
-           WRITE ( dos_unit, '(3(f15.9))' ) egrid(ie), dos(ie), dos_T(ie)
+           WRITE ( dos_unit, '(4(f15.9))' ) egrid(ie), dos_E(ie), gamma_E(ie), dos_T(ie)
        ENDDO
        !
        CLOSE( dos_unit )
@@ -341,8 +339,8 @@
    !
    ! clean local memory
    !
-   DEALLOCATE ( dos, dos_T, STAT=ierr )
-   IF( ierr /=0 ) CALL errore(subname,'deallocating dos, dos_T', ABS(ierr) )
+   DEALLOCATE ( dos_E, gamma_E, dos_T, STAT=ierr )
+   IF( ierr /=0 ) CALL errore(subname,'deallocating dos_E, gamma_E, dos_T', ABS(ierr) )
    !
    DEALLOCATE ( work, STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'deallocating work', ABS(ierr) )
