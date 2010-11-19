@@ -2,7 +2,7 @@
 
 #
 # parse_wannier.awk -- extract sensible information from the
-#                      output file of wannier.x code
+#                      output files the WanT codes
 # 
 
 BEGIN{ converged=0; end_of_iterations=0; program="" }

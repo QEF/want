@@ -65,7 +65,7 @@ ETSF_IO_INCLUDE     = @etsf_io_include@
 #
 NETCDF_LIBS         = @netcdf_libs@
 NETCDF_LIBS_SWITCH  = @netcdf_libs_switch@
-NETCDF_LIBS_INCLUDE = @netcdf_libs_include@
+NETCDF_INCLUDE      = @netcdf_include@
 #
 
 
