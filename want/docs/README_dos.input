@@ -67,6 +67,14 @@ emax          REAL
               upper limit [eV] of the energy grid.
               DEFAULT : +10.0
 
+shift         REAL
+              shift [eV] applied to the energy scale:  omega -> omega+shift
+              DEFAULT : 0.0
+
+scale         REAL
+              scaling factor applied to the outcome DOS and pDOS.
+              DEFAULT : 1.0
+
 delta         REAL
               the smearing parameter [eV] used in the calculation of the DOS.
               DEFAULT : 0.1

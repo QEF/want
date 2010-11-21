@@ -41,6 +41,8 @@
    REAL(dbl)        :: emin          ! egrid extrema
    REAL(dbl)        :: emax
    REAL(dbl)        :: delta         ! smearing parameter
+   REAL(dbl)        :: shift         ! shift energy grid
+   REAL(dbl)        :: scale         ! scale resulting dos
    CHARACTER(nstrx) :: smearing_type
    CHARACTER(nstrx) :: fileout       ! output filename
    LOGICAL          :: projdos       ! whether to write WF projected DOS
@@ -54,7 +56,8 @@
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
                     nk, s, delta, smearing_type, fileout, debug_level,     &
-                    emin, emax, ne, ircut, projdos, nprint, verbosity
+                    emin, emax, ne, ircut, projdos, nprint, verbosity,     &
+                    shift, scale
    !
    ! end of declariations
    !   
@@ -89,7 +92,7 @@
       ! do the main task
       !
       CALL do_dos( fileout, nk, s, delta, smearing_type, emin, emax, ne, &
-                   ircut, projdos, nprint, verbosity )
+                   shift, scale, ircut, projdos, nprint, verbosity )
       !
       ! clean global memory
       !
@@ -137,6 +140,8 @@ CONTAINS
       emin                        = -10.0
       emax                        =  10.0
       ne                          =  1000
+      shift                       = 0.0
+      scale                       = 1.0
       smearing_type               = 'gaussian'
       ircut(1:3)                  =  0
       projdos                     = .FALSE.
@@ -166,6 +171,8 @@ CONTAINS
       CALL mp_bcast( emin,            ionode_id )
       CALL mp_bcast( emax,            ionode_id )
       CALL mp_bcast( ne,              ionode_id )
+      CALL mp_bcast( shift,           ionode_id )
+      CALL mp_bcast( scale,           ionode_id )
       CALL mp_bcast( smearing_type,   ionode_id )
       CALL mp_bcast( ircut,           ionode_id )      
       CALL mp_bcast( projdos,         ionode_id )      
@@ -199,6 +206,7 @@ CONTAINS
       IF ( ne <= 0  )             CALL errore(subname, 'Invalid ne', 4)
       IF ( ANY( ircut(:) < 0 ) )  CALL errore(subname, 'Invalid ircut', 10)
       IF ( nprint <= 0  )         CALL errore(subname, 'invalid nprint', 5)
+      IF ( scale  <= 0.0 )        CALL errore(subname, 'invalid scale', 5)
       !
       nkpts_int = PRODUCT( nk(1:3) )
       IF ( ANY( nk(:) <= 0 ) ) CALL  errore(subname, 'invalid nk', 71) 
@@ -224,6 +232,8 @@ CONTAINS
           WRITE( stdout, "(   7x,'                  emin :',3x,f8.3 )") emin 
           WRITE( stdout, "(   7x,'                  emax :',3x,f8.3 )") emax 
           WRITE( stdout, "(   7x,'                    ne :',3x,i6 )") ne
+          WRITE( stdout, "(   7x,'                 shift :',3x,f8.3 )") shift
+          WRITE( stdout, "(   7x,'                 scale :',3x,f8.3 )") scale
           WRITE( stdout, "(   7x,'                nprint :',3x,i6 )") nprint
           !
           IF ( ANY( ircut(:) > 0 ) ) THEN
@@ -252,7 +262,7 @@ END PROGRAM dos_main
 
 !********************************************************
    SUBROUTINE do_dos( fileout, nk, s, delta, smearing_type, emin, emax, ne, &
-                      ircut, projdos, nprint, verbosity )
+                      shift, scale, ircut, projdos, nprint, verbosity )
    !********************************************************
    !
    ! perform the main task of the calculation
@@ -291,6 +301,7 @@ END PROGRAM dos_main
       REAL(dbl),     INTENT(IN)    :: delta
       INTEGER,       INTENT(INOUT) :: ne
       REAL(dbl),     INTENT(INOUT) :: emin, emax
+      REAL(dbl),     INTENT(IN)    :: shift, scale
       CHARACTER(*),  INTENT(IN)    :: smearing_type
       INTEGER,       INTENT(IN)    :: ircut(3)
       LOGICAL,       INTENT(IN)    :: projdos
@@ -931,14 +942,14 @@ END PROGRAM dos_main
                 !
                 WRITE( aux_unit, *) "# E (eV)   ldos(E)    ldos0(E)"
                 DO ie = 1, ne
-                    WRITE(aux_unit, "(f9.4,2E15.4E3)") egrid(ie), dos(ie), dos0(ie)
+                    WRITE(aux_unit, "(f9.4,2E15.4E3)") egrid(ie)+shift, dos(ie)*scale, dos0(ie)*scale
                 ENDDO
                 !
              ELSE
                 !
                 WRITE( aux_unit, *) "# E (eV)   ldos(E)"
                 DO ie = 1, ne
-                    WRITE(aux_unit, "(f9.4,1E15.4E3)") egrid(ie), dos(ie)
+                    WRITE(aux_unit, "(f9.4,1E15.4E3)") egrid(ie)+shift, dos(ie)*scale
                 ENDDO
                 !
              ENDIF
@@ -965,7 +976,7 @@ END PROGRAM dos_main
               !
               WRITE( aux_unit, *) "# E (eV)   ldos(E)"
               DO ie = 1, ne
-                  WRITE(aux_unit, "(f9.4,1E15.4E3)") egrid(ie), pdos( ie, i)
+                  WRITE(aux_unit, "(f9.4,1E15.4E3)") egrid(ie)+shift, pdos( ie, i)*scale
               ENDDO
               !
               CLOSE( aux_unit )
