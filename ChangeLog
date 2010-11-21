@@ -4,6 +4,8 @@
 =======================================================
 
 
+Nov 21 2010      scale, shift parameters added to dos.f90. (AF)
+
 Oct 31 2010      Bug fixed in embed. Trace of the gamma function (coupling matrix)
                  printed out in the dos file. Test14 updated. (AF)
 
