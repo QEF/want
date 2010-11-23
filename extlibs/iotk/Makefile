@@ -7,7 +7,7 @@ include ../../make.sys
 
 LIBNAME=libiotk.a
 PACKAGE=iotk
-TARBALL=../archive/iotk-1.2.0.tar.gz
+TARBALL=../archive/iotk-1.2.1.tar.gz
 
 #
 # redefinitions
@@ -30,16 +30,20 @@ configure-stamp: uncompress-stamp
 		if test -e ../make.sys ; then rm ../make.sys ; fi ; \
 	        if test -e ../../install/make_iotk.inc ; then \
 	           cp ../../install/make_iotk.inc ../make.sys ; \
+	        fi ; \
+	        if test -e ../../install/iotk_specials.h ; then \
+	           cp ../../install/iotk_specials.h ../iotk/include ; \
 	        fi ) ; \
 	fi
 	if test -d $(PACKAGE) ; then ( cd $(PACKAGE);  \
 	        if test -x ./configure ; then ./configure  \
 	           FC=$(F90) \
-	           IOTK_REAL_KINDS="ALL"; \
-	           IOTK_MAXL_RANK=4; \
+	           IOTK_SAFEST="yes" \
+	           IOTK_MAX_RANK=4; \
 	        fi ) ; \
 	fi
 	touch configure-stamp
+	           #IOTK_REAL_KINDS="ALL" \
 	
 package-ready-stamp: uncompress-stamp configure-stamp
 	if test -d $(PACKAGE) ; then \
