@@ -4,6 +4,9 @@
 =======================================================
 
 
+Nov 23 2010      iotk-lib update to version 1.2.1 . Makefile system slighlty
+                 modified. (AF)
+
 Nov 21 2010      scale, shift parameters added to dos.f90. (AF)
 
 Oct 31 2010      Bug fixed in embed. Trace of the gamma function (coupling matrix)
