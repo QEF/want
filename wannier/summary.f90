@@ -68,7 +68,7 @@ CONTAINS
    USE windows_module,    ONLY : windows_alloc => alloc, dimwin, eig, efermi, nbnd, &
                                  imin, imax, dimfroz, lfrozen, dimwinx, nspin, &
                                  spin_component, win_min, win_max, froz_min, froz_max, &
-                                 iwin_min, iwin_max, ifroz_min, ifroz_max
+                                 iwin_mink, iwin_maxk, ifroz_mink, ifroz_maxk
    USE subspace_module,   ONLY : dimwann, disentangle_thr, alpha_dis, maxiter_dis
    USE localization_module, ONLY : alpha0_wan, alpha1_wan, maxiter0_wan, maxiter1_wan, ncg, &
                                  wannier_thr, a_condmin, niter_condmin, dump_condmin, xcell

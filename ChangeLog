@@ -4,6 +4,11 @@
 =======================================================
 
 
+Nov 24 2010      iwin_max, iwin_min, ifroz_max, ifroz_min renamed as
+                 iwin_maxk, iwin_mink, etc.
+                 iwin_max, iwin_min, ifroz_max, ifroz_min vars added
+                 with the meaning to work on all the kpts. (AF)
+
 Nov 23 2010      iotk-lib update to version 1.2.1 . Makefile system slighlty
                  modified. (AF)
 

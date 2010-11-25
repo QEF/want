@@ -19,7 +19,8 @@
    USE kpoints_module,           ONLY : nkpts_g, kpoints_alloc
    USE io_global_module,         ONLY : ionode, ionode_id
    USE control_module,           ONLY : read_efermi
-   USE input_parameters_module,  ONLY : iwin_min, iwin_max, ifroz_min, ifroz_max
+   USE input_parameters_module,  ONLY : iwin_mink, iwin_maxk, ifroz_mink, ifroz_maxk
+   USE input_parameters_module,  ONLY : iwin_min,  iwin_max,  ifroz_min,  ifroz_max
    USE mp,                       ONLY : mp_bcast
    !
    USE iotk_module
@@ -85,8 +86,9 @@
 !
 
    PUBLIC :: nkpts_g, nbnd, nspin, ispin, spin_component, dimwinx
-   PUBLIC :: win_min,  win_max,  froz_min,  froz_max
-   PUBLIC :: iwin_min, iwin_max, ifroz_min, ifroz_max
+   PUBLIC :: win_min,   win_max,   froz_min,   froz_max
+   PUBLIC :: iwin_min,  iwin_max,  ifroz_min,  ifroz_max
+   PUBLIC :: iwin_mink, iwin_maxk, ifroz_mink, ifroz_maxk
    PUBLIC :: dimwin, imin, imax, eig, efermi, nelec
    PUBLIC :: dimfroz, indxfroz, indxnfroz, lfrozen, frozen
    PUBLIC :: alloc
@@ -142,11 +144,15 @@ CONTAINS
                CALL errore(subname, 'energy window contains no eigenvalues ',1)
 
           !
-          ! iwin_min/iwin_max are either 0 (do the
-          ! standard initizalization) or > 0 if set from input
+          ! iwin_mink/iwin_maxk, iwin_min/iwin_max, are either 0 
+          ! (do the standard initizalization) 
+          ! or > 0 if set from input
           !
-          imin(ik_g) = iwin_min( ik_g )
-          imax(ik_g) = iwin_max( ik_g )
+          IF ( iwin_mink( ik_g ) == 0 ) iwin_mink( ik_g ) = iwin_min
+          IF ( iwin_maxk( ik_g ) == 0 ) iwin_maxk( ik_g ) = iwin_max
+
+          imin(ik_g) = iwin_mink( ik_g )
+          imax(ik_g) = iwin_maxk( ik_g )
           !
           lhave_min = ( imin( ik_g ) /= 0 )
           lhave_max = ( imax( ik_g ) /= 0 )
@@ -210,11 +216,14 @@ CONTAINS
           !
           frozen(:,ik_g) = .FALSE.
           ! 
-          kifroz_min = ifroz_min( ik_g ) 
-          kifroz_max = ifroz_max( ik_g )
+          IF ( ifroz_mink( ik_g ) ==  0 ) ifroz_mink( ik_g ) = ifroz_min
+          IF ( ifroz_maxk( ik_g ) == -1 ) ifroz_maxk( ik_g ) = ifroz_max
           !
-          lhave_min = ( ifroz_min( ik_g ) /=  0 )
-          lhave_max = ( ifroz_max( ik_g ) /= -1 )
+          kifroz_min = ifroz_mink( ik_g ) 
+          kifroz_max = ifroz_maxk( ik_g )
+          !
+          lhave_min = ( ifroz_mink( ik_g ) /=  0 )
+          lhave_max = ( ifroz_maxk( ik_g ) /= -1 )
 
           !
           ! Note that the above obeys kifroz_max-kifroz_min+1=kdimfroz=0,
