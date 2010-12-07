@@ -150,9 +150,24 @@ datafile_R  STRING
             As for datafile_L but for R-lead.
             DEFAULT : mandatory if not calculation_type == "bulk"
 
-datafile_sgm STRING
+datafile_C_sgm  STRING
+            Name of the file containing the correlation self-energy
+            in the C region.  When specified, correlation is included 
+            in the calculation.
+            DEFAULT : ""
+
+datafile_L_sgm  STRING
+            As datafile_C_sgm, but for the L region.
+            DEFAULT : ""
+
+datafile_R_sgm  STRING
+            As datafile_C_sgm, but for the R region.
+            DEFAULT : ""
+
+datafile_sgm    STRING
             Name of the file containing the correlation self-energy. 
             When specified, correlation is included in the calculation.
+            This variable is obsolete and should be substituted by datafile_C_sgm
             DEFAULT : ""
 
 shift_L     REAL
