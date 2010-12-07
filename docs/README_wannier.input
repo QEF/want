@@ -143,16 +143,24 @@ froz_max      REAL
               upper limit [eV] of the frozen window above described.
               DEFAULT : -50000000 (this is a large number which stands for -INF)
 
-iwin_min(:),  INTEGER
-iwin_max(:)   For each kpt, min and max band indexes to define the outer window.
+iwin_mink(:), INTEGER
+iwin_maxk(:)  For each kpt, min and max band indexes to define the outer window.
               They overwrite win_min and win_max and are meant to fine tune
               the outer window in extreme cases. 
               DEFAULT : not used
 
-ifroz_min(:), INTEGER
-ifroz_max(:)  For each kpt, min and max band indexes to define the frozen window.
+iwin_min      INTEGER
+iwin_max      As above, but valid for all the kpts
+              DEFAULT : not used
+
+ifroz_mink(:), INTEGER
+ifroz_maxk(:) For each kpt, min and max band indexes to define the frozen window.
               They overwrite froz_min and froz_max and are meant to fine tune
               the frozen window in extreme cases. 
+              DEFAULT : not used
+
+ifroz_min     INTEGER
+ifroz_max     As above, but valid for all the kpts
               DEFAULT : not used
 
 efermi        REAL
