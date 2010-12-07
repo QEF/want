@@ -96,6 +96,7 @@ hamiltonian.o : ../libs/kind.o
 hamiltonian.o : ../libs/log_module.o
 hamiltonian.o : ../libs/parameters.o
 hamiltonian.o : operator_blc.o
+hamiltonian_setup.o : correlation.o
 hamiltonian_setup.o : egrid.o
 hamiltonian_setup.o : hamiltonian.o
 hamiltonian_setup.o : ../libs/kind.o

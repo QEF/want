@@ -22,10 +22,11 @@
    USE io_module,            ONLY : work_dir, prefix, postfix, ionode
    USE T_hamiltonian_module, ONLY : dimL, dimC, dimR, &
                                     shift_L, shift_C, shift_R, shift_corr
-   USE T_correlation_module, ONLY : lhave_corr
+   USE T_correlation_module, ONLY : lhave_corr, &
+                                    datafile_C_sgm, datafile_L_sgm, datafile_R_sgm
    USE T_control_module,     ONLY : calculation_type, conduct_formula,  &
                                     datafile_C, datafile_L, datafile_R, &
-                                    datafile_sgm, transport_dir, niterx, nprint, & 
+                                    transport_dir, niterx, nprint, & 
                                     write_kdata
    USE T_egrid_module,       ONLY : ne, emin, emax, de
    USE T_smearing_module,    ONLY : delta, smearing_type, nx_smear => nx, xmax
@@ -91,7 +92,9 @@
           WRITE(iunit,"( 7x,'    R-lead datafile :',5x,a)") TRIM(datafile_R)
        ENDIF
        IF (lhave_corr) THEN
-          WRITE(iunit,"( 7x,'       Sgm datafile :',5x,a)") TRIM(datafile_sgm)
+          WRITE(iunit,"( 7x,'     L-Sgm datafile :',5x,a)") TRIM(datafile_L_sgm)
+          WRITE(iunit,"( 7x,'     C-Sgm datafile :',5x,a)") TRIM(datafile_C_sgm)
+          WRITE(iunit,"( 7x,'     R-Sgm datafile :',5x,a)") TRIM(datafile_R_sgm)
        ENDIF
        WRITE( iunit,"( 2x,'</INPUT>',2/)" )
     

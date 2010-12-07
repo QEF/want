@@ -13,7 +13,7 @@
    USE kinds,                   ONLY : dbl
    USE constants,               ONLY : EPS_m6
    USE parameters,              ONLY : nstrx
-   USE io_module,               ONLY : sgm_unit, ionode, ionode_id, stdout
+   USE io_module,               ONLY : ionode, ionode_id, stdout
    USE mp,                      ONLY : mp_bcast
    USE parser_module,           ONLY : change_case
    USE operator_module,         ONLY : operator_read_aux, operator_read_data
@@ -25,7 +25,7 @@
    USE T_hamiltonian_module,    ONLY : dimL, dimC, dimR, &
                                        blc_00L, blc_01L, blc_00R, blc_01R, &
                                        blc_00C, blc_LC,  blc_CR
-   USE T_control_module,        ONLY : calculation_type, transport_dir, datafile_sgm
+   USE T_control_module,        ONLY : calculation_type, transport_dir
    USE T_operator_blc_module
    !
    IMPLICIT NONE
@@ -35,12 +35,18 @@
 !
 ! Contains correlation self-energy data
 ! 
-    INTEGER     :: dimC_corr
-    INTEGER     :: nrtot_corr
+    
+    CHARACTER(nstrx) :: datafile_L_sgm
+    CHARACTER(nstrx) :: datafile_C_sgm
+    CHARACTER(nstrx) :: datafile_R_sgm
+    !
+    REAL(dbl)   :: shift_C_corr
+    !
     LOGICAL     :: lhave_corr   = .FALSE.
     LOGICAL     :: ldynam_corr  = .FALSE.
     !
-    LOGICAL     ::  init = .FALSE.
+    LOGICAL     :: first = .TRUE.
+    LOGICAL     :: init = .FALSE.
 
 
 !
@@ -50,14 +56,15 @@
    PUBLIC :: dimL, dimC, dimR
    PUBLIC :: nkpts_par
    !
-   PUBLIC :: dimC_corr
-   PUBLIC :: nrtot_corr
+   PUBLIC :: datafile_L_sgm, datafile_C_sgm, datafile_R_sgm 
+   !
    PUBLIC :: lhave_corr, ldynam_corr
+   PUBLIC :: shift_C_corr
    !
    PUBLIC :: init
    !
    PUBLIC :: correlation_init
-   PUBLIC :: correlation_sgmread
+   PUBLIC :: correlation_finalize
    PUBLIC :: correlation_read
 
 
@@ -67,296 +74,306 @@ CONTAINS
 ! subroutines
 !
 !**********************************************************
-   SUBROUTINE correlation_init(iunit)
+   SUBROUTINE correlation_init( )
    !**********************************************************
    !
-   ! open the sigma file and allocate the main workspace
-   ! energy grid is read from file
+   ! open the sigma files and allocate the main workspace
+   ! energy grid is read from file if present
    !
    IMPLICIT NONE
-      !
-      ! I/O vars
-      !
-      INTEGER, INTENT(in)   :: iunit
-      !
-      ! local vars
-      !
-      CHARACTER(16)         :: subname="correlation_init"
-      CHARACTER(nstrx)      :: analyticity
-      INTEGER,  ALLOCATABLE :: ivr_corr(:,:)
-      INTEGER               :: ne_corr, ierr
 
-      CALL log_push( 'correlation_init' )
-      IF ( egrid_alloc )   CALL errore(subname,'egrid already allocated', 1 )
+   !
+   ! local vars
+   !
+   CHARACTER(16)         :: subname="correlation_init"
+   INTEGER               :: ierr
 
-      !
-      ! This file must be opened by all the processors
-      !
-      CALL file_open( sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read", IERR=ierr )
-      IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile_sgm), ABS(ierr) )
+!
+!------------------------------
+! main body
+!------------------------------
+!
+   CALL log_push( 'correlation_init' )
+   
 
-      !
-      ! get main data and check them
-      !
-      IF ( ionode ) THEN
-         !
-         CALL operator_read_aux( iunit, DIMWANN=dimC_corr, NR=nrtot_corr, &
-                                 DYNAMICAL=ldynam_corr, &
-                                 NOMEGA=ne_corr, ANALYTICITY=analyticity, IERR=ierr )
-         !
-         IF ( ierr/=0 ) CALL errore(subname,'reading DIMWANN--ANALYTICITY', ABS(ierr))
-         !
-      ENDIF
-      !
-      CALL mp_bcast( dimC_corr,    ionode_id )
-      CALL mp_bcast( nrtot_corr,   ionode_id )
-      CALL mp_bcast( ldynam_corr,  ionode_id )
-      CALL mp_bcast( ne_corr,      ionode_id )
-      CALL mp_bcast( analyticity,  ionode_id )
-      !
-      !
-      IF ( dimC_corr > dimC)               CALL errore(subname,'invalid dimC_corr',3)
-      IF ( nrtot_corr <= 0 )               CALL errore(subname,'invalid nrtot_corr',3)
-      IF ( ne_corr <= 0 .AND. ldynam_corr) CALL errore(subname,'invalid ne_corr',3)
-      !
-      CALL change_case( analyticity, 'lower' )
-      IF ( TRIM(analyticity) /= 'retarded' .AND. ldynam_corr) &
-                CALL errore(subname,'invalid analyticity = '//TRIM(analyticity),1)
-      !
-      !
-      ALLOCATE ( ivr_corr(3,nrtot_corr), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_corr', ABS(ierr) )
-      !
-      IF ( ldynam_corr ) THEN
-          !
-          ne = ne_corr
-          !
-          ALLOCATE( egrid(ne), STAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'allocating egrid',ABS(ierr))
-          !
-      ENDIF
-      !
-      ! init units
-      !
-      blc_00C%iunit_sgm = iunit
-      blc_CR%iunit_sgm  = iunit
-      blc_LC%iunit_sgm  = iunit
-      !
-      IF ( ionode ) THEN
-          !
-          IF ( ldynam_corr ) THEN
-              !
-              CALL operator_read_aux( iunit, GRID=egrid, IVR=ivr_corr, IERR=ierr )
-              IF (ierr/=0) CALL errore(subname,'reading GRID, IVR',ABS(ierr))
-              !
-          ELSE
-              !
-              CALL operator_read_aux( iunit, IVR=ivr_corr, IERR=ierr )
-              IF (ierr/=0) CALL errore(subname,'reading IVR',ABS(ierr))
-              !
-          ENDIF
-          !
-      ENDIF
-      !
-      IF ( ldynam_corr ) CALL mp_bcast( egrid, ionode_id )
-      CALL mp_bcast( ivr_corr, ionode_id )
+   IF ( LEN_TRIM( datafile_C_sgm ) /= 0 ) THEN
+       !
+       CALL correlation_open( blc_00C, datafile_C_sgm )
+       CALL correlation_open( blc_LC,  datafile_C_sgm )
+       CALL correlation_open( blc_CR,  datafile_C_sgm )
+       !
+   ENDIF
+   ! 
+   IF ( LEN_TRIM( datafile_L_sgm ) /= 0 ) THEN
+       !
+       CALL correlation_open( blc_00L, datafile_L_sgm )
+       CALL correlation_open( blc_01L, datafile_L_sgm )
+       !
+   ENDIF
+   ! 
+   IF ( LEN_TRIM( datafile_R_sgm ) /= 0 ) THEN
+       !
+       CALL correlation_open( blc_00R, datafile_L_sgm )
+       CALL correlation_open( blc_01R, datafile_L_sgm )
+       !
+   ENDIF
+   !
+   init = .TRUE.
 
-      !
-      ! store data
-      !
-      CALL operator_blc_allocate( dimC, dimC, nkpts_par, NRTOT_SGM=nrtot_corr, &
-                                  LHAVE_CORR=.TRUE., OBJ=blc_00C)
-      CALL operator_blc_allocate( dimC, dimR, nkpts_par, NRTOT_SGM=nrtot_corr, &
-                                  LHAVE_CORR=.TRUE., OBJ=blc_CR)
-      CALL operator_blc_allocate( dimL, dimC, nkpts_par, NRTOT_SGM=nrtot_corr, &
-                                  LHAVE_CORR=.TRUE., OBJ=blc_LC)
-      !
-      blc_00C%ivr_sgm = ivr_corr
-      blc_CR%ivr_sgm  = ivr_corr
-      blc_LC%ivr_sgm  = ivr_corr
-      !
-      DEALLOCATE ( ivr_corr, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_corr', ABS(ierr) )
+   ! 
+   ! read all data if static 
+   ! 
+   IF ( .NOT. ldynam_corr ) THEN
+       !
+       CALL correlation_read( )
+       !
+   ENDIF
 
-      ! 
-      !
-      ! set further data about the energy grid
-      !
-      IF ( ldynam_corr ) THEN
-          !
-          CALL warning( subname, "energy egrid is forced from SGM datafile" )
-          WRITE( stdout, "()")
-          !
-          emin = egrid(1)
-          emax = egrid(ne)
-          de   = ( emax - emin ) / REAL( ne -1, dbl )  
-          egrid_alloc = .TRUE.
-          !
-      ENDIF
-      !
-      init = .TRUE.
-      !
-      CALL log_pop( 'correlation_init' )
-      ! 
-   END SUBROUTINE correlation_init
+   CALL log_pop( 'correlation_init' )
+   ! 
+END SUBROUTINE correlation_init
 
 
 !**********************************************************
-   SUBROUTINE correlation_sgmread( opr, ie )
+   SUBROUTINE correlation_finalize( )
    !**********************************************************
    !
+   ! close all the sigma files, if the case
+   !
+   USE T_hamiltonian_module,    ONLY : blc_00L, blc_01L, blc_00R, blc_01R, &
+                                       blc_00C, blc_LC,  blc_CR
    IMPLICIT NONE
-      TYPE(operator_blc), INTENT(INOUT) :: opr
-      INTEGER, OPTIONAL,  INTENT(IN)    :: ie
+   !
+   CHARACTER(20)  :: subname='correlation_finalize'
+   INTEGER        :: ierr
+
+!
+!----------------------------------------
+! main Body
+!----------------------------------------
+!
+
+   CALL timing( subname, OPR='start' )
+   CALL log_push( subname )
+   
+
+   IF ( blc_00L%lhave_corr ) THEN
+       CALL file_close(blc_00L%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00L', ABS(ierr) )
+   ENDIF
+   !
+   IF ( blc_01L%lhave_corr ) THEN
+       CALL file_close(blc_01L%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_01L', ABS(ierr) )
+   ENDIF
+   !
+   IF ( blc_00R%lhave_corr ) THEN
+       CALL file_close(blc_00R%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00R', ABS(ierr) )
+   ENDIF
+   !
+   IF ( blc_01R%lhave_corr ) THEN
+       CALL file_close(blc_01R%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_01R', ABS(ierr) )
+   ENDIF
+   !
+   IF ( blc_00C%lhave_corr ) THEN
+       CALL file_close(blc_00C%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00C', ABS(ierr) )
+   ENDIF
+   !
+   IF ( blc_LC%lhave_corr ) THEN
+       CALL file_close(blc_LC%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_LC', ABS(ierr) )
+   ENDIF
+   !
+   IF ( blc_CR%lhave_corr ) THEN
+       CALL file_close(blc_CR%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_CR', ABS(ierr) )
+   ENDIF
+
+   CALL log_pop( subname )
+   CALL timing( subname, OPR='stop' )
+   !
+END SUBROUTINE correlation_finalize
+
+
+!**********************************************************
+   SUBROUTINE correlation_open( opr, datafile )
+   !**********************************************************
+   !
+   ! open the sigma file and allocate the main workspace
+   ! energy grid is read from file if the case
+   !
+   USE iotk_module,   ONLY : iotk_free_unit
+   !
+   IMPLICIT NONE
+   !
+   ! I/O vars
+   !
+   TYPE(operator_blc),      INTENT(INOUT) :: opr
+   CHARACTER(*),            INTENT(IN)    :: datafile
+
+   !
+   ! local vars
+   !
+   CHARACTER(16)     :: subname="correlation_open"
+   CHARACTER(nstrx)  :: analyticity
+   INTEGER           :: iunit
+   LOGICAL           :: ldynam
+   INTEGER           :: dimx_corr, nrtot_corr, ne_corr, ierr
+   !
+   INTEGER,     ALLOCATABLE :: ivr_corr(:,:)
+   REAL(dbl),   ALLOCATABLE :: egrid_corr(:)
+
+!
+!------------------------------
+! main body
+!------------------------------
+!
+   CALL log_push( subname )
+
+   !
+   ! get IO data
+   !
+   CALL iotk_free_unit( iunit )
+   opr%iunit_sgm = iunit
+
+   !
+   ! This file must be opened by all the processors
+   !
+   CALL file_open( iunit, TRIM(datafile), PATH="/", ACTION="read", IERR=ierr )
+   IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile), ABS(ierr) )
+
+   !
+   ! get main data and check them
+   !
+   IF ( ionode ) THEN
       !
-      CHARACTER(19)              :: subname="correlation_sgmread"
-      COMPLEX(dbl), ALLOCATABLE  :: caux(:,:,:), caux_small(:,:,:)
-      LOGICAL                    :: lfound
-      INTEGER                    :: iun
-      INTEGER                    :: ind, ivr_aux(3)
-      INTEGER                    :: i, j, ir, ir_par, ierr
-
-
-      CALL timing( subname, OPR='start' )
-      CALL log_push( subname )
-
-      IF ( .NOT. init ) CALL errore(subname,'correlation not init',71)
-      IF ( opr%iunit_sgm <= 0 )     CALL errore(subname,'invalid unit',71)
- 
-      IF ( .NOT. opr%alloc )        CALL errore(subname,'opr not alloc',71)
-      IF ( opr%dim1 >  dimC_corr )  CALL errore(subname,'invalid dim1',1)
-      IF ( opr%dim2 >  dimC_corr )  CALL errore(subname,'invalid dim2',2)
-      IF ( opr%nkpts /= nkpts_par ) CALL errore(subname,'invalid nkpts',3)
-
-      iun = opr%iunit_sgm
-
+      CALL operator_read_aux( iunit, DIMWANN=dimx_corr, NR=nrtot_corr, &
+                              DYNAMICAL=ldynam, &
+                              NOMEGA=ne_corr, ANALYTICITY=analyticity, IERR=ierr )
       !
-      ! allocate auxiliary quantities
+      IF ( ierr/=0 ) CALL errore(subname,'reading DIMWANN--ANALYTICITY', ABS(ierr))
       !
-      ALLOCATE( caux(dimC_corr, dimC_corr, nrtot_corr), STAT=ierr )
-      IF ( ierr/=0 ) CALL errore(subname, 'allocating caux', ABS(ierr))
-      !
-      ALLOCATE( caux_small(opr%dim1, opr%dim2, nrtot_par), STAT=ierr )
-      IF ( ierr/=0 ) CALL errore(subname, 'allocating caux_small', ABS(ierr))
+   ENDIF
+   !
+   CALL mp_bcast( dimx_corr,    ionode_id )
+   CALL mp_bcast( nrtot_corr,   ionode_id )
+   CALL mp_bcast( ldynam,       ionode_id )
+   CALL mp_bcast( ne_corr,      ionode_id )
+   CALL mp_bcast( analyticity,  ionode_id )
+   !
+   !
+   !IF ( dimx_corr > dimC)              CALL errore(subname,'invalid dimx_corr',3)
+   IF ( nrtot_corr <= 0 )               CALL errore(subname,'invalid nrtot_corr',3)
+   IF ( ne_corr <= 0 .AND. ldynam_corr) CALL errore(subname,'invalid ne_corr',3)
+   !
+   CALL change_case( analyticity, 'lower' )
+   IF ( TRIM(analyticity) /= 'retarded' .AND. ldynam_corr) &
+             CALL errore(subname,'invalid analyticity = '//TRIM(analyticity),1)
+   !
+   IF ( first ) THEN
+       ldynam_corr = ldynam
+       first       = .FALSE.
+   ELSE
+       IF ( .NOT.  ldynam .EQV. ldynam_corr ) &
+          CALL errore(subname,'wrong dynam',10)
+   ENDIF
 
-      !
-      ! get the required data
-      !
-      IF ( PRESENT( ie ) ) THEN
-          !
-          opr%ie = ie
-          CALL operator_read_data( iun, ie, R_OPR=caux, IERR=ierr )
-          !
-      ELSE
-          !
-          CALL operator_read_data( iun, R_OPR=caux, IERR=ierr )
-          !
-      ENDIF
-      !
-      IF ( ierr/=0 ) CALL errore(subname, 'reading data from file', ABS(ierr))
+   !
+   ALLOCATE ( ivr_corr(3,nrtot_corr), STAT=ierr )
+   IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_corr', ABS(ierr) )
+   !
+   !
+   IF ( ldynam_corr ) THEN
+       !
+       ALLOCATE( egrid_corr(ne_corr), STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'allocating egrid_corr',ABS(ierr))
+       !
+   ENDIF
+
+   !
+   ! read data
+   !
+   IF ( ionode ) THEN
+       !
+       IF ( ldynam_corr ) THEN
+           !
+           CALL operator_read_aux( iunit, GRID=egrid_corr, IVR=ivr_corr, IERR=ierr )
+           IF (ierr/=0) CALL errore(subname,'reading GRID, IVR',ABS(ierr))
+           !
+       ELSE
+           !
+           CALL operator_read_aux( iunit, IVR=ivr_corr, IERR=ierr )
+           IF (ierr/=0) CALL errore(subname,'reading IVR',ABS(ierr))
+           !
+       ENDIF
+       !
+   ENDIF
+   !
+   IF ( ldynam_corr ) CALL mp_bcast( egrid, ionode_id )
+   CALL mp_bcast( ivr_corr, ionode_id )
+
+   !
+   ! setting egrid if the case
+   !
+   IF ( ldynam_corr ) THEN
+       !
+       IF ( .NOT. egrid_alloc ) THEN
+           !
+           ne = ne_corr
+           !
+           ALLOCATE( egrid(ne), STAT=ierr )
+           IF (ierr/=0) CALL errore(subname,'allocating egrid',ABS(ierr))
+           !
+           egrid = egrid_corr
+           !
+           CALL warning( subname, "energy egrid is forced from SGM datafile" )
+           WRITE( stdout, "()")
+           !
+           emin = egrid(1)
+           emax = egrid(ne)
+           de   = ( emax - emin ) / REAL( ne -1, dbl )  
+           egrid_alloc = .TRUE.
+           !
+       ELSE
+           !
+           IF ( ne /= ne_corr ) CALL errore(subname,'invalid ne_corr /= ne',10) 
+           !
+       ENDIF
+       !
+       DEALLOCATE( egrid_corr, STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'deallocating egrid_corr',ABS(ierr))
+       !
+   ENDIF
+   
+
+   !
+   ! store data
+   !
+   CALL operator_blc_allocate( opr%dim1, opr%dim2, nkpts_par, NRTOT_SGM=nrtot_corr, &
+                               LHAVE_CORR=.TRUE., OBJ=opr)
+   !
+   opr%ivr_sgm    = ivr_corr
+   opr%dimx_sgm   = dimx_corr
+   !
+   DEALLOCATE ( ivr_corr, STAT=ierr )
+   IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_corr', ABS(ierr) )
 
 
-      !
-      ! get the required matrix elements
-      !
-      R_loop: &
-      DO ir_par = 1, nrtot_par
+   CALL log_pop( 'correlation_open' )
+   ! 
+END SUBROUTINE correlation_open
 
-          !
-          ! set the indexes
-          !
-          j = 0
-          DO i=1,3
-              !
-              ivr_aux(i)=0
-              IF ( i == transport_dir ) THEN
-                  !
-                  ! set ivr_aux(i) = 0 , 1 depending on the
-                  ! required matrix (detected from opr%blc_name)
-                  !
-                  SELECT CASE( TRIM(opr%blc_name) )
-                  !
-                  CASE( "block_00C", "block_00R", "block_00L" )
-                      ivr_aux(i) = 0
-                  CASE( "block_01R", "block_01L", "block_LC", "block_CR" )
-                      ivr_aux(i) = 1
-                  CASE DEFAULT
-                      CALL errore(subname, 'invalid label = '//TRIM(opr%blc_name), 1009 )
-                  END SELECT
-                  !
-              ELSE
-                  !
-                  ! set the 2D parallel indexes
-                  !
-                  j = j + 1
-                  ivr_aux(i) = ivr_par( j, ir_par)
-                  !
-              ENDIF
-              !
-          ENDDO
-      
-          !
-          ! search the 3D index corresponding to ivr_aux
-          !
-          lfound = .FALSE.
-          !
-          DO ir = 1, opr%nrtot_sgm
-              !
-              ind=0
-              !
-              IF ( ALL( opr%ivr_sgm(:,ir) == ivr_aux(:) ) )  THEN
-                  !
-                  lfound = .TRUE.
-                  ind    = ir
-                  EXIT
-                  !
-              ENDIF
-              !
-          ENDDO
-          !
-          IF ( .NOT. lfound ) CALL errore(subname, '3D R-vector not found', ir_par )
-
-
-          !
-          ! cut the operator (caux) 
-          ! according to the required rows and cols
-          !
-          DO j=1,opr%dim2
-          DO i=1,opr%dim1
-              !
-              caux_small(i, j, ir_par) = caux( opr%irows_sgm(i), opr%icols_sgm(j), ind )
-              !
-          ENDDO
-          ENDDO
-          !
-          !
-      ENDDO R_loop
-
-
-      !
-      ! Compute the 2D fourier transform
-      !
-      CALL fourier_par (opr%sgm, opr%dim1, opr%dim2, caux_small, opr%dim1, opr%dim2)
-
-
-      !
-      ! local cleaning
-      !
-      DEALLOCATE( caux, caux_small, STAT=ierr )
-      IF ( ierr/=0 ) CALL errore(subname, 'deallocating caux, caux_small', ABS(ierr))
-
-      CALL timing( subname, OPR='stop' )
-      CALL log_pop( subname )
-      !
-   END SUBROUTINE correlation_sgmread
-    
 
 !*******************************************************************
    SUBROUTINE correlation_read( ie )
    !*******************************************************************
    !
-   ! Read correlation data
-   ! If IE is present, it meas that we are reading a dynamic self-energy
+   ! Read correlation data for all the blocks.
+   ! If IE is present, it means that we are reading 
+   ! dynamic self-energies
    !
    IMPLICIT NONE
 
@@ -369,7 +386,6 @@ CONTAINS
    ! local variables
    !
    CHARACTER(16) :: subname="correlation_read"
-   LOGICAL       :: lopen
 
    !
    ! end of declarations
@@ -392,47 +408,55 @@ CONTAINS
    !
    IF ( PRESENT( ie ) .AND. .NOT. ldynam_corr ) &
        CALL errore(subname,'correlation is not dynamic',10)
-   !
-   ! check units
-   !
-   INQUIRE( blc_00C%iunit_sgm, OPENED=lopen)
-   IF ( .NOT. lopen ) CALL errore(subname,'sgm_00C datafile not connected',10)
-   !
-   INQUIRE( blc_CR%iunit_sgm, OPENED=lopen)
-   IF ( .NOT. lopen ) CALL errore(subname,'sgm_CR datafile not connected',10)
 
-
-   !
-   ! read data
-   !
-   IF ( PRESENT( ie ) ) THEN
-       !
-       CALL correlation_sgmread( blc_00C, IE=ie )
-       CALL correlation_sgmread( blc_CR,  IE=ie )
-       !
-   ELSE
-       !
-       CALL correlation_sgmread( blc_00C )
-       CALL correlation_sgmread( blc_CR  )
-       !
-   ENDIF
 
    !
    ! chose whether to do 'conductor' or 'bulk'
    !
    SELECT CASE ( TRIM(calculation_type) )
-
+   !
    CASE ( "conductor" )
+       !
        !
        IF ( PRESENT( ie ) ) THEN
            !
+           CALL correlation_sgmread( blc_00C, IE=ie )
+           CALL correlation_sgmread( blc_CR,  IE=ie )
            CALL correlation_sgmread( blc_LC,  IE=ie )
+           !
+           CALL correlation_sgmread( blc_00L, IE=ie )
+           CALL correlation_sgmread( blc_01L, IE=ie )
+           CALL correlation_sgmread( blc_00R, IE=ie )
+           CALL correlation_sgmread( blc_01R, IE=ie )
+           !
        ELSE
+           !
+           CALL correlation_sgmread( blc_00C )
+           CALL correlation_sgmread( blc_CR  )
            CALL correlation_sgmread( blc_LC  )
+           !
+           CALL correlation_sgmread( blc_00L )
+           CALL correlation_sgmread( blc_01L )
+           CALL correlation_sgmread( blc_00R )
+           CALL correlation_sgmread( blc_01R )
            !
        ENDIF
        !
+       !
    CASE ( "bulk" )
+       !
+       !
+       IF ( PRESENT( ie ) ) THEN
+           !
+           CALL correlation_sgmread( blc_00C, IE=ie )
+           CALL correlation_sgmread( blc_CR,  IE=ie )
+           !
+       ELSE
+           !
+           CALL correlation_sgmread( blc_00C )
+           CALL correlation_sgmread( blc_CR  )
+           !
+       ENDIF
        !
        ! rearrange the data already read
        !
@@ -441,6 +465,7 @@ CONTAINS
        blc_01L = blc_CR
        blc_01R = blc_CR
        blc_LC  = blc_CR
+       !
        !
    CASE DEFAULT
        !
@@ -455,6 +480,167 @@ CONTAINS
    RETURN
    !
 END SUBROUTINE correlation_read
+
+
+!**********************************************************
+   SUBROUTINE correlation_sgmread( opr, ie )
+   !**********************************************************
+   !
+   IMPLICIT NONE
+   !
+   TYPE(operator_blc), INTENT(INOUT) :: opr
+   INTEGER, OPTIONAL,  INTENT(IN)    :: ie
+   !
+   CHARACTER(19)              :: subname="correlation_sgmread"
+   COMPLEX(dbl), ALLOCATABLE  :: caux(:,:,:), caux_small(:,:,:)
+   LOGICAL                    :: lfound, lopen
+   INTEGER                    :: iun
+   INTEGER                    :: ind, ivr_aux(3)
+   INTEGER                    :: i, j, ir, ir_par, ierr
+
+
+   CALL timing( subname, OPR='start' )
+   CALL log_push( subname )
+
+   IF ( .NOT. init )             CALL errore(subname,'correlation not init',71)
+   IF ( .NOT. opr%alloc )        CALL errore(subname,'opr not alloc',71)
+   IF ( opr%nkpts /= nkpts_par ) CALL errore(subname,'invalid nkpts',3)
+
+   !
+   ! if we do not have any self-energy for this block, 
+   ! return
+   !
+   IF ( .NOT. ASSOCIATED( opr%sgm) ) THEN
+       !
+       CALL timing( subname, OPR='stop' )
+       CALL log_pop( subname )
+       RETURN
+       !
+   ENDIF
+   !
+   iun = opr%iunit_sgm
+
+
+   !
+   ! allocate auxiliary quantities
+   !
+   ALLOCATE( caux( opr%dimx_sgm, opr%dimx_sgm, opr%nrtot_sgm), STAT=ierr )
+   IF ( ierr/=0 ) CALL errore(subname, 'allocating caux', ABS(ierr))
+   !
+   ALLOCATE( caux_small(opr%dim1, opr%dim2, nrtot_par), STAT=ierr )
+   IF ( ierr/=0 ) CALL errore(subname, 'allocating caux_small', ABS(ierr))
+
+   !
+   ! get the required data
+   !
+   IF ( PRESENT( ie ) ) THEN
+       !
+       opr%ie = ie
+       CALL operator_read_data( iun, ie, R_OPR=caux, IERR=ierr )
+       !
+   ELSE
+       !
+       CALL operator_read_data( iun, R_OPR=caux, IERR=ierr )
+       !
+   ENDIF
+   !
+   IF ( ierr/=0 ) CALL errore(subname, 'reading data from file', ABS(ierr))
+
+
+   !
+   ! get the required matrix elements
+   !
+   R_loop: &
+   DO ir_par = 1, nrtot_par
+
+       !
+       ! set the indexes
+       !
+       j = 0
+       DO i=1,3
+           !
+           ivr_aux(i)=0
+           IF ( i == transport_dir ) THEN
+               !
+               ! set ivr_aux(i) = 0 , 1 depending on the
+               ! required matrix (detected from opr%blc_name)
+               !
+               SELECT CASE( TRIM(opr%blc_name) )
+               !
+               CASE( "block_00C", "block_00R", "block_00L" )
+                   ivr_aux(i) = 0
+               CASE( "block_01R", "block_01L", "block_LC", "block_CR" )
+                   ivr_aux(i) = 1
+               CASE DEFAULT
+                   CALL errore(subname, 'invalid label = '//TRIM(opr%blc_name), 1009 )
+               END SELECT
+               !
+           ELSE
+               !
+               ! set the 2D parallel indexes
+               !
+               j = j + 1
+               ivr_aux(i) = ivr_par( j, ir_par)
+               !
+           ENDIF
+           !
+       ENDDO
+   
+       !
+       ! search the 3D index corresponding to ivr_aux
+       !
+       lfound = .FALSE.
+       !
+       DO ir = 1, opr%nrtot_sgm
+           !
+           ind=0
+           !
+           IF ( ALL( opr%ivr_sgm(:,ir) == ivr_aux(:) ) )  THEN
+               !
+               lfound = .TRUE.
+               ind    = ir
+               EXIT
+               !
+           ENDIF
+           !
+       ENDDO
+       !
+       IF ( .NOT. lfound ) CALL errore(subname, '3D R-vector not found', ir_par )
+
+
+       !
+       ! cut the operator (caux) 
+       ! according to the required rows and cols
+       !
+       DO j=1,opr%dim2
+       DO i=1,opr%dim1
+           !
+           caux_small(i, j, ir_par) = caux( opr%irows_sgm(i), opr%icols_sgm(j), ind )
+           !
+       ENDDO
+       ENDDO
+       !
+       !
+   ENDDO R_loop
+
+
+   !
+   ! Compute the 2D fourier transform
+   !
+   CALL fourier_par (opr%sgm, opr%dim1, opr%dim2, caux_small, opr%dim1, opr%dim2)
+
+
+   !
+   ! local cleaning
+   !
+   DEALLOCATE( caux, caux_small, STAT=ierr )
+   IF ( ierr/=0 ) CALL errore(subname, 'deallocating caux, caux_small', ABS(ierr))
+
+   CALL timing( subname, OPR='stop' )
+   CALL log_pop( subname )
+   !
+END SUBROUTINE correlation_sgmread
+    
 
 END MODULE T_correlation_module
 

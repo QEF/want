@@ -86,7 +86,6 @@ CONTAINS
                                            datafile_L,        &
                                            datafile_C,        &
                                            datafile_R,        &
-                                           datafile_sgm,      &
                                            write_kdata,       &
                                            write_lead_sgm,    &
                                            debug_level,       &
@@ -107,7 +106,6 @@ CONTAINS
                                            datafile_L_        => datafile_L, &
                                            datafile_C_        => datafile_C, &
                                            datafile_R_        => datafile_R, &
-                                           datafile_sgm_      => datafile_sgm, &
                                            write_kdata_       => write_kdata, &
                                            write_lead_sgm_    => write_lead_sgm, &
                                            debug_level_       => debug_level, &
@@ -128,7 +126,6 @@ CONTAINS
       datafile_L          = datafile_L_
       datafile_C          = datafile_C_
       datafile_R          = datafile_R_
-      datafile_sgm        = datafile_sgm_
       transport_dir       = transport_dir_
       write_kdata         = write_kdata_
       write_lead_sgm      = write_lead_sgm_
@@ -231,16 +228,14 @@ CONTAINS
                                            ispin,   &
                                            shift_L, &
                                            shift_C, &
-                                           shift_R, &
-                                           shift_corr
+                                           shift_R
       USE T_input_parameters_module,ONLY : dimL_     => dimL,    &
                                            dimR_     => dimR,    &
                                            dimC_     => dimC,    &
                                            ispin_    => ispin,   &
                                            shift_L_  => shift_L, &
                                            shift_C_  => shift_C, &
-                                           shift_R_  => shift_R, &
-                                        shift_corr_  => shift_corr
+                                           shift_R_  => shift_R
       IMPLICIT NONE
       ! 
       dimL            = dimL_
@@ -252,7 +247,6 @@ CONTAINS
       shift_L         = shift_L_
       shift_C         = shift_C_
       shift_R         = shift_R_
-      shift_corr      = shift_corr_
       !
    END SUBROUTINE setup_hamiltonian
 
@@ -274,11 +268,32 @@ CONTAINS
 !**********************************************************
    SUBROUTINE setup_correlation()
    !**********************************************************
-      USE T_correlation_module,     ONLY :     lhave_corr
-      USE T_input_parameters_module,ONLY :     datafile_sgm_ => datafile_sgm
+      USE T_correlation_module,     ONLY :     lhave_corr, &
+                                               shift_C_corr, &
+                                               datafile_L_sgm, &
+                                               datafile_C_sgm, &
+                                               datafile_R_sgm
+      USE T_input_parameters_module,ONLY :     datafile_sgm_   => datafile_sgm, &
+                                               datafile_L_sgm_ => datafile_L_sgm, &
+                                               datafile_C_sgm_ => datafile_C_sgm, &
+                                               datafile_R_sgm_ => datafile_R_sgm, &
+                                               shift_corr_     => shift_corr
       IMPLICIT NONE
     
-      lhave_corr     = LEN_TRIM( datafile_sgm_ ) /= 0
+      datafile_C_sgm   = datafile_C_sgm_
+      datafile_L_sgm   = datafile_L_sgm_
+      datafile_R_sgm   = datafile_R_sgm_
+      !
+      IF ( LEN_TRIM(datafile_sgm_) /=0 .AND. LEN_TRIM(datafile_C_sgm_) == 0 ) THEN
+           datafile_C_sgm = datafile_sgm_     
+      ENDIF
+      !
+      lhave_corr       = ( LEN_TRIM( datafile_L_sgm  ) /= 0  .OR. &
+                           LEN_TRIM( datafile_C_sgm  ) /= 0  .OR. &
+                           LEN_TRIM( datafile_R_sgm  ) /= 0   )
+      !
+      shift_C_corr     = shift_corr_
+
 
    END SUBROUTINE setup_correlation
 
