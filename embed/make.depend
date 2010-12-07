@@ -68,13 +68,15 @@ hamiltonian.o : ../libs/log_module.o
 hamiltonian.o : ../libs/parameters.o
 hamiltonian.o : ../transport/kpoints.o
 hamiltonian.o : ../transport/operator_blc.o
+hamiltonian.o : ../transport/smearing.o
 hamiltonian_setup.o : hamiltonian.o
+hamiltonian_setup.o : ../libs/constants.o
 hamiltonian_setup.o : ../libs/kind.o
 hamiltonian_setup.o : ../libs/log_module.o
 hamiltonian_setup.o : ../libs/timing.o
-hamiltonian_setup.o : ../libs/util.o
 hamiltonian_setup.o : ../transport/egrid.o
 hamiltonian_setup.o : ../transport/operator_blc.o
+hamiltonian_setup.o : ../transport/smearing.o
 input.o : control.o
 input.o : correlation.o
 input.o : hamiltonian.o
