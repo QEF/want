@@ -136,6 +136,11 @@ CONTAINS
           !
       ENDIF
       !
+      ! init units
+      !
+      blc_00C%iunit_sgm = iunit
+      blc_CR%iunit_sgm  = iunit
+      blc_LC%iunit_sgm  = iunit
       !
       IF ( ionode ) THEN
           !
@@ -197,17 +202,17 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE correlation_sgmread( iun, opr, ie )
+   SUBROUTINE correlation_sgmread( opr, ie )
    !**********************************************************
    !
    IMPLICIT NONE
-      INTEGER,            INTENT(IN)    :: iun
       TYPE(operator_blc), INTENT(INOUT) :: opr
       INTEGER, OPTIONAL,  INTENT(IN)    :: ie
       !
       CHARACTER(19)              :: subname="correlation_sgmread"
       COMPLEX(dbl), ALLOCATABLE  :: caux(:,:,:), caux_small(:,:,:)
       LOGICAL                    :: lfound
+      INTEGER                    :: iun
       INTEGER                    :: ind, ivr_aux(3)
       INTEGER                    :: i, j, ir, ir_par, ierr
 
@@ -216,12 +221,14 @@ CONTAINS
       CALL log_push( subname )
 
       IF ( .NOT. init ) CALL errore(subname,'correlation not init',71)
+      IF ( opr%iunit_sgm <= 0 )     CALL errore(subname,'invalid unit',71)
  
       IF ( .NOT. opr%alloc )        CALL errore(subname,'opr not alloc',71)
       IF ( opr%dim1 >  dimC_corr )  CALL errore(subname,'invalid dim1',1)
       IF ( opr%dim2 >  dimC_corr )  CALL errore(subname,'invalid dim2',2)
       IF ( opr%nkpts /= nkpts_par ) CALL errore(subname,'invalid nkpts',3)
 
+      iun = opr%iunit_sgm
 
       !
       ! allocate auxiliary quantities
@@ -386,21 +393,27 @@ CONTAINS
    IF ( PRESENT( ie ) .AND. .NOT. ldynam_corr ) &
        CALL errore(subname,'correlation is not dynamic',10)
    !
-   INQUIRE( sgm_unit, OPENED=lopen)
-   IF ( .NOT. lopen ) CALL errore(subname,'sgm datafile not connected',10)
+   ! check units
+   !
+   INQUIRE( blc_00C%iunit_sgm, OPENED=lopen)
+   IF ( .NOT. lopen ) CALL errore(subname,'sgm_00C datafile not connected',10)
+   !
+   INQUIRE( blc_CR%iunit_sgm, OPENED=lopen)
+   IF ( .NOT. lopen ) CALL errore(subname,'sgm_CR datafile not connected',10)
+
 
    !
    ! read data
    !
    IF ( PRESENT( ie ) ) THEN
        !
-       CALL correlation_sgmread( sgm_unit, blc_00C, IE=ie )
-       CALL correlation_sgmread( sgm_unit, blc_CR,  IE=ie )
+       CALL correlation_sgmread( blc_00C, IE=ie )
+       CALL correlation_sgmread( blc_CR,  IE=ie )
        !
    ELSE
        !
-       CALL correlation_sgmread( sgm_unit, blc_00C )
-       CALL correlation_sgmread( sgm_unit, blc_CR  )
+       CALL correlation_sgmread( blc_00C )
+       CALL correlation_sgmread( blc_CR  )
        !
    ENDIF
 
@@ -413,9 +426,9 @@ CONTAINS
        !
        IF ( PRESENT( ie ) ) THEN
            !
-           CALL correlation_sgmread( sgm_unit, blc_LC,  IE=ie )
+           CALL correlation_sgmread( blc_LC,  IE=ie )
        ELSE
-           CALL correlation_sgmread( sgm_unit, blc_LC  )
+           CALL correlation_sgmread( blc_LC  )
            !
        ENDIF
        !

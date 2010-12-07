@@ -174,7 +174,7 @@ END SUBROUTINE hamiltonian_setup
    COMPLEX(dbl),       INTENT(OUT) :: zmat_O(blc_O%dim1,blc_O%dim2)
    !
    CHARACTER(15)  :: subname='ham_matrix_mask'
-   INTEGER        :: i, j, it, jt, is, js 
+   INTEGER        :: i, j, is, js 
    INTEGER        :: dim1_O, dim2_O, dim1_T, dim2_T  
    INTEGER        :: imap( blc_O%dim1 )
    INTEGER        :: jmap( blc_O%dim2 )

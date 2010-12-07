@@ -23,12 +23,12 @@
    USE mp,                   ONLY : mp_sum
    USE io_module,            ONLY : io_name, ionode, stdout, stdin, sgm_unit, &
                                     dos_unit => aux1_unit, sgmB_unit => aux3_unit, &
-                                    work_dir, prefix, postfix, aux_unit
+                                    aux_unit
    USE operator_module,      ONLY : operator_write_init, operator_write_close, &
                                     operator_write_aux, operator_write_data
    USE T_egrid_module,       ONLY : egrid_init, ne, egrid, egrid_alloc => alloc
    USE T_kpoints_module,     ONLY : kpoints_init, nkpts_par, vkpt_par3D, wk_par, ivr_par3D, vr_par3D, nrtot_par
-   USE T_smearing_module,    ONLY : smearing_init, smearing_type, smearing_type_null
+   USE T_smearing_module,    ONLY : smearing_init, smearing_type_null
    USE T_operator_blc_module
    !
    USE E_input_module,       ONLY : input_manager
