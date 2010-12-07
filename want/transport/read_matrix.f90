@@ -17,7 +17,7 @@
    USE parameters,           ONLY : nstrx
    USE constants,            ONLY : CZERO, CONE
    USE files_module,         ONLY : file_open, file_close
-   USE io_module,            ONLY : stdin, aux_unit, ionode, ionode_id, mpime
+   USE io_module,            ONLY : stdin, aux_unit, ionode, ionode_id
    USE log_module,           ONLY : log_push, log_pop
    USE timing_module,        ONLY : timing
    USE mp,                   ONLY : mp_bcast

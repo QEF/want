@@ -55,7 +55,7 @@ SUBROUTINE ccalbec( nkbx, nkb, npwx, npw, nbnd, bec, vkb, psi )
         CALL DGEMV( 'C', 2*npw, nkb, 2.0_dbl, vkb, 2*npwx, psi, 1, 0.0_dbl, &
                      betapsi, 1 ) 
         !IF ( gstart == 2 ) betapsi(:,1) = betapsi(:,1) - beta(1,:)*psi(1,1)
-        betapsi(:,1) = betapsi(:,1) - vkb(1,:)*psi(1,1)
+        betapsi(:,1) = betapsi(:,1) -vkb(1,:)*psi(1,1)
         !   
      ELSE
         !   

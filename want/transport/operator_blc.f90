@@ -37,6 +37,7 @@
         INTEGER                 :: nkpts        !
         INTEGER                 :: nrtot        ! number of 3D R-vects for H and S
         INTEGER                 :: nrtot_sgm    ! number of 3D R-vects for SGM
+        INTEGER                 :: iunit_sgm    ! fortran unit for sgm
         LOGICAL                 :: lhave_aux    ! have aux workspace
         LOGICAL                 :: lhave_sgm_aux! have sgm_aux workspace
         LOGICAL                 :: lhave_ham    ! have hamiltonian
@@ -94,6 +95,7 @@ CONTAINS
       obj%dim2=0
       obj%nkpts=0
       obj%nrtot=0
+      obj%iunit_sgm=-1
       obj%nrtot_sgm=0
       obj%lhave_aux=.FALSE.
       obj%lhave_sgm_aux=.FALSE.
@@ -146,9 +148,10 @@ CONTAINS
                                   BLC_NAME=TRIM(obj1%blc_name), OBJ=obj2 )
       !
       obj2%ldynam_corr = obj1%ldynam_corr
-      obj2%ie = obj1%ie
-      obj2%ik = obj1%ik
-      obj2%tag = TRIM( obj1%tag )
+      obj2%iunit_sgm   = obj1%iunit_sgm
+      obj2%ie   = obj1%ie
+      obj2%ik   = obj1%ik
+      obj2%tag  = TRIM( obj1%tag )
       !
       IF ( ASSOCIATED( obj1%icols ) )      obj2%icols = obj1%icols
       IF ( ASSOCIATED( obj1%irows ) )      obj2%irows = obj1%irows
@@ -221,6 +224,7 @@ CONTAINS
       WRITE( ounit, "(  2x,'     have_ovp : ',a)") TRIM( log2char(obj%lhave_ovp) )
       WRITE( ounit, "(  2x,'    have_corr : ',a)") TRIM( log2char(obj%lhave_corr) )
       WRITE( ounit, "(  2x,'     dyn_corr : ',a)") TRIM( log2char(obj%ldynam_corr) )
+      WRITE( ounit, "(  2x,'     unit_sgm : ',a)") obj%iunit_sgm
       WRITE( ounit, "(  2x,'           ie : ',i5)") obj%ie
       WRITE( ounit, "(  2x,'           ik : ',i5)") obj%ik
       WRITE( ounit, "(  2x,'          tag : ',a)") TRIM(obj%tag)

@@ -49,8 +49,8 @@
 
    INTEGER       :: i, j, m, ik, ik_g, ir, inorm, imax, imin
    INTEGER       :: ierr
-   REAL(dbl)     :: norm, rmod, fact
-!   REAL(dbl)     :: arg
+   REAL(dbl)     :: norm, rmod
+!   REAL(dbl)     :: arg, fact
 !   COMPLEX(dbl)  :: phase
    COMPLEX(dbl), ALLOCATABLE :: kham(:,:,:)
  
@@ -114,7 +114,8 @@
       ! 
       ! Fourier transform it: H_ij(k) --> H_ij(R) = (1/N_kpts) sum_k e^{-ikR} H_ij(k)
       !
-      fact = ONE / REAL(nkpts_g, dbl)
+
+      !fact = ONE / REAL(nkpts_g, dbl)
       !
       !
       DO ir = 1, nrtot

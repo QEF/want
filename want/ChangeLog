@@ -1,69 +1,72 @@
 
 =======================================================
-            WanT code:  Log of Changes 
+		WanT code:  Log of Changes 
 =======================================================
 
 
-Nov 24 2010      iwin_max, iwin_min, ifroz_max, ifroz_min renamed as
-                 iwin_maxk, iwin_mink, etc.
-                 iwin_max, iwin_min, ifroz_max, ifroz_min vars added
-                 with the meaning to work on all the kpts. (AF)
+Dec 07 2010     Cleanup in embed and transport. vars for correlation sgm's 
+		in the leads added. (AF)
 
-Nov 23 2010      iotk-lib update to version 1.2.1 . Makefile system slighlty
-                 modified. (AF)
+Nov 24 2010     iwin_max, iwin_min, ifroz_max, ifroz_min renamed as
+		iwin_maxk, iwin_mink, etc.
+		iwin_max, iwin_min, ifroz_max, ifroz_min vars added
+		with the meaning to work on all the kpts. (AF)
 
-Nov 21 2010      scale, shift parameters added to dos.f90. (AF)
+Nov 23 2010     iotk-lib update to version 1.2.1 . Makefile system slighlty
+		modified. (AF)
 
-Oct 31 2010      Bug fixed in embed. Trace of the gamma function (coupling matrix)
-                 printed out in the dos file. Test14 updated. (AF)
+Nov 21 2010     scale, shift parameters added to dos.f90. (AF)
 
-Oct 30 2010      Bug fixed in embed when using smearing different from lorentzian.
-                 Test14 updated with an example of gaussian smearing. (AF)
+Oct 31 2010     Bug fixed in embed. Trace of the gamma function (coupling matrix)
+		printed out in the dos file. Test14 updated. (AF)
 
-Oct 24 2010      Further cleanup in embed.f90 and util.f90 . (AF)
+Oct 30 2010     Bug fixed in embed when using smearing different from lorentzian.
+		test14 updated with an example of gaussian smearing. (AF)
 
-Oct 20 2010      Problem (bug?) in g95 when linking ZDOTC. Workaround added to
-                 precompiler by using -D__WORKAROUND_ZDOTC. iotk_cleanup added. (AF)
+Oct 24 2010     Further cleanup in embed.f90 and util.f90 . (AF)
 
-Oct 19 2010      plot.f90 cleaned up (no ifort warninf msgs when writing cube data). 
-                 cleanup in writing data and managing arrays in conductor.f90 .
-                 Bug fixed in current.f90 . Cleanup in many parts of the code
-                 according to ifort debugger report. (AF)
+Oct 20 2010     Problem (bug?) in g95 when linking ZDOTC. Workaround added to
+		recompiler by using -D__WORKAROUND_ZDOTC. iotk_cleanup added. (AF)
 
-Oct 08 2010      test15 added. bug fixed in sumpdos.f90. (AF)
+Oct 19 2010     plot.f90 cleaned up (no ifort warninf msgs when writing cube data). 
+		cleanup in writing data and managing arrays in conductor.f90 .
+		Bug fixed in current.f90 . Cleanup in many parts of the code
+		according to ifort debugger report. (AF)
 
-Oct 07 2010      conductor writes kdata also resolved wrt eigenchannels. (AF)
+Oct 08 2010     test15 added. bug fixed in sumpdos.f90. (AF)
 
-Oct 06 2010      plot.x program updated to deal with kpt when plotting 
-                 eigenchannels. Checks performed. (AF)
+Oct 07 2010     conductor writes kdata also resolved wrt eigenchannels. (AF)
 
-Sep 29 2010      bug fixed in plot; bug fixed in hamiltonian_calc; qexml.f90
-                 lib updated to take into account a bug fixed in QE. (AF)
+Oct 06 2010     plot.x program updated to deal with kpt when plotting 
+		eigenchannels. Checks performed. (AF)
 
-Sep 28 2010      bug fixed: non-hermiticity of resulting hamiltonian 
-                 on the wannier basis avoided. Verbosity added to all postprocs. 
-                 Documentation updated. Test14 added to check embed. 
-                 Version updated to 2.4.0-alpha2. (AF)
+Sep 29 2010     bug fixed in plot; bug fixed in hamiltonian_calc; qexml.f90
+		lib updated to take into account a bug fixed in QE. (AF)
 
-Jul 07 2010      bug fixed in the definition of eigenchannel orbitals.
-                 plot procedure extended to eigenchannels. test11 updated. 
-                 At the moment the plotting utility is not working when parallel 
-                 kpts are used in transport. 
-                 version number changed to 2.4.0-alpha (AF)
+Sep 28 2010     bug fixed: non-hermiticity of resulting hamiltonian 
+		on the wannier basis avoided. Verbosity added to all postprocs. 
+		Documentation updated. Test14 added to check embed. 
+		Version updated to 2.4.0-alpha2. (AF)
 
-Jun 10 2010      bug fix in midpoint.f90: input_from_file called
-                 with a wrong interface. Problem reported by Deborah Prezzi. (AF)
+Jul 07 2010     bug fixed in the definition of eigenchannel orbitals.
+		plot procedure extended to eigenchannels. test11 updated. 
+		At the moment the plotting utility is not working when parallel 
+		kpts are used in transport. 
+		version number changed to 2.4.0-alpha (AF)
 
-May 26 2010      configure flag --enable-etsf-io removed. (AF)
+Jun 10 2010     bug fix in midpoint.f90: input_from_file called
+		with a wrong interface. Problem reported by Deborah Prezzi. (AF)
 
-May 11 2010      Error given on reading pseudo when built-in DFT functionals
-                 are different changed to a warning. (AF)
+May 26 2010     configure flag --enable-etsf-io removed. (AF)
 
-May 08 2010      Small inconsistency in the definition of kpt-weights in dos.x
-                 fixed. (AF)
+May 11 2010     Error given on reading pseudo when built-in DFT functionals
+		are different changed to a warning. (AF)
 
-May 02 2010      fmt "internal" added to available choices. Postprocs
-                 able to start from want files only. (AF)
+May 08 2010     Small inconsistency in the definition of kpt-weights in dos.x
+		fixed. (AF)
+
+May 02 2010     fmt "internal" added to available choices. Postprocs
+		able to start from want files only. (AF)
 
 
 -------------------------------------------------
