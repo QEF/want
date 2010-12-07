@@ -1,0 +1,36 @@
+
+&INPUT_CONDUCTOR
+   calculation_type = "conductor"
+   postfix = "_graphene_klein_sgm"
+   dimL =   5
+   dimC =   5
+   dimR =   5
+   ne   = 400
+   emin =  -5.0
+   emax =   5.0
+   datafile_L = "./SCRATCH/graphene_WanT.ham"
+   datafile_C = "./SCRATCH/graphene_WanT.ham"
+   datafile_R = "./SCRATCH/graphene_WanT.ham"
+   datafile_L_sgm = "./SCRATCH/sigma_graphene.wan.dat"
+   datafile_R_sgm = "./SCRATCH/sigma_graphene.wan.dat"
+   transport_dir = 2
+   delta = 0.05
+!   smearing_type = "lorentzian"
+   smearing_type = "gaussian"
+   use_symm = .TRUE.
+   nk(1) = 400
+   nk(2) =  1
+/
+
+<HAMILTONIAN_DATA>
+
+   <H00_C rows="ALL" cols="ALL" />
+   <H_CR  rows="ALL" cols="ALL" />
+   <H_LC  rows="ALL" cols="ALL" />
+   <H00_L rows="ALL" cols="ALL" />
+   <H01_L rows="ALL" cols="ALL" />
+   <H00_R rows="ALL" cols="ALL" />
+   <H01_R rows="ALL" cols="ALL" />
+
+</HAMILTONIAN_DATA>
+

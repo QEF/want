@@ -24,6 +24,8 @@ MANUAL=" Usage
  plot            compute WFs on real space for plotting
  conductor       compute bulk transmittance as a reference
  conductor_sgm   as above, but including a correlation term
+ conductor_klein       gating the leads by shifting the Hamiltonian
+ conductor_klein_sgm   gating the leads by using a self-energy
  want            perform DISENTANGLE, WANNIER and BANDS
  all             perform all the above described steps
 
@@ -60,6 +62,8 @@ PLOT=
 BLC2WAN=
 CONDUCTOR=
 CONDUCTOR_SGM=
+CONDUCTOR_KLEIN=
+CONDUCTOR_KLEIN_SGM=
 CHECK=
 CLEAN=
 
@@ -80,13 +84,17 @@ case $INPUT in
    (blc2wan)        BLC2WAN=yes ;;
    (conductor)      CONDUCTOR=yes ;;
    (conductor_sgm)  BLC2WAN=yes ; CONDUCTOR_SGM=yes ;;
+   (conductor_klein)      CONDUCTOR_KLEIN=yes ;;
+   (conductor_klein_sgm)  CONDUCTOR_KLEIN_SGM=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ;
                     BANDS=yes ; PLOT=yes ; DOS=yes ; BLC2WAN=yes ;
-                    CONDUCTOR=yes ; CONDUCTOR_SGM=yes ;;
+                    CONDUCTOR=yes ; CONDUCTOR_SGM=yes ;
+                    CONDUCTOR_KLEIN=yes ; CONDUCTOR_KLEIN_SGM=yes ;;
    (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; 
                     DISENTANGLE=yes ; WANNIER=yes ; 
                     BANDS=yes ; PLOT=yes ; DOS=yes ; BLC2WAN=yes ;
-                    CONDUCTOR=yes ; CONDUCTOR_SGM=yes ;;
+                    CONDUCTOR=yes ; CONDUCTOR_SGM=yes ;
+                    CONDUCTOR_KLEIN=yes ; CONDUCTOR_KLEIN_SGM=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -161,8 +169,10 @@ run_blc2wan  SUFFIX=$SUFFIX  RUN=$BLC2WAN
 #
 # running CONDUCTOR
 #
-run_conductor  SUFFIX=$SUFFIX  RUN=$CONDUCTOR
-run_conductor  NAME=CONDUCTOR_SGM   SUFFIX=${SUFFIX}_sgm  RUN=$CONDUCTOR_SGM
+run_conductor  NAME=CONDUCTOR            SUFFIX=$SUFFIX                RUN=$CONDUCTOR
+run_conductor  NAME=CONDUCTOR_SGM        SUFFIX=${SUFFIX}_sgm          RUN=$CONDUCTOR_SGM
+run_conductor  NAME=CONDUCTOR_KLEIN      SUFFIX=${SUFFIX}_klein        RUN=$CONDUCTOR_KLEIN
+run_conductor  NAME=CONDUCTOR_KLEIN_SGM  SUFFIX=${SUFFIX}_klein_sgm    RUN=$CONDUCTOR_KLEIN_SGM
 
 
 
