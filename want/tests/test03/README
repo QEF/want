@@ -50,18 +50,18 @@
 
       * Final average total spreads are small (around 5.7 Bohr^2). 
 
-   It can be verified that if a not-conditioned minimization is performed the 
-   same final positions for WF centers are not recovered and the localization 
-   procedure basically fail. 
-   Total spread is lower, since we have no penalty functional, but 
-   some wannier functions (at least one) move to the vacuum region. This results
-   in having the other WFs to better fit in the molecular region. While the 
-   states out of the molecule have huge spreads, those near the molecule can
-   better localize themselves, since no constrain of orthonormality with the
-   missing functions is present. The balance is positive on the total spread
-   but is usually useless since localization is not found.
+  It can be verified that if a not-conditioned minimization is performed the 
+  same final positions for WF centers are not recovered and the localization 
+  procedure basically fail. 
+  Total spread is lower, since we have no penalty functional, but 
+  some wannier functions (at least one) move to the vacuum region. This results
+  in having the other WFs to better fit in the molecular region. While the 
+  states out of the molecule have huge spreads, those near the molecule can
+  better localize themselves, since no constrain of orthonormality with the
+  missing functions is present. The balance is positive on the total spread
+  but is usually useless since localization is not found.
 
-   Norm-conserving and Ultra-soft calculations work almost the same. 
+  Norm-conserving and Ultra-soft calculations work almost the same. 
 
   In the graphene case disentangle convergence is achieved in about 40
   iterations 
