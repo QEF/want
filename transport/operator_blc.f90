@@ -34,6 +34,7 @@
         CHARACTER(50)           :: blc_name     ! name of the block
         INTEGER                 :: dim1         ! dims
         INTEGER                 :: dim2         !
+        INTEGER                 :: dimx_sgm     ! I/O purposes
         INTEGER                 :: nkpts        !
         INTEGER                 :: nrtot        ! number of 3D R-vects for H and S
         INTEGER                 :: nrtot_sgm    ! number of 3D R-vects for SGM
@@ -93,6 +94,7 @@ CONTAINS
       IF ( PRESENT( blc_name ) ) obj%blc_name = TRIM( blc_name )
       obj%dim1=0
       obj%dim2=0
+      obj%dimx_sgm=0
       obj%nkpts=0
       obj%nrtot=0
       obj%iunit_sgm=-1
@@ -149,6 +151,7 @@ CONTAINS
       !
       obj2%ldynam_corr = obj1%ldynam_corr
       obj2%iunit_sgm   = obj1%iunit_sgm
+      obj2%dimx_sgm    = obj1%dimx_sgm
       obj2%ie   = obj1%ie
       obj2%ik   = obj1%ik
       obj2%tag  = TRIM( obj1%tag )
@@ -215,6 +218,7 @@ CONTAINS
       WRITE( ounit, "(/,2x,'         name : ',a)") TRIM(obj%blc_name)
       WRITE( ounit, "(  2x,'         dim1 : ',i5)") obj%dim1
       WRITE( ounit, "(  2x,'         dim2 : ',i5)") obj%dim2
+      WRITE( ounit, "(  2x,'     dimx_sgm : ',i5)") obj%dimx_sgm
       WRITE( ounit, "(  2x,'        nkpts : ',i5)") obj%nkpts
       WRITE( ounit, "(  2x,'        nrtot : ',i5)") obj%nrtot
       WRITE( ounit, "(  2x,'    nrtot_sgm : ',i5)") obj%nrtot_sgm

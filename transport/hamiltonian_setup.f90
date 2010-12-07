@@ -19,9 +19,10 @@
    !
    !
    USE kinds,                ONLY : dbl
-   USE T_hamiltonian_module, ONLY : shift_L, shift_C, shift_R, shift_corr, &
+   USE T_hamiltonian_module, ONLY : shift_L, shift_C, shift_R,             &
                                     blc_00L, blc_01L, blc_00R, blc_01R,    &
                                     blc_00C, blc_LC,  blc_CR
+   USE T_correlation_module, ONLY : shift_C_corr
    USE T_egrid_module,       ONLY : egrid
    USE T_operator_blc_module
    !
@@ -87,15 +88,15 @@
    !
    IF ( ASSOCIATED( blc_00C%sgm ) ) THEN
        blc_00C%aux(:,:) = blc_00C%aux(:,:) -blc_00C%sgm(:,:,ik) &
-                                           -shift_corr * blc_00C%S(:,:,ik)
+                                           -shift_C_corr * blc_00C%S(:,:,ik)
    ENDIF
    IF ( ASSOCIATED( blc_LC%sgm ) ) THEN
        blc_LC%aux(:,:)  = blc_LC%aux(:,:)  -blc_LC%sgm(:,:,ik) &
-                                           -shift_corr * blc_LC%S(:,:,ik)
+                                           -shift_C_corr * blc_LC%S(:,:,ik)
    ENDIF
    IF ( ASSOCIATED( blc_CR%sgm ) ) THEN
        blc_CR%aux(:,:)  = blc_CR%aux(:,:)  -blc_CR%sgm(:,:,ik) &
-                                           -shift_corr * blc_CR%S(:,:,ik)
+                                           -shift_C_corr * blc_CR%S(:,:,ik)
    ENDIF
 
 

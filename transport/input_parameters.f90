@@ -168,6 +168,20 @@
    CHARACTER(nstrx) :: datafile_sgm = ' '
        ! the name of the file containing correlation self-energy
        ! If a valid file is provided, correlation is taken into account
+       ! this is kept for backcompatibility, nad it refers to
+       ! datafile_C_sgm
+
+   CHARACTER(nstrx) :: datafile_C_sgm = ' '
+       ! the name of the file containing correlation self-energy
+       ! C, CR, LC regions
+
+   CHARACTER(nstrx) :: datafile_L_sgm = ' '
+       ! the name of the file containing correlation self-energy
+       ! 00L, 01L regions
+
+   CHARACTER(nstrx) :: datafile_R_sgm = ' '
+       ! the name of the file containing correlation self-energy
+       ! 00R, 01R regions
 
    REAL(dbl) :: shift_L = 0.0
        ! global energy shift [eV] to be applied to the matrix elements
@@ -196,7 +210,8 @@
 
    NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type,             &
                  conduct_formula, niterx, ne, emin, emax, nprint, delta, bias,  &
-                 datafile_L, datafile_C, datafile_R, datafile_sgm,              &
+                 datafile_L,     datafile_C,     datafile_R, datafile_sgm,      &
+                 datafile_L_sgm, datafile_C_sgm, datafile_R_sgm,                &
                  transport_dir, smearing_type, do_eigenchannels, do_eigplot,    &
                  ie_eigplot, ik_eigplot, neigchnx,                              &
                  delta_ratio, xmax, nk, s, use_symm, debug_level,               &
@@ -206,7 +221,8 @@
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx, smearing_type
    PUBLIC :: ne, emin, emax, nprint, delta, bias, delta_ratio, xmax 
-   PUBLIC :: datafile_sgm, datafile_L, datafile_C, datafile_R, transport_dir    
+   PUBLIC :: datafile_L,     datafile_C,     datafile_R,     datafile_sgm, transport_dir
+   PUBLIC :: datafile_L_sgm, datafile_C_sgm, datafile_R_sgm
    PUBLIC :: nk, s, use_symm, debug_level
    PUBLIC :: work_dir, prefix, postfix, ispin, write_kdata, write_lead_sgm 
    PUBLIC :: do_eigenchannels, neigchnx, do_eigplot, ie_eigplot, ik_eigplot
@@ -282,6 +298,9 @@ CONTAINS
       CALL mp_bcast( datafile_C,         ionode_id)      
       CALL mp_bcast( datafile_R,         ionode_id)      
       CALL mp_bcast( datafile_sgm,       ionode_id)      
+      CALL mp_bcast( datafile_L_sgm,     ionode_id)      
+      CALL mp_bcast( datafile_C_sgm,     ionode_id)      
+      CALL mp_bcast( datafile_R_sgm,     ionode_id)      
       CALL mp_bcast( shift_L,            ionode_id)      
       CALL mp_bcast( shift_C,            ionode_id)      
       CALL mp_bcast( shift_R,            ionode_id)      
@@ -373,6 +392,11 @@ CONTAINS
 
       IF ( TRIM(conduct_formula) /= 'landauer' .AND. LEN_TRIM (datafile_sgm) == 0 ) &
            CALL errore(subname,'invalid conduct formula',1)
+
+!      IF ( LEN_TRIM (datafile_sgm) == 0 .AND.  &
+!           ( LEN_TRIM (datafile_C_sgm) /= 0  .OR. LEN_TRIM (datafile_L_sgm) /= 0 ) .OR. &
+!             LEN_TRIM (datafile_R_sgm) /= 0  ) &
+!           CALL errore(subname,'use datafile_C_sgm instead of datafile_sgm',1)
 
       IF ( ispin < 0 ) CALL errore(subname, 'ispin too small', 1) 
       IF ( ispin > 2 ) CALL errore(subname, 'ispin too large', 2) 

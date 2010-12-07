@@ -16,7 +16,7 @@
    ! Computes the quantum transmittance across a junction.
    !
    USE version_module,       ONLY : version_number
-   USE io_module,            ONLY : stdout, sgm_unit
+   USE io_module,            ONLY : stdout
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
    USE T_input_module,       ONLY : input_manager
@@ -65,15 +65,13 @@
    ! Init correlation data and energy grid
    !
    ! If correlation is used, the energy grid is read
-   ! from datafile_sgm and input parameters are overwirtten
+   ! from datafile_sgm and input parameters are overwritten
    !
    ! otherwise, grid is built indipendently
    !
    IF ( lhave_corr ) THEN 
        !
-       CALL correlation_init( sgm_unit )
-       !
-       IF ( .NOT. ldynam_corr ) CALL correlation_read( )
+       CALL correlation_init( )
        !
    ENDIF   
    !
@@ -118,12 +116,12 @@ END PROGRAM conductor
    USE util_module,          ONLY : mat_mul, mat_inv
    USE mp_global,            ONLY : mpime, nproc
    USE mp,                   ONLY : mp_sum
-   USE io_module,            ONLY : io_name, ionode, stdout, stdin, sgm_unit, &
+   USE io_module,            ONLY : io_name, ionode, stdout, stdin, &
                                     sgmL_unit => aux3_unit, sgmR_unit => aux4_unit, &
                                     work_dir, prefix, postfix, aux_unit
    USE operator_module,      ONLY : operator_write_init, operator_write_close, &
                                     operator_write_aux, operator_write_data
-   USE T_control_module,     ONLY : conduct_formula, nprint, datafile_sgm,  &
+   USE T_control_module,     ONLY : conduct_formula, nprint, &
                                     write_kdata, write_lead_sgm, transport_dir, &
                                     do_eigenchannels, neigchn, neigchnx, &
                                     do_eigplot, ie_eigplot, ik_eigplot
@@ -136,7 +134,8 @@ END PROGRAM conductor
    USE T_workspace_module,   ONLY : totL, tottL, totR, tottR, &
                                     gR, gL, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
                                     rsgm_L, rsgm_R, workspace_allocate
-   USE T_correlation_module, ONLY : lhave_corr, ldynam_corr, correlation_read
+   USE T_correlation_module, ONLY : lhave_corr, ldynam_corr, &
+                                    correlation_read, correlation_finalize
    USE T_write_data_module,  ONLY : wd_write_data, wd_write_eigchn
    USE T_operator_blc_module
    !
@@ -459,12 +458,11 @@ END PROGRAM conductor
    CALL mp_sum( conduct_k )
 
    !
-   ! close sgm file
+   ! close sgm file's
    !
    IF ( lhave_corr ) THEN
        !
-       CALL file_close(sgm_unit, PATH="/", ACTION="read", IERR=ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(datafile_sgm), ABS(ierr) )
+       CALL correlation_finalize( )
        !
    ENDIF
        

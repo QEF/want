@@ -5,7 +5,9 @@
 
 
 Dec 07 2010     Cleanup in embed and transport. vars for correlation sgm's 
-		in the leads added. (AF)
+		in the leads added. Big changes in correlation module to
+		be consistent with the new treatment of the self-energies. 
+		Test03 updated including a case study of the Klein paradox. (AF)
 
 Nov 24 2010     iwin_max, iwin_min, ifroz_max, ifroz_min renamed as
 		iwin_maxk, iwin_mink, etc.
