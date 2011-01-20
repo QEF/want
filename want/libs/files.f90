@@ -189,6 +189,7 @@ CONTAINS
       !
       ! Set defaults
       ! 
+      NULLIFY ( tags )
       ierr = 0
       !
       status_   = "UNKNOWN"
