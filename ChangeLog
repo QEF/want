@@ -4,6 +4,8 @@
 =======================================================
 
 
+Jan 25 2011     memstat.c updated from QE-4.2. Courtesy of Yifeng Chen.  (AF)
+
 Dec 07 2010     Cleanup in embed and transport. vars for correlation sgm's 
 		in the leads added. Big changes in correlation module to
 		be consistent with the new treatment of the self-energies. 

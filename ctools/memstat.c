@@ -14,14 +14,28 @@
   Auhor: Carlo Cavazzoni.
 */
 
+#if defined (__SVR4) && defined (__sun)
+#define SUN_MALLINFO
+#endif
+
+#if defined(HAVE_MALLINFO) && !defined(__QK_USER__) && !defined(SUN__MALLINFO) 
+#include <malloc.h>
+
 void F77_FUNC(memstat,MEMSTAT)(int *kilobytes)
 {
-#if defined(HAVE_MALLINFO)
-#include <malloc.h>
+
   struct mallinfo info;  
   info = mallinfo();
-  *kilobytes = info.arena / 1024 ;
+
+#if defined(__AIX)
+  *kilobytes = (info.arena) / 1024 ;
 #else
+  *kilobytes = (info.arena + info.hblkhd) / 1024 ;
+#endif
+
+#else
+void F77_FUNC(memstat,MEMSTAT)(int *kilobytes)
+{
   *kilobytes = -1;
 #endif
 }
