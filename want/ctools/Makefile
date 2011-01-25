@@ -24,6 +24,9 @@ libctools.a : $(OBJS)
 	$(AR) $(ARFLAGS) $@ $?
 	$(RANLIB) $@
 
+source :
+	co -l $(OBJS:.o=.c)
+
 #
 # cleaning
 # 
