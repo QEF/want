@@ -27,7 +27,7 @@
    USE T_control_module,     ONLY : calculation_type, conduct_formula,  &
                                     datafile_C, datafile_L, datafile_R, &
                                     transport_dir, niterx, nprint, & 
-                                    write_kdata
+                                    write_kdata, write_lead_sgm, write_gf
    USE T_egrid_module,       ONLY : ne, emin, emax, de
    USE T_smearing_module,    ONLY : delta, smearing_type, nx_smear => nx, xmax
    USE T_kpoints_module,     ONLY : nkpts_par, nk_par, s_par, vkpt_par3D, wk_par, use_symm, &
@@ -82,6 +82,8 @@
        WRITE(iunit,"( 7x,'Transport Direction :',8x,i2)") transport_dir
        WRITE(iunit,"( 7x,'   Have Correlation :',5x,a)") log2char(lhave_corr)
        WRITE(iunit,"( 7x,'       Write k-data :',5x,a)") log2char(write_kdata)
+       WRITE(iunit,"( 7x,'     Write sgm lead :',5x,a)") log2char(write_lead_sgm)
+       WRITE(iunit,"( 7x,'         Write gf C :',5x,a)") log2char(write_gf)
        WRITE(iunit,"( 7x,'Max iteration number:',5x,i5)") niterx
        WRITE(iunit,"( )")
        WRITE(iunit,"( 7x,'             nprint :',5x,i5)") nprint

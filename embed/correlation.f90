@@ -137,6 +137,16 @@ CONTAINS
       CALL mp_bcast( analyticity,  ionode_id )
       !
       !
+      ! this is a workaround, 
+      ! when the sgm files a re too big, iotk seems to have problems
+      ! to go back and forth
+      !
+      CALL file_close( sgm_unit, PATH="/", ACTION="read", IERR=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(datafile_sgm), ABS(ierr) )
+      
+      !
+      ! checks
+      !
       IF ( dimT_corr > dimT)               CALL errore(subname,'invalid dicT_corr',3)
       IF ( nrtot_corr <= 0 )               CALL errore(subname,'invalid nrtot_corr',3)
       IF ( ne_corr <= 0 .AND. ldynam_corr) CALL errore(subname,'invalid ne_corr',3)
@@ -145,6 +155,11 @@ CONTAINS
       IF ( TRIM(analyticity) /= 'retarded' .AND. ldynam_corr) &
                 CALL errore(subname,'invalid analyticity = '//TRIM(analyticity),1)
       !
+      !
+      ! re-open the file
+      !
+      CALL file_open( sgm_unit, TRIM(datafile_sgm), PATH="/", ACTION="read", IERR=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile_sgm), ABS(ierr) )
       !
       ALLOCATE ( ivr_corr(3,nrtot_corr), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating ivr_corr', ABS(ierr) )

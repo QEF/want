@@ -13,7 +13,7 @@
    USE kinds,                ONLY : dbl
    USE T_hamiltonian_module, ONLY : dimL, dimC, dimR
    USE T_kpoints_module,     ONLY : nkpts_par, nrtot_par, kpoints_alloc => alloc
-   USE T_control_module,     ONLY : write_lead_sgm
+   USE T_control_module,     ONLY : write_lead_sgm, write_gf
    !
    IMPLICIT NONE
    PRIVATE 
@@ -36,6 +36,9 @@
    COMPLEX(dbl), ALLOCATABLE :: gR(:,:)
    COMPLEX(dbl), ALLOCATABLE :: gC(:,:)
    !
+   COMPLEX(dbl), ALLOCATABLE :: rgC(:,:,:)
+   COMPLEX(dbl), ALLOCATABLE :: kgC(:,:,:)
+   !
    LOGICAL :: alloc = .FALSE.
 
 
@@ -53,6 +56,7 @@
    PUBLIC :: gamma_R, gamma_L
    PUBLIC :: sgm_L,  sgm_R
    PUBLIC :: rsgm_L, rsgm_R
+   PUBLIC :: rgC, kgC
    !
    PUBLIC :: workspace_allocate
    PUBLIC :: workspace_deallocate
@@ -101,6 +105,15 @@ CONTAINS
           !
       ENDIF
       !
+      IF ( write_gf ) THEN
+          !
+          ALLOCATE ( rgC(dimC,dimC,nrtot_par), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating rgC', ABS(ierr) )
+          ALLOCATE ( kgC(dimC,dimC,nkpts_par), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating kgC', ABS(ierr) )
+          !
+      ENDIF
+      !
       ALLOCATE ( gamma_R(dimC,dimC), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating gamma_R', ABS(ierr) )
       ALLOCATE ( gamma_L(dimC,dimC), STAT=ierr )
@@ -139,6 +152,15 @@ CONTAINS
           !
           DEALLOCATE ( rsgm_L, rsgm_R, STAT=ierr )
           IF( ierr /=0 ) CALL errore(subname,'deallocating rsgm_L, rsgm_R ', ABS(ierr) )
+          !
+      ENDIF
+      !
+      IF ( write_gf ) THEN
+          !
+          DEALLOCATE ( rgC, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'deallocating rgC', ABS(ierr) )
+          DEALLOCATE ( kgC, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'deallocating kgC', ABS(ierr) )
           !
       ENDIF
       !

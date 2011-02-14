@@ -80,6 +80,7 @@
    CHARACTER( 5), PARAMETER   ::  suffix_save=".save"
    CHARACTER( 4), PARAMETER   ::  suffix_log=".log"
    CHARACTER( 4), PARAMETER   ::  suffix_sgm=".sgm"
+   CHARACTER( 3), PARAMETER   ::  suffix_gf=".gf"
    CHARACTER(nstrx)           ::  suffix_qe_data=" "
    CHARACTER(12), PARAMETER   ::  suffix_etsf_io_data="_WFK-etsf.nc"
    REAL,          PARAMETER   ::  etsf_io_version_min=2.1
@@ -114,7 +115,7 @@
    PUBLIC ::  wantdata_fmt, wantdata_form, wantdata_binary
    PUBLIC ::  dft_unit, pseudo_unit 
    PUBLIC ::  ovp_unit, space_unit, wan_unit, ham_unit, sgm_unit 
-   PUBLIC ::  aux_unit, aux1_unit, aux2_unit, aux3_unit, aux4_unit
+   PUBLIC ::  aux_unit, aux1_unit, aux2_unit, aux3_unit, aux4_unit, aux5_unit
    PUBLIC ::  save_unit, log_unit
 
    PUBLIC ::  prefix, postfix, work_dir, title, pseudo_dir
@@ -615,6 +616,18 @@
            body_   = "sgm" 
            IF ( PRESENT(body) )  body_ = TRIM(body)
            suffix_ = TRIM(suffix_sgm) // TRIM(proc_)
+           !
+      CASE ( "gf" )
+           !
+           body_   = "greenf" 
+           IF ( PRESENT(body) )  body_ = TRIM(body)
+           suffix_ = TRIM(suffix_gf) // TRIM(proc_)
+           !
+      CASE ( "free" )
+           !
+           body_   = "" 
+           IF ( PRESENT(body) )  body_ = TRIM(body)
+           suffix_ = TRIM(proc_)
            !
       CASE DEFAULT
            CALL errore('io_name','Unknown DATA type in input: '//TRIM(data_type),1)
