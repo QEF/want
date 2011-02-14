@@ -36,6 +36,7 @@
    LOGICAL                   :: use_debug_mode
    LOGICAL                   :: write_kdata
    LOGICAL                   :: write_lead_sgm
+   LOGICAL                   :: write_gf
    !
    INTEGER                   :: niterx
    INTEGER                   :: nfailx
@@ -66,6 +67,7 @@
    !
    PUBLIC :: write_kdata
    PUBLIC :: write_lead_sgm
+   PUBLIC :: write_gf
    !
    PUBLIC :: niterx
    PUBLIC :: nfailx

@@ -118,11 +118,11 @@ END PROGRAM conductor
    USE mp,                   ONLY : mp_sum
    USE io_module,            ONLY : io_name, ionode, stdout, stdin, &
                                     sgmL_unit => aux3_unit, sgmR_unit => aux4_unit, &
-                                    work_dir, prefix, postfix, aux_unit
+                                    gf_unit => aux5_unit, work_dir, prefix, postfix, aux_unit
    USE operator_module,      ONLY : operator_write_init, operator_write_close, &
                                     operator_write_aux, operator_write_data
-   USE T_control_module,     ONLY : conduct_formula, nprint, &
-                                    write_kdata, write_lead_sgm, transport_dir, &
+   USE T_control_module,     ONLY : conduct_formula, nprint, transport_dir, &
+                                    write_kdata, write_lead_sgm, write_gf, &
                                     do_eigenchannels, neigchn, neigchnx, &
                                     do_eigplot, ie_eigplot, ik_eigplot
    USE T_egrid_module,       ONLY : ne, egrid
@@ -133,7 +133,7 @@ END PROGRAM conductor
                                     blc_00C, blc_LC,  blc_CR
    USE T_workspace_module,   ONLY : totL, tottL, totR, tottR, &
                                     gR, gL, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
-                                    rsgm_L, rsgm_R, workspace_allocate
+                                    rsgm_L, rsgm_R, kgC, rgC, workspace_allocate
    USE T_correlation_module, ONLY : lhave_corr, ldynam_corr, &
                                     correlation_read, correlation_finalize
    USE T_write_data_module,  ONLY : wd_write_data, wd_write_eigchn
@@ -235,7 +235,7 @@ END PROGRAM conductor
 
    
    !
-   ! init lead sgm output files, if the case
+   ! init output files for lead sgm
    !
    IF ( write_lead_sgm ) THEN
        !
@@ -248,6 +248,18 @@ END PROGRAM conductor
        CALL io_name( "sgm", filename, BODY="sgmlead_R" )
        CALL operator_write_init(sgmR_unit, filename)
        CALL operator_write_aux( sgmR_unit, dimC, .TRUE., ne, iomg_s, iomg_e, &
+                                NRTOT=nrtot_par, IVR=ivr_par3D, GRID=egrid, &
+                                ANALYTICITY="retarded", EUNITS="eV" )
+       !
+   ENDIF
+   !
+   ! init output files for the conductor GF
+   !
+   IF ( write_gf ) THEN
+       !
+       CALL io_name( "gf", filename, BODY="greenf" )
+       CALL operator_write_init(gf_unit, filename)
+       CALL operator_write_aux( gf_unit, dimC, .TRUE., ne, iomg_s, iomg_e, &
                                 NRTOT=nrtot_par, IVR=ivr_par3D, GRID=egrid, &
                                 ANALYTICITY="retarded", EUNITS="eV" )
        !
@@ -345,6 +357,13 @@ END PROGRAM conductor
           work(1:dimC,1:dimC) = work(1:dimC,1:dimC) -sgm_L(:,:,ik) -sgm_R(:,:,ik)
           !
           CALL mat_inv( dimC, work, gC)
+          !
+          !
+          IF ( write_gf ) THEN
+              !
+              kgC(:,:,ik) = gC
+              !
+          ENDIF
 
 
           !
@@ -415,7 +434,7 @@ END PROGRAM conductor
       ENDDO kpt_loop 
 
       !
-      ! write massive data for lead sgm if the case
+      ! write massive data for lead sgm
       !
       IF ( write_lead_sgm ) THEN
           !
@@ -430,7 +449,22 @@ END PROGRAM conductor
           CALL operator_write_data( sgmR_unit, rsgm_R, .TRUE., ie_g )
           !
       ENDIF
- 
+      !
+      ! write massive data for conductor GF
+      !
+      IF ( write_gf ) THEN
+          !
+          DO ir = 1, nrtot_par
+              !
+              CALL compute_rham(dimC, vr_par3D(:,ir), rgC(:,:,ir), nkpts_par, vkpt_par3D, wk_par, kgC)
+              !
+          ENDDO
+          !
+          CALL operator_write_data( gf_unit, rgC, .TRUE., ie_g )
+          !
+      ENDIF
+
+
       !
       ! report to stdout
       !
@@ -475,6 +509,14 @@ END PROGRAM conductor
        CALL operator_write_close(sgmR_unit)
        !
    ENDIF
+   !
+   IF ( write_gf ) THEN
+       !
+       CALL operator_write_close(gf_unit)
+       !
+   ENDIF
+
+
 
    !
    ! write DOS and CONDUCT data on files

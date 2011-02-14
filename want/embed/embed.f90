@@ -151,7 +151,10 @@
    !
    ! init embedding sgm output
    !
-   CALL operator_write_init(sgmB_unit, TRIM(datafile_sgm_emb) )
+   CALL io_name( "free", filename, lpostfix=.FALSE., lbody=.TRUE., &
+                 body=TRIM(datafile_sgm_emb), lpath=.FALSE., lproc=.TRUE. )
+   !
+   CALL operator_write_init(sgmB_unit, TRIM(filename) )
    CALL operator_write_aux( sgmB_unit, dimE, .TRUE., ne, iomg_s, iomg_e, &
                             NRTOT=nrtot_par, IVR=ivr_par3D,  GRID=egrid, &
                             ANALYTICITY="retarded", EUNITS="eV" )

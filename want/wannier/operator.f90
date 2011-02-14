@@ -84,19 +84,22 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE operator_read_aux( iun, dimwann, dynamical, nomega, grid, analyticity, &
+    SUBROUTINE operator_read_aux( iun, dimwann, dynamical, nomega, &
+                                  iomg_s, iomg_e, grid, analyticity, &
                                   nr, vr, ivr, ierr ) 
       !------------------------------------------------------------------------
       !
       INTEGER,                     INTENT(IN)  :: iun
       INTEGER,           OPTIONAL, INTENT(OUT) :: dimwann, nomega, nr
       LOGICAL,           OPTIONAL, INTENT(OUT) :: dynamical
+      INTEGER,           OPTIONAL, INTENT(OUT) :: iomg_s, iomg_e
       REAL(dbl),         OPTIONAL, INTENT(OUT) :: grid(:), vr(:,:)
       INTEGER,           OPTIONAL, INTENT(OUT) :: ivr(:,:)
       CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: analyticity
       INTEGER,                     INTENT(OUT) :: ierr
       !
       INTEGER           :: dimwann_, nomega_, nr_
+      INTEGER           :: iomg_s_, iomg_e_
       LOGICAL           :: dynamical_
       CHARACTER(256)    :: analyticity_
       !
@@ -119,12 +122,20 @@ CONTAINS
          CALL iotk_scan_attr( attr, "nomega", nomega_, IERR=ierr )
          IF ( ierr /= 0 ) RETURN
          !
+         CALL iotk_scan_attr( attr, "iomg_s", iomg_s_, IERR=ierr )
+         IF ( ierr /= 0 ) RETURN
+         !
+         CALL iotk_scan_attr( attr, "iomg_e", iomg_e_, IERR=ierr )
+         IF ( ierr /= 0 ) RETURN
+         !
          CALL iotk_scan_attr( attr, "analyticity", analyticity_, IERR=ierr )
          IF ( ierr /= 0 ) RETURN
          !
       ELSE
          nomega_ = 1
          analyticity_ = ""
+         iomg_s_ = 1
+         iomg_e_ = 1
       ENDIF
       !
       IF ( PRESENT ( vr ) ) THEN
@@ -160,6 +171,8 @@ CONTAINS
       IF ( PRESENT(dynamical) )    dynamical    = dynamical_
       IF ( PRESENT(nomega) )       nomega       = nomega_
       IF ( PRESENT(analyticity) )  analyticity  = TRIM( analyticity_ )
+      IF ( PRESENT(iomg_s) )       iomg_s       = iomg_s_
+      IF ( PRESENT(iomg_e) )       iomg_e       = iomg_e_
       !
     END SUBROUTINE operator_read_aux
     !

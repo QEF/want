@@ -131,6 +131,9 @@
    LOGICAL :: write_lead_sgm = .FALSE.
        ! write the computed lead self-energies to disk.
 
+   LOGICAL :: write_gf = .FALSE.
+       ! write the green's function in the conductor region
+
    LOGICAL :: do_eigenchannels = .FALSE.
        ! compute eigenchannels
 
@@ -215,7 +218,8 @@
                  transport_dir, smearing_type, do_eigenchannels, do_eigplot,    &
                  ie_eigplot, ik_eigplot, neigchnx,                              &
                  delta_ratio, xmax, nk, s, use_symm, debug_level,               &
-                 work_dir, prefix, postfix, write_kdata, write_lead_sgm, ispin, &
+                 work_dir, prefix, postfix, ispin,                              &
+                 write_kdata, write_lead_sgm, write_gf,                         &
                  shift_L, shift_C, shift_R, shift_corr, nfailx 
 
 
@@ -224,7 +228,7 @@
    PUBLIC :: datafile_L,     datafile_C,     datafile_R,     datafile_sgm, transport_dir
    PUBLIC :: datafile_L_sgm, datafile_C_sgm, datafile_R_sgm
    PUBLIC :: nk, s, use_symm, debug_level
-   PUBLIC :: work_dir, prefix, postfix, ispin, write_kdata, write_lead_sgm 
+   PUBLIC :: work_dir, prefix, postfix, ispin, write_kdata, write_lead_sgm, write_gf 
    PUBLIC :: do_eigenchannels, neigchnx, do_eigplot, ie_eigplot, ik_eigplot
    PUBLIC :: shift_L, shift_C, shift_R, shift_corr, nfailx
    PUBLIC :: INPUT_CONDUCTOR
@@ -281,6 +285,7 @@ CONTAINS
       CALL mp_bcast( niterx,             ionode_id)      
       CALL mp_bcast( write_kdata,        ionode_id)      
       CALL mp_bcast( write_lead_sgm,     ionode_id)      
+      CALL mp_bcast( write_gf,           ionode_id)      
       CALL mp_bcast( nk,                 ionode_id)      
       CALL mp_bcast( s,                  ionode_id)      
       CALL mp_bcast( use_symm,           ionode_id)      
