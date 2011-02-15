@@ -4,6 +4,9 @@
 =======================================================
 
 
+Feb 14 2011     want repository moved to qe-forge and converted to svn.
+		Courtesy of Layla Martin-Samos. (AF)
+
 Jan 25 2011     memstat.c updated from QE-4.2. Courtesy of Yifeng Chen.  (AF)
 
 Dec 07 2010     Cleanup in embed and transport. vars for correlation sgm's 
