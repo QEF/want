@@ -186,15 +186,18 @@ CONTAINS
    SUBROUTINE setup_egrid()
    !**********************************************************
       USE T_egrid_module,           ONLY : ne,           &
-                                           emin, emax   
-      USE T_input_parameters_module,ONLY : ne_     => ne,   &
-                                           emin_   => emin, &
-                                           emax_   => emax 
+                                           ne_buffer,    &
+                                           emin, emax
+      USE T_input_parameters_module,ONLY : ne_          => ne,   &
+                                           ne_buffer_   => ne_buffer, &
+                                           emin_        => emin, &
+                                           emax_        => emax 
       IMPLICIT NONE
 
-      ne     = ne_
-      emin   = emin_
-      emax   = emax_
+      ne          = ne_
+      ne_buffer   = ne_buffer_
+      emin        = emin_
+      emax        = emax_
 
    END SUBROUTINE setup_egrid
 
@@ -257,13 +260,16 @@ CONTAINS
 !**********************************************************
    SUBROUTINE setup_kpoints()
    !**********************************************************
-      USE T_kpoints_module,         ONLY :     nk_par, s_par, use_symm
-      USE T_input_parameters_module,ONLY :     nk, s, use_symm_ => use_symm
+      USE T_kpoints_module,         ONLY :     nk_par, s_par, use_symm, use_safe_kmesh
+      USE T_input_parameters_module,ONLY :     nk, s, &
+                                               write_lead_sgm, write_gf, &
+                                               use_symm_ => use_symm
       IMPLICIT NONE
       
-      nk_par(1:2)  = nk(1:2)
-      s_par(1:2)   = s(1:2)
-      use_symm     = use_symm_
+      nk_par(1:2)      = nk(1:2)
+      s_par(1:2)       = s(1:2)
+      use_symm         = use_symm_
+      use_safe_kmesh   = write_lead_sgm .OR. write_gf
 
    END SUBROUTINE setup_kpoints
 

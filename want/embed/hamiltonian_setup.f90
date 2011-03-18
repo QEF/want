@@ -7,7 +7,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*******************************************************************
-   SUBROUTINE hamiltonian_setup( ik, ie )
+   SUBROUTINE hamiltonian_setup( ik, ie, ie_buff )
    !*******************************************************************
    !
    ! For each block (tot T, emb E, bath B, emb bath EB) define
@@ -34,14 +34,15 @@
    !
    ! local variables
    !
-   INTEGER,   INTENT(IN) :: ie, ik
+   INTEGER,            INTENT(IN) :: ie, ik
+   INTEGER, OPTIONAL,  INTENT(IN) :: ie_buff
 
    !
    ! local variables
    !
    CHARACTER(17) :: subname="hamiltonian_setup"
    REAL(dbl)     :: omg
-   INTEGER       :: dimT, ierr
+   INTEGER       :: ie_bl, dimT, ierr
    COMPLEX(dbl), ALLOCATABLE :: work(:,:)
 
    !
@@ -57,6 +58,9 @@
    CALL log_push( subname )
 
    omg = egrid(ie)
+
+   ie_bl = 1
+   IF ( PRESENT (ie_buff) ) ie_bl = ie_buff
 
    !
    ! hamiltonian and overlap
@@ -107,35 +111,35 @@
    ! correlation
    !
    IF ( ASSOCIATED( blc_T%sgm ) ) THEN
-       blc_T%aux(:,:) = blc_T%aux(:,:) -blc_T%sgm(:,:,ik)
+       blc_T%aux(:,:) = blc_T%aux(:,:) -blc_T%sgm(:,:,ik, ie_bl)
    ENDIF
    IF ( ASSOCIATED( blc_T%sgm_aux ) ) THEN
        blc_T%aux(:,:) = blc_T%aux(:,:) -blc_T%sgm_aux(:,:)
    ENDIF
    !
    IF ( ASSOCIATED( blc_E%sgm ) ) THEN
-       blc_E%aux(:,:) = blc_E%aux(:,:) -blc_E%sgm(:,:,ik)
+       blc_E%aux(:,:) = blc_E%aux(:,:) -blc_E%sgm(:,:,ik, ie_bl)
    ENDIF
    IF ( ASSOCIATED( blc_E%sgm_aux ) ) THEN
        blc_E%aux(:,:) = blc_E%aux(:,:) -blc_E%sgm_aux(:,:)
    ENDIF
    !
    IF ( ASSOCIATED( blc_B%sgm ) ) THEN
-       blc_B%aux(:,:) = blc_B%aux(:,:) -blc_B%sgm(:,:,ik)
+       blc_B%aux(:,:) = blc_B%aux(:,:) -blc_B%sgm(:,:,ik, ie_bl)
    ENDIF
    IF ( ASSOCIATED( blc_B%sgm_aux ) ) THEN
        blc_B%aux(:,:) = blc_B%aux(:,:) -blc_B%sgm_aux(:,:)
    ENDIF
    !
    IF ( ASSOCIATED( blc_EB%sgm ) ) THEN
-       blc_EB%aux(:,:) = blc_EB%aux(:,:) -blc_EB%sgm(:,:,ik)
+       blc_EB%aux(:,:) = blc_EB%aux(:,:) -blc_EB%sgm(:,:,ik, ie_bl)
    ENDIF
    IF ( ASSOCIATED( blc_EB%sgm_aux ) ) THEN
        blc_EB%aux(:,:) = blc_EB%aux(:,:) -blc_EB%sgm_aux(:,:)
    ENDIF
    !
    IF ( ASSOCIATED( blc_BE%sgm ) ) THEN
-       blc_BE%aux(:,:) = blc_BE%aux(:,:) -blc_BE%sgm(:,:,ik)
+       blc_BE%aux(:,:) = blc_BE%aux(:,:) -blc_BE%sgm(:,:,ik, ie_bl)
    ENDIF
    IF ( ASSOCIATED( blc_BE%sgm_aux ) ) THEN
        blc_BE%aux(:,:) = blc_BE%aux(:,:) -blc_BE%sgm_aux(:,:)
@@ -144,11 +148,11 @@
    !
    ! finalize setup
    !
-   CALL operator_blc_update( IE=ie, IK=ik, OBJ=blc_T  )
-   CALL operator_blc_update( IE=ie, IK=ik, OBJ=blc_E  )
-   CALL operator_blc_update( IE=ie, IK=ik, OBJ=blc_B  )
-   CALL operator_blc_update( IE=ie, IK=ik, OBJ=blc_EB )
-   CALL operator_blc_update( IE=ie, IK=ik, OBJ=blc_BE )
+   CALL operator_blc_update( IE=ie, IK=ik, IE_BUFF=ie_bl, OBJ=blc_T  )
+   CALL operator_blc_update( IE=ie, IK=ik, IE_BUFF=ie_bl, OBJ=blc_E  )
+   CALL operator_blc_update( IE=ie, IK=ik, IE_BUFF=ie_bl, OBJ=blc_B  )
+   CALL operator_blc_update( IE=ie, IK=ik, IE_BUFF=ie_bl, OBJ=blc_EB )
+   CALL operator_blc_update( IE=ie, IK=ik, IE_BUFF=ie_bl, OBJ=blc_BE )
    
    CALL timing( subname, OPR='STOP' )
    CALL log_pop( subname )

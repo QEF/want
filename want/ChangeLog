@@ -4,6 +4,13 @@
 =======================================================
 
 
+Mar 17 2011     150th anniversary of unified Italy. FOund and fixed a bug showing up
+		when damping to file lead-self-energies or conductor green's functions:
+		In those cases, kpt symmetry should not be used and it is recommended not
+		to specify the kpt mesh by hand. This makes the 2D FFT working properly. 
+		Checks and tests added. 
+		Buffering of correlation self-energy added. (AF)
+
 Feb 14 2011     want repository moved to qe-forge and converted to svn.
 		Courtesy of Layla Martin-Samos. (AF)
 

@@ -125,7 +125,8 @@ END PROGRAM conductor
                                     write_kdata, write_lead_sgm, write_gf, &
                                     do_eigenchannels, neigchn, neigchnx, &
                                     do_eigplot, ie_eigplot, ik_eigplot
-   USE T_egrid_module,       ONLY : ne, egrid
+   USE T_egrid_module,       ONLY : ne, egrid, &
+                                    ne_buffer, egrid_buffer_doread, egrid_buffer_iend
    USE T_kpoints_module,     ONLY : nkpts_par, vkpt_par3D, wk_par, ivr_par3D, &
                                     vr_par3D, nrtot_par
    USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,             &
@@ -149,6 +150,8 @@ END PROGRAM conductor
    INTEGER          :: i, ir, ik, ierr, niter
    INTEGER          :: ie_g
    INTEGER          :: iomg_s, iomg_e
+   INTEGER          :: ie_buff, ie_buff_s, ie_buff_e
+   LOGICAL          :: read_buffer
    LOGICAL          :: write_eigchn
    REAL(dbl)        :: avg_iter
    CHARACTER(4)     :: ctmp
@@ -271,11 +274,11 @@ END PROGRAM conductor
    conduct(:,:)     = ZERO
    conduct_k(:,:,:) = ZERO
    !
+   ie_buff = 1
+   !
    energy_loop: &
    DO ie_g = iomg_s, iomg_e
 
-      ! XXX
-      !ie = ie_g -iomg_s+1
       
       !
       ! grids and misc
@@ -292,7 +295,22 @@ END PROGRAM conductor
       !
       IF ( lhave_corr .AND. ldynam_corr ) THEN
           !
-          CALL correlation_read( IE=ie_g )
+          read_buffer = egrid_buffer_doread ( ie_g, iomg_s, iomg_e, ne_buffer )
+          !
+          IF ( read_buffer ) THEN
+              !
+              ie_buff_s = ie_g
+              ie_buff_e = egrid_buffer_iend( ie_g, iomg_s, iomg_e, ne_buffer ) 
+              !
+              CALL correlation_read( IE_S=ie_buff_s, IE_E=ie_buff_e )
+              !
+              ie_buff = 1
+              !
+          ELSE
+              !
+              ie_buff = ie_buff +1
+              !
+          ENDIF
           !
       ENDIF
 
@@ -310,7 +328,7 @@ END PROGRAM conductor
           !
           ! define aux quantities for each data block
           !
-          CALL hamiltonian_setup( ik, ie_g )
+          CALL hamiltonian_setup( ik, ie_g, ie_buff )
 
  
           ! 
@@ -364,7 +382,6 @@ END PROGRAM conductor
               kgC(:,:,ik) = gC
               !
           ENDIF
-
 
           !
           ! Compute density of states for the conductor layer

@@ -25,6 +25,8 @@
    CHARACTER(nstrx)          :: datafile_sgm
    CHARACTER(nstrx)          :: datafile_sgm_emb
    !
+   LOGICAL                   :: write_embed_sgm
+   !
    INTEGER                   :: transport_dir
    INTEGER                   :: debug_level
    LOGICAL                   :: use_debug_mode
@@ -39,6 +41,8 @@
    PUBLIC :: datafile_emb
    PUBLIC :: datafile_sgm
    PUBLIC :: datafile_sgm_emb
+   !
+   PUBLIC :: write_embed_sgm
    !
    PUBLIC :: transport_dir
    PUBLIC :: debug_level

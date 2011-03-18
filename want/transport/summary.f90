@@ -28,7 +28,7 @@
                                     datafile_C, datafile_L, datafile_R, &
                                     transport_dir, niterx, nprint, & 
                                     write_kdata, write_lead_sgm, write_gf
-   USE T_egrid_module,       ONLY : ne, emin, emax, de
+   USE T_egrid_module,       ONLY : ne, emin, emax, de, ne_buffer
    USE T_smearing_module,    ONLY : delta, smearing_type, nx_smear => nx, xmax
    USE T_kpoints_module,     ONLY : nkpts_par, nk_par, s_par, vkpt_par3D, wk_par, use_symm, &
                                     kpoints_alloc => alloc, kpoints_imask
@@ -102,6 +102,7 @@
     
        WRITE(iunit,"( 2x,'<ENERGY_GRID>')" )
        WRITE(iunit,"( 7x,'          Dimension :',5x,i6)")    ne
+       WRITE(iunit,"( 7x,'          Buffering :',5x,i6)")    ne_buffer
        WRITE(iunit,"( 7x,'         Min Energy :',5x,f10.5)") emin
        WRITE(iunit,"( 7x,'         Max Energy :',5x,f10.5)") emax
        WRITE(iunit,"( 7x,'        Energy Step :',5x,f10.5)") de

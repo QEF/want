@@ -21,6 +21,8 @@
 ! 
    
    INTEGER                :: ne        ! dimension of the energy grid
+   INTEGER                :: ne_buffer ! how many frequencies are stored together
+                                       ! for the correlation sgm
    REAL(dbl)              :: emin      !
    REAL(dbl)              :: emax      ! egrid extrema 
    !
@@ -34,10 +36,13 @@
 !
 
    PUBLIC :: ne, emin, emax
+   PUBLIC :: ne_buffer
    PUBLIC :: egrid
    PUBLIC :: alloc
    !
    PUBLIC :: egrid_init, de
+   PUBLIC :: egrid_buffer_doread
+   PUBLIC :: egrid_buffer_iend
    PUBLIC :: egrid_deallocate
 
 
@@ -58,6 +63,7 @@ CONTAINS
 
        IF ( alloc )   CALL errore(subname,'already allocated', 1 )
        IF ( ne <= 0 ) CALL errore(subname,'invalid ne', -ne+1 )
+       IF ( ne_buffer <= 0 ) CALL errore(subname,'invalid ne_buffer', -ne_buffer+1 )
        
        ALLOCATE( egrid(ne), STAT=ierr )
        IF (ierr/=0) CALL errore(subname,'allocating egrid', ABS(ierr))
@@ -96,5 +102,51 @@ CONTAINS
    END SUBROUTINE egrid_deallocate
 
 
+!**********************************************************
+   FUNCTION egrid_buffer_doread(  ie_g, iomg_s, iomg_e, ne_buffer )
+   !**********************************************************
+   IMPLICIT NONE
+       INTEGER       :: ie_g, iomg_s, iomg_e, ne_buffer
+       LOGICAL       :: egrid_buffer_doread
+       !
+       LOGICAL       :: doread
+       INTEGER       :: ie
+       ! 
+       !
+       doread = .FALSE.
+       !
+       ie = ie_g -iomg_s + 1
+       !
+       IF ( MOD( ie, ne_buffer ) == 1  ) doread=.TRUE.
+       !
+       egrid_buffer_doread = doread
+       !
+   END FUNCTION
+
+!**********************************************************
+   FUNCTION egrid_buffer_iend(  ie_g, iomg_s, iomg_e, ne_buffer )
+   !**********************************************************
+   IMPLICIT NONE
+       INTEGER       :: ie_g, iomg_s, iomg_e, ne_buffer
+       INTEGER       :: egrid_buffer_iend
+       !
+       INTEGER       :: iend
+       ! 
+       !
+       IF ( ie_g + ne_buffer -1 <= iomg_e ) THEN
+           !
+           iend =  ie_g + ne_buffer -1
+           !
+       ELSE
+           !
+           iend =  iomg_e
+           !
+       ENDIF
+       !
+       egrid_buffer_iend = iend
+       !
+   END FUNCTION
+   !
+   !
 END MODULE T_egrid_module
 

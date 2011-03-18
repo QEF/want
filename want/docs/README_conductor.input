@@ -76,6 +76,11 @@ ne          INTEGER
             calculation
             DEFAULT : 1000
 
+ne_buffer  INTEGER
+            dimension of the energy buffering for correlation sgm.
+            This is the number of frequencies stored in memory for corr_sgm.
+            DEFAULT : 1
+
 emin        REAL
             lower limit [eV] of the energy grid dimensioned by NE
             DEFAULT : -10.0
@@ -134,6 +139,12 @@ write_kdata LOGICAL
 
 write_lead_sgm   LOGICAL
             If .TRUE. writes the computed lead self-energies to disk.
+            ACTUNG: at the moment it needs use_symm=.FALSE.
+            DEFAULT : .FALSE.
+
+write_gf    LOGICAL
+            If .TRUE. writes the computed conductor green's function to disk.
+            ACTUNG: at the moment it needs use_symm=.FALSE.
             DEFAULT : .FALSE.
 
 datafile_C  STRING

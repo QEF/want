@@ -36,6 +36,7 @@ correlation.o : ../libs/constants.o
 correlation.o : ../libs/files.o
 correlation.o : ../libs/kind.o
 correlation.o : ../libs/log_module.o
+correlation.o : ../libs/mp_global.o
 correlation.o : ../libs/mp.o
 correlation.o : ../libs/parameters.o
 correlation.o : ../libs/parser.o

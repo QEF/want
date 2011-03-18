@@ -47,7 +47,7 @@
    COMPLEX(dbl), ALLOCATABLE :: work(:,:), work1(:,:), work2(:,:)
    COMPLEX(dbl), ALLOCATABLE :: z(:,:), lambda(:,:)
    REAL(dbl),    ALLOCATABLE :: w(:)
-   INTEGER :: i, j, ik, ierr
+   INTEGER :: i, j, ik, ierr, ie_buff
    !
    ! end of declarations
    !
@@ -84,7 +84,8 @@
    ! where g_corr = i (sgm_corr - sgm_corr^\dag)
    ! 
    !
-   ik = opr00%ik
+   ik       = opr00%ik
+   ie_buff  = opr00%ie_buff
    !
    IF ( TRIM(which_formula) == "generalized" )  THEN
        !
@@ -92,7 +93,7 @@
        DO j=1,dimC
            !
            DO i=1,dimC
-               lambda(i,j) =  CI * ( opr00%sgm(i,j,ik) - CONJG(opr00%sgm(j,i,ik))  )
+               lambda(i,j) =  CI * ( opr00%sgm(i,j,ik, ie_buff) - CONJG(opr00%sgm(j,i,ik, ie_buff))  )
                work(i,j) =  gamma_L(i,j) + gamma_R(i,j) 
            ENDDO
            !

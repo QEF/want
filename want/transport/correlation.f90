@@ -20,7 +20,7 @@
    USE timing_module,           ONLY : timing
    USE log_module,              ONLY : log_push, log_pop
    USE files_module,            ONLY : file_open, file_close
-   USE T_egrid_module,          ONLY : de, ne, egrid, emin, emax, egrid_alloc => alloc
+   USE T_egrid_module,          ONLY : de, ne, egrid, emin, emax, ne_buffer, egrid_alloc => alloc
    USE T_kpoints_module,        ONLY : nkpts_par, nrtot_par, ivr_par
    USE T_hamiltonian_module,    ONLY : dimL, dimC, dimR, &
                                        blc_00L, blc_01L, blc_00R, blc_01R, &
@@ -205,7 +205,8 @@ END SUBROUTINE correlation_finalize
    ! open the sigma file and allocate the main workspace
    ! energy grid is read from file if the case
    !
-   USE iotk_module,   ONLY : iotk_free_unit
+   USE iotk_module,       ONLY : iotk_free_unit
+   USE mp_global,         ONLY : nproc
    !
    IMPLICIT NONE
    !
@@ -268,6 +269,22 @@ END SUBROUTINE correlation_finalize
    !IF ( dimx_corr > dimC)              CALL errore(subname,'invalid dimx_corr',3)
    IF ( nrtot_corr <= 0 )               CALL errore(subname,'invalid nrtot_corr',3)
    IF ( ne_corr <= 0 .AND. ldynam_corr) CALL errore(subname,'invalid ne_corr',3)
+   !
+   ! reset buffering
+   !
+   IF ( .NOT. ldynam_corr ) THEN
+       !
+       ne_buffer = 1
+       CALL warning( subname, 'buffering reset to 1')
+       !
+   ELSE
+       !
+       ne_buffer = INT(  ne_corr / nproc ) + 1
+       CALL warning( subname, 'buffering reset')
+       !
+   ENDIF
+
+   !
    !
    CALL change_case( analyticity, 'lower' )
    IF ( TRIM(analyticity) /= 'retarded' .AND. ldynam_corr) &
@@ -353,7 +370,7 @@ END SUBROUTINE correlation_finalize
    ! store data
    !
    CALL operator_blc_allocate( opr%dim1, opr%dim2, nkpts_par, NRTOT_SGM=nrtot_corr, &
-                               LHAVE_CORR=.TRUE., OBJ=opr)
+                               NE_SGM=ne_buffer, LHAVE_CORR=.TRUE., OBJ=opr)
    !
    opr%ivr_sgm    = ivr_corr
    opr%dimx_sgm   = dimx_corr
@@ -368,11 +385,11 @@ END SUBROUTINE correlation_open
 
 
 !*******************************************************************
-   SUBROUTINE correlation_read( ie )
+   SUBROUTINE correlation_read( ie_s, ie_e )
    !*******************************************************************
    !
    ! Read correlation data for all the blocks.
-   ! If IE is present, it means that we are reading 
+   ! If IE_S, IE_E are present, it means that we are reading 
    ! dynamic self-energies
    !
    IMPLICIT NONE
@@ -380,12 +397,13 @@ END SUBROUTINE correlation_open
    !
    ! Input variabls
    !
-   INTEGER, OPTIONAL, INTENT(IN) :: ie
+   INTEGER, OPTIONAL, INTENT(IN) :: ie_s, ie_e
 
    !
    ! local variables
    !
    CHARACTER(16) :: subname="correlation_read"
+   INTEGER       :: ie, ie_buff
 
    !
    ! end of declarations
@@ -406,8 +424,15 @@ END SUBROUTINE correlation_open
    IF ( .NOT. init )       CALL errore(subname,'correlation not init',10)
    IF ( .NOT. lhave_corr ) CALL errore(subname,'correlation not required',10)
    !
-   IF ( PRESENT( ie ) .AND. .NOT. ldynam_corr ) &
+   IF ( .NOT. ( PRESENT( ie_s ) .EQV.  PRESENT( ie_e ) )  ) &
+       CALL errore(subname,' ie_s and ie_e should be given together or not given at all',10)
+   !
+   IF ( ( PRESENT( ie_s ) .OR. PRESENT( ie_e ) ) .AND. .NOT. ldynam_corr ) &
        CALL errore(subname,'correlation is not dynamic',10)
+
+   IF ( ldynam_corr .AND. .NOT. PRESENT( ie_s ) ) &
+       CALL errore(subname,'ie_s should be present',10)
+
 
 
    !
@@ -418,16 +443,24 @@ END SUBROUTINE correlation_open
    CASE ( "conductor" )
        !
        !
-       IF ( PRESENT( ie ) ) THEN
+       IF ( ldynam_corr ) THEN
            !
-           CALL correlation_sgmread( blc_00C, IE=ie )
-           CALL correlation_sgmread( blc_CR,  IE=ie )
-           CALL correlation_sgmread( blc_LC,  IE=ie )
+           ie_buff = 0
            !
-           CALL correlation_sgmread( blc_00L, IE=ie )
-           CALL correlation_sgmread( blc_01L, IE=ie )
-           CALL correlation_sgmread( blc_00R, IE=ie )
-           CALL correlation_sgmread( blc_01R, IE=ie )
+           DO ie = ie_s, ie_e
+               !
+               ie_buff = ie_buff + 1
+               ! 
+               CALL correlation_sgmread( blc_00C, IE=ie, IE_BUFF=ie_buff )
+               CALL correlation_sgmread( blc_CR,  IE=ie, IE_BUFF=ie_buff )
+               CALL correlation_sgmread( blc_LC,  IE=ie, IE_BUFF=ie_buff )
+               !
+               CALL correlation_sgmread( blc_00L, IE=ie, IE_BUFF=ie_buff )
+               CALL correlation_sgmread( blc_01L, IE=ie, IE_BUFF=ie_buff )
+               CALL correlation_sgmread( blc_00R, IE=ie, IE_BUFF=ie_buff )
+               CALL correlation_sgmread( blc_01R, IE=ie, IE_BUFF=ie_buff )
+               !
+           ENDDO
            !
        ELSE
            !
@@ -446,10 +479,18 @@ END SUBROUTINE correlation_open
    CASE ( "bulk" )
        !
        !
-       IF ( PRESENT( ie ) ) THEN
+       IF ( ldynam_corr ) THEN
            !
-           CALL correlation_sgmread( blc_00C, IE=ie )
-           CALL correlation_sgmread( blc_CR,  IE=ie )
+           ie_buff = 0
+           !
+           DO ie = ie_s, ie_e
+               !
+               ie_buff = ie_buff + 1
+               !
+               CALL correlation_sgmread( blc_00C, IE=ie, IE_BUFF=ie_buff )
+               CALL correlation_sgmread( blc_CR,  IE=ie, IE_BUFF=ie_buff )
+               !
+           ENDDO
            !
        ELSE
            !
@@ -483,20 +524,20 @@ END SUBROUTINE correlation_read
 
 
 !**********************************************************
-   SUBROUTINE correlation_sgmread( opr, ie )
+   SUBROUTINE correlation_sgmread( opr, ie, ie_buff )
    !**********************************************************
    !
    IMPLICIT NONE
    !
    TYPE(operator_blc), INTENT(INOUT) :: opr
-   INTEGER, OPTIONAL,  INTENT(IN)    :: ie
+   INTEGER, OPTIONAL,  INTENT(IN)    :: ie, ie_buff
    !
    CHARACTER(19)              :: subname="correlation_sgmread"
    COMPLEX(dbl), ALLOCATABLE  :: caux(:,:,:), caux_small(:,:,:)
    LOGICAL                    :: lfound, lopen
    INTEGER                    :: iun
    INTEGER                    :: ind, ivr_aux(3)
-   INTEGER                    :: i, j, ir, ir_par, ierr
+   INTEGER                    :: i, j, ie_bl, ir, ir_par, ierr
 
 
    CALL timing( subname, OPR='start' )
@@ -505,6 +546,16 @@ END SUBROUTINE correlation_read
    IF ( .NOT. init )             CALL errore(subname,'correlation not init',71)
    IF ( .NOT. opr%alloc )        CALL errore(subname,'opr not alloc',71)
    IF ( opr%nkpts /= nkpts_par ) CALL errore(subname,'invalid nkpts',3)
+
+   IF ( PRESENT(ie) .AND. .NOT. PRESENT(ie_buff) ) &
+       CALL errore(subname,'ie and ie_buff should be present together',3)
+
+   !
+   ! setting index for buffering
+   !
+   ie_bl = 1
+   IF ( PRESENT(ie_buff) ) ie_bl = ie_buff
+  
 
    !
    ! if we do not have any self-energy for this block, 
@@ -535,7 +586,7 @@ END SUBROUTINE correlation_read
    !
    IF ( PRESENT( ie ) ) THEN
        !
-       opr%ie = ie
+       opr%ie      = ie
        CALL operator_read_data( iun, ie, R_OPR=caux, IERR=ierr )
        !
    ELSE
@@ -627,7 +678,7 @@ END SUBROUTINE correlation_read
    !
    ! Compute the 2D fourier transform
    !
-   CALL fourier_par (opr%sgm, opr%dim1, opr%dim2, caux_small, opr%dim1, opr%dim2)
+   CALL fourier_par (opr%sgm(:,:,:,ie_bl), opr%dim1, opr%dim2, caux_small, opr%dim1, opr%dim2)
 
 
    !

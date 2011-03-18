@@ -38,6 +38,7 @@
         INTEGER                 :: nkpts        !
         INTEGER                 :: nrtot        ! number of 3D R-vects for H and S
         INTEGER                 :: nrtot_sgm    ! number of 3D R-vects for SGM
+        INTEGER                 :: ne_sgm       ! number of frequencies for buffering
         INTEGER                 :: iunit_sgm    ! fortran unit for sgm
         LOGICAL                 :: lhave_aux    ! have aux workspace
         LOGICAL                 :: lhave_sgm_aux! have sgm_aux workspace
@@ -46,6 +47,7 @@
         LOGICAL                 :: lhave_corr   ! have correlation
         LOGICAL                 :: ldynam_corr  ! dynamical correlation
         INTEGER                 :: ie           ! index of current energy-point
+        INTEGER                 :: ie_buff      ! index of current energy-point
         INTEGER                 :: ik           ! index of current k-point
         CHARACTER(nstrx)        :: tag          ! attr tag from stdin
         !
@@ -59,8 +61,8 @@
         !
         COMPLEX(dbl), POINTER   :: H(:,:,:)     ! hamiltonian mtrx elements
         COMPLEX(dbl), POINTER   :: S(:,:,:)     ! overlaps
-        COMPLEX(dbl), POINTER   :: sgm(:,:,:)   ! correlation self-energy
-        COMPLEX(dbl), POINTER   :: aux(:,:)     ! correlation self-energy
+        COMPLEX(dbl), POINTER   :: sgm(:,:,:,:) ! correlation self-energy
+        COMPLEX(dbl), POINTER   :: aux(:,:)     ! auxiliary quantity
         COMPLEX(dbl), POINTER   :: sgm_aux(:,:) ! auxiliary (smearing) self-energy
         !
         LOGICAL                 :: alloc
@@ -98,6 +100,7 @@ CONTAINS
       obj%nkpts=0
       obj%nrtot=0
       obj%iunit_sgm=-1
+      obj%ne_sgm=0
       obj%nrtot_sgm=0
       obj%lhave_aux=.FALSE.
       obj%lhave_sgm_aux=.FALSE.
@@ -105,6 +108,7 @@ CONTAINS
       obj%lhave_corr=.FALSE.
       obj%ldynam_corr=.FALSE.
       obj%ie=0
+      obj%ie_buff=0
       obj%ik=0
       obj%tag=" " 
       NULLIFY( obj%icols )
@@ -143,7 +147,7 @@ CONTAINS
       CALL operator_blc_deallocate( obj2 )
       !
       CALL operator_blc_allocate( obj1%dim1, obj1%dim2, obj1%nkpts, &
-                                  NRTOT=obj1%nrtot, NRTOT_SGM=obj1%nrtot_sgm, &
+                                  NRTOT=obj1%nrtot, NRTOT_SGM=obj1%nrtot_sgm, NE_SGM=obj1%ne_sgm, &
                                   LHAVE_AUX=obj1%lhave_aux, LHAVE_SGM_AUX=obj1%lhave_sgm_aux, &
                                   LHAVE_HAM=obj1%lhave_ham, &
                                   LHAVE_OVP=obj1%lhave_ovp, LHAVE_CORR=obj1%lhave_corr, &
@@ -152,9 +156,10 @@ CONTAINS
       obj2%ldynam_corr = obj1%ldynam_corr
       obj2%iunit_sgm   = obj1%iunit_sgm
       obj2%dimx_sgm    = obj1%dimx_sgm
-      obj2%ie   = obj1%ie
-      obj2%ik   = obj1%ik
-      obj2%tag  = TRIM( obj1%tag )
+      obj2%ie          = obj1%ie
+      obj2%ie_buff     = obj1%ie_buff
+      obj2%ik          = obj1%ik
+      obj2%tag         = TRIM( obj1%tag )
       !
       IF ( ASSOCIATED( obj1%icols ) )      obj2%icols = obj1%icols
       IF ( ASSOCIATED( obj1%irows ) )      obj2%irows = obj1%irows
@@ -176,11 +181,11 @@ CONTAINS
 
 
 !****************************************************
-   SUBROUTINE operator_blc_update(nrtot, nrtot_sgm, ie, ik, ldynam_corr, tag, blc_name, obj )
+   SUBROUTINE operator_blc_update(nrtot, nrtot_sgm, ie, ie_buff, ik, ldynam_corr, tag, blc_name, obj )
    !****************************************************
    IMPLICIT NONE
       !
-      INTEGER,       OPTIONAL, INTENT(IN) :: nrtot, nrtot_sgm, ie, ik
+      INTEGER,       OPTIONAL, INTENT(IN) :: nrtot, nrtot_sgm, ie, ie_buff, ik
       LOGICAL,       OPTIONAL, INTENT(IN) :: ldynam_corr
       CHARACTER(*),  OPTIONAL, INTENT(IN) :: blc_name, tag
       TYPE(operator_blc),   INTENT(INOUT) :: obj
@@ -193,6 +198,7 @@ CONTAINS
       IF ( PRESENT( nrtot ) )      obj%nrtot = nrtot
       IF ( PRESENT( nrtot_sgm ) )  obj%nrtot_sgm = nrtot_sgm
       IF ( PRESENT( ie ) )         obj%ie = ie
+      IF ( PRESENT( ie_buff ) )    obj%ie_buff = ie_buff
       IF ( PRESENT( ik ) )         obj%ik = ik
       IF ( PRESENT( ldynam_corr )) obj%ldynam_corr = ldynam_corr
       IF ( PRESENT( tag ))         obj%tag = TRIM(tag)
@@ -222,6 +228,7 @@ CONTAINS
       WRITE( ounit, "(  2x,'        nkpts : ',i5)") obj%nkpts
       WRITE( ounit, "(  2x,'        nrtot : ',i5)") obj%nrtot
       WRITE( ounit, "(  2x,'    nrtot_sgm : ',i5)") obj%nrtot_sgm
+      WRITE( ounit, "(  2x,'       ne_sgm : ',i5)") obj%ne_sgm
       WRITE( ounit, "(  2x,'     have_aux : ',a)") TRIM( log2char(obj%lhave_aux) )
       WRITE( ounit, "(  2x,' have_sgm_aux : ',a)") TRIM( log2char(obj%lhave_sgm_aux) )
       WRITE( ounit, "(  2x,'     have_ham : ',a)") TRIM( log2char(obj%lhave_ham) )
@@ -230,6 +237,7 @@ CONTAINS
       WRITE( ounit, "(  2x,'     dyn_corr : ',a)") TRIM( log2char(obj%ldynam_corr) )
       WRITE( ounit, "(  2x,'     unit_sgm : ',a)") obj%iunit_sgm
       WRITE( ounit, "(  2x,'           ie : ',i5)") obj%ie
+      WRITE( ounit, "(  2x,'    ie buffer : ',i5)") obj%ie_buff
       WRITE( ounit, "(  2x,'           ik : ',i5)") obj%ik
       WRITE( ounit, "(  2x,'          tag : ',a)") TRIM(obj%tag)
       !
@@ -237,14 +245,14 @@ CONTAINS
 
 
 !****************************************************
-   SUBROUTINE operator_blc_allocate(dim1, dim2, nkpts, nrtot, nrtot_sgm, &
+   SUBROUTINE operator_blc_allocate(dim1, dim2, nkpts, nrtot, nrtot_sgm, ne_sgm, &
                                     lhave_aux, lhave_sgm_aux, lhave_ham, &
                                     lhave_ovp, lhave_corr, blc_name, obj)
    !****************************************************
    IMPLICIT NONE
       !
       INTEGER,                 INTENT(IN) :: dim1, dim2, nkpts 
-      INTEGER,       OPTIONAL, INTENT(IN) :: nrtot, nrtot_sgm
+      INTEGER,       OPTIONAL, INTENT(IN) :: nrtot, nrtot_sgm, ne_sgm
       LOGICAL,       OPTIONAL, INTENT(IN) :: lhave_aux, lhave_sgm_aux, lhave_ham, lhave_ovp, lhave_corr
       CHARACTER(*),  OPTIONAL, INTENT(IN) :: blc_name
       TYPE(operator_blc),   INTENT(INOUT) :: obj
@@ -257,8 +265,8 @@ CONTAINS
       !
       ! some checks
       !
-      IF ( dim1 <= 0 )  CALL errore(subname,'invalid dim1',10)
-      IF ( dim2 <= 0 )  CALL errore(subname,'invalid dim2',10)
+      IF ( dim1 <   0 )  CALL errore(subname,'invalid dim1',10)
+      IF ( dim2 <   0 )  CALL errore(subname,'invalid dim2',10)
       IF ( nkpts <= 0 ) CALL errore(subname,'invalid nkpts',10)
  
       !
@@ -271,9 +279,11 @@ CONTAINS
           obj%nkpts       = nkpts
           obj%nrtot       = 0
           obj%nrtot_sgm   = 0
+          obj%ne_sgm      = 1
           !
           IF ( PRESENT( nrtot) )           obj%nrtot = nrtot
           IF ( PRESENT( nrtot_sgm) )   obj%nrtot_sgm = nrtot_sgm
+          IF ( PRESENT( ne_sgm) )         obj%ne_sgm = ne_sgm
           !
       ELSE
           !
@@ -285,6 +295,8 @@ CONTAINS
                obj%nrtot = nrtot
           IF ( PRESENT(nrtot_sgm) .AND. .NOT. ASSOCIATED(obj%ivr_sgm) ) &
                obj%nrtot_sgm = nrtot_sgm
+          IF ( PRESENT(ne_sgm)    .AND. .NOT. ASSOCIATED(obj%sgm) ) &
+               obj%ne_sgm = ne_sgm
           !
       ENDIF
       !
@@ -363,7 +375,7 @@ CONTAINS
       !
       IF ( lhave_corr_ .AND. .NOT. ASSOCIATED( obj%sgm ) ) THEN
           !
-          ALLOCATE( obj%sgm(dim1,dim2,nkpts), STAT=ierr )
+          ALLOCATE( obj%sgm(dim1,dim2,nkpts,obj%ne_sgm), STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname,'allocating sgm',ABS(ierr))
           !
           obj%lhave_corr = .TRUE.

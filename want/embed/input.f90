@@ -81,6 +81,7 @@ CONTAINS
                                            datafile_emb,      &
                                            datafile_sgm,      &
                                            datafile_sgm_emb,  &
+                                           write_embed_sgm,   &
                                            debug_level,       &
                                            use_debug_mode
                                             
@@ -90,6 +91,7 @@ CONTAINS
                                            datafile_emb_      => datafile_emb, &
                                            datafile_sgm_      => datafile_sgm, &
                                            datafile_sgm_emb_  => datafile_sgm_emb, &
+                                           write_embed_sgm_   => write_embed_sgm, &
                                            debug_level_       => debug_level
 
       IMPLICIT NONE
@@ -101,6 +103,7 @@ CONTAINS
       datafile_sgm_emb    = datafile_sgm_emb_
       transport_dir       = transport_dir_
       debug_level         = debug_level_
+      write_embed_sgm     = write_embed_sgm_
 
       use_debug_mode = .FALSE.
       IF ( debug_level_ > 0 )  use_debug_mode  = .TRUE.
@@ -148,15 +151,18 @@ CONTAINS
    SUBROUTINE setup_egrid()
    !**********************************************************
       USE T_egrid_module,           ONLY : ne,              &
+                                           ne_buffer,       &
                                            emin, emax   
-      USE E_input_parameters_module,ONLY : ne_     => ne,   &
-                                           emin_   => emin, &
-                                           emax_   => emax 
+      USE E_input_parameters_module,ONLY : ne_        =>  ne,        &
+                                           ne_buffer_ =>  ne_buffer, &
+                                           emin_      =>  emin,      &
+                                           emax_      =>  emax 
       IMPLICIT NONE
 
-      ne     = ne_
-      emin   = emin_
-      emax   = emax_
+      ne         = ne_
+      ne_buffer  = ne_buffer_
+      emin       = emin_
+      emax       = emax_
 
    END SUBROUTINE setup_egrid
 
@@ -217,13 +223,16 @@ CONTAINS
 !**********************************************************
    SUBROUTINE setup_kpoints()
    !**********************************************************
-      USE T_kpoints_module,          ONLY : nk_par,      s_par, use_symm
-      USE E_input_parameters_module, ONLY : nk, s, use_symm_ => use_symm
+      USE T_kpoints_module,         ONLY :     nk_par, s_par, use_symm, use_safe_kmesh
+      USE E_input_parameters_module,ONLY :     nk, s, &
+                                               write_embed_sgm, &
+                                               use_symm_ => use_symm
       IMPLICIT NONE
-      
-      nk_par(1:2)  = nk(1:2)
-      s_par(1:2)   = s(1:2)
-      use_symm     = use_symm_
+
+      nk_par(1:2)      = nk(1:2)
+      s_par(1:2)       = s(1:2)
+      use_symm         = use_symm_
+      use_safe_kmesh   = write_embed_sgm
 
    END SUBROUTINE setup_kpoints
 
