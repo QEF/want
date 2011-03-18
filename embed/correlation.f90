@@ -25,7 +25,8 @@
    USE E_hamiltonian_module,    ONLY : dimT, dimE, dimB, blc_T, blc_E, blc_B, blc_EB, blc_BE
    USE E_control_module,        ONLY : transport_dir, datafile_sgm
    !
-   USE T_egrid_module,          ONLY : de, ne, egrid, emin, emax, egrid_alloc => alloc
+   USE T_egrid_module,          ONLY : de, ne, egrid, emin, emax, &
+                                       ne_buffer, egrid_alloc => alloc
    USE T_kpoints_module,        ONLY : nkpts_par, nrtot_par, ivr_par
    USE T_operator_blc_module
    !
@@ -38,6 +39,7 @@
 ! 
     INTEGER     :: dimT_corr
     INTEGER     :: nrtot_corr
+    !
     LOGICAL     :: lhave_corr   = .FALSE.
     LOGICAL     :: ldynam_corr  = .FALSE.
     !
@@ -150,6 +152,22 @@ CONTAINS
       IF ( dimT_corr > dimT)               CALL errore(subname,'invalid dicT_corr',3)
       IF ( nrtot_corr <= 0 )               CALL errore(subname,'invalid nrtot_corr',3)
       IF ( ne_corr <= 0 .AND. ldynam_corr) CALL errore(subname,'invalid ne_corr',3)
+
+      !
+      ! reset buffering
+      !
+      IF ( .NOT. ldynam_corr ) THEN
+          !
+          ne_buffer = 1
+          CALL warning( subname, 'buffering reset to 1')
+          !
+      ELSE
+          !
+          ne_buffer = INT(  ne_corr / nproc ) + 1
+          CALL warning( subname, 'buffering reset')
+          !
+      ENDIF
+
       !
       CALL change_case( analyticity, 'lower' )
       IF ( TRIM(analyticity) /= 'retarded' .AND. ldynam_corr) &
@@ -197,15 +215,15 @@ CONTAINS
       ! store data
       !
       CALL operator_blc_allocate( dimT, dimT, nkpts_par, NRTOT_SGM=nrtot_corr, &
-                                  LHAVE_CORR=.TRUE., OBJ=blc_T)
+                                  NE_SGM=ne_buffer, LHAVE_CORR=.TRUE., OBJ=blc_T)
       CALL operator_blc_allocate( dimE, dimE, nkpts_par, NRTOT_SGM=nrtot_corr, &
-                                  LHAVE_CORR=.TRUE., OBJ=blc_E)
+                                  NE_SGM=ne_buffer, LHAVE_CORR=.TRUE., OBJ=blc_E)
       CALL operator_blc_allocate( dimB, dimB, nkpts_par, NRTOT_SGM=nrtot_corr, &
-                                  LHAVE_CORR=.TRUE., OBJ=blc_B)
+                                  NE_SGM=ne_buffer, LHAVE_CORR=.TRUE., OBJ=blc_B)
       CALL operator_blc_allocate( dimE, dimB, nkpts_par, NRTOT_SGM=nrtot_corr, &
-                                  LHAVE_CORR=.TRUE., OBJ=blc_EB)
+                                  NE_SGM=ne_buffer, LHAVE_CORR=.TRUE., OBJ=blc_EB)
       CALL operator_blc_allocate( dimB, dimE, nkpts_par, NRTOT_SGM=nrtot_corr, &
-                                  LHAVE_CORR=.TRUE., OBJ=blc_BE)
+                                  NE_SGM=ne_buffer, LHAVE_CORR=.TRUE., OBJ=blc_BE)
       !
       blc_T%ivr_sgm = ivr_corr
       blc_E%ivr_sgm = ivr_corr
@@ -240,30 +258,40 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE correlation_sgmread( iun, opr, ie )
+   SUBROUTINE correlation_sgmread( iun, opr, ie, ie_buff )
    !**********************************************************
    !
    IMPLICIT NONE
       INTEGER,            INTENT(IN)    :: iun
       TYPE(operator_blc), INTENT(INOUT) :: opr
-      INTEGER, OPTIONAL,  INTENT(IN)    :: ie
+      INTEGER, OPTIONAL,  INTENT(IN)    :: ie, ie_buff
       !
       CHARACTER(19)              :: subname="correlation_sgmread"
       COMPLEX(dbl), ALLOCATABLE  :: caux(:,:,:), caux_small(:,:,:)
       LOGICAL                    :: lfound
       INTEGER                    :: ind, ivr_aux(3)
       INTEGER                    :: i, j, ir, ir_par, ierr
+      INTEGER                    :: ie_bl
 
 
       CALL timing( subname, OPR='start' )
       CALL log_push( subname )
 
       IF ( .NOT. init ) CALL errore(subname,'correlation not init',71)
+      !
+      IF ( PRESENT(ie) .AND. .NOT. PRESENT(ie_buff) ) &
+           CALL errore(subname,'ie and ie_buff should be present together',3)
  
       IF ( .NOT. opr%alloc )        CALL errore(subname,'opr not alloc',71)
       IF ( opr%dim1 >  dimT_corr )  CALL errore(subname,'invalid dim1',1)
       IF ( opr%dim2 >  dimT_corr )  CALL errore(subname,'invalid dim2',2)
       IF ( opr%nkpts /= nkpts_par ) CALL errore(subname,'invalid nkpts',3)
+
+      !
+      ! setting index for buffering
+      !
+      ie_bl = 1
+      IF ( PRESENT(ie_buff) ) ie_bl = ie_buff
 
       !
       ! allocate auxiliary quantities
@@ -368,7 +396,7 @@ CONTAINS
       !
       ! Compute the 2D fourier transform
       !
-      CALL fourier_par (opr%sgm, opr%dim1, opr%dim2, caux_small, opr%dim1, opr%dim2)
+      CALL fourier_par (opr%sgm(:,:,:,ie_bl), opr%dim1, opr%dim2, caux_small, opr%dim1, opr%dim2)
 
       !
       ! local cleaning
@@ -383,24 +411,26 @@ CONTAINS
     
 
 !*******************************************************************
-   SUBROUTINE correlation_read( ie )
+   SUBROUTINE correlation_read( ie_s, ie_e )
    !*******************************************************************
    !
    ! Read correlation data
-   ! If IE is present, it meas that we are reading a dynamic self-energy
+   ! If IE_S, IE_E are present, it means that we are reading
+   ! dynamic self-energies
    !
    IMPLICIT NONE
 
    !
    ! Input variabls
    !
-   INTEGER, OPTIONAL, INTENT(IN) :: ie
+   INTEGER, OPTIONAL, INTENT(IN) :: ie_s, ie_e
 
    !
    ! local variables
    !
    CHARACTER(16) :: subname="correlation_read"
    LOGICAL       :: lopen
+   INTEGER       :: ie, ie_buff
 
    !
    ! end of declarations
@@ -421,22 +451,36 @@ CONTAINS
    IF ( .NOT. init )       CALL errore(subname,'correlation not init',10)
    IF ( .NOT. lhave_corr ) CALL errore(subname,'correlation not required',10)
    !
-   IF ( PRESENT( ie ) .AND. .NOT. ldynam_corr ) &
-       CALL errore(subname,'correlation is not dynamic',10)
+   IF ( .NOT. ( PRESENT( ie_s ) .EQV.  PRESENT( ie_e ) )  ) &
+       CALL errore(subname,' ie_s and ie_e should be given together or not given at all',10)
    !
+   IF ( ( PRESENT( ie_s ) .OR. PRESENT( ie_e ) ) .AND. .NOT. ldynam_corr ) &
+       CALL errore(subname,'correlation is not dynamic',10)
+
+   IF ( ldynam_corr .AND. .NOT. PRESENT( ie_s ) ) &
+       CALL errore(subname,'ie_s should be present',10)
+
    INQUIRE( sgm_unit, OPENED=lopen)
    IF ( .NOT. lopen ) CALL errore(subname,'sgm datafile not connected',10)
 
    !
    ! read data
    !
-   IF ( PRESENT( ie ) ) THEN
+   IF ( ldynam_corr ) THEN
        !
-       CALL correlation_sgmread( sgm_unit, blc_T,  IE=ie )
-       CALL correlation_sgmread( sgm_unit, blc_E,  IE=ie )
-       CALL correlation_sgmread( sgm_unit, blc_B,  IE=ie )
-       CALL correlation_sgmread( sgm_unit, blc_EB, IE=ie )
-       CALL correlation_sgmread( sgm_unit, blc_BE, IE=ie )
+       ie_buff = 0
+       !
+       DO ie = ie_s, ie_e
+           !
+           ie_buff = ie_buff + 1
+           ! 
+           CALL correlation_sgmread( sgm_unit, blc_T,  IE=ie, IE_BUFF=ie_buff )
+           CALL correlation_sgmread( sgm_unit, blc_E,  IE=ie, IE_BUFF=ie_buff )
+           CALL correlation_sgmread( sgm_unit, blc_B,  IE=ie, IE_BUFF=ie_buff )
+           CALL correlation_sgmread( sgm_unit, blc_EB, IE=ie, IE_BUFF=ie_buff )
+           CALL correlation_sgmread( sgm_unit, blc_BE, IE=ie, IE_BUFF=ie_buff )
+           !
+       ENDDO
        !
    ELSE
        !

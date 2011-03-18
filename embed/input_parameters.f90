@@ -49,6 +49,9 @@
    INTEGER :: ne = 1000  
        ! the dimension of the energy grid
 
+   INTEGER :: ne_buffer = 1
+       ! dimension of the energy buffering for correlation sgm
+
    REAL(dbl) :: emin = -10.0
        ! lower bound of the energy range
 
@@ -83,9 +86,13 @@
    INTEGER :: s(2) =  0
        ! shifts for the generation of the 2D mesh of kpts
  
-   LOGICAL :: use_symm = .TRUE.  
+   LOGICAL :: use_symm = .FALSE.  
        ! whether to use symmetry to reduce the numberof kpts
        ! only Time-Rev is implemented at the moment
+
+   LOGICAL :: write_embed_sgm = .TRUE.
+       ! write the computed embed self-energy to disk.
+       ! ACTUNG: at the moment it needs use_symm=.FALSE.
 
    INTEGER :: nprint = 20 
        ! every nprint energy step write to stdout
@@ -126,15 +133,17 @@
        ! Currently it is used only within the interface with CRYSTAL06.
 
 
-   NAMELIST / INPUT / dim_tot, dim_emb, ne, emin, emax, nprint,              &
+   NAMELIST / INPUT / dim_tot, dim_emb, ne, ne_buffer, emin, emax, nprint,   &
                  datafile_tot, datafile_emb, datafile_sgm, datafile_sgm_emb, &
+                 use_symm, write_embed_sgm, &
                  delta, smearing_type, delta_ratio, xmax,                    &
-                 transport_dir, nk, s, use_symm, debug_level,                &
+                 transport_dir, nk, s, debug_level,                          &
                  work_dir, prefix, postfix, shift_tot, ispin
 
-   PUBLIC :: dim_tot, dim_emb, ne, emin, emax, nprint
+   PUBLIC :: dim_tot, dim_emb, ne, ne_buffer, emin, emax, nprint
    PUBLIC :: datafile_tot, datafile_emb, datafile_sgm, datafile_sgm_emb
-   PUBLIC :: transport_dir, nk, s, use_symm, debug_level
+   PUBLIC :: use_symm, write_embed_sgm
+   PUBLIC :: transport_dir, nk, s, debug_level
    PUBLIC :: delta, smearing_type, delta_ratio, xmax
    PUBLIC :: work_dir, prefix, postfix, shift_tot, ispin
    PUBLIC :: INPUT
@@ -177,6 +186,7 @@ CONTAINS
       CALL mp_bcast( dim_emb,            ionode_id)      
       CALL mp_bcast( transport_dir,      ionode_id)      
       CALL mp_bcast( ne,                 ionode_id)      
+      CALL mp_bcast( ne_buffer,          ionode_id)      
       CALL mp_bcast( emin,               ionode_id)      
       CALL mp_bcast( emax,               ionode_id)      
       CALL mp_bcast( delta,              ionode_id)
@@ -187,6 +197,7 @@ CONTAINS
       CALL mp_bcast( nk,                 ionode_id)      
       CALL mp_bcast( s,                  ionode_id)      
       CALL mp_bcast( use_symm,           ionode_id)      
+      CALL mp_bcast( write_embed_sgm,    ionode_id)      
       CALL mp_bcast( debug_level,        ionode_id)      
       CALL mp_bcast( work_dir,           ionode_id)      
       CALL mp_bcast( prefix,             ionode_id)      
@@ -216,8 +227,9 @@ CONTAINS
       INQUIRE( FILE=datafile_tot, EXIST=exists )
       IF ( .NOT. exists ) CALL errore(subname,'unable to find '//TRIM(datafile_tot),1)
       !
-      IF ( emax <= emin ) CALL errore(subname,'Invalid EMIN EMAX',1)
-      IF ( ne <= 1 ) CALL errore(subname,'Invalid NE',1)
+      IF ( emax <= emin )    CALL errore(subname,'Invalid EMIN EMAX',1)
+      IF ( ne <= 1 )         CALL errore(subname,'Invalid NE',1)
+      IF ( ne_buffer <= 1 )  CALL errore(subname,'Invalid NE_BUFFER',1)
 
       IF ( delta < ZERO ) CALL errore(subname,'Invalid DELTA',1)
       IF ( delta > 3.0_dbl* EPS_m1 ) CALL errore(subname,'DELTA too large',1)
@@ -231,13 +243,16 @@ CONTAINS
           CALL errore(subname,'Invalid smearing_type ='//TRIM(smearing_type),10)
 
       IF ( dim_emb <= 0)        CALL errore(subname,'Invalid dim_emb',1)
-      IF ( dim_emb >= dim_tot)  CALL errore(subname,'Invalid dim_emb >= dim_tot',1)
+      IF ( dim_emb > dim_tot)   CALL errore(subname,'Invalid dim_emb > dim_tot',1)
 
       IF ( ANY( nk(:) < 0 ) ) CALL errore(subname,'invalid nk', 10 )
       IF ( ANY( s(:)  < 0 .OR.  s(:) > 1 ) ) CALL errore(subname,'invalid s', 10 )
 
       IF ( ispin < 0 ) CALL errore(subname, 'ispin too small', 1)
       IF ( ispin > 2 ) CALL errore(subname, 'ispin too large', 2)
+
+      IF ( write_embed_sgm .AND. use_symm ) &
+          CALL errore(subname,'use_symm and write_sgm not implemented',1)
 
       CALL log_pop( 'read_namelist_input' )
 

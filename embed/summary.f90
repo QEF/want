@@ -22,8 +22,8 @@
    USE E_correlation_module, ONLY : lhave_corr
    USE E_control_module,     ONLY : datafile_tot, datafile_emb, &
                                     datafile_sgm, datafile_sgm_emb, &
-                                    transport_dir, nprint
-   USE T_egrid_module,       ONLY : ne, emin, emax, de
+                                    transport_dir, nprint, write_embed_sgm
+   USE T_egrid_module,       ONLY : ne, emin, emax, de, ne_buffer
    USE T_smearing_module,    ONLY : delta, smearing_type, nx_smear => nx, xmax
    USE T_kpoints_module,     ONLY : nkpts_par, nk_par, s_par, vkpt_par3D, wk_par, use_symm, &
                                     kpoints_alloc => alloc
@@ -73,6 +73,7 @@
    WRITE(iunit,"( 7x,'    global datafile :',5x,a)") TRIM(datafile_tot)
    WRITE(iunit,"( 7x,'     embed datafile :',5x,a)") TRIM(datafile_emb)
    WRITE(iunit,"( 7x,' sgm embed datafile :',5x,a)") TRIM(datafile_sgm_emb)
+   WRITE(iunit,"( 7x,'    write sgm embed :',5x,a)") log2char(write_embed_sgm)
    !
    IF (lhave_corr) THEN
        WRITE(iunit,"( 7x,'  sgm corr datafile :',5x,a)") TRIM(datafile_sgm)
@@ -81,6 +82,7 @@
 
    WRITE(iunit,"( 2x,'<ENERGY_GRID>')" )
    WRITE(iunit,"( 7x,'          Dimension :',5x,i6)")    ne
+   WRITE(iunit,"( 7x,'          Buffering :',5x,i6)")    ne_buffer
    WRITE(iunit,"( 7x,'         Min energy :',5x,f10.5)") emin
    WRITE(iunit,"( 7x,'         Max energy :',5x,f10.5)") emax
    WRITE(iunit,"( 7x,'        Energy step :',5x,f10.5)") de

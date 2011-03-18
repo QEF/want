@@ -76,6 +76,9 @@
    INTEGER :: ne = 1000  
        ! the dimension of the energy grid
 
+   INTEGER :: ne_buffer = 1
+       ! dimension of the energy buffering for correlation sgm
+
    REAL(dbl) :: emin = -10.0
        ! lower bound of the energy range
 
@@ -130,9 +133,11 @@
 
    LOGICAL :: write_lead_sgm = .FALSE.
        ! write the computed lead self-energies to disk.
+       ! ACTUNG: at the moment it needs use_symm=.FALSE.
 
    LOGICAL :: write_gf = .FALSE.
        ! write the green's function in the conductor region
+       ! ACTUNG: at the moment it needs use_symm=.FALSE.
 
    LOGICAL :: do_eigenchannels = .FALSE.
        ! compute eigenchannels
@@ -212,7 +217,8 @@
        ! Currently it is used only within the interface with CRYSTAL09.
 
    NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type,             &
-                 conduct_formula, niterx, ne, emin, emax, nprint, delta, bias,  &
+                 conduct_formula, niterx, ne, ne_buffer, emin, emax,            &
+                 nprint, delta, bias,                                           &
                  datafile_L,     datafile_C,     datafile_R, datafile_sgm,      &
                  datafile_L_sgm, datafile_C_sgm, datafile_R_sgm,                &
                  transport_dir, smearing_type, do_eigenchannels, do_eigplot,    &
@@ -224,7 +230,7 @@
 
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx, smearing_type
-   PUBLIC :: ne, emin, emax, nprint, delta, bias, delta_ratio, xmax 
+   PUBLIC :: ne, ne_buffer, emin, emax, nprint, delta, bias, delta_ratio, xmax 
    PUBLIC :: datafile_L,     datafile_C,     datafile_R,     datafile_sgm, transport_dir
    PUBLIC :: datafile_L_sgm, datafile_C_sgm, datafile_R_sgm
    PUBLIC :: nk, s, use_symm, debug_level
@@ -274,6 +280,7 @@ CONTAINS
       CALL mp_bcast( calculation_type,   ionode_id)      
       CALL mp_bcast( conduct_formula,    ionode_id)      
       CALL mp_bcast( ne,                 ionode_id)      
+      CALL mp_bcast( ne_buffer,          ionode_id)      
       CALL mp_bcast( emin,               ionode_id)      
       CALL mp_bcast( emax,               ionode_id)      
       CALL mp_bcast( delta,              ionode_id)      
@@ -328,6 +335,7 @@ CONTAINS
       !
       IF ( emax <= emin )   CALL errore(subname,'Invalid EMIN EMAX',1)
       IF ( ne <= 1 )        CALL errore(subname,'Invalid NE',1)
+      IF ( ne_buffer <= 0 ) CALL errore(subname,'Invalid NE_BUFFER',1)
       IF ( niterx <= 0 )    CALL errore(subname,'Invalid NITERX',1)
       IF ( nprint <= 0)     CALL errore(subname, ' nprint must be > 0 ', -nprint+1 )
       IF ( delta < ZERO )   CALL errore(subname,'Invalid DELTA',1)
@@ -418,7 +426,10 @@ CONTAINS
           CALL errore(subname,'ie_eigplot needs do_eigplot',1)
       IF ( ik_eigplot > 0 .AND. .NOT. do_eigplot ) &
           CALL errore(subname,'ik_eigplot needs do_eigplot',1)
-
+      !
+      !
+      IF ( ( write_lead_sgm .OR. write_gf ) .AND. use_symm ) &
+           CALL errore(subname,'use_symm and write_sgm or write_gf not implemented',1)
 
       CALL log_pop( 'read_namelist_input_conductor' )
 

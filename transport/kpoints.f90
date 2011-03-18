@@ -23,6 +23,8 @@
 ! all vectors (vkpt_par, ivr_par) in crystal units
 ! 
     LOGICAL                   :: use_symm        ! whether to use kpt_symm
+    LOGICAL                   :: use_safe_kmesh  ! whether to use consistent nk and nr 2D meshes
+                                                 ! for FFT purposes
     INTEGER                   :: nkpts_par       ! number of parallel  kpts
     INTEGER                   :: nk_par(2)       ! 2D kpt mesh generator
     INTEGER                   :: s_par(2)        ! 2D shifts for kpt mesh generation
@@ -48,7 +50,7 @@
 ! end delcarations
 !
 
-   PUBLIC :: use_symm
+   PUBLIC :: use_symm, use_safe_kmesh
    PUBLIC :: nrtot_par, nr_par, ivr_par, wr_par
    PUBLIC :: nkpts_par, nk_par, s_par, vkpt_par, wk_par
    PUBLIC :: vkpt_par3D, ivr_par3D, vr_par3D
@@ -146,6 +148,9 @@ CONTAINS
       IF ( nk_par(2) == 0 ) nk_par(2) = nr_par(2)
       !
       IF ( ANY( nk_par(:) < 1 ) ) CALL errore(subname,'nk mesh too small',71)
+      !
+      IF ( use_safe_kmesh .AND. ANY( nk_par(:) < nr_par(:) ) ) &
+           CALL errore(subname,'nk should be >= than nr',72)
       !
       ! the total number of kpts will re-defined below
       ! due to symmetrization

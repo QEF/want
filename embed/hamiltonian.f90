@@ -84,7 +84,7 @@ CONTAINS
       IF ( alloc )            CALL errore(subname,'already allocated', 1 )
       IF ( dimT <= 0 )        CALL errore(subname,'invalid dimT', 1 )
       IF ( dimE <= 0 )        CALL errore(subname,'invalid dimE', 1 )
-      IF ( dimE >= dimT)      CALL errore(subname,'Invalid dimE >= dimT',1)
+      IF ( dimE > dimT)       CALL errore(subname,'Invalid dimE > dimT',1)
       !
       IF ( dimB /= dimT-dimE) CALL errore(subname,'Invalid dimB,dimE,dimT',1)
       !
