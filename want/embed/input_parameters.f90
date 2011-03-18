@@ -229,7 +229,7 @@ CONTAINS
       !
       IF ( emax <= emin )    CALL errore(subname,'Invalid EMIN EMAX',1)
       IF ( ne <= 1 )         CALL errore(subname,'Invalid NE',1)
-      IF ( ne_buffer <= 1 )  CALL errore(subname,'Invalid NE_BUFFER',1)
+      IF ( ne_buffer <= 0 )  CALL errore(subname,'Invalid NE_BUFFER',1)
 
       IF ( delta < ZERO ) CALL errore(subname,'Invalid DELTA',1)
       IF ( delta > 3.0_dbl* EPS_m1 ) CALL errore(subname,'DELTA too large',1)
