@@ -221,7 +221,11 @@ CONTAINS
    length=LEN_TRIM(str)
    nitem = 0
    IF ( PRESENT(ierr) ) ierr = -1
-   IF ( length == 0 ) RETURN
+   !
+   IF ( length == 0 ) THEN
+       ierr = 0
+       RETURN
+   ENDIF
 
 
    IF ( PRESENT(ierr) ) ierr = 0
