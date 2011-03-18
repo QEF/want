@@ -92,7 +92,7 @@ clean:
 	if test -d embed ;     then ( cd embed;     $(MAKE) clean ) ; fi
 	if test -d utility ;   then ( cd utility;   $(MAKE) clean ) ; fi
 	- /bin/rm  ./include/build_date.h
-	- /bin/rm -rf bin/*.x
+	- /bin/rm -rf ./bin/*.x  ./bin/sumpdos  ./bin/iotk
 
 clean_test:
 	if test -d tests ; then \
