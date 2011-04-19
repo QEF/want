@@ -12,6 +12,7 @@
 !*********************************************
    !   
    USE kinds,               ONLY : dbl 
+   USE constants,           ONLY : ZERO
    USE parameters,          ONLY : nstrx
    USE parser_module,       ONLY : change_case, log2char
    USE log_module,          ONLY : log_push, log_pop
@@ -81,6 +82,7 @@
    PUBLIC :: operator_blc_allocate
    PUBLIC :: operator_blc_deallocate
    PUBLIC :: operator_blc_write
+   PUBLIC :: operator_blc_memusage
 
 
 CONTAINS
@@ -474,6 +476,64 @@ CONTAINS
       RETURN
       !
    END SUBROUTINE operator_blc_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION operator_blc_memusage(obj,memtype)
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       TYPE(operator_blc)  :: obj
+       CHARACTER(*)        :: memtype
+       !
+       !
+       LOGICAL   :: do_ham = .FALSE.
+       LOGICAL   :: do_corr = .FALSE.
+       !
+       REAL(dbl) :: cost
+       !
+       !
+       SELECT CASE ( TRIM(memtype) )
+       CASE ( "ham", "hamiltonian" )
+           do_ham=.TRUE.
+       CASE ( "corr", "correlation" )
+           do_corr=.TRUE.
+       CASE ( "all" )
+           do_ham=.TRUE.
+           do_corr=.TRUE.
+       CASE DEFAULT
+           CALL errore('operator_blc_memusage','invalid memtype: '//TRIM(memtype),10)
+       END SELECT
+       !
+       cost = ZERO
+       !
+       IF ( do_ham ) THEN
+           IF ( ASSOCIATED(obj%icols) )       cost = cost + REAL(SIZE(obj%icols))   *  4.0_dbl
+           IF ( ASSOCIATED(obj%irows) )       cost = cost + REAL(SIZE(obj%irows))   *  4.0_dbl
+           IF ( ASSOCIATED(obj%ivr) )         cost = cost + REAL(SIZE(obj%ivr))     *  4.0_dbl
+       ENDIF
+       !
+       IF ( do_corr ) THEN
+           IF ( ASSOCIATED(obj%icols_sgm) )   cost = cost + REAL(SIZE(obj%icols_sgm))   *  4.0_dbl
+           IF ( ASSOCIATED(obj%irows_sgm) )   cost = cost + REAL(SIZE(obj%irows_sgm))   *  4.0_dbl
+           IF ( ASSOCIATED(obj%ivr_sgm) )     cost = cost + REAL(SIZE(obj%ivr_sgm))     *  4.0_dbl
+       ENDIF
+       !
+       IF ( do_ham ) THEN
+           IF ( ASSOCIATED(obj%H) )           cost = cost + REAL(SIZE(obj%H))       * 16.0_dbl
+           IF ( ASSOCIATED(obj%S) )           cost = cost + REAL(SIZE(obj%S))       * 16.0_dbl
+           IF ( ASSOCIATED(obj%aux) )         cost = cost + REAL(SIZE(obj%aux))     * 16.0_dbl
+       ENDIF
+       !
+       IF ( do_corr ) THEN
+           IF ( ASSOCIATED(obj%sgm) )         cost = cost + REAL(SIZE(obj%sgm))     * 16.0_dbl
+           IF ( ASSOCIATED(obj%sgm_aux) )     cost = cost + REAL(SIZE(obj%sgm_aux)) * 16.0_dbl
+       ENDIF
+       !
+       operator_blc_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION operator_blc_memusage
+
 
 END MODULE T_operator_blc_module
 

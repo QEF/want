@@ -131,6 +131,14 @@
    ALLOCATE ( work(dimx,dimx), STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'allocating work', ABS(ierr) )
 
+   !
+   ! memory usage
+   !
+   IF ( ionode ) WRITE( stdout, "()" )
+   CALL memusage( stdout )
+   !
+   CALL flush_unit( stdout )
+
 
 !
 !================================

@@ -16,7 +16,7 @@
    ! Computes the quantum transmittance across a junction.
    !
    USE version_module,       ONLY : version_number
-   USE io_module,            ONLY : stdout
+   USE io_module,            ONLY : stdout, ionode
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
    USE T_input_module,       ONLY : input_manager
@@ -81,6 +81,13 @@
    ! print data to output
    !
    CALL summary( stdout )
+   !
+   ! memory usage
+   !
+   IF ( ionode ) WRITE( stdout, "()" )
+   CALL memusage( stdout )
+   !
+   CALL flush_unit( stdout )
 
 
    !

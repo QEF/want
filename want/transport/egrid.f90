@@ -117,7 +117,8 @@ CONTAINS
        !
        ie = ie_g -iomg_s + 1
        !
-       IF ( MOD( ie, ne_buffer ) == 1  ) doread=.TRUE.
+       IF ( ne_buffer == 1           .OR. & 
+            MOD( ie, ne_buffer ) == 1 ) doread=.TRUE.
        !
        egrid_buffer_doread = doread
        !

@@ -60,6 +60,7 @@
    !
    PUBLIC :: kpoints_init
    PUBLIC :: kpoints_deallocate
+   PUBLIC :: kpoints_memusage
    PUBLIC :: kpoints_rmask
    PUBLIC :: kpoints_imask
 
@@ -377,6 +378,31 @@ CONTAINS
       alloc = .FALSE.
       CALL log_pop( 'kpoints_deallocate' )
    END SUBROUTINE kpoints_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION kpoints_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       !
+       IF ( ALLOCATED(vkpt_par) )    cost = cost + REAL(SIZE(vkpt_par))     *  8.0_dbl
+       IF ( ALLOCATED(vkpt_par3D) )  cost = cost + REAL(SIZE(vkpt_par3D))   *  8.0_dbl
+       IF ( ALLOCATED(wk_par) )      cost = cost + REAL(SIZE(wk_par))       *  8.0_dbl
+       !
+       IF ( ALLOCATED(ivr_par) )     cost = cost + REAL(SIZE(ivr_par))      *  4.0_dbl
+       IF ( ALLOCATED(ivr_par3D) )   cost = cost + REAL(SIZE(ivr_par3D))    *  4.0_dbl
+       IF ( ALLOCATED(vr_par3D) )    cost = cost + REAL(SIZE(vr_par3D))     *  8.0_dbl
+       IF ( ALLOCATED(wr_par) )      cost = cost + REAL(SIZE(wr_par))       *  8.0_dbl
+       !
+       IF ( ALLOCATED(table_par) )   cost = cost + REAL(SIZE(table_par))    * 16.0_dbl
+       !
+       kpoints_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION kpoints_memusage
 
    
 !**********************************************************

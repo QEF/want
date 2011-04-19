@@ -10,10 +10,11 @@
    MODULE E_workspace_module
    !*********************************************
    !
-   USE kinds,                ONLY : dbl
-   USE T_kpoints_module,     ONLY : nkpts_par, nrtot_par, kpoints_alloc => alloc
+   USE kinds,                 ONLY : dbl
+   USE constants,             ONLY : ZERO
    !
-   USE E_hamiltonian_module, ONLY : dimT, dimE, dimB
+   USE T_kpoints_module,      ONLY : nkpts_par, nrtot_par, kpoints_alloc => alloc
+   USE E_hamiltonian_module,  ONLY : dimT, dimE, dimB
    !
    IMPLICIT NONE
    PRIVATE 
@@ -43,6 +44,7 @@
    !
    PUBLIC :: workspace_allocate
    PUBLIC :: workspace_deallocate
+   PUBLIC :: workspace_memusage
    PUBLIC :: alloc
 
 CONTAINS
@@ -99,6 +101,27 @@ CONTAINS
       alloc = .FALSE.   
       !
    END SUBROUTINE workspace_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION workspace_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(sgm_B) )    cost = cost + REAL(SIZE(sgm_B))      * 16.0_dbl
+       IF ( ALLOCATED(rsgm_B) )   cost = cost + REAL(SIZE(rsgm_B))     * 16.0_dbl
+       IF ( ALLOCATED(gT) )       cost = cost + REAL(SIZE(gT))         * 16.0_dbl
+       IF ( ALLOCATED(gB) )       cost = cost + REAL(SIZE(gB))         * 16.0_dbl
+       IF ( ALLOCATED(gE) )       cost = cost + REAL(SIZE(gE))         * 16.0_dbl
+       !
+       workspace_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION workspace_memusage
+
+
 
 END MODULE E_workspace_module
 

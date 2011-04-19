@@ -163,7 +163,7 @@ CONTAINS
           !
       ELSE
           !
-          ne_buffer = INT(  ne_corr / nproc ) + 1
+          ne_buffer = MIN( ne_buffer, INT(  ne_corr / nproc ) + 1 )
           CALL warning( subname, 'buffering reset')
           !
       ENDIF
@@ -286,6 +286,15 @@ CONTAINS
       IF ( opr%dim1 >  dimT_corr )  CALL errore(subname,'invalid dim1',1)
       IF ( opr%dim2 >  dimT_corr )  CALL errore(subname,'invalid dim2',2)
       IF ( opr%nkpts /= nkpts_par ) CALL errore(subname,'invalid nkpts',3)
+      !
+!! XXX
+!WRITE(0,*) "irows_sgm", opr%irows_sgm(:)
+!WRITE(0,*) "icols_sgm", opr%icols_sgm(:)
+! XXX
+      IF ( ANY( opr%irows_sgm(:) > dimT_corr ) ) &
+                                    CALL errore(subname,'invalid irows_sgm',3)
+      IF ( ANY( opr%icols_sgm(:) > dimT_corr ) ) &
+                                    CALL errore(subname,'invalid icols_sgm',3)
 
       !
       ! setting index for buffering

@@ -34,8 +34,8 @@
       INTEGER,                 INTENT(IN)    :: ndim
       TYPE(operator_blc),      INTENT(IN)    :: opr00, opr01
       INTEGER,                 INTENT(OUT)   :: niter
-      COMPLEX(dbl),            INTENT(INOUT) :: tot(ndim,ndim)
-      COMPLEX(dbl),            INTENT(INOUT) :: tott(ndim,ndim)
+      COMPLEX(dbl),            INTENT(OUT)   :: tot(ndim,ndim)
+      COMPLEX(dbl),            INTENT(OUT)   :: tott(ndim,ndim)
 
 
 

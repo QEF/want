@@ -269,6 +269,7 @@ END SUBROUTINE correlation_finalize
    !IF ( dimx_corr > dimC)              CALL errore(subname,'invalid dimx_corr',3)
    IF ( nrtot_corr <= 0 )               CALL errore(subname,'invalid nrtot_corr',3)
    IF ( ne_corr <= 0 .AND. ldynam_corr) CALL errore(subname,'invalid ne_corr',3)
+
    !
    ! reset buffering
    !
@@ -279,7 +280,7 @@ END SUBROUTINE correlation_finalize
        !
    ELSE
        !
-       ne_buffer = INT(  ne_corr / nproc ) + 1
+       ne_buffer = MIN( ne_buffer, INT(  ne_corr / nproc ) + 1 )
        CALL warning( subname, 'buffering reset')
        !
    ENDIF

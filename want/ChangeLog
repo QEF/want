@@ -4,6 +4,9 @@
 =======================================================
 
 
+Apr 19 2011     memusage routines added to transport and embed. 
+		Problem with ne_buffer fixed (wasn't it already). (AF)
+
 Mar 17 2011     150th anniversary of unified Italy. FOund and fixed a bug showing up
 		when damping to file lead-self-energies or conductor green's functions:
 		In those cases, kpt symmetry should not be used and it is recommended not
