@@ -11,6 +11,7 @@
    !*********************************************
    !
    USE kinds,                  ONLY : dbl
+   USE constants,              ONLY : ZERO
    USE parameters,             ONLY : nstrx
    USE log_module,             ONLY : log_push, log_pop
    !
@@ -64,6 +65,7 @@
    !
    PUBLIC :: hamiltonian_allocate
    PUBLIC :: hamiltonian_deallocate
+   PUBLIC :: hamiltonian_memusage
 
 
 CONTAINS
@@ -141,6 +143,28 @@ CONTAINS
       CALL log_pop( subname )
 
    END SUBROUTINE hamiltonian_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION hamiltonian_memusage(memtype)
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       CHARACTER(*)   :: memtype
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( blc_T%alloc )      cost = cost + operator_blc_memusage(blc_T,  memtype)
+       IF ( blc_E%alloc )      cost = cost + operator_blc_memusage(blc_E,  memtype)
+       IF ( blc_B%alloc )      cost = cost + operator_blc_memusage(blc_B,  memtype)
+       IF ( blc_EB%alloc )     cost = cost + operator_blc_memusage(blc_EB, memtype)
+       IF ( blc_BE%alloc )     cost = cost + operator_blc_memusage(blc_BE, memtype)
+       !
+       hamiltonian_memusage = cost 
+       !
+   END FUNCTION hamiltonian_memusage
+
 
 END MODULE E_hamiltonian_module
 

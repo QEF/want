@@ -11,6 +11,7 @@
    !*********************************************
    !
    USE kinds,                ONLY : dbl
+   USE constants,            ONLY : ZERO
    USE T_hamiltonian_module, ONLY : dimL, dimC, dimR
    USE T_kpoints_module,     ONLY : nkpts_par, nrtot_par, kpoints_alloc => alloc
    USE T_control_module,     ONLY : write_lead_sgm, write_gf
@@ -26,6 +27,8 @@
    COMPLEX(dbl), ALLOCATABLE :: totR(:,:)
    COMPLEX(dbl), ALLOCATABLE :: tottL(:,:)
    COMPLEX(dbl), ALLOCATABLE :: tottR(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: tot(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: tott(:,:)
    COMPLEX(dbl), ALLOCATABLE :: gamma_R(:,:)
    COMPLEX(dbl), ALLOCATABLE :: gamma_L(:,:)
    COMPLEX(dbl), ALLOCATABLE :: sgm_L(:,:,:)
@@ -60,6 +63,7 @@
    !
    PUBLIC :: workspace_allocate
    PUBLIC :: workspace_deallocate
+   PUBLIC :: workspace_memusage
    PUBLIC :: alloc
 
 CONTAINS
@@ -174,6 +178,38 @@ CONTAINS
       alloc = .FALSE.   
       !
    END SUBROUTINE workspace_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION workspace_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(totL) )     cost = cost + REAL(SIZE(totL))       * 16.0_dbl
+       IF ( ALLOCATED(totR) )     cost = cost + REAL(SIZE(totR))       * 16.0_dbl
+       IF ( ALLOCATED(tottL) )    cost = cost + REAL(SIZE(tottL))      * 16.0_dbl
+       IF ( ALLOCATED(tottR) )    cost = cost + REAL(SIZE(tottR))      * 16.0_dbl
+       IF ( ALLOCATED(gamma_R) )  cost = cost + REAL(SIZE(gamma_R))    * 16.0_dbl
+       IF ( ALLOCATED(gamma_L) )  cost = cost + REAL(SIZE(gamma_L))    * 16.0_dbl
+       !
+       IF ( ALLOCATED(sgm_L) )    cost = cost + REAL(SIZE(sgm_L))      * 16.0_dbl
+       IF ( ALLOCATED(sgm_R) )    cost = cost + REAL(SIZE(sgm_R))      * 16.0_dbl
+       IF ( ALLOCATED(rsgm_L) )   cost = cost + REAL(SIZE(rsgm_L))     * 16.0_dbl
+       IF ( ALLOCATED(rsgm_R) )   cost = cost + REAL(SIZE(rsgm_R))     * 16.0_dbl
+       !
+       IF ( ALLOCATED(gL) )       cost = cost + REAL(SIZE(gL))         * 16.0_dbl
+       IF ( ALLOCATED(gR) )       cost = cost + REAL(SIZE(gR))         * 16.0_dbl
+       IF ( ALLOCATED(gC) )       cost = cost + REAL(SIZE(gC))         * 16.0_dbl
+       IF ( ALLOCATED(rgC) )      cost = cost + REAL(SIZE(rgC))        * 16.0_dbl
+       IF ( ALLOCATED(kgC) )      cost = cost + REAL(SIZE(kgC))        * 16.0_dbl
+       !
+       workspace_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION workspace_memusage
+
 
 END MODULE T_workspace_module
 

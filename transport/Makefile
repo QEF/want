@@ -21,6 +21,7 @@ hamiltonian_setup.o \
 input.o \
 input_parameters.o \
 kpoints.o \
+memusage.o \
 operator_blc.o \
 read_matrix.o \
 smearing.o \

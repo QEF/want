@@ -53,6 +53,7 @@
    !
    PUBLIC :: smearing_init
    PUBLIC :: smearing_deallocate
+   PUBLIC :: smearing_memusage
 
 
 CONTAINS
@@ -278,6 +279,23 @@ CONTAINS
        ENDIF
        alloc = .FALSE.
    END SUBROUTINE smearing_deallocate
+
+
+!**********************************************************
+   REAL(dbl) FUNCTION smearing_memusage()
+   !**********************************************************
+   IMPLICIT NONE
+       !
+       REAL(dbl) :: cost
+       !
+       cost = ZERO
+       IF ( ALLOCATED(xgrid) )    cost = cost + REAL(SIZE(xgrid))      *  8.0_dbl
+       IF ( ALLOCATED(g_smear) )  cost = cost + REAL(SIZE(g_smear))    * 16.0_dbl
+       !
+       smearing_memusage = cost / 1000000.0_dbl
+       !
+   END FUNCTION smearing_memusage
+
 
 END MODULE T_smearing_module
 

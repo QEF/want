@@ -16,6 +16,7 @@ hamiltonian_init.o \
 hamiltonian_setup.o \
 input.o \
 input_parameters.o \
+memusage.o \
 summary.o \
 workspace.o
 
