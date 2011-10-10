@@ -34,6 +34,7 @@
    CHARACTER(10)             :: spin_component
    LOGICAL                   :: binary
    LOGICAL                   :: do_extrapolation
+   LOGICAL                   :: do_cmplxconjg
    REAL(dbl)                 :: energy_ref
    INTEGER                   :: nprint
 
@@ -42,7 +43,7 @@
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, filein, fileout, &
                     binary, energy_ref, spin_component, nprint, &
-                    debug_level, do_extrapolation, verbosity
+                    debug_level, do_extrapolation, do_cmplxconjg, verbosity
    !
    ! end of declariations
    !   
@@ -77,7 +78,8 @@
       ! do the main task 
       ! 
       CALL do_blc2wan( filein, fileout, energy_ref, spin_component, &
-                       binary, nprint, verbosity, do_extrapolation )
+                       binary, nprint, verbosity, do_extrapolation, &
+                       do_cmplxconjg )
 
       !
       ! clean global memory
@@ -125,6 +127,7 @@ CONTAINS
       verbosity                   = 'medium'
       debug_level                 = 0
       do_extrapolation            = .FALSE.
+      do_cmplxconjg               = .FALSE.
 
 
       CALL input_from_file ( stdin )
@@ -148,7 +151,8 @@ CONTAINS
       CALL mp_bcast( nprint,            ionode_id )
       CALL mp_bcast( debug_level,       ionode_id )
       CALL mp_bcast( do_extrapolation,  ionode_id )
-      CALL mp_bcast( verbosity,         ionode_id )      
+      CALL mp_bcast( do_cmplxconjg,     ionode_id )
+      CALL mp_bcast( verbosity,         ionode_id )
 
       !
       ! Init
@@ -198,6 +202,9 @@ CONTAINS
           !
           WRITE( stdout,"(  2x,'  Spin component :',3x,a)") TRIM(spin_component)
           !
+          WRITE( stdout,"(  2x,'do extrapolation :',3x,l)") do_extrapolation
+          WRITE( stdout,"(  2x,'  do cmplx-conjg :',3x,l)") do_cmplxconjg
+          !
       ENDIF
       !
       CALL timing(subname,OPR='stop')
@@ -209,7 +216,8 @@ END PROGRAM blc2wan
 
 !********************************************************
    SUBROUTINE do_blc2wan( filein, fileout, energy_ref, spin_component, &
-                          binary, nprint, verbosity, do_extrapolation  )
+                          binary, nprint, verbosity, do_extrapolation, &
+                          do_cmplxconjg  )
    !********************************************************
    !
    ! perform the main task of the calculation
@@ -250,6 +258,7 @@ END PROGRAM blc2wan
       LOGICAL,       INTENT(IN) :: binary
       CHARACTER(*),  INTENT(IN) :: verbosity
       LOGICAL,       INTENT(IN) :: do_extrapolation
+      LOGICAL,       INTENT(IN) :: do_cmplxconjg
 
       !
       ! local vars
@@ -642,6 +651,15 @@ END PROGRAM blc2wan
                                       opr_in(ibnd_start:ibnd_end, ibnd_start:ibnd_end), &
                                       IERR=ierr)
                    IF (ierr/=0) CALL errore(subname,'reading full KPT' ,ikmap(ik_g) )
+                   !
+                   ! workaround to fix an old bug in SaX
+                   !
+                   IF ( do_cmplxconjg ) THEN
+                       !
+                       opr_in(ibnd_start:ibnd_end, ibnd_start:ibnd_end) = &
+                                  CONJG( opr_in(ibnd_start:ibnd_end, ibnd_start:ibnd_end) )
+                       !
+                   ENDIF
                    !
                ENDIF
 

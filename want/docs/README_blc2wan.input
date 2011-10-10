@@ -82,5 +82,12 @@ do_extrapolation        LOGICAL
               values.  On the contrary, they are set to zero.
               DEFAULT: .FALSE.
 
+do_cmplxconjg LOGICAL
+              if .TRUE. and if the input operator is off-diagonal, performs
+              a complex conjugation on the operator matrix elements.
+              Useful to fix an old bug from SaX.
+              DEFAULT: .FALSE.
+
+
 ==============================================================================
 
