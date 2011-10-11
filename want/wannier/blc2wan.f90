@@ -31,6 +31,7 @@
    ! input variables
    !
    CHARACTER(nstrx)          :: filein, fileout
+   CHARACTER(nstrx)          :: datafile_urot
    CHARACTER(10)             :: spin_component
    LOGICAL                   :: binary
    LOGICAL                   :: do_extrapolation
@@ -41,7 +42,7 @@
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, filein, fileout, &
+   NAMELIST /INPUT/ prefix, postfix, work_dir, filein, fileout, datafile_urot, &
                     binary, energy_ref, spin_component, nprint, &
                     debug_level, do_extrapolation, do_cmplxconjg, verbosity
    !
@@ -77,7 +78,7 @@
       !
       ! do the main task 
       ! 
-      CALL do_blc2wan( filein, fileout, energy_ref, spin_component, &
+      CALL do_blc2wan( filein, fileout, datafile_urot, energy_ref, spin_component, &
                        binary, nprint, verbosity, do_extrapolation, &
                        do_cmplxconjg )
 
@@ -105,6 +106,7 @@ CONTAINS
    IMPLICIT NONE
 
       CHARACTER(13)    :: subname = 'blc2wan_input'
+      LOGICAL          :: lhave_extra_urot
       INTEGER          :: ierr
       !
       ! end of declarations
@@ -120,6 +122,7 @@ CONTAINS
       work_dir                    = './'
       filein                      = ' '
       fileout                     = ' '
+      datafile_urot               = ' '
       binary                      = .TRUE.
       spin_component              = 'none'
       energy_ref                  = 0.0
@@ -145,6 +148,7 @@ CONTAINS
       CALL mp_bcast( work_dir,          ionode_id )
       CALL mp_bcast( filein,            ionode_id )
       CALL mp_bcast( fileout,           ionode_id )
+      CALL mp_bcast( datafile_urot,     ionode_id )
       CALL mp_bcast( binary,            ionode_id )
       CALL mp_bcast( energy_ref,        ionode_id )
       CALL mp_bcast( spin_component,    ionode_id )
@@ -184,6 +188,10 @@ CONTAINS
            TRIM(verbosity) /= "high" ) &
            CALL errore(subname,'invalid verbosity = '//TRIM(verbosity),3 )
 
+      lhave_extra_urot = .FALSE.
+      IF ( LEN_TRIM(datafile_urot) /= 0 ) lhave_extra_urot = .TRUE.
+
+
       !
       ! input summary
       !
@@ -203,7 +211,12 @@ CONTAINS
           WRITE( stdout,"(  2x,'  Spin component :',3x,a)") TRIM(spin_component)
           !
           WRITE( stdout,"(  2x,'do extrapolation :',3x,l)") do_extrapolation
-          WRITE( stdout,"(  2x,'  do cmplx-conjg :',3x,l)") do_cmplxconjg
+          WRITE( stdout,"(  2x,'  do cmplx-conjg :',3x,l,/)") do_cmplxconjg
+          !
+          WRITE( stdout,"(  2x,'have extra U-rot :',3x,l)") lhave_extra_urot
+          !
+          IF ( lhave_extra_urot ) &
+             WRITE(stdout,"(2x,'  U-rot datafile :',3x,a)") TRIM(datafile_urot)
           !
       ENDIF
       !
@@ -215,7 +228,7 @@ END PROGRAM blc2wan
       
 
 !********************************************************
-   SUBROUTINE do_blc2wan( filein, fileout, energy_ref, spin_component, &
+   SUBROUTINE do_blc2wan( filein, fileout, datafile_urot, energy_ref, spin_component, &
                           binary, nprint, verbosity, do_extrapolation, &
                           do_cmplxconjg  )
    !********************************************************
@@ -227,7 +240,7 @@ END PROGRAM blc2wan
    USE parameters,           ONLY : nstrx
    USE io_module,            ONLY : ionode, ionode_id
    USE io_module,            ONLY : stdout, work_dir, prefix, postfix
-   USE io_module,            ONLY : in_unit => aux1_unit, out_unit => aux2_unit
+   USE io_module,            ONLY : in_unit => aux1_unit, out_unit => aux2_unit, aux_unit
    USE mp,                   ONLY : mp_bcast, mp_sum
    USE mp_global,            ONLY : mpime, nproc
    USE parser_module,        ONLY : log2char, change_case
@@ -251,7 +264,7 @@ END PROGRAM blc2wan
       !
       ! input vars
       !
-      CHARACTER(*),  INTENT(IN) :: filein, fileout
+      CHARACTER(*),  INTENT(IN) :: filein, fileout, datafile_urot
       CHARACTER(*),  INTENT(IN) :: spin_component
       REAL(dbl),     INTENT(IN) :: energy_ref
       INTEGER,       INTENT(IN) :: nprint
@@ -271,6 +284,7 @@ END PROGRAM blc2wan
       COMPLEX(dbl), ALLOCATABLE :: phase(:,:)
       COMPLEX(dbl), ALLOCATABLE :: opr_in(:,:), opr_out(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: oprk(:,:,:), cutot(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE :: cu_extra(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: aux(:), work(:,:)
       !
       REAL(dbl)                 :: arg
@@ -278,10 +292,12 @@ END PROGRAM blc2wan
       CHARACTER(nstrx)          :: attr, str, grid_units, analyticity
       !
       INTEGER :: ierr
-      INTEGER :: i, j, m, ie, ik_g, ir, isup, iinf
+      INTEGER :: i, j, m, ie, ik_g, ik_f, ir, isup, iinf
       INTEGER :: nbnd_file, nkpts_file, nspin_file, nomega
       INTEGER :: ibnd_start, ibnd_end, ispin
+      INTEGER :: nbmin, nbmax
       LOGICAL :: lfound, ldynam, lband_diag
+      LOGICAL :: lhave_extra_urot
       !
       ! end of declarations
       !
@@ -464,6 +480,57 @@ END PROGRAM blc2wan
       ENDIF
 
       !
+      ! extra unitary rotation to be applied
+      !
+      lhave_extra_urot = .FALSE.
+      !
+      IF ( LEN_TRIM( datafile_urot ) /= 0 ) lhave_extra_urot = .TRUE.
+      !
+      IF ( lhave_extra_urot ) THEN
+          !
+          ALLOCATE( cu_extra(nbnd, nbnd, nkpts_file), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating cu_extra', ABS(ierr))
+          !
+          CALL iotk_open_read( aux_unit, TRIM(datafile_urot), IERR=ierr )
+          IF ( ierr/= 0 ) CALL errore(subname,'opening '//TRIM(datafile_urot), ABS(ierr)) 
+          !
+          ! XXX: tmp FMT to be improved
+          CALL iotk_scan_begin( aux_unit, "HF_QP", IERR=ierr)
+          IF ( ierr/= 0 ) CALL errore(subname,'opening HF_QP', ABS(ierr)) 
+          !
+          CALL iotk_scan_dat( aux_unit, "nbmin", nbmin, IERR=ierr)
+          IF ( ierr/= 0 ) CALL errore(subname,'scanning nbmin', ABS(ierr)) 
+          CALL iotk_scan_dat( aux_unit, "nbmax", nbmax, IERR=ierr)
+          IF ( ierr/= 0 ) CALL errore(subname,'scanning nbmax', ABS(ierr)) 
+          !
+          IF ( nbmin /= ibnd_start ) CALL errore(subname,"ibnd_start inconsistent", 10)
+          IF ( nbmax /= ibnd_end )   CALL errore(subname,"ibnd_end inconsistent", 10)
+          !
+          IF ( ANY( dimwin(:) /= ibnd_end-ibnd_start+1 ) ) &
+              CALL errore(subname,"missing implementation: incompat. nbnd_file", 11)
+          !
+          !
+          DO ik_f = 1, nkpts_file
+              !
+              WRITE( str, '( I3.3 )' ) ik_f
+              !
+              CALL iotk_scan_dat( aux_unit, "eigenvec"//TRIM(str), &
+                   cu_extra(nbmin:nbmax,nbmin:nbmax,ik_f), IERR=ierr )
+              IF ( ierr/= 0 ) CALL errore(subname,'scanning eigenvec', ik_f) 
+              !
+          ENDDO
+          !
+          CALL iotk_scan_end( aux_unit, "HF_QP", IERR=ierr)
+          IF ( ierr/= 0 ) CALL errore(subname,'opening HF_QP', ABS(ierr)) 
+          !
+          CALL iotk_close_read( aux_unit, IERR=ierr )
+          IF ( ierr/= 0 ) CALL errore(subname,'closing '//TRIM(datafile_urot), ABS(ierr)) 
+          !
+      ENDIF
+ 
+
+
+      !
       ! report data from file
       !
       IF ( ionode ) THEN
@@ -553,7 +620,24 @@ END PROGRAM blc2wan
           !
           CALL mat_mul( cutot(:,:,ik_g), eamp(:,:,ik_g), 'N', cu(:,:,ik_g), 'N' ,  &
                         dimwin(ik_g), dimwann, dimwann)
+          !
+          IF ( lhave_extra_urot ) THEN
+              !
+              work = CZERO
+              CALL mat_mul( work,  cu_extra(:,:,ikmap(ik_g)), 'C', cutot(:,:,ik_g), 'N' ,  &
+                            dimwin(ik_g), dimwann, dimwin(ik_g))
+              !
+              cutot(:,:,ik_g) = work(:,:)
+              !
+          ENDIF
+          !
       ENDDO
+      !     
+      IF ( ALLOCATED( cu_extra ) ) THEN
+          DEALLOCATE( cu_extra, STAT=ierr )
+          IF (ierr/=0 ) CALL errore(subname,"deallocating cu_extra",ABS(ierr)) 
+      ENDIF
+
 
   
       !

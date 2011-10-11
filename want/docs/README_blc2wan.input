@@ -38,6 +38,12 @@ filein        STRING
               representation
               DEFAULT: mandatory
 
+datafile_urot STRING
+              if not empty, an extra unitary rotation is read from file
+              and applied in the blc2wan conversion. Useful when dealing
+              with SaX data.
+              DEFAULT: " "
+
 fileout       STRING
               the name of the file containing the computed operator on the 
               Wannier basis
