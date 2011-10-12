@@ -4,6 +4,9 @@
 =======================================================
 
 
+Oct 12 2011     version number changed to 2.4.0beta1 . decay.x utility added.
+		memstat.c routine removed. (AF)
+
 Oct 11 2011     datafile_urot input var added to blc2wan, to allow for and extra
 		unitary rotation to be plugged in. do_cmplxconjg var added to fix
 		an old bug in SaX. (AF)

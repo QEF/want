@@ -93,6 +93,7 @@ hamiltonian_init.o : ../libs/util.o
 hamiltonian_init.o : operator_blc.o
 hamiltonian_init.o : ../wannier/io_module.o
 hamiltonian.o : kpoints.o
+hamiltonian.o : ../libs/constants.o
 hamiltonian.o : ../libs/kind.o
 hamiltonian.o : ../libs/log_module.o
 hamiltonian.o : ../libs/parameters.o
@@ -129,6 +130,13 @@ kpoints.o : ../libs/kind.o
 kpoints.o : ../libs/log_module.o
 kpoints.o : ../libs/parameters.o
 kpoints.o : ../wannier/io_module.o
+memusage.o : hamiltonian.o
+memusage.o : kpoints.o
+memusage.o : ../libs/kind.o
+memusage.o : smearing.o
+memusage.o : ../wannier/io_module.o
+memusage.o : workspace.o
+operator_blc.o : ../libs/constants.o
 operator_blc.o : ../libs/kind.o
 operator_blc.o : ../libs/log_module.o
 operator_blc.o : ../libs/parameters.o
@@ -180,6 +188,7 @@ transmittance.o : operator_blc.o
 workspace.o : control.o
 workspace.o : hamiltonian.o
 workspace.o : kpoints.o
+workspace.o : ../libs/constants.o
 workspace.o : ../libs/kind.o
 write_data.o : ../libs/files.o
 write_data.o : ../libs/kind.o
@@ -188,3 +197,4 @@ write_data.o : ../libs/parameters.o
 write_data.o : ../libs/parser.o
 write_data.o : ../libs/timing.o
 write_data.o : ../wannier/io_module.o
+memusage.o : ../include/f_defs.h

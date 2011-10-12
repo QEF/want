@@ -44,7 +44,7 @@
    !
    REAL(dbl) :: memsum, mtmp
    !
-#ifdef HAVE_MALLINFO
+#ifdef HAVE_MALLINFO_FALSE
    INTEGER  :: tmem
 #endif
 
@@ -154,7 +154,7 @@
       WRITE( iunit, "()")
       WRITE( iunit, 100 ) "Total alloc. Memory", memsum
 
-#ifdef HAVE_MALLINFO
+#ifdef HAVE_MALLINFO_FALSE
       CALL memstat( tmem )
       WRITE( iunit, 100 ) " Real alloc. Memory",  REAL( tmem )/ 1000.0_dbl
 #endif

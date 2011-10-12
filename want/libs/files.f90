@@ -12,7 +12,6 @@
    MODULE files_module
    !*********************************************
    !
-   USE parameters,       ONLY : nstrx
    USE parser_module,    ONLY : parser_path, change_case
    USE io_global_module, ONLY : ionode, ionode_id
    USE mp,               ONLY : mp_bcast
@@ -52,6 +51,7 @@
 ! end of declarations
 !
 
+   INTEGER, PARAMETER :: nstrx = 256
    INTEGER, PARAMETER :: unitx = 100
 
    PUBLIC ::  file_open
