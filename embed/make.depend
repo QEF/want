@@ -63,6 +63,7 @@ hamiltonian_init.o : ../libs/util.o
 hamiltonian_init.o : ../transport/kpoints.o
 hamiltonian_init.o : ../transport/operator_blc.o
 hamiltonian_init.o : ../wannier/io_module.o
+hamiltonian.o : ../libs/constants.o
 hamiltonian.o : ../libs/kind.o
 hamiltonian.o : ../libs/log_module.o
 hamiltonian.o : ../libs/parameters.o
@@ -96,6 +97,12 @@ input_parameters.o : ../libs/mp.o
 input_parameters.o : ../libs/parameters.o
 input_parameters.o : ../libs/parser.o
 input_parameters.o : ../wannier/io_module.o
+memusage.o : hamiltonian.o
+memusage.o : ../libs/kind.o
+memusage.o : ../transport/kpoints.o
+memusage.o : ../transport/smearing.o
+memusage.o : ../wannier/io_module.o
+memusage.o : workspace.o
 summary.o : control.o
 summary.o : correlation.o
 summary.o : hamiltonian.o
@@ -108,5 +115,7 @@ summary.o : ../transport/kpoints.o
 summary.o : ../transport/smearing.o
 summary.o : ../wannier/io_module.o
 workspace.o : hamiltonian.o
+workspace.o : ../libs/constants.o
 workspace.o : ../libs/kind.o
 workspace.o : ../transport/kpoints.o
+memusage.o : ../include/f_defs.h

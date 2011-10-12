@@ -7,7 +7,6 @@ etsf_error.o : io_global.o
 fft_scalar.o : kind.o
 files.o : io_global.o
 files.o : mp.o
-files.o : parameters.o
 files.o : parser.o
 input_from_file.o : io_global.o
 input_from_file.o : mp.o

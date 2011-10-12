@@ -9,8 +9,7 @@ OBJS= \
 c_mkdir.o \
 cptimer.o \
 fft_stick.o \
-gcube2plt.o \
-memstat.o
+gcube2plt.o
 
 
 

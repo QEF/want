@@ -89,7 +89,7 @@ CONTAINS
       OPEN( logunit, FILE=logfile, IOSTAT=ierr )
          IF (ierr/=0) CALL errore('log_init', 'opening logfile '//TRIM(logfile), ABS(ierr))
          !
-#if defined HAVE_MALLINFO
+#if defined HAVE_MALLINFO_FALSE
          WRITE( logunit, "(2x, ' Time',6x, 'Memory [kB]   Routines',/ )")
 #else
          WRITE( logunit, "(2x, ' Time',6x, 'Routines',/ )")
@@ -129,7 +129,10 @@ CONTAINS
       CHARACTER(*),    INTENT(IN) :: name
       !
       CHARACTER(9) :: cdate, ctime
-      INTEGER      :: memory, istack, ierr
+      INTEGER      :: istack, ierr
+#ifdef HAVE_MALLINFO_FALSE
+      INTEGER      :: memory
+#endif
       !
       IF ( .NOT. debug_mode ) RETURN
       IF ( .NOT. alloc )      RETURN
@@ -144,7 +147,6 @@ CONTAINS
       stack( stack_index ) = TRIM( name ) 
       !
       CALL date_and_tim( cdate, ctime )
-      CALL memstat( memory )
       ! 
       ! 
       ! Writes info on log file 
@@ -153,7 +155,8 @@ CONTAINS
          !
          IF (ierr/=0) CALL errore('log_push', 'opening logfile '//TRIM(logfile), ABS(ierr))
          !
-#if defined HAVE_MALLINFO
+#ifdef HAVE_MALLINFO_FALSE
+            CALL memstat( memory )
             WRITE( logunit, "( 2x, a9, ' | ', I9, 2x, ' | ')", ADVANCE="no" ) ctime, memory
 #else
             WRITE( logunit, "( 2x, a9, ' | ')", ADVANCE="no" ) ctime
