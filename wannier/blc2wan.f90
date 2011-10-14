@@ -494,10 +494,6 @@ END PROGRAM blc2wan
           CALL iotk_open_read( aux_unit, TRIM(datafile_urot), IERR=ierr )
           IF ( ierr/= 0 ) CALL errore(subname,'opening '//TRIM(datafile_urot), ABS(ierr)) 
           !
-          ! XXX: tmp FMT to be improved
-          CALL iotk_scan_begin( aux_unit, "HF_QP", IERR=ierr)
-          IF ( ierr/= 0 ) CALL errore(subname,'opening HF_QP', ABS(ierr)) 
-          !
           CALL iotk_scan_dat( aux_unit, "nbmin", nbmin, IERR=ierr)
           IF ( ierr/= 0 ) CALL errore(subname,'scanning nbmin', ABS(ierr)) 
           CALL iotk_scan_dat( aux_unit, "nbmax", nbmax, IERR=ierr)
@@ -519,9 +515,6 @@ END PROGRAM blc2wan
               IF ( ierr/= 0 ) CALL errore(subname,'scanning eigenvec', ik_f) 
               !
           ENDDO
-          !
-          CALL iotk_scan_end( aux_unit, "HF_QP", IERR=ierr)
-          IF ( ierr/= 0 ) CALL errore(subname,'opening HF_QP', ABS(ierr)) 
           !
           CALL iotk_close_read( aux_unit, IERR=ierr )
           IF ( ierr/= 0 ) CALL errore(subname,'closing '//TRIM(datafile_urot), ABS(ierr)) 
