@@ -12,7 +12,7 @@
    !
    USE kinds,                   ONLY : dbl
    USE parameters,              ONLY : nstrx
-   USE io_global_module,        ONLY : stdout, stdin, ionode, ionode_id, &
+   USE io_global_module,        ONLY : stdout, stdin, stderr, ionode, ionode_id, &
                                        io_global_start, io_global_getionode
    USE files_module,            ONLY : file_open, file_close
    USE mp_global,               ONLY : nproc, mpime
@@ -109,7 +109,7 @@
    PUBLIC ::  io_global_start, io_global_getionode
    PUBLIC ::  mpime, ionode, ionode_id
 
-   PUBLIC ::  stdin, stdout 
+   PUBLIC ::  stderr, stdin, stdout 
    PUBLIC ::  dftdata_fmt, dftdata_fmt_version, dftdata_file
    PUBLIC ::  datafile_sgm
    PUBLIC ::  wantdata_fmt, wantdata_form, wantdata_binary

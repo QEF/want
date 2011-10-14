@@ -19,6 +19,7 @@
 ! Basic IO variables 
 ! 
    INTEGER, PARAMETER         ::   &
+         stderr = 0,               &! std error unit
           stdin = 5,               &! std input unit
          stdout = 6                 ! std output unit
          
@@ -30,7 +31,7 @@
 ! end delcarations
 !
 
-   PUBLIC ::  stdin, stdout 
+   PUBLIC ::  stdin, stdout, stderr 
    PUBLIC ::  ionode, ionode_id
    PUBLIC ::  io_global_start, io_global_getionode
 
