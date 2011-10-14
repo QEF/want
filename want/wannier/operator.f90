@@ -85,7 +85,7 @@ CONTAINS
     !
     !------------------------------------------------------------------------
     SUBROUTINE operator_read_aux( iun, dimwann, dynamical, nomega, &
-                                  iomg_s, iomg_e, grid, analyticity, &
+                                  iomg_s, iomg_e, grid, eunits, analyticity, &
                                   nr, vr, ivr, ierr ) 
       !------------------------------------------------------------------------
       !
@@ -94,6 +94,7 @@ CONTAINS
       LOGICAL,           OPTIONAL, INTENT(OUT) :: dynamical
       INTEGER,           OPTIONAL, INTENT(OUT) :: iomg_s, iomg_e
       REAL(dbl),         OPTIONAL, INTENT(OUT) :: grid(:), vr(:,:)
+      CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: eunits
       INTEGER,           OPTIONAL, INTENT(OUT) :: ivr(:,:)
       CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: analyticity
       INTEGER,                     INTENT(OUT) :: ierr
@@ -102,6 +103,7 @@ CONTAINS
       INTEGER           :: iomg_s_, iomg_e_
       LOGICAL           :: dynamical_
       CHARACTER(256)    :: analyticity_
+      REAL(dbl), ALLOCATABLE :: grid_(:)
       !
 
       ierr=0
@@ -152,15 +154,29 @@ CONTAINS
          !
       ENDIF
       !
-      IF ( PRESENT ( grid ) ) THEN
+      IF ( PRESENT ( grid ) .OR. PRESENT ( eunits ) ) THEN
          !
          IF ( dynamical_ ) THEN
             !
-            CALL iotk_scan_dat( iun, "GRID", grid, IERR=ierr )
+            ALLOCATE( grid_(nomega_), STAT=ierr )
+            IF (ierr/=0) RETURN
+            !
+            CALL iotk_scan_dat( iun, "GRID", grid_, ATTR=attr, IERR=ierr )
+            IF (ierr/=0) RETURN
+            !
+            IF ( PRESENT(grid) )   grid(:) = grid_(:)
+            !
+            IF ( PRESENT(eunits) ) THEN
+                CALL iotk_scan_attr(attr, "units", eunits, IERR=ierr)
+                IF (ierr/=0) RETURN
+            ENDIF
+            !
+            DEALLOCATE( grid_, STAT=ierr )
             IF (ierr/=0) RETURN
             !
          ELSE
             grid(:) = ZERO
+            eunits  = " " 
          ENDIF
          !
       ENDIF

@@ -41,6 +41,7 @@ WANNIER_OBJS= \
 ../wannier/memusage.o \
 ../wannier/monkpack.o \
 ../wannier/overlap_module.o \
+../wannier/operator.o \
 ../wannier/paratools.o \
 ../wannier/pseudo_types.o \
 ../wannier/pwcom.o \
@@ -86,7 +87,7 @@ BIN_DEPS=      $(OBJS) $(WANNIER_OBJS) $(EXTERNAL_LIBS)
 #
 # main targets
 #
-all: midpoint.x wfk2etsf.x kgrid.x sumpdos decay.x gcube2plt.x
+all: midpoint.x wfk2etsf.x kgrid.x sumpdos sum_sgm.x decay.x gcube2plt.x
 
 
 midpoint.x: midpoint.o $(BIN_DEPS)
@@ -113,6 +114,11 @@ sumpdos: sumpdos.o
 
 decay.x: decay.o $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ decay.o \
+	       $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
+	- ( cd ../bin ; ln -sf ../utility/$@ . )
+
+sum_sgm.x: sum_sgm.o $(OBJS)
+	$(LD) $(LDFLAGS) -o $@ sum_sgm.o \
 	       $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../bin ; ln -sf ../utility/$@ . )
 
