@@ -266,6 +266,7 @@ PROGRAM sum_sgm
    CALL operator_read_close( iunit, IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(files(1)), 10)
 
+
    
    !
    ! init aux data
@@ -352,6 +353,8 @@ PROGRAM sum_sgm
    ! finalize
    !
    CALL operator_write_close( ounit )
+   !
+   WRITE(stderr,"(/,2x,'Data written on file: ',a)") TRIM(fileout)
            
 
 
@@ -367,6 +370,25 @@ PROGRAM sum_sgm
    DEALLOCATE( sgm, sgm_aux, STAT=ierr )
    IF (ierr/=0) CALL errore(subname, "deallocating sgm, sgm_aux", ierr)
 
+CONTAINS
+
+!*************************************************
+SUBROUTINE errore(routine, msg, ierr)
+   !*************************************************
+   IMPLICIT NONE
+   CHARACTER(*),    INTENT(in) :: routine, msg
+   INTEGER,         INTENT(in) :: ierr
+
+   !
+   WRITE( UNIT = 0, FMT = '(/,1X,78("*"))')
+   WRITE( UNIT = 0, &
+          FMT = '(5X,"from ",A," : error #",I10)' ) routine, ierr
+   WRITE( UNIT = 0, FMT = '(5X,A)' ) msg
+   WRITE( UNIT = 0, FMT = '(1X,78("*"),/)' )
+   !
+   STOP
+   RETURN
+END SUBROUTINE errore
 
 END PROGRAM sum_sgm
 

@@ -13,8 +13,6 @@
    !*********************************************
    !
    USE parser_module,    ONLY : parser_path, change_case
-   USE io_global_module, ONLY : ionode, ionode_id
-   USE mp,               ONLY : mp_bcast
    USE iotk_module
    !
    IMPLICIT NONE
@@ -27,7 +25,6 @@
 ! SUBROUTINE  file_open(unit,filename[,path][,root][,status][,access][,recl] 
 !                       [,form][,position][,action], ierr)
 ! SUBROUTINE  file_close(unit[,path][,action], ierr)
-! SUBROUTINE  get_free_unit(unit)
 ! SUBROUTINE  file_delete(name)
 ! FUNCTION    file_exist(name)
 ! SUBROUTINE  file_rename(oldname,newname)
@@ -58,45 +55,12 @@
    PUBLIC ::  file_close
    PUBLIC ::  file_delete
    PUBLIC ::  file_exist
-   PUBLIC ::  get_free_unit
 
 CONTAINS
 
 !
 ! Subroutines
 !   
-
-!**********************************************************
-   SUBROUTINE get_free_unit(unit)
-   !**********************************************************
-   IMPLICIT NONE
-      INTEGER, INTENT(out) :: unit
-      INTEGER  :: i 
-      LOGICAL  :: opnd, found
-
-      IF ( ionode ) THEN
-          !
-          DO i=1,unitx
-             !
-             unit = i
-             INQUIRE(UNIT=1,OPENED=opnd)
-             !
-             IF (.NOT. opnd) THEN
-                found = .TRUE.
-                EXIT
-             ENDIF
-             !
-          ENDDO
-          !
-      ENDIF
-      !
-      CALL mp_bcast( found,   ionode_id )
-      CALL mp_bcast( unit,    ionode_id )
-      !
-      IF (.NOT. found ) CALL errore('get_free_unit','Unable to find an available unit',1)
-      !
-   END SUBROUTINE get_free_unit
-
 
 !**********************************************************
    SUBROUTINE file_delete(filename)
@@ -106,20 +70,16 @@ CONTAINS
       LOGICAL :: exist
       INTEGER :: unit,ierr
    
-      IF ( ionode ) INQUIRE(FILE=TRIM(filename),EXIST=exist)
-      CALL mp_bcast( exist, ionode_id )
+      INQUIRE(FILE=TRIM(filename),EXIST=exist)
       !
       IF (.NOT. exist) RETURN
       !
-      CALL get_free_unit(unit)
+      CALL iotk_free_unit(unit)
       !
-      IF (ionode) OPEN(unit,FILE=TRIM(filename),IOSTAT=ierr)
-      CALL mp_bcast( ierr, ionode_id )
-      !
+      OPEN(unit,FILE=TRIM(filename),IOSTAT=ierr)
       IF (ierr/=0) CALL errore('file_delete','Unable to open file '//TRIM(filename),1)
       !
-      IF (ionode) CLOSE(unit,STATUS='delete',IOSTAT=ierr)
-      CALL mp_bcast( ierr, ionode_id )
+      CLOSE(unit,STATUS='delete',IOSTAT=ierr)
       !
       IF (ierr/=0) CALL errore('file_delete','Unable to close file '//TRIM(filename),1)
       !
@@ -132,8 +92,7 @@ CONTAINS
    IMPLICIT NONE
       CHARACTER(*)  :: filename
    
-      IF (ionode) INQUIRE(FILE=TRIM(filename),EXIST=file_exist)
-      CALL mp_bcast( file_exist, ionode_id )
+      INQUIRE(FILE=TRIM(filename),EXIST=file_exist)
       !
       RETURN
       !
