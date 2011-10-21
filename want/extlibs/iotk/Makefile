@@ -45,7 +45,7 @@ configure-stamp: uncompress-stamp
 	touch configure-stamp
 	           #IOTK_REAL_KINDS="ALL" \
 	
-package-ready-stamp: uncompress-stamp configure-stamp
+package-ready-stamp: uncompress-stamp configure-stamp 
 	if test -d $(PACKAGE) ; then \
 	( cd $(PACKAGE);  $(MAKE) loclib_only ; $(MAKE) iotk.x ) ; fi
 	#
@@ -55,7 +55,7 @@ package-ready-stamp: uncompress-stamp configure-stamp
 	mv $(PACKAGE)/src/*.a ./lib ;
 	mv $(PACKAGE)/src/*.x ./bin ;
 	cp $(PACKAGE)/tools/iotk ./bin ;
-	mv $(PACKAGE)/src/*.mod ./include ;
+	cp $(PACKAGE)/src/*.mod ./include ;
 	#
 	- ( cd ../../bin ; ln -sf ../extlibs/iotk/bin/* . )
 	#
