@@ -209,7 +209,7 @@ PROGRAM sum_sgm
    IF ( lhave_list ) THEN 
        WRITE(stderr,"(2x,'      List file: ',a)") TRIM(filein)
    ENDIF
-   WRITE(stderr,"(2x,'         Binary: ',l)") binary
+   WRITE(stderr,"(2x,'         Binary: ',l5)") binary
    WRITE(stderr,"(2x,'Number of files: ',i5)") nfiles
    !
    DO ifile = 1, nfiles
@@ -313,7 +313,7 @@ PROGRAM sum_sgm
                IF (ierr/=0 ) CALL errore(subname,"reading aux data III", ABS(ierr))
                !
                IF ( dimwann /= dimwann_ ) CALL errore(subname,"invalid dimwann_", ifile)
-               IF ( ldynam  /= ldynam_ )  CALL errore(subname,"invalid ldynam_", ifile)
+               IF ( ldynam .NEQV. ldynam_ )  CALL errore(subname,"invalid ldynam_", ifile)
                IF ( nomega  /= nomega_ )  CALL errore(subname,"invalid nomega_", ifile)
                IF ( iomg_s  /= iomg_s_ )  CALL errore(subname,"invalid iomg_s_", ifile)
                IF ( iomg_e  /= iomg_e_ )  CALL errore(subname,"invalid iomg_e_", ifile)
