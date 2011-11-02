@@ -4,6 +4,9 @@
 =======================================================
 
 
+Nov 02 2011     bug fixed in util.f90 in zmat_diag (the input matrix is
+		overwritten). Courtesy of Eleonora Luppi. (AF)
+
 Oct 14 2011     operator_module updated; sum_sgm.x tool added to utility. (AF)
 
 Oct 12 2011     version number changed to 2.4.0beta1 . decay.x utility added.
