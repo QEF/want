@@ -113,8 +113,8 @@ PUBLIC ::  mat_svd
 PUBLIC ::  mat_sv
 PUBLIC ::  mat_mul
 PUBLIC ::  mat_hdiag
-PUBLIC ::  mat_inv
 PUBLIC :: zmat_diag
+PUBLIC ::  mat_inv
 PUBLIC :: zmat_is_unitary
 PUBLIC :: zmat_is_herm
 PUBLIC ::  mat_rank
@@ -1089,6 +1089,7 @@ END SUBROUTINE dmat_hdiag
    INTEGER   :: ierr, info, lwork
    CHARACTER :: jobvl, jobvr
    COMPLEX(dbl), ALLOCATABLE :: work(:), vl(:,:), vr(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: a_(:,:)
    REAL(dbl),    ALLOCATABLE :: rwork(:)
 
    ! get the dimension of the problem
@@ -1119,7 +1120,12 @@ END SUBROUTINE dmat_hdiag
    ALLOCATE( vr(n,n), STAT=ierr )
       IF(ierr/=0) CALL errore('zmat_diag','allocating vr',ABS(ierr))
 
-   CALL ZGEEV( jobvl, jobvr, n, a, SIZE(a,1), w, vl, n, vr, n, work, &
+   ALLOCATE( a_(n,n), STAT=ierr )
+      IF(ierr/=0) CALL errore('zmat_diag','allocating a_',ABS(ierr))
+
+   a_(1:n,1:n) = a(1:n,1:n)
+
+   CALL ZGEEV( jobvl, jobvr, n, a_, SIZE(a_,1), w, vl, n, vr, n, work, &
                lwork, rwork, info )
 
    IF ( info < 0 ) CALL errore('zmat_diag', 'zgeev: info illegal value', -info )
@@ -1132,8 +1138,8 @@ END SUBROUTINE dmat_hdiag
        z(1:n,1:n) = vr
    END SELECT
     
-   DEALLOCATE( work, rwork, vl, vr, STAT=ierr)
-      IF(ierr/=0) CALL errore('zmat_diag','deallocating work--vr',ABS(ierr))
+   DEALLOCATE( a_, work, rwork, vl, vr, STAT=ierr)
+      IF(ierr/=0) CALL errore('zmat_diag','deallocating a_, work--vr',ABS(ierr))
 
    RETURN
 END SUBROUTINE zmat_diag
