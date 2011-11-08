@@ -4,7 +4,8 @@
 =======================================================
 
 
-Nov 07 2011     sax2qexml utilities added. (AF)
+Nov 07 2011     sax2qexml utilities added. Bug fixed in qexml_write_wfc.
+		c_mkdir updated to c_mkdir_int (QE-4.3). (AF)
 
 Nov 02 2011     bug fixed in util.f90 in zmat_diag (the input matrix is
 		overwritten). Courtesy of Eleonora Luppi. (AF)

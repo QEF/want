@@ -64,7 +64,7 @@ if [ -z "$prefix"  ] ; then echo ERROR: invalid prefix ; exit 1 ; fi
 if [ -z "$label"   ] ; then echo ERROR: invalid label  ; exit 1 ; fi
 if [ -z "$qp_file" ] ; then echo ERROR: nvalid qp_file ; exit 1 ; fi
 #
-if [ ! -d "$work_dir"  ]  ; then echo ERROR: dir $work_dir does not exist  ; exit 1 ; fi
+if [ ! -d "$work_dir"  ] ; then echo ERROR: dir $work_dir does not exist  ; exit 1 ; fi
 #
 if [ -z "$work_dir" ] ; then
    datadir=$prefix.save
@@ -100,9 +100,11 @@ fi
 #
 # create the kpt dirs
 #
+here=`pwd`
+#
 cd $datadir
-list=`ls -d K????? 2>/dev/null`
-cd -
+    list=`ls -d K????? 2>/dev/null`
+cd $here
 #
 for kdir in $list
 do
