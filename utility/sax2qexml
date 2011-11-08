@@ -1,0 +1,135 @@
+#! /bin/sh
+#
+# wrapper to copy $prefix.save dir
+# in order to change wfcs and eigs with those
+# computed by SaX.
+#
+# extract pathname
+#
+topdir=`echo $0 | sed 's/\(.*\)\/.*/\1/'`
+bindir=$topdir
+#
+#================================================================
+#
+MANUAL="
+ Usage  sax2qexml [-h] [-d <work_dir>] [-p <prefix>] [-l <label>] 
+                  [-f <qp_file>] [-s <qp_states>]
+
+    -h              prints this manual
+    -p  <prefix>    points to $prefix.save/
+    -d  <work_dir>  work_dir containing $prefix.save/
+    -l  <label>     postfix (HF or GW) to be added to prefix
+
+  Creates a new .save directory ($work_dir/$prefix_$label.save) 
+  where wavefunctions and eigenvalues are given in SaX format
+
+"
+#
+#================================================================
+#
+
+work_dir=
+prefix=
+label=GW
+qp_file=
+qp_states=
+#
+
+#
+# parse input
+#
+while getopts :hd:p:l:f:s: OPT
+do
+  case $OPT in
+  (h) echo "$MANUAL" ; exit 0 ;;
+  (d) work_dir=$OPTARG ;;
+  (p) prefix=$OPTARG ;;
+  (l) label=$OPTARG ;;
+  (f) qp_file=$OPTARG ;;
+  (s) qp_states=$OPTARG ;;
+  (:) echo "error: $OPTARG requires an argument" ; exit 1 ;;
+  (?) echo "error: unkwown option $OPTARG" ; exit 1 ;;
+  esac
+done
+
+echo "
+  work_dir : $work_dir
+    prefix : $prefix
+     label : $label
+   qp_file : $qp_file
+ qp_states : $qp_states
+"
+
+if [ -z "$prefix"  ] ; then echo ERROR: invalid prefix ; exit 1 ; fi
+if [ -z "$label"   ] ; then echo ERROR: invalid label  ; exit 1 ; fi
+if [ -z "$qp_file" ] ; then echo ERROR: nvalid qp_file ; exit 1 ; fi
+#
+if [ ! -d "$work_dir"  ]  ; then echo ERROR: dir $work_dir does not exist  ; exit 1 ; fi
+#
+if [ -z "$work_dir" ] ; then
+   datadir=$prefix.save
+   datadir_new=$prefix"_"$label.save
+else
+   datadir=$work_dir/$prefix.save
+   datadir_new=$work_dir/$prefix"_"$label.save
+fi
+#
+#if [ ! -e "$qp_file" ] ; then echo ERROR: $qp_file does not exist      ; exit 1 ; fi
+if [ ! -d "$datadir" ] ; then echo ERROR: dir $datadir does not exist  ; exit 1 ; fi
+
+
+#
+# create the new directory
+#
+if [ -d "$datadir_new" ] ; then rm -rf $datadir_new ; fi
+mkdir -p $datadir_new
+
+list=`ls $datadir/*.xml $datadir/*.dat $datadir/*.UPF $datadir/*.upf 2>/dev/null`
+for file in $list
+do
+   cp $file $datadir_new
+done
+
+#
+# charge-density file has to be removed and updated.
+#
+if [ -e "$datadir_new/charge-density.dat" ] ; then
+   rm $datadir_new/charge-density.dat
+fi
+
+#
+# create the kpt dirs
+#
+cd $datadir
+list=`ls -d K????? 2>/dev/null`
+cd -
+#
+for kdir in $list
+do
+   mkdir $datadir_new/$kdir
+   if [ -e $datadir/$kdir/gkvectors.dat ] ; then
+      cp $datadir/$kdir/gkvectors.dat $datadir_new/$kdir/
+   fi
+   #
+done
+
+#
+# now convert the wfc and eigs data
+#
+if [ -x $bindir/sax2qexml.x ] ; then
+    #
+    $bindir/sax2qexml.x << EOF
+        &INPUT
+            prefix='$prefix'
+            label='$label'
+            work_dir='$work_dir'
+            qp_file='$qp_file'
+            qp_states='$qp_states'
+        /
+EOF
+    #
+fi
+
+
+exit 0
+
