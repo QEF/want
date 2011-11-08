@@ -143,7 +143,7 @@ CONTAINS
    ! performs the main task
    !
    USE kinds
-   USE constants,            ONLY : ZERO, CZERO
+   USE constants,            ONLY : ZERO, CZERO, TWO
    USE parameters,           ONLY : nstrx
    USE io_module,            ONLY : ionode, ionode_id, &
                                     dft_unit, sax_unit => aux1_unit, &
@@ -352,8 +352,9 @@ CONTAINS
       !
       ! dump eigenval.xml files
       !
-      ! Units=Hartree, no conversion needed
-      !eig(:,:,:) = eig(:,:,:) * TWO * RYD
+      ! SaX units = Ryd, converting to Hartrees
+      !
+      eig(:,:,:) = eig(:,:,:) / TWO
       !
       IF ( ionode ) WRITE(stdout,"(2x,'Write eigenval to file...',/)")
       !
