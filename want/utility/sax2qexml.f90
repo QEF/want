@@ -407,12 +407,6 @@ CONTAINS
           !
       ENDIF
       
-! XXX
-WRITE(0,*) "npwk"
-WRITE(0,*) npwk
-WRITE(0,*) "npwkx", npwkx
-! XXXX
-
       !
       ! read and/or convert wfc data
       !
