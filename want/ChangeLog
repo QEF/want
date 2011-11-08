@@ -4,6 +4,8 @@
 =======================================================
 
 
+Nov 07 2011     sax2qexml utilities added. (AF)
+
 Nov 02 2011     bug fixed in util.f90 in zmat_diag (the input matrix is
 		overwritten). Courtesy of Eleonora Luppi. (AF)
 
