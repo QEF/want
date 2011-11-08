@@ -426,14 +426,14 @@ CONTAINS
       CHARACTER(LEN=*), INTENT(IN)  :: dirname
       INTEGER,          INTENT(OUT) :: ierr
       !
-      INTEGER(i4b), EXTERNAL        :: c_mkdir
+      INTEGER(i4b), EXTERNAL        :: c_mkdir_int
       INTEGER  :: iunaux
       !
       !
       ierr = 0
       CALL iotk_free_unit( iunaux )
       !
-      ierr = c_mkdir( TRIM( dirname ), LEN_TRIM( dirname ) )
+      ierr = c_mkdir_int( TRIM( dirname ), LEN_TRIM( dirname ) )
       IF ( ierr/=0 ) RETURN
 
       !
@@ -1418,7 +1418,7 @@ CONTAINS
          !
          DO ib = 1, nbnd
             !
-            CALL iotk_write_dat( iunaux, "evc" // TRIM(iotk_index( ib )), wf( 1: ngw, ib) )
+            CALL iotk_write_dat( iunaux, "evc" // TRIM(iotk_index( ib )), wf( 1: igwx, ib) )
             !
          ENDDO
          !

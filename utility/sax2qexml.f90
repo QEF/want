@@ -181,6 +181,7 @@ CONTAINS
       !
       INTEGER,      ALLOCATABLE :: npwk(:)
       REAL(dbl),    ALLOCATABLE :: eig(:,:,:)
+      REAL(dbl),    ALLOCATABLE :: occ(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: U_rot(:,:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: wfc(:,:)
       COMPLEX(dbl), ALLOCATABLE :: wfc_new(:,:)
@@ -247,6 +248,7 @@ CONTAINS
           !
           DO ik = 1, nkpts
               CALL qexml_read_gk(ik, NPWK=npwk(ik), GAMMA_ONLY=lgamma_only, IERR=ierr)
+              IF ( ierr/=0 ) CALL errore(subname,'reading gk',ik)
           ENDDO
           !
       ENDIF
@@ -257,6 +259,29 @@ CONTAINS
       npwkx = MAXVAL( npwk(1:nkpts) )
       !
       IF ( lgamma_only ) CALL errore(subname,"gamma_only not implemented",10)
+      !
+      ! occupations
+      !
+      ALLOCATE( occ(nbnd,nkpts,nspin), STAT=ierr)
+      IF ( ierr/=0 ) CALL errore(subname,"alloating occ",ABS(ierr))
+      !
+      IF ( ionode ) THEN
+          !
+          DO isp = 1, nspin
+          DO ik  = 1, nkpts
+              !
+              IF ( nspin == 1 ) THEN 
+                  CALL qexml_read_bands(IK=ik, OCC=occ(:,ik,isp), IERR=ierr)
+              ELSE
+                  CALL qexml_read_bands(IK=ik, ISPIN=isp, OCC=occ(:,ik,isp), IERR=ierr)
+              ENDIF
+              !
+          ENDDO
+          ENDDO
+          !
+      ENDIF
+      !
+      CALL mp_bcast( occ,         ionode_id)
       !
       !
       CALL qexml_closefile( "read", IERR=ierr)
@@ -338,11 +363,11 @@ CONTAINS
           DO ik  = 1, nkpts
               !
               IF ( nspin == 1 ) THEN
-                  CALL qexml_write_bands( ik, NBND=nbnd,  &
-                                          EIG=eig(:,ik,isp), ENERGY_UNITS="Hartree" )
+                  CALL qexml_write_bands( ik, NBND=nbnd,  EIG=eig(:,ik,isp), &
+                                          ENERGY_UNITS="Hartree", OCC=occ(:,ik,isp) )
               ELSE
-                  CALL qexml_write_bands( ik, ISPIN=isp, NBND=nbnd, &
-                                          EIG=eig(:,ik,isp), ENERGY_UNITS="Hartree" )
+                  CALL qexml_write_bands( ik, ISPIN=isp, NBND=nbnd, EIG=eig(:,ik,isp), &
+                                          ENERGY_UNITS="Hartree", OCC=occ(:,ik,isp) )
               ENDIF
               !
           ENDDO
@@ -350,8 +375,8 @@ CONTAINS
           !
       ENDIF
       ! 
-      DEALLOCATE( eig, STAT=ierr)
-      IF ( ierr/=0 ) CALL errore(subname,"deallocating eig",ABS(ierr))
+      DEALLOCATE( eig, occ, STAT=ierr)
+      IF ( ierr/=0 ) CALL errore(subname,"deallocating eig, occ",ABS(ierr))
       
 
       !
@@ -382,6 +407,12 @@ CONTAINS
           !
       ENDIF
       
+! XXX
+WRITE(0,*) "npwk"
+WRITE(0,*) npwk
+WRITE(0,*) "npwkx", npwkx
+! XXXX
+
       !
       ! read and/or convert wfc data
       !
