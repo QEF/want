@@ -436,8 +436,10 @@ CONTAINS
                   !
                   IF ( npw /= npwk(ik) ) CALL errore(subname,"unexpected npw",10)
                   !
-                  CALL iotk_scan_dat(sax_unit, "val", wfc_new(:,ib), IERR=ierr)
-                  IF ( ierr/=0 ) CALL errore(subname,"scan end "//TRIM(str),ABS(ierr))
+                  CALL iotk_scan_dat(sax_unit, "val", wfc_new(1:npwk(ik),ib), IERR=ierr)
+                  IF ( ierr/=0 ) CALL errore(subname,"val",ABS(ierr))
+                  !
+                  wfc_new(npwk(ik)+1:npwkx,ib) = CZERO
                   !
                   CALL iotk_scan_end(sax_unit, TRIM(str), IERR=ierr)
                   IF ( ierr/=0 ) CALL errore(subname,"scan end "//TRIM(str),ABS(ierr))
@@ -474,13 +476,13 @@ CONTAINS
                   !
                   CALL qexml_write_wfc( nbnd, nkpts, nspin, ik, &
                               NGW=0, IGWX=npwk(ik), GAMMA_ONLY=lgamma_only, &
-                              WF=wfc(1:npwk(ik),:) )
+                              WF=wfc_new(1:npwk(ik),1:nbnd) )
                   !
               ELSE
                   !
                   CALL qexml_write_wfc( nbnd, nkpts, nspin, ik, ISPIN=isp, &
                               NGW=0, IGWX=npwk(ik), GAMMA_ONLY=lgamma_only, &
-                              WF=wfc(1:npwk(ik),:) )
+                              WF=wfc_new(1:npwk(ik),1:nbnd) )
                   !
               ENDIF
               !
