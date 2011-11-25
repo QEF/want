@@ -4,6 +4,8 @@
 =======================================================
 
 
+Nov 25 2011     sax2qexml implementation completed (gkvectors re-written). (AF)
+
 Nov 07 2011     sax2qexml utilities added. Bug fixed in qexml_write_wfc.
 		c_mkdir updated to c_mkdir_int (QE-4.3). (AF)
 

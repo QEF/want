@@ -150,6 +150,7 @@ CONTAINS
                                     qexml_unit => aux2_unit
    USE mp,                   ONLY : mp_bcast
    USE util_module,          ONLY : mat_mul
+   USE ggrids_module,        ONLY : ggrids_gv_indexes
    USE qexml_module
    USE iotk_module
    !
@@ -175,13 +176,16 @@ CONTAINS
       INTEGER       :: ib, ik, isp, ig
       INTEGER       :: nbnd, nkpts, nspin, npw
       INTEGER       :: ibnd_min, ibnd_max
+      INTEGER       :: ngm, nr1, nr2, nr3
       INTEGER       :: npwkx
       LOGICAL       :: lhave_qp_states
       LOGICAL       :: lgamma_only
       REAL(dbl)     :: xk(3)
       !
       INTEGER,      ALLOCATABLE :: npwk(:)
+      INTEGER,      ALLOCATABLE :: igv(:,:)
       INTEGER,      ALLOCATABLE :: igk(:,:), igksort(:)
+      INTEGER,      ALLOCATABLE :: fft2gv(:)
       REAL(dbl),    ALLOCATABLE :: eig(:,:,:)
       REAL(dbl),    ALLOCATABLE :: occ(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: U_rot(:,:,:,:)
@@ -284,6 +288,22 @@ CONTAINS
       ENDIF
       !
       CALL mp_bcast( occ,         ionode_id)
+
+      !
+      ! G-vectors
+      !
+      IF ( lhave_qp_states ) THEN
+          !
+          CALL qexml_read_planewaves( NR1=nr1, NR2=nr2, NR3=nr3,  NGM=ngm, IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,"reading planewaves I",ABS(ierr))
+          !
+          ALLOCATE( igv(3,ngm), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,'allocating igv',ABS(ierr))
+          !
+          CALL qexml_read_planewaves( IGV=igv, IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,"reading planewaves II",ABS(ierr))
+          !
+      ENDIF
       !
       !
       CALL qexml_closefile( "read", IERR=ierr)
@@ -394,6 +414,11 @@ CONTAINS
           ALLOCATE( igksort(npwkx), STAT=ierr )
           IF( ierr/=0 ) CALL errore(subname,"allocating igksort",ABS(ierr))
           !
+          ALLOCATE( fft2gv(0:nr1*nr2*nr3), STAT=ierr )
+          IF( ierr/=0 ) CALL errore(subname,"allocating fft2gv",ABS(ierr))
+          !
+          CALL ggrids_gv_indexes( igv, ngm, nr1, nr2, nr3, FFT2GV=fft2gv )
+          !
       ELSE
           !
           ALLOCATE( wfc(npwkx,nbnd), STAT=ierr )
@@ -445,8 +470,6 @@ CONTAINS
               CALL iotk_scan_dat(sax_unit, "g", igk(1:3,1:npwk(ik)), IERR=ierr)
               IF ( ierr/=0 ) CALL errore(subname,"scan g",ABS(ierr))
               !
-              igksort(1:npwk(ik)) = 0
-              !
               CALL iotk_scan_end(sax_unit, "basis"//TRIM(iotk_index(ik)), IERR=ierr)
               IF ( ierr/=0 ) CALL errore(subname,"scan end basis"//TRIM(iotk_index(ik)),ABS(ierr))
               !
@@ -468,6 +491,14 @@ CONTAINS
                   IF ( ierr/=0 ) CALL errore(subname,"scan end "//TRIM(str),ABS(ierr))
                   !
               ENDDO
+
+              !
+              ! find the map for SaX G-vectors in the QE density G grid
+              !
+              igksort(1:npwk(ik)) = 0
+              !
+              CALL ggrids_map_igv( npwk(ik), igk, nr1, nr2, nr3, &
+                                   fft2gv, igksort )
               !
           ELSE
               !
@@ -554,9 +585,17 @@ CONTAINS
           DEALLOCATE( igk, STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname, 'deallocating igk', ABS(ierr))
       ENDIF
+      IF ( ALLOCATED( igv ) ) THEN
+          DEALLOCATE( igv, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname, 'deallocating igv', ABS(ierr))
+      ENDIF
       IF ( ALLOCATED( igksort ) ) THEN
           DEALLOCATE( igksort, STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname, 'deallocating igksort', ABS(ierr))
+      ENDIF
+      IF ( ALLOCATED( fft2gv ) ) THEN
+          DEALLOCATE( fft2gv, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname, 'deallocating fft2gv', ABS(ierr))
       ENDIF
       !
       DEALLOCATE( wfc_new, STAT=ierr )
@@ -575,7 +614,45 @@ CONTAINS
       !
    END SUBROUTINE do_sax2qexml
 
-
 END PROGRAM sax2qexml
+
+
+!********************************************************
+SUBROUTINE ggrids_map_igv( npwk, igk, nr1, nr2, nr3, fft2gv, igksort )
+   !********************************************************
+   !
+   USE kinds
+   USE ggrids_module,      ONLY : ggrids_gv_indexes
+   !
+   IMPLICIT NONE
+   !
+   INTEGER,    INTENT(IN)  :: npwk
+   INTEGER,    INTENT(IN)  :: igk(3,npwk)
+   INTEGER,    INTENT(IN)  :: nr1, nr2, nr3
+   INTEGER,    INTENT(IN)  :: fft2gv(0:)
+   INTEGER,    INTENT(OUT) :: igksort(npwk)
+   !
+   CHARACTER(14) :: subname='ggrids_map_igv'
+   INTEGER       :: ig, ierr
+   INTEGER, ALLOCATABLE :: gvk2fft(:)
+   !
+   !
+   ALLOCATE( gvk2fft( npwk ), STAT=ierr  )
+   IF ( ierr/=0 ) CALL errore(subname,'allocating gvk2fft',ABS(ierr))
+   !
+   CALL ggrids_gv_indexes( igk, npwk, nr1, nr2, nr3, GV2FFT=gvk2fft )
+   !
+   DO ig = 1, npwk
+       !
+       igksort( ig ) = fft2gv( gvk2fft(ig) )
+       !
+   ENDDO
+   !
+   DEALLOCATE( gvk2fft, STAT=ierr  )
+   IF ( ierr/=0 ) CALL errore(subname,'deallocating gvk2fft',ABS(ierr))
+   !
+   RETURN
+   !
+END SUBROUTINE ggrids_map_igv
 
 
