@@ -91,11 +91,12 @@ do
 done
 
 #
-# charge-density file has to be removed and updated.
+# charge-density file has to be updated (and so its removed).
 #
 if [ -e "$datadir_new/charge-density.dat" ] ; then
    rm $datadir_new/charge-density.dat
 fi
+
 
 #
 # create the kpt dirs
@@ -109,7 +110,11 @@ cd $here
 for kdir in $list
 do
    mkdir $datadir_new/$kdir
-   if [ -e $datadir/$kdir/gkvectors.dat ] ; then
+   #
+   # copy gkvectors.dat only if don't have qp_states
+   # in such a case, the gkvectors.dat files have to be updated
+   #
+   if [ -e $datadir/$kdir/gkvectors.dat -a -z "$qp_states" ] ; then
       cp $datadir/$kdir/gkvectors.dat $datadir_new/$kdir/
    fi
    #
