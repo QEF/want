@@ -178,8 +178,10 @@ CONTAINS
       INTEGER       :: npwkx
       LOGICAL       :: lhave_qp_states
       LOGICAL       :: lgamma_only
+      REAL(dbl)     :: xk(3)
       !
       INTEGER,      ALLOCATABLE :: npwk(:)
+      INTEGER,      ALLOCATABLE :: igk(:,:), igksort(:)
       REAL(dbl),    ALLOCATABLE :: eig(:,:,:)
       REAL(dbl),    ALLOCATABLE :: occ(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: U_rot(:,:,:,:)
@@ -385,9 +387,18 @@ CONTAINS
       ! otherwise, read wfcs from $prefix.save
       ! and rotate them according to the eigenvector matrices
       !
-      IF ( .NOT. lhave_qp_states ) THEN
+      IF ( lhave_qp_states ) THEN
+          !
+          ALLOCATE( igk(3,npwkx), STAT=ierr )
+          IF( ierr/=0 ) CALL errore(subname,"allocating igk",ABS(ierr))
+          ALLOCATE( igksort(npwkx), STAT=ierr )
+          IF( ierr/=0 ) CALL errore(subname,"allocating igksort",ABS(ierr))
+          !
+      ELSE
+          !
           ALLOCATE( wfc(npwkx,nbnd), STAT=ierr )
           IF( ierr/=0 ) CALL errore(subname,"allocating wfc",ABS(ierr))
+          !
       ENDIF
       !
       ALLOCATE( wfc_new(npwkx,nbnd), STAT=ierr )
@@ -412,15 +423,34 @@ CONTAINS
       ! read and/or convert wfc data
       !
       DO isp = 1, nspin
-      DO ik = 1, nkpts
+      DO ik  = 1, nkpts
           !
           IF ( ionode ) WRITE(stdout,"(2x,'Read/Write wfc [',i3,' ] to file...')") ik
           !
           have_qp_states_if :&
           IF ( lhave_qp_states ) THEN
               !
-              wfc_new(:,1:ibnd_min-1)    = CZERO
-              wfc_new(:,ibnd_max+1:nbnd) = CZERO
+              CALL iotk_scan_begin(sax_unit, "basis"//TRIM(iotk_index(ik)), IERR=ierr)
+              IF ( ierr/=0 ) CALL errore(subname,"scan begin basis"//TRIM(iotk_index(ik)),ABS(ierr))
+              ! 
+              CALL iotk_scan_empty(sax_unit, "info", ATTR=attr, IERR=ierr)
+              IF ( ierr/=0 ) CALL errore(subname,"scan info",ABS(ierr))
+              CALL iotk_scan_attr(attr, "npw", npw, IERR=ierr)
+              IF ( ierr/=0 ) CALL errore(subname,"scan npw",ABS(ierr))
+              CALL iotk_scan_attr(attr, "k", xk, IERR=ierr)
+              IF ( ierr/=0 ) CALL errore(subname,"scan k",ABS(ierr))
+              !
+              IF ( npw /= npwk(ik) ) CALL errore(subname,"unexpected npw",10)
+              !
+              CALL iotk_scan_dat(sax_unit, "g", igk(1:3,1:npwk(ik)), IERR=ierr)
+              IF ( ierr/=0 ) CALL errore(subname,"scan g",ABS(ierr))
+              !
+              igksort(1:npwk(ik)) = 0
+              !
+              CALL iotk_scan_end(sax_unit, "basis"//TRIM(iotk_index(ik)), IERR=ierr)
+              IF ( ierr/=0 ) CALL errore(subname,"scan end basis"//TRIM(iotk_index(ik)),ABS(ierr))
+              !
+              wfc_new(:,:)    = CZERO
               !
               DO ib = ibnd_min, ibnd_max
                   !
@@ -428,13 +458,6 @@ CONTAINS
                   !
                   CALL iotk_scan_begin(sax_unit, TRIM(str), IERR=ierr)
                   IF ( ierr/=0 ) CALL errore(subname,"scan begin "//TRIM(str),ABS(ierr))
-                  !
-                  CALL iotk_scan_empty(sax_unit, "info", ATTR=attr, IERR=ierr)
-                  IF ( ierr/=0 ) CALL errore(subname,"scan info",ABS(ierr))
-                  CALL iotk_scan_attr(attr, "npw", npw, IERR=ierr)
-                  IF ( ierr/=0 ) CALL errore(subname,"scan npw",ABS(ierr))
-                  !
-                  IF ( npw /= npwk(ik) ) CALL errore(subname,"unexpected npw",10)
                   !
                   CALL iotk_scan_dat(sax_unit, "val", wfc_new(1:npwk(ik),ib), IERR=ierr)
                   IF ( ierr/=0 ) CALL errore(subname,"val",ABS(ierr))
@@ -462,15 +485,18 @@ CONTAINS
               !
               IF ( ierr/=0 ) CALL errore(subname,"reading old wfcs",ABS(ierr))
               !
-              CALL mat_mul( wfc_new, wfc, 'N', U_rot(:,:,ik,isp), 'N', &
-                            npwk(ik), SIZE(U_rot,1), SIZE(U_rot,1) )
+              CALL mat_mul( wfc_new(:,ibnd_min:ibnd_max), &
+                            wfc(:,ibnd_min:ibnd_max), 'N', U_rot(:,:,ik,isp), 'N', &
+                            npwk(ik), ibnd_max-ibnd_min+1, ibnd_max-ibnd_min+1 )
               !
           ENDIF have_qp_states_if
 
           !
-          ! dump evc.dat
+          ! dump evc.dat, gkvectors.dat
           !
           IF ( ionode ) THEN
+              !
+              ! evc.dat
               !
               IF ( nspin == 1 ) THEN
                   !
@@ -483,6 +509,15 @@ CONTAINS
                   CALL qexml_write_wfc( nbnd, nkpts, nspin, ik, ISPIN=isp, &
                               NGW=0, IGWX=npwk(ik), GAMMA_ONLY=lgamma_only, &
                               WF=wfc_new(1:npwk(ik),1:nbnd) )
+                  !
+              ENDIF
+              !
+              ! gkvectors.dat
+              !
+              IF ( lhave_qp_states ) THEN
+                  !
+                  CALL qexml_write_gk( ik, npwk(ik), npwkx, lgamma_only, &
+                                       xk, "crystal", INDEX=igksort, IGK=igk)
                   !
               ENDIF
               !
@@ -514,6 +549,14 @@ CONTAINS
       IF ( ALLOCATED( wfc ) ) THEN
           DEALLOCATE( wfc, STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname, 'deallocating wfc', ABS(ierr))
+      ENDIF
+      IF ( ALLOCATED( igk ) ) THEN
+          DEALLOCATE( igk, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname, 'deallocating igk', ABS(ierr))
+      ENDIF
+      IF ( ALLOCATED( igksort ) ) THEN
+          DEALLOCATE( igksort, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname, 'deallocating igksort', ABS(ierr))
       ENDIF
       !
       DEALLOCATE( wfc_new, STAT=ierr )
