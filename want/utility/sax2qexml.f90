@@ -629,7 +629,7 @@ SUBROUTINE ggrids_map_igv( npwk, igk, nr1, nr2, nr3, fft2gv, igksort )
    INTEGER,    INTENT(IN)  :: npwk
    INTEGER,    INTENT(IN)  :: igk(3,npwk)
    INTEGER,    INTENT(IN)  :: nr1, nr2, nr3
-   INTEGER,    INTENT(IN)  :: fft2gv(0:)
+   INTEGER,    INTENT(IN)  :: fft2gv(0:nr1*nr2*nr3)
    INTEGER,    INTENT(OUT) :: igksort(npwk)
    !
    CHARACTER(14) :: subname='ggrids_map_igv'
