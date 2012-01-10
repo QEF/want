@@ -4,6 +4,8 @@
 =======================================================
 
 
+Jan 10 2011     bug fixed in libs/files.f90 (tags pointer was not nullified). (AF)
+
 Nov 25 2011     sax2qexml implementation completed (gkvectors re-written). (AF)
 
 Nov 07 2011     sax2qexml utilities added. Bug fixed in qexml_write_wfc.
