@@ -310,6 +310,7 @@ CONTAINS
       ! Set defaults
       ! 
       ierr      = 0
+      NULLIFY(tags)
       !
       action_   = "READWRITE"
       path_     = "/"
