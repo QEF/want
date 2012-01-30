@@ -22,21 +22,22 @@
 ! routines in this module:
 ! SUBROUTINE  zmat_pack( zp, z, n)
 ! SUBROUTINE  zmat_unpack( z, zp, n)
-! SUBROUTINE  zmat_bnd_pack( zb, z, n, kl, ku)
-! SUBROUTINE  zmat_bnd_unpack( z, zb, n, kl, ku)
+! SUBROUTINE   mat_bnd_pack( zb, z, n, kl, ku)
+! SUBROUTINE   mat_bnd_unpack( z, zb, n, kl, ku)
 ! SUBROUTINE   mat_bnd_getdims( z, n, kl, ku)
-! SUBROUTINE  zmat_herm( z, n)
-! SUBROUTINE  zmat_antiherm( z, n)
+! SUBROUTINE   mat_herm( z, n)
+! SUBROUTINE   mat_antiherm( z, n)
 ! SUBROUTINE   mat_svd( m, n, a, s, u, vt)
 ! SUBROUTINE   mat_sv ( n, nrhs, a, b [,ierr])
+! SUBROUTINE   mat_lsd( m, n, nrhs, a, b, rcond [, sv, rank, ierr])
 ! SUBROUTINE   mat_mul( c, a, opa, b, opb, m, n, k)
-! SUBROUTINE   mat_hdiag( z, w, a, n, uplo)
+! SUBROUTINE   mat_hdiag( z, w, a, n[, uplo][, il, iu])
 ! SUBROUTINE   mat_inv( n, a, z [, kl, ku, ldab] [,det_a] [,ierr] )
 ! SUBROUTINE  zmat_diag( z, w, a, n, side)
 ! COMPLEX/REAL FUNCTION   mat_dotp( m, n, a, b)
 ! COMPLEX/REAL FUNCTION   mat_hdotp( m, a, b)
 ! LOGICAL FUNCTION  zmat_is_unitary( m, n, z [,side] [,toll])
-! LOGICAL FUNCTION  zmat_is_herm( n, z [,toll])
+! LOGICAL FUNCTION   mat_is_herm( n, z [,toll])
 ! INTEGER FUNCTION   mat_rank( m, n, a, toll)
 ! 
 ! </INFO>
@@ -47,6 +48,30 @@
 INTERFACE mat_bnd_getdims
    MODULE PROCEDURE zmat_bnd_getdims
    MODULE PROCEDURE dmat_bnd_getdims
+END INTERFACE
+INTERFACE mat_bnd_pack
+   MODULE PROCEDURE zmat_bnd_pack
+   MODULE PROCEDURE dmat_bnd_pack
+   MODULE PROCEDURE dmat_hbnd_pack
+END INTERFACE
+INTERFACE mat_bnd_unpack
+   MODULE PROCEDURE zmat_bnd_unpack
+   MODULE PROCEDURE dmat_bnd_unpack
+   MODULE PROCEDURE dmat_hbnd_unpack
+END INTERFACE
+!
+! hermitian, antohermitian parts
+INTERFACE mat_herm
+   MODULE PROCEDURE zmat_herm
+   MODULE PROCEDURE dmat_herm
+END INTERFACE
+INTERFACE mat_antiherm
+   MODULE PROCEDURE zmat_antiherm
+END INTERFACE
+!
+INTERFACE mat_is_herm
+   MODULE PROCEDURE zmat_is_herm
+   MODULE PROCEDURE dmat_is_herm
 END INTERFACE
 !
 ! matrix multiplication
@@ -69,6 +94,11 @@ INTERFACE mat_sv
    MODULE PROCEDURE dmat_sv_1
 END INTERFACE
 !
+INTERFACE mat_lsd
+   MODULE PROCEDURE dmat_lsd
+   MODULE PROCEDURE dmat_lsd_1
+END INTERFACE
+!
 ! rank calculation
 INTERFACE mat_rank
    MODULE PROCEDURE zmat_rank
@@ -81,6 +111,8 @@ INTERFACE mat_hdiag
    MODULE PROCEDURE zmat_hdiag_pack
    MODULE PROCEDURE zmat_hdiag_gen
    MODULE PROCEDURE dmat_hdiag
+   MODULE PROCEDURE dmat_bnd_hdiag
+   MODULE PROCEDURE dmat_bnd_hdiag_ext
 END INTERFACE
 !
 ! matrix inversion
@@ -105,18 +137,19 @@ END INTERFACE
 
 
 PUBLIC :: zmat_pack, zmat_unpack
-PUBLIC :: zmat_bnd_pack, zmat_bnd_unpack
+PUBLIC ::  mat_bnd_pack,  mat_bnd_unpack
 PUBLIC ::  mat_bnd_getdims
-PUBLIC :: zmat_herm
-PUBLIC :: zmat_antiherm
+PUBLIC ::  mat_herm
+PUBLIC ::  mat_antiherm
 PUBLIC ::  mat_svd
 PUBLIC ::  mat_sv
+PUBLIC ::  mat_lsd
 PUBLIC ::  mat_mul
 PUBLIC ::  mat_hdiag
-PUBLIC :: zmat_diag
 PUBLIC ::  mat_inv
+PUBLIC :: zmat_diag
 PUBLIC :: zmat_is_unitary
-PUBLIC :: zmat_is_herm
+PUBLIC ::  mat_is_herm
 PUBLIC ::  mat_rank
 PUBLIC ::  mat_hdotp
 PUBLIC ::  mat_dotp
@@ -231,6 +264,122 @@ END SUBROUTINE
 
 
 !**********************************************************
+   SUBROUTINE dmat_bnd_pack( zb, z, n, kl, ku )
+   !**********************************************************
+    IMPLICIT NONE
+    REAL(dbl),    INTENT(OUT)  :: zb(:,:)
+    REAL(dbl),    INTENT(IN)   :: z(:,:)
+    INTEGER,      INTENT(IN)   :: n
+    INTEGER,      INTENT(IN)   :: kl, ku
+    !
+    ! kl :   # of subdiagonals
+    ! ku :   # of supradiagonals
+    ! ldzb must be >= 2*kl + ku +1
+    !
+    INTEGER :: i, j, ind
+
+    IF ( SIZE(zb,1) < 2 *kl + ku + 1 ) CALL errore('dmat_bnd_pack','invalid ldzb',10) 
+    !
+    zb(:,:) = ZERO
+    !
+    DO j = 1, n
+    DO i = MAX(1,j-ku),MIN(n,j+kl)
+        ind = kl+ku+1+i-j
+        zb(ind,j) = z(i,j)
+    ENDDO
+    ENDDO
+
+    RETURN
+  END SUBROUTINE dmat_bnd_pack
+
+    
+!**********************************************************
+   SUBROUTINE dmat_bnd_unpack( z, zb, n, kl, ku )
+   !**********************************************************
+    IMPLICIT NONE
+    REAL(dbl),    INTENT(OUT) :: z(:,:)
+    REAL(dbl),    INTENT(IN)  :: zb(:,:)
+    INTEGER,      INTENT(IN)  :: n
+    INTEGER,      INTENT(IN)  :: kl, ku
+    !
+    ! kl :   # of subdiagonals
+    ! ku :   # of supradiagonals
+    ! ldzb must be >= 2*kl + ku +1
+    !
+    INTEGER :: i, j, ind
+
+    IF ( SIZE(zb,1) < 2 *kl + ku + 1 ) CALL errore('dmat_bnd_unpack','invalid ldzb',10) 
+    !
+    z(:,:) = ZERO
+    !
+    DO j = 1, n
+    DO i = MAX(1,j-ku),MIN(n,j+kl)
+        ind = kl+ku+1+i-j
+        z(i,j) = zb(ind,j)
+    ENDDO
+    ENDDO
+
+    RETURN
+  END SUBROUTINE dmat_bnd_unpack
+
+
+!**********************************************************
+   SUBROUTINE dmat_hbnd_pack( zb, z, n, kd )
+   !**********************************************************
+    IMPLICIT NONE
+    REAL(dbl),    INTENT(OUT)  :: zb(:,:)
+    REAL(dbl),    INTENT(IN)   :: z(:,:)
+    INTEGER,      INTENT(IN)   :: n
+    INTEGER,      INTENT(IN)   :: kd
+    !
+    ! kd :   # of supradiagonals
+    !
+    INTEGER :: i, j, ind
+
+    IF ( SIZE(zb,1) < kd+1 ) CALL errore('dmat_hbnd_pack','invalid ldzb',10) 
+    !
+    zb(:,:) = ZERO
+    !
+    DO j = 1, n
+    DO i = MAX(1,j-kd),j
+        ind = kd+1+i-j
+        zb(ind,j) = z(i,j)
+    ENDDO
+    ENDDO
+
+    RETURN
+  END SUBROUTINE dmat_hbnd_pack
+
+    
+!**********************************************************
+   SUBROUTINE dmat_hbnd_unpack( z, zb, n, kd )
+   !**********************************************************
+    IMPLICIT NONE
+    REAL(dbl),    INTENT(OUT) :: z(:,:)
+    REAL(dbl),    INTENT(IN)  :: zb(:,:)
+    INTEGER,      INTENT(IN)  :: n
+    INTEGER,      INTENT(IN)  :: kd
+    !
+    ! kd :   # of supradiagonals
+    !
+    INTEGER :: i, j, ind
+
+    IF ( SIZE(zb,1) < kd + 1 ) CALL errore('dmat_hbnd_unpack','invalid ldzb',10) 
+    !
+    z(:,:) = ZERO
+    !
+    DO j = 1, n
+    DO i = MAX(1,j-kd),j
+        ind = kd+1+i-j
+        z(i,j) = zb(ind,j)
+    ENDDO
+    ENDDO
+
+    RETURN
+  END SUBROUTINE dmat_hbnd_unpack
+
+
+!**********************************************************
    SUBROUTINE zmat_bnd_getdims( a, thr, n, kl, ku )
    !**********************************************************
     IMPLICIT NONE
@@ -319,7 +468,29 @@ END SUBROUTINE
    ENDDO
 
    RETURN
-END SUBROUTINE
+END SUBROUTINE zmat_herm
+
+
+!**********************************************************
+   SUBROUTINE dmat_herm( z, n )
+   !**********************************************************
+   !
+   ! overwrite the input matrix with its hermitean part
+   !
+   IMPLICIT NONE
+   REAL(dbl),    INTENT(INOUT) :: z(:,:)
+   INTEGER,      INTENT(IN)    :: n
+   INTEGER :: i, j
+
+   DO j = 1, n
+   DO i = j, n
+       z(i,j) = 0.5_dbl * ( z(i,j) + z(j,i) )
+       z(j,i) = z(i,j)
+   ENDDO
+   ENDDO
+
+   RETURN
+END SUBROUTINE dmat_herm
 
 
 !**********************************************************
@@ -550,9 +721,9 @@ END SUBROUTINE dmat_sv
    ! Interface to dmat_sv when nrhs = 1
    !
    IMPLICIT NONE
-   INTEGER, INTENT(IN)      :: n, nrhs
-   REAL(dbl), INTENT(IN)    :: a(:,:)
-   REAL(dbl), INTENT(INOUT) :: b(:)
+   INTEGER,         INTENT(IN)    :: n, nrhs
+   REAL(dbl),       INTENT(IN)    :: a(:,:)
+   REAL(dbl),       INTENT(INOUT) :: b(:)
    INTEGER, OPTIONAL, INTENT(out) :: ierr
    !
    INTEGER  :: ierr_, info
@@ -582,6 +753,163 @@ END SUBROUTINE dmat_sv
 
    RETURN
 END SUBROUTINE dmat_sv_1
+
+
+!**********************************************************
+   SUBROUTINE dmat_lsd(m, n, nrhs, a, b, rcond, sv, rank, ierr)
+   !**********************************************************
+   !
+   !  Computes the minimum-norm solution of the real system of linear equations
+   !     A * X = B,
+   !  where A is an M-by-N matrix and X and B are N-by-NRHS matrices.
+   !
+   !  The solutions found are:   min 2-norm| B-AX |
+   !
+   !  The SVD method is used, see the manual of DGELSD
+   !  Singular values and rank can be provided in output
+   !
+   !  Only square matrices are treated
+   !
+   IMPLICIT NONE
+   INTEGER,   INTENT(IN)       :: m, n, nrhs
+   REAL(dbl), INTENT(IN)       :: rcond
+   REAL(dbl), INTENT(IN)       :: a(:,:)
+   REAL(dbl), INTENT(INOUT)    :: b(:,:)
+   REAL(dbl), OPTIONAL, INTENT(OUT) :: sv(:)
+   INTEGER,   OPTIONAL, INTENT(OUT) :: rank
+   INTEGER,   OPTIONAL, INTENT(OUT) :: ierr
+   !
+   CHARACTER(8)              :: subname="dmat_lsd"
+   INTEGER                   :: ierr_, rank_, info
+   INTEGER,      ALLOCATABLE :: iwork(:)
+   REAL(dbl),    ALLOCATABLE :: atmp(:,:), work(:), sv_(:)
+   !
+   REAL(dbl)         :: workl
+   INTEGER           :: smlsiz, minmn, nlvl, lwork, liwork
+   INTEGER, EXTERNAL :: ILAENV
+
+
+
+   IF ( PRESENT(ierr) ) ierr=0
+   !
+   IF ( m > SIZE(a,1) .OR. n > SIZE(a,2) ) CALL errore(subname,'matrix A too small',1)
+   IF ( n > SIZE(b,1) ) CALL errore(subname,'matrix B too small (I)',1)
+   IF ( nrhs > SIZE(b,2) ) CALL errore(subname,'matrix B too small (II)',1)
+
+   !
+   ! dimensions
+   !
+   minmn  = MIN(m,n)
+   smlsiz = ILAENV( 9, 'DGELSD', ' ', 0, 0, 0, 0 )
+   nlvl   = MAX( INT( LOG( DBLE( minmn ) / DBLE( smlsiz+1 ) ) /  &
+            LOG( 2.0d0 ) ) + 1, 0 )
+   !
+   liwork = MAX(1, 3 * minmn * nlvl + 11 * minmn)
+   !
+
+   !
+   ! workspace
+   !
+   ALLOCATE( atmp(m,n), STAT=ierr_ )
+   IF (ierr_/=0) CALL errore(subname,'allocating atmp',ABS(ierr_))
+   ALLOCATE( sv_(MIN(m,n)), STAT=ierr_ )
+   IF (ierr_/=0) CALL errore(subname,'allocating sv_',ABS(ierr_))
+   ALLOCATE( iwork(liwork), STAT=ierr_ )
+   IF (ierr_/=0) CALL errore(subname,'allocating iwork',ABS(ierr_))
+   !
+   ! get lwork
+   !
+   info   =  0
+   lwork  = -1
+   !
+   CALL DGELSD( m, n, nrhs, atmp, m, b, SIZE(b,1), sv_, rcond, rank_, &
+                workl, lwork, iwork, info)
+   !
+   lwork  = INT( workl )
+   !
+   ALLOCATE( work(lwork), STAT=ierr_ )
+   IF (ierr_/=0) CALL errore(subname,'allocating work',ABS(ierr_))
+
+   !
+   ! make a local copy of a
+   atmp(:,:) = a(1:m,1:n) 
+
+   !
+   CALL DGELSD( m, n, nrhs, atmp, m, b, SIZE(b,1), sv_, rcond, rank_, &
+                work, lwork, iwork, info)
+
+   IF ( PRESENT(ierr) ) THEN
+        IF (info/=0) ierr= info
+   ELSE
+        IF ( info < 0 ) CALL errore(subname, 'DGELSD: info illegal value', -info )
+        IF ( info > 0 ) CALL errore(subname, 'DGELSD: algorithm failure', info )
+   ENDIF
+   !
+   IF ( PRESENT(sv) )     sv(1:minmn) = sv_(1:minmn)
+   IF ( PRESENT(rank) )   rank        = rank_
+    
+
+   DEALLOCATE( atmp, STAT=ierr_)
+   IF(ierr_/=0) CALL errore(subname,'deallocating atmp',ABS(ierr_))
+   DEALLOCATE( sv_, STAT=ierr_)
+   IF(ierr_/=0) CALL errore(subname,'deallocating atmp',ABS(ierr_))
+   DEALLOCATE( work, iwork, STAT=ierr_)
+   IF(ierr_/=0) CALL errore(subname,'deallocating work, iwork',ABS(ierr_))
+
+   RETURN
+END SUBROUTINE dmat_lsd
+
+
+!**********************************************************
+   SUBROUTINE dmat_lsd_1(m, n, nrhs, a, b, rcond, sv, rank, ierr)
+   !**********************************************************
+   !
+   ! Interface to dmat_lsd when nrhs = 1
+   !
+   IMPLICIT NONE
+   INTEGER,   INTENT(IN)       :: m, n, nrhs
+   REAL(dbl), INTENT(IN)       :: rcond
+   REAL(dbl), INTENT(IN)       :: a(:,:)
+   REAL(dbl), INTENT(INOUT)    :: b(:)
+   REAL(dbl), OPTIONAL, INTENT(OUT) :: sv(:)
+   INTEGER,   OPTIONAL, INTENT(OUT) :: rank
+   INTEGER,   OPTIONAL, INTENT(OUT) :: ierr
+   !
+   CHARACTER(10)             :: subname="dmat_lsd_1"
+   INTEGER                   :: ierr_, rank_, info
+   REAL(dbl),    ALLOCATABLE :: bl(:,:)
+   REAL(dbl),    ALLOCATABLE :: sv_(:)
+
+   IF ( PRESENT(ierr) ) ierr=0
+   !
+   IF ( nrhs /= 1) CALL errore(subname,'more than 1 rhs ? ',ABS(nrhs)+1)
+   IF ( n > SIZE(b,1) ) CALL errore(subname,'vector b too small',2)
+   !
+   ALLOCATE( bl(n,1), STAT=ierr_ )
+   IF (ierr_/=0) CALL errore(subname,'allocating bl',ABS(ierr_))
+   ALLOCATE( sv_(MIN(m,n)), STAT=ierr_ )
+   IF (ierr_/=0) CALL errore(subname,'allocating sv_',ABS(ierr_))
+
+   bl(:,1) = b(1:n)
+   CALL dmat_lsd( m, n, 1, a, bl, rcond, SV=sv_, RANK=rank_, IERR=info)
+   !
+   IF ( PRESENT(ierr) ) THEN 
+       ierr=info
+   ELSE
+       IF (info /=0) CALL errore(subname,'info/=0',ABS(info))
+   ENDIF
+   IF ( PRESENT(sv) )    sv(1:MIN(m,n))  = sv_(:)
+   IF ( PRESENT(rank) )  rank            = rank_
+   !
+   b(1:n) = bl(1:n,1)
+
+   DEALLOCATE( bl, STAT=ierr_)
+   IF (ierr_/=0) CALL errore(subname,'deallocating bl',ABS(ierr_))
+   DEALLOCATE( sv_, STAT=ierr_)
+   IF (ierr_/=0) CALL errore(subname,'deallocating sv_',ABS(ierr_))
+
+   RETURN
+END SUBROUTINE dmat_lsd_1
 
 
 !**********************************************************
@@ -1074,6 +1402,107 @@ END SUBROUTINE dmat_hdiag
 
 
 !**********************************************************
+   SUBROUTINE dmat_bnd_hdiag( z, w, ab, ldab, n, kd )
+   !**********************************************************
+   !
+   ! utility to diagonalize real symmetric matrices
+   !
+   IMPLICIT NONE
+   REAL(dbl),    INTENT(IN)  :: ab(:,:)
+   REAL(dbl),    INTENT(OUT) :: z(:,:)
+   REAL(dbl),    INTENT(OUT) :: w(:)
+   INTEGER,      INTENT(in)  :: ldab, n, kd
+
+   CHARACTER(14) :: subname="dmat_bnd_hdiag"
+   INTEGER :: i, j, m, ierr, info
+   REAL(dbl), ALLOCATABLE :: work(:), qmat(:,:)
+   INTEGER,   ALLOCATABLE :: ifail(:)
+   INTEGER,   ALLOCATABLE :: iwork(:)
+
+   ! get the dimension of the problem
+   IF ( n <= 0 ) CALL errore(subname,'Invalid N',ABS(n)+1)
+   !
+   IF ( ldab < kd + 1)  CALL errore (subname, 'invalid ldab', 10)
+   IF ( SIZE(z,1) < n)  CALL errore (subname, 'invalid ldz', 10)
+   IF ( SIZE(z,2) < n)  CALL errore (subname, 'invalid ldz II', 11)
+   !
+   ALLOCATE( qmat(n,n), STAT=ierr )
+   IF(ierr/=0) CALL errore(subname,'allocating qmat',ABS(ierr))
+   ALLOCATE( work(7*n), STAT=ierr )
+   IF(ierr/=0) CALL errore(subname,'allocating work',ABS(ierr))
+   ALLOCATE( ifail(n), STAT=ierr )
+   IF(ierr/=0) CALL errore(subname,'allocating ifail',ABS(ierr))
+   ALLOCATE( iwork(5*n), STAT=ierr )
+   IF(ierr/=0) CALL errore(subname,'allocating iwork',ABS(ierr))
+
+
+   CALL DSBEVX( 'v', 'a', 'u', n, kd, ab, ldab, qmat, SIZE(qmat,1), 0, 0, 0, 0, ZERO, &
+                 m, w, z, SIZE(z,1), work, iwork, ifail, info )
+
+   IF ( info < 0 ) CALL errore(subname, 'DSBEVX: info illegal value', -info )
+   IF ( info > 0 ) CALL errore(subname, 'DSBEVX: eigenvectors not converged', info )
+    
+   DEALLOCATE( qmat, work, iwork, ifail, STAT=ierr)
+      IF(ierr/=0) CALL errore(subname,'deallocating qmat...ifail',ABS(ierr))
+
+   RETURN
+END SUBROUTINE dmat_bnd_hdiag
+
+
+!**********************************************************
+   SUBROUTINE dmat_bnd_hdiag_ext( z, w, ab, ldab, n, kd, il, iu )
+   !**********************************************************
+   !
+   ! utility to diagonalize real symmetric matrices
+   !
+   IMPLICIT NONE
+   REAL(dbl),    INTENT(IN)  :: ab(:,:)
+   REAL(dbl),    INTENT(OUT) :: z(:,:)
+   REAL(dbl),    INTENT(OUT) :: w(:)
+   INTEGER,      INTENT(in)  :: ldab, n, kd
+   INTEGER,      INTENT(in)  :: il, iu
+
+   CHARACTER(18) :: subname="dmat_bnd_hdiag_ext"
+   INTEGER :: i, j, m, ierr, info
+   REAL(dbl), ALLOCATABLE :: work(:), qmat(:,:)
+   INTEGER,   ALLOCATABLE :: ifail(:)
+   INTEGER,   ALLOCATABLE :: iwork(:)
+
+   ! get the dimension of the problem
+   IF ( n <= 0 ) CALL errore(subname,'Invalid N',ABS(n)+1)
+   !
+   IF ( ldab < kd + 1)  CALL errore (subname, 'invalid ldab', 10)
+   IF ( SIZE(z,1) < n)  CALL errore (subname, 'invalid ldz I', 10)
+   IF ( SIZE(z,2) < iu-il+1)  &
+                        CALL errore (subname, 'invalid ldz II', 11)
+   IF ( il <= 0 )       CALL errore (subname, 'invalid il', 12)
+   IF ( iu <= 0 )       CALL errore (subname, 'invalid iu', 12)
+   !
+   ALLOCATE( qmat(n,n), STAT=ierr )
+   IF(ierr/=0) CALL errore(subname,'allocating qmat',ABS(ierr))
+   ALLOCATE( work(7*n), STAT=ierr )
+   IF(ierr/=0) CALL errore(subname,'allocating work',ABS(ierr))
+   ALLOCATE( ifail(n), STAT=ierr )
+   IF(ierr/=0) CALL errore(subname,'allocating ifail',ABS(ierr))
+   ALLOCATE( iwork(5*n), STAT=ierr )
+   IF(ierr/=0) CALL errore(subname,'allocating iwork',ABS(ierr))
+
+
+   CALL DSBEVX( 'v', 'i', 'u', n, kd, ab, ldab, qmat, SIZE(qmat,1), 0, 0, il, iu, ZERO, &
+                 m, w, z, SIZE(z,1), work, iwork, ifail, info )
+
+   IF ( info < 0 ) CALL errore(subname, 'DSBEVX: info illegal value', -info )
+   IF ( info > 0 ) &
+        CALL errore(subname, 'DSBEVX: eigenvectors not converged', info )
+    
+   DEALLOCATE( qmat, work, iwork, ifail, STAT=ierr)
+      IF(ierr/=0) CALL errore(subname,'deallocating qmat...ifail',ABS(ierr))
+
+   RETURN
+END SUBROUTINE dmat_bnd_hdiag_ext
+
+
+!**********************************************************
    SUBROUTINE zmat_diag( z, w, a, n, side )
    !**********************************************************
    !
@@ -1106,10 +1535,10 @@ END SUBROUTINE dmat_hdiag
    CASE ( 'R', 'r' )
        jobvl = 'N'
        jobvr = 'V'
-   CASE DEFAULT   
+   CASE DEFAULT
        CALL errore('zmat_diag','Invalid side',3)
    END SELECT
-   
+
    lwork = 2 * n
    ALLOCATE( work(lwork), STAT=ierr )
       IF(ierr/=0) CALL errore('zmat_diag','allocating work',ABS(ierr))
@@ -1137,7 +1566,7 @@ END SUBROUTINE dmat_hdiag
    CASE ( 'R', 'r' )
        z(1:n,1:n) = vr
    END SELECT
-    
+
    DEALLOCATE( a_, work, rwork, vl, vr, STAT=ierr)
       IF(ierr/=0) CALL errore('zmat_diag','deallocating a_, work--vr',ABS(ierr))
 
@@ -1446,6 +1875,52 @@ END SUBROUTINE dmat_inv
        
    RETURN
 END FUNCTION zmat_is_herm
+
+
+!**********************************************************
+   FUNCTION  dmat_is_herm( n, A, toll )
+   !**********************************************************
+   IMPLICIT NONE
+   LOGICAL               :: dmat_is_herm
+   INTEGER               :: n
+   REAL(dbl)             :: A(:,:)
+   REAL(dbl), OPTIONAL   :: toll
+   !
+   ! n : actual dimension of Z
+   ! check if a real matrix is hermitean.
+   !
+   REAL(dbl)     :: toll_
+   CHARACTER(12) :: subname='dmat_is_herm'
+   REAL(dbl)     :: rtmp
+   INTEGER       :: i, j
+   
+
+   toll_ = TINY(ZERO)  
+   IF ( PRESENT(toll) ) toll_ = toll
+   IF ( toll_ <= 0.0 ) CALL errore(subname,'Invalid TOLL',1)
+  
+   IF ( n > SIZE( A, 1) ) CALL errore(subname,'Invalid n I',n)
+   IF ( n > SIZE( A, 2) ) CALL errore(subname,'Invalid n II',n)
+
+   dmat_is_herm = .TRUE.
+   !
+   main_loop: &
+   DO j = 1, n
+   DO i = 1, j
+       !
+       rtmp = A(i,j) - A(j,i)
+       rtmp = rtmp**2
+       !
+       IF ( rtmp > toll_ ) THEN
+          dmat_is_herm = .FALSE. 
+          EXIT main_loop
+       ENDIF
+       !
+   ENDDO
+   ENDDO main_loop
+       
+   RETURN
+END FUNCTION dmat_is_herm
 
 
 !**********************************************************
