@@ -42,7 +42,7 @@
    USE log_module,           ONLY : log_push, log_pop
    USE timing_module,        ONLY : timing
    USE mp,                   ONLY : mp_bcast
-   USE util_module,          ONLY : zmat_herm
+   USE util_module,          ONLY : mat_herm
    USE T_control_module,     ONLY : calculation_type, idir => transport_dir, &
                                     datafile_L, datafile_C, datafile_R
    USE T_hamiltonian_module, ONLY : hamiltonian_allocate, ispin,        &
@@ -174,14 +174,14 @@
    !
    DO ik = 1, blc_00C%nkpts
        !
-       CALL zmat_herm( blc_00C%H(:,:,ik), blc_00C%dim1 )
-       CALL zmat_herm( blc_00C%S(:,:,ik), blc_00C%dim1 )
+       CALL mat_herm( blc_00C%H(:,:,ik), blc_00C%dim1 )
+       CALL mat_herm( blc_00C%S(:,:,ik), blc_00C%dim1 )
        !
-       CALL zmat_herm( blc_00L%H(:,:,ik), blc_00L%dim1 )
-       CALL zmat_herm( blc_00L%S(:,:,ik), blc_00L%dim1 )
+       CALL mat_herm( blc_00L%H(:,:,ik), blc_00L%dim1 )
+       CALL mat_herm( blc_00L%S(:,:,ik), blc_00L%dim1 )
        ! 
-       CALL zmat_herm( blc_00R%H(:,:,ik), blc_00R%dim1 )
-       CALL zmat_herm( blc_00R%S(:,:,ik), blc_00R%dim1 )
+       CALL mat_herm( blc_00R%H(:,:,ik), blc_00R%dim1 )
+       CALL mat_herm( blc_00R%S(:,:,ik), blc_00R%dim1 )
        ! 
    ENDDO
    

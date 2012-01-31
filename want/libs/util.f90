@@ -1025,7 +1025,11 @@ END SUBROUTINE zmat_sv_1
    IF( opb /= 'N' .AND. opb /= 'C' ) &
      CALL errore('zmat_mul','argument value not allowed', 5 )
 
-   IF( k < 20 ) THEN
+   !
+   ! this filter value has to be checked. Here we try to use BLAS
+   ! as much as we can.
+   !
+   IF( k <= 3 ) THEN
        IF( ( opb == 'N' ) .AND. ( opa == 'N' ) ) THEN
            !
            IF ( m > SIZE(c,1) .OR. m > SIZE(a,1) ) CALL  errore('zmat_mul','Invalid C,A',m)
@@ -1110,7 +1114,11 @@ END SUBROUTINE zmat_mul
    IF( opb /= 'N' .AND. opb /= 'T' ) &
      CALL errore('dmat_mul','argument value not allowed ', 5 )
 
-   IF( k < 20 ) THEN
+   !
+   ! this filter value has to be checked. Here we try to use BLAS
+   ! as much as we can.
+   !
+   IF( k <= 3 ) THEN
        IF( ( opb == 'N' ) .AND. ( opa == 'N' ) ) THEN
            !
            IF ( m > SIZE(c,1) .OR. m > SIZE(a,1) ) CALL  errore('dmat_mul','Invalid C,A',m)

@@ -261,7 +261,7 @@ END PROGRAM cmplx_bands
    USE mp,                   ONLY : mp_bcast, mp_sum
    USE mp_global,            ONLY : mpime, nproc
    USE files_module,         ONLY : file_open, file_close
-   USE util_module,          ONLY : mat_hdiag, zmat_herm
+   USE util_module,          ONLY : mat_hdiag
    USE converters_module,    ONLY : cry2cart, cart2cry
    USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nrtot, nr, vr, wr

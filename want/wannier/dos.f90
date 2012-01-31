@@ -276,7 +276,7 @@ END PROGRAM dos_main
    USE mp,                   ONLY : mp_bcast, mp_sum
    USE mp_global,            ONLY : mpime, nproc
    USE files_module,         ONLY : file_open, file_close
-   USE util_module,          ONLY : mat_hdiag, zmat_herm, zmat_is_herm
+   USE util_module,          ONLY : mat_hdiag, mat_herm, mat_is_herm
    USE converters_module,    ONLY : cry2cart, cart2cry
    USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nrtot, vr, wr 
@@ -681,7 +681,7 @@ END PROGRAM dos_main
               CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rham_nn,  &
                                  vkpt_int(:,ik_g), kham)
 
-              IF ( .NOT. zmat_is_herm(dimwann, kham, TOLL=EPS_m8) ) &
+              IF ( .NOT. mat_is_herm(dimwann, kham, TOLL=EPS_m8) ) &
                   CALL errore(subname,'kham not herm',ik)
 
               IF ( lhave_overlap ) THEN
@@ -698,7 +698,7 @@ END PROGRAM dos_main
                   !
                   ! symmetryze the static sgm in order to make it hermitean
                   !
-                  CALL zmat_herm( ksgm, dimwann )
+                  CALL mat_herm( ksgm, dimwann )
                   ! 
                   kham(:,:) = kham(:,:) + ksgm(:,:)
                   !
