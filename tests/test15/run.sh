@@ -87,7 +87,7 @@ case $INPUT in
    (nscf_bulk)      NSCF_BULK=yes ;;
 
    (dft)            SCF=yes ; NSCF=yes ; 
-                    SCF_BULKx1=yes ; NSCF_BULK=yes ;;
+                    SCF_BULK=yes ; NSCF_BULK=yes ;;
 
    (disentangle)    DISENTANGLE=yes ;;
    (wannier)        WANNIER=yes ;;
