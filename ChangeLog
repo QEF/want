@@ -4,7 +4,7 @@
 =======================================================
 
 
-Jan 30 2012     util.f90 updated. (AF)
+Jan 30 2012     util.f90 updated; some calls to utile wrappers renamed. (AF)
 
 Jan 10 2012     bug fixed in libs/files.f90 (tags pointer was not nullified). (AF)
 

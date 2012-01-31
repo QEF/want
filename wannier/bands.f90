@@ -225,7 +225,7 @@ END PROGRAM bands
    USE mp,                   ONLY : mp_bcast, mp_sum
    USE mp_global,            ONLY : mpime, nproc
    USE files_module,         ONLY : file_open, file_close
-   USE util_module,          ONLY : mat_hdiag, zmat_herm
+   USE util_module,          ONLY : mat_hdiag, mat_herm
    USE converters_module,    ONLY : cry2cart, cart2cry
    USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nkpts, nrtot, vr, wr 
@@ -540,7 +540,7 @@ END PROGRAM bands
               !
               ! symmetrize the input static sgm to make it hermitean
               !
-              CALL zmat_herm( ksgm, dimwann )
+              CALL mat_herm( ksgm, dimwann )
               !
               !
               kham(:,:) = kham(:,:) + ksgm(:,:)
