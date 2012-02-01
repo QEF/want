@@ -4,6 +4,14 @@
 =======================================================
 
 
+01 Feb 2012     branch for version 2.4.0 started (v2.4.0 almost release compliant).
+		version number in trunk changed to 2.5.0_alpha1 . Inclusion of
+		phiGEMM (CUDA and GPU) started (thanks also to FIlippo Spiga). (AF)
+
+-------------------------------------------------
+Date: 01 Feb 2012    Version: WanT-2.4.0
+-------------------------------------------------
+
 Jan 30 2012     util.f90 updated; some calls to utile wrappers renamed. (AF)
 
 Jan 10 2012     bug fixed in libs/files.f90 (tags pointer was not nullified). (AF)
