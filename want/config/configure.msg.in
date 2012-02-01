@@ -12,6 +12,9 @@ The following libraries have been found:
   @mass_line@
   @etsf_io_line@
   @netcdf_line@
+  @cuda_line@
+  @phigemm_line@
+  @magma_line@
 
 Please check if that is correct.
 

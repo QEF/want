@@ -7,7 +7,7 @@ cd `echo $0 | sed 's/\(.*\)\/.*/\1/'` # extract pathname
 cd ..  
 #
 TOPDIR=`pwd`
-BINDIR=$TOPDIR/conf
+BINDIR=$TOPDIR/config
 
 DIR_LIST="libs wannier transport utility embed"
 SPECIAL_MODULES="etsf_io  etsf_io_tools  etsf_io_low_level \
