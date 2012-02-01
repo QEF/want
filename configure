@@ -1,7 +1,7 @@
 #! /bin/sh
 #
 # This script is a simple wrapper calling the autoconf configuration
-# script (configure) in conf/
+# script (configure) in config/
 # Dependencies may be also directly generated 
 #
 ##================================================================
@@ -31,7 +31,7 @@ if [ "$auxdir" != "configure" ] ; then cd $auxdir ; fi
 # detect the simplest cases
 #
 case $1 in
-  ("-h" | "--help" )      echo "$MANUAL"     ; ./conf/configure --help ; exit 0 ;;
+  ("-h" | "--help" )      echo "$MANUAL"     ; ./config/configure --help ; exit 0 ;;
 esac
 
 #
@@ -40,19 +40,19 @@ esac
 #
 
 test -e ./make.sys               && rm ./make.sys
-test -e ./conf/make.sys          && rm ./conf/make.sys
-test -e ./conf/configure.msg     && rm ./conf/configure.msg
+test -e ./config/make.sys        && rm ./config/make.sys
+test -e ./config/configure.msg   && rm ./config/configure.msg
 
-./conf/configure $*
+./config/configure $*
 
 #
 # copy make.sys in the home dir
 # and final clean up
 #
-test -e ./conf/make.sys     && mv ./conf/make.sys    .
-test -e config.log          && mv config.log         ./conf/
-test -e config.status       && mv config.status      ./conf/
-test -e configure.msg       && mv configure.msg      ./conf/
+test -e config/make.sys     && mv config/make.sys    .
+test -e config.log          && mv config.log         ./config/
+test -e config.status       && mv config.status      ./config/
+test -e configure.msg       && mv configure.msg      ./config/
 #
 
 exit 0

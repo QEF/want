@@ -6,7 +6,8 @@
 
 01 Feb 2012     branch for version 2.4.0 started (v2.4.0 almost release compliant).
 		version number in trunk changed to 2.5.0_alpha1 . Inclusion of
-		phiGEMM (CUDA and GPU) started (thanks also to FIlippo Spiga). (AF)
+		phiGEMM (CUDA and GPU) started (thanks also to Filippo Spiga). 
+		conf/ directory renamed to config. (AF)
 
 -------------------------------------------------
 Date: 01 Feb 2012    Version: WanT-2.4.0
