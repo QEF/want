@@ -38,10 +38,10 @@ default:
 all: build_date  wannier transport embed utility
 
 deps:
-	if test -x ./conf/makedeps.sh ; then ./conf/makedeps.sh ; fi
+	if test -x ./config/makedeps.sh ; then ./config/makedeps.sh ; fi
 
 build_date:
-	if test -x ./conf/make_build_date.sh ; then ./conf/make_build_date.sh ; fi
+	if test -x ./config/make_build_date.sh ; then ./config/make_build_date.sh ; fi
 
 # 
 # LIBS and MODULES
@@ -106,9 +106,9 @@ wash_plugins:
 
 
 wash : wash_extlibs wash_plugins clean clean_test
-	- /bin/rm -rf make.sys ./conf/configure.msg \
-		./conf/config.log ./conf/config.status \
-		./conf/*.lineno \
+	- /bin/rm -rf make.sys ./config/configure.msg \
+		./config/config.log ./config/config.status \
+		./config/*.lineno \
 		./include/configure.h ./include/fft_defs.h \
 	        ./include/c_defs.h ./include/iotk_config.h \
 		*/dum1 */dum2 
