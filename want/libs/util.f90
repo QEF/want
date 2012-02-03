@@ -14,6 +14,10 @@
   USE kinds
   USE constants, ONLY : ZERO, ONE, CZERO, CONE, CI
   !
+#if defined(__CUDA) && defined(__PHIGEMM)
+  USE phigemm, ONLY : DGEMM => phidgemm , ZGEMM => phizgemm
+#endif
+  !
   IMPLICIT NONE
   PRIVATE
 

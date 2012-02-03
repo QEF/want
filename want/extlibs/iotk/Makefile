@@ -21,7 +21,7 @@ INSTALL_DIR=$(TOPDIR)/extlibs/iotk/tmp
 all: package-ready-stamp
 
 uncompress-stamp:
-	gunzip < $(TARBALL) | ../../conf/missing --run tar xf -
+	gunzip < $(TARBALL) | ../../config/missing --run tar xf -
 	test -d $(INSTALL_DIR) || mkdir $(INSTALL_DIR)
 	touch uncompress-stamp
 

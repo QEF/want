@@ -9,7 +9,7 @@ include ../make.sys
 #
 # MAIN target
 #
-all: libblas liblapack libiotk
+all: libblas liblapack libiotk libphiGEMM
 
 #
 # blas
@@ -48,10 +48,23 @@ libiotk_:
 
 
 #
+# phiGEMM
+#
+libphiGEMM:  libphiGEMM_$(PHIGEMM_LIBS_SWITCH)
+
+libphiGEMM_internal:
+	 if test -d phiGEMM ;  then ( cd phiGEMM;  $(MAKE) ) ; fi
+
+libphiGEMM_external:
+libphiGEMM_:
+
+
+#
 # cleaning
 #
 clean wash:
 	 if test -d blas ;    then ( cd blas;    $(MAKE) $@ ) ; fi
 	 if test -d lapack ;  then ( cd lapack;  $(MAKE) $@ ) ; fi
 	 if test -d iotk ;    then ( cd iotk;    $(MAKE) $@ ) ; fi
+	 if test -d phiGEMM ; then ( cd phiGEMM; $(MAKE) $@ ) ; fi
 
