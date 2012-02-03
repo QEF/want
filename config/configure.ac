@@ -167,6 +167,28 @@ AC_ARG_ENABLE(phigemm,
    [use_phigemm=0])
 
 
+AC_ARG_WITH(cuda_dir,
+   [AS_HELP_STRING([--with-cuda-dir=<path>],
+    [specify CUDA installation directory (default is /usr/local/cuda/)])],
+    [cuda_path="$withval"],
+    [cuda_path="/usr/local/cuda/"])
+
+AC_ARG_WITH(gpu_arch,
+   [AS_HELP_STRING([--with-gpu-arch=<arch>],
+        [specify the GPU target architecture (default: 20)])],
+        [cuda_arch="$withval"],
+        [cuda_arch=20])
+
+AC_ARG_WITH(scalapack,
+   [AS_HELP_STRING([--with-scalapack],
+       [use scalapack if available (default: yes)])],
+   [if  test "$withval" = "yes" ; then
+      with_scalapack=1
+   else
+      with_scalapack=0
+   fi],
+   [with_scalapack=1])
+
 
 # -----------------------------
 # -----------------------------
@@ -1301,9 +1323,9 @@ fi
 
 if test "$have_blas" -eq 0 -o "$use_internal_blas" -eq 1 ; then
     blas_libs="-L$topdir/extlibs/blas/lib -lblas"    #AF
-    blas_libs_switch="internal"
+    blas_switch="internal"
 else
-    blas_libs_switch="external"
+    blas_switch="external"
 fi
 
 # no lapack library found, or incomplete lapack found (atlas, essl),
@@ -1311,16 +1333,16 @@ fi
 
 if test "$have_lapack" -eq 0 -o "$use_internal_lapack" -eq 1 ; then
     lapack_libs="-L$topdir/extlibs/lapack/lib -llapack"
-    lapack_libs_switch="internal"
+    lapack_switch="internal"
 else 
     if test "$have_essl" -eq 1 -o "$have_atlas" -eq 1 ; then
     # IBM essl or atlas: add missing lapack routines - must be loaded after lib
     # atlas: add missing lapack routines so as to complete atlas
     # note that some compilers do not like to have multiple symbols
       lapack_libs="$lapack_libs $topdir/extlibs/lapack/lib/liblapack.a"
-      lapack_libs_switch="internal"
+      lapack_switch="internal"
     else
-      lapack_libs_switch="external"
+      lapack_switch="external"
     fi
 fi
 
@@ -1332,9 +1354,9 @@ echo setting LAPACK_LIBS... $lapack_libs
 if test "$use_internal_iotk" -eq 1 ; then
    iotk_libs="-L$topdir/extlibs/iotk/lib -liotk"
    iotk_include="${imod}$topdir/extlibs/iotk/include"
-   iotk_libs_switch="internal"
+   iotk_switch="internal"
 else
-   iotk_libs_switch="external"
+   iotk_switch="external"
 fi
 #
 echo setting IOTK_LIBS... $iotk_libs
@@ -1708,12 +1730,16 @@ if test "$have_cuda" -eq 1
 then
      
     # Empty inits...
+    # AF
+    cuda_switch="external"
+    #
     magma_include=""
     magma_libs=""
+    magma_switch=""
+    #
     phigemm_include=""
     phigemm_libs=""
-    magma_switch=0
-    phigemm_switch=0
+    phigemm_switch=""
                     
     # GPU architecture
     if  test "$cuda_arch" = "20" ; then
@@ -1732,11 +1758,12 @@ then
     # phiGEMM 
     if test "$use_phigemm" -eq 1  ; then 
     	if test "$have_mkl" -eq 1  ; then
-	        phigemm_switch=1
+	        phigemm_switch="internal"
 	        try_dflags="$try_dflags -D__PHIGEMM"
 	        phigemm_opts="-D__PHIGEMM_WEAK_INTERFACES"	       
-		    phigemm_include="-I$topdir/phiGEMM/include"
-	        phigemm_libs="$topdir/phiGEMM/lib/libphigemm.a "    
+                # AF
+	        phigemm_include="-I$topdir/extlibs/phiGEMM/include"
+	        phigemm_libs="$topdir/extlibs/phiGEMM/lib/libphigemm.a "    
 
 		    if test "$have_mpi" -eq 1 && test "$cudamajor" -eq 4 ; then
 			    phigemm_opts="$phigemm_opts -D__PHIGEMM_PARA"
@@ -1765,7 +1792,7 @@ then
     # try_dflags="$try_dflags -D__CUDA_QE_TIMING"
             
     if test "$use_magma" -eq 1; then
-        magma_switch=1
+        magma_switch="internal"
         magma_include="-I$topdir/magma/include -I$topdir/quark/include"
         magma_libs="$topdir/magma/lib/libmagma.a $topdir/magma/lib/libmagmablas.a $topdir/magma/lib/libmagma.a" 
         try_dflags="$try_dflags -D__MAGMA"
@@ -1835,26 +1862,26 @@ fi
 # 
 if test "$etsf_io_libs" != "" ; then
     use_etsf_io=1
-    etsf_io_libs_switch="external"
+    etsf_io_switch="external"
 fi
 #
 if test "$use_etsf_io" = "1" -a "$etsf_io_libs" = "" ; then
     etsf_io_libs="-L$topdir/plugins/etsf_io/lib -letsf_io"
     etsf_io_include="${imod}$topdir/plugins/etsf_io/include"
-    etsf_io_libs_switch="internal"
+    etsf_io_switch="internal"
 fi
 if test "$use_etsf_io" = "1" ; then try_dflags="$try_dflags -D__ETSF_IO" ; fi
 #
 if test "$netcdf_libs" != "" ; then
     use_netcdf=1
-    netcdf_libs_switch="external"
+    netcdf_switch="external"
 fi
 #
 if test "$use_netcdf" = "1" -a "$netcdf_libs" = "" ; then
     netcdf_libs="-L$topdir/plugins/netcdf/lib -lnetcdf"
     netcdf_include="${imod}$topdir/plugins/netcdf/include"
     #plugins_libs="$plugins_libs libnetcdf"
-    netcdf_libs_switch="internal"
+    netcdf_switch="internal"
 fi
 if test "$use_netcdf" = "1" ; then try_dflags="$try_dflags -D__NETCDF" ; fi
 
@@ -1899,7 +1926,13 @@ else
    scalapack_line="@delete@"
 fi
 lapack_line="LAPACK_LIBS=$lapack_libs"
-fft_line="FFT_LIBS=$fft_libs"
+# AF
+if test "$fft_libs" != "" ; then 
+   fft_line="FFT_LIBS=$fft_libs"
+else
+   fft_line="@delete@" 
+fi
+#
 if test "$mpi_libs" != "" ; then 
    mpi_line="MPI_LIBS=$mpi_libs"
 else 
@@ -1912,6 +1945,11 @@ else
 fi
 
 # AF
+if test "$iotk_libs" != "" ; then
+   iotk_line="IOTK_LIBS=$iotk_libs"
+else
+   iotk_line="@delete@"
+fi
 if test "$etsf_io_libs" != "" ; then
    etsf_io_line="ETSF_IO_LIBS=$etsf_io_libs"
 else
@@ -1922,6 +1960,23 @@ if test "$netcdf_libs" != "" ; then
 else
    netcdf_line="@delete@"
 fi
+# AF
+if test "$have_cuda" -eq 1 ; then 
+   cuda_line="CUDA_LIBS=$cuda_libs"
+else
+   cuda_line="@delete@"
+fi
+if test "$phigemm_libs" != "" ; then 
+   phigemm_line="PHIGEMM_LIBS=$phigemm_libs"
+else
+   phigemm_line="@delete@"
+fi
+if test "$magma_libs" != "" ; then 
+   magma_line="MAGMA_LIBS=$magma_libs"
+else
+   magma_line="@delete@"
+fi
+
 #
 
 
@@ -1940,14 +1995,6 @@ else
 	parallel_report="Configured for compilation of serial executables."
 fi
 
-
-# ??? AF
-if test "$have_cuda" -eq 1; then 
-   cuda_line="CUDA_LIBS=$cuda_libs"
-else
-   cuda_line=""
-   cuda_line="@delete@"
-fi
 
 
 
@@ -1976,9 +2023,9 @@ AC_SUBST(ld)
 AC_SUBST(ldflags)
 AC_SUBST(ld_libs)
 AC_SUBST(blas_libs)
-AC_SUBST(blas_libs_switch)
+AC_SUBST(blas_switch)
 AC_SUBST(lapack_libs)
-AC_SUBST(lapack_libs_switch)
+AC_SUBST(lapack_switch)
 AC_SUBST(fft_libs)
 AC_SUBST(mpi_libs)
 AC_SUBST(mass_libs)
@@ -1997,17 +2044,17 @@ AC_SUBST(mass_line)
 AC_SUBST(parallel_report)
 #
 AC_SUBST(etsf_io_libs)         # <AF>
-AC_SUBST(etsf_io_libs_switch)  # <AF>
+AC_SUBST(etsf_io_switch)       # <AF>
 AC_SUBST(etsf_io_include)      # <AF>
 AC_SUBST(etsf_io_line)         # <AF>
 #
 AC_SUBST(netcdf_libs)          # <AF>
-AC_SUBST(netcdf_libs_switch)   # <AF>
+AC_SUBST(netcdf_switch)        # <AF>
 AC_SUBST(netcdf_include)       # <AF>
 AC_SUBST(netcdf_line)          # <AF>
 #
 AC_SUBST(iotk_libs)            # <AF>
-AC_SUBST(iotk_libs_switch)     # <AF>
+AC_SUBST(iotk_switch)          # <AF>
 AC_SUBST(iotk_include)         # <AF>
 AC_SUBST(iotk_line)            # <AF>
 #
@@ -2018,13 +2065,21 @@ AC_SUBST(cudamajor)
 AC_SUBST(cuda_path)
 AC_SUBST(cuda_include)
 AC_SUBST(cuda_libs)
+AC_SUBST(cuda_switch)
+AC_SUBST(cuda_line)
+#
 AC_SUBST(phigemm_cc)
 AC_SUBST(phigemm_fc)
 AC_SUBST(phigemm_opts)
 AC_SUBST(phigemm_include)
 AC_SUBST(phigemm_libs)
 AC_SUBST(phigemm_switch)
+AC_SUBST(phigemm_line)
+#
+AC_SUBST(magma_include)
+AC_SUBST(magma_libs)
 AC_SUBST(magma_switch)
+AC_SUBST(magma_line)
 AC_SUBST(magma_gpu_target)
 
 AC_CONFIG_HEADERS([include/c_defs.h:include/c_defs.h.in])
@@ -2052,8 +2107,11 @@ fi
 # AF
 # setup for configuring extlibs
 #
-if test "$iotk_libs_switch" = "internal" ; then
+if test "$iotk_switch" = "internal" ; then
    test -e ./extlibs/iotk/configure-stamp && rm ./extlibs/iotk/configure-stamp
+fi
+if test "$use_phigemm" = "1" ; then
+   test -e ./extlibs/phiGEMM/fconfigure-stamp && rm ./extlibs/phiGEMM/configure-stamp
 fi
 # setup for configuring plugins
 #
