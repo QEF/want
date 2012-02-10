@@ -675,6 +675,7 @@ s_psi.o : pwcom.o
 s_psi.o : uspp.o
 s_psi.o : wfc_data.o
 startup.o : io_module.o
+startup.o : ../libs/cuda_env_module.o
 startup.o : ../libs/mp_global.o
 startup.o : ../libs/mp.o
 startup.o : ../libs/timing.o

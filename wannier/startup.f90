@@ -23,6 +23,10 @@
    USE mp,            ONLY : mp_start, mp_env
    USE mp_global,     ONLY : mpime, nproc, root, group, mp_global_start
    !
+#if defined __CUDA
+   USE cuda_env
+#endif
+   !
    IMPLICIT NONE
 
    !
@@ -34,7 +38,11 @@
    !
    ! local variables
    !
-   CHARACTER(9)             :: cdate, ctime
+   CHARACTER(9)        :: cdate, ctime
+   !
+#if defined __OPENMP
+    INTEGER, EXTERNAL  :: omp_get_max_threads
+#endif
       
 !--------------------------------------------------
 
@@ -49,6 +57,14 @@
    !  nproc = number of processors
    !  group = group index
    !  root  = index of the root processor
+
+   !
+   ! GPU/CUDA, phiGEMM
+   !
+#if ( defined __CUDA || defined __PHIGEMM )
+   !CALL selfPhigemmInit()
+   CALL InitCudaEnv()
+#endif
 
    !
    ! IO initializations
@@ -80,12 +96,25 @@
                       TRIM(main_name),TRIM(version) 
        WRITE( stdout, FMT='(2x,"Date ",A9," at ",A9,/ )') cdate, ctime
        !
-       IF ( nproc > 1 ) THEN
-           WRITE( stdout, FMT='(5x,"Parallel run, # proc: ",i4,/ )') nproc
-       ELSE
-           WRITE( stdout, FMT='(5x,"Serial run.",/ )')
-       ENDIF
+#ifdef __PARA
+       WRITE( stdout, '(5x,"Number of MPI processes:    ",i4,/ )') nproc
+#else
+       WRITE( stdout, '(5x,"Serial run.",/ )')
+#endif
        !
+#ifdef __OPENMP
+       WRITE( stdout, '(5X,"Threads/MPI process:        ",i4)' ) &
+            omp_get_max_threads()
+#endif
+       !
+#ifdef __CUDA
+       !
+       WRITE( stdout, '(5X,"Number of GPUs detected:    ",i4)' ) ngpus_detected
+       !
+       WRITE( stdout, '(5X,"Number of GPUs used:        ",i4)' ) ngpus_used
+       !
+#endif
+       WRITE( stdout, "(/)")
    ENDIF
 
    !

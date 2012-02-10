@@ -49,6 +49,13 @@
    CALL log_pop ( )
    IF ( log_alloc ) CALL log_deallocate()
         
+   !
+   ! GPU/CUDA, phiGEMM
+   !
+#if ( defined __CUDA || defined __PHIGEMM )
+   !CALL phiGemmShutdown()
+   CALL CloseCudaEnv()
+#endif
 
    !
    ! shutdown the MPI

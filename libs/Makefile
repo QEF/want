@@ -9,6 +9,7 @@ OBJS= \
 constants.o \
 crystal_io.o \
 crystal_io_base.o \
+cuda_env_module.o \
 date_and_tim.o \
 divide_et_impera.o \
 erf.o \
