@@ -7,6 +7,7 @@ include ../make.sys
 
 OBJS= \
 c_mkdir.o \
+cuda_env.o \
 cptimer.o \
 fft_stick.o \
 gcube2plt.o

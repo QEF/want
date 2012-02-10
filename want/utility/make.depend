@@ -35,6 +35,7 @@ sax2qexml.o : ../libs/qexml.o
 sax2qexml.o : ../libs/timing.o
 sax2qexml.o : ../libs/util.o
 sax2qexml.o : ../wannier/control.o
+sax2qexml.o : ../wannier/ggrids.o
 sax2qexml.o : ../wannier/io_module.o
 sax2qexml.o : ../wannier/version.o
 sum_sgm.o : ../libs/constants.o
