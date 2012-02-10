@@ -78,6 +78,8 @@ MAGMA_INCLUDE       = @magma_include@
 CUDA_LIBS           = @cuda_libs@
 CUDA_LIBS_SWITCH    = @cuda_switch@
 CUDA_INCLUDE        = @cuda_include@
+NVCC                = @nvcc@
+NVCCFLAGS           = @nvccflags@
 
 
 # -----------------------------

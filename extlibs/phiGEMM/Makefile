@@ -13,23 +13,40 @@ TARBALL=../archive/$(PACKAGE)-v1.6.tar.gz
 # redefinitions
 #
 INSTALL_DIR=$(TOPDIR)/extlibs/phiGEMM/tmp
+PARA_FLAGS=$(findstring __PARA,$(DFLAGS) )
+
+#test: set_flags
+#	@echo $(PARA_FLAGS)
+#	@echo $(AUX_FLAGS)
 
 #
 # MAIN target
 #
 all: package-ready-stamp
 
+#
+# manage parallel configure
+#
+ifdef PARA_FLAGS
+set_flags:
+	AUX_FLAGS=--enable-parallel
+else
+set_flags:
+	AUX_FLAGS=
+endif
+
+
 uncompress-stamp:
 	gunzip < $(TARBALL) | ../../config/missing --run tar xf -
 	test -d $(INSTALL_DIR) || mkdir $(INSTALL_DIR)
 	touch uncompress-stamp
 
-configure-stamp: uncompress-stamp
+configure-stamp: uncompress-stamp set_flags
 	if test -d $(PACKAGE) ; then ( cd $(PACKAGE);  \
 		if test -e ./make.inc ; then rm ./make.inc ; fi; \
 		if test -x ./configure ; then ./configure  \
 		--prefix=$(INSTALL_DIR) \
-		--enable-parallel \
+		$(AUX_FLAGS) \
 	        FC="$(F90)" \
 	        CC="mpicc" \
 	        LD="mpicc" \
