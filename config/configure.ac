@@ -1812,7 +1812,11 @@ then
 fi
 
 # Always show CUDA timing (if CUDA is not enable, only GEMM are tracked)    
-try_dflags="$try_dflags -D__CUDA_QE_TIMING"
+if test "$have_cuda" -eq 1
+    try_dflags="$try_dflags -D__CUDA_QE_TIMING"
+else
+    try_dflags="$try_dflags"
+fi
     
 
 # final check on availability of parallel environment
