@@ -62,8 +62,8 @@
    ! GPU/CUDA, phiGEMM
    !
 #if ( defined __CUDA || defined __PHIGEMM )
-   !CALL selfPhigemmInit()
-   CALL InitCudaEnv()
+   CALL selfPhigemmInit()
+   !CALL InitCudaEnv()
 #endif
 
    !

@@ -13,6 +13,8 @@
  *
  */
 
+#ifdef __CUDA
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -357,3 +359,5 @@ void closecudaenv_()
 #endif
 
 }
+
+#endif
