@@ -9,7 +9,7 @@ include ../make.sys
 #
 # MAIN target
 #
-all: libblas liblapack libiotk libphiGEMM
+all: libblas liblapack libiotk libphiGEMM libmagma
 
 #
 # blas
@@ -57,6 +57,18 @@ libphiGEMM_internal:
 
 libphiGEMM_external:
 libphiGEMM_:
+
+
+#
+# magma
+#
+libmagma:  libmagma_$(MAGMA_LIBS_SWITCH)
+
+libmagma_internal:
+	 if test -d magma ;  then ( cd magma;  $(MAKE) ) ; fi
+
+libmagma_external:
+libmagma_:
 
 
 #
