@@ -2093,6 +2093,7 @@ AC_CONFIG_FILES(configure.msg)
 
 AC_CONFIG_FILES(extlibs/install/make_blas.inc)
 AC_CONFIG_FILES(extlibs/install/make_lapack.inc)
+AC_CONFIG_FILES(extlibs/install/make_magma.inc) # AF
 AC_CONFIG_FILES(extlibs/install/make_iotk.inc)  # AF
 
 
