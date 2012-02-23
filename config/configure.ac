@@ -1813,6 +1813,7 @@ fi
 
 # Always show CUDA timing (if CUDA is not enable, only GEMM are tracked)    
 if test "$have_cuda" -eq 1
+then
     try_dflags="$try_dflags -D__CUDA_QE_TIMING"
 else
     try_dflags="$try_dflags"
