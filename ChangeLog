@@ -4,6 +4,9 @@
 =======================================================
 
 
+23 Feb 2012     qexml.f90 changed to allow postprocessing of CP runs. 
+		Inclusion of magma libs started. (AF)
+
 10 Feb 2012     CUDA implementation compiling and running, but still crashing. (AF)
 
 01 Feb 2012     branch for version 2.4.0 started (v2.4.0 almost release compliant).

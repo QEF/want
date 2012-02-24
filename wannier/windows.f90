@@ -656,7 +656,7 @@ CONTAINS
        CHARACTER(*),      INTENT(in) :: filefmt
        CHARACTER(16)      :: subname="windows_read_ext"
        CHARACTER(nstrx)   :: str
-       INTEGER            :: lnkpts, ierr, ik
+       INTEGER            :: lnkpts, ierr, ik, ierr_loc
        REAL(dbl)          :: lefermi(2)
        REAL(dbl), ALLOCATABLE :: leig(:,:,:)
        !
@@ -676,10 +676,13 @@ CONTAINS
        !
        CASE ( 'qexml' )
             !
-            IF ( ionode ) &
-            CALL qexml_read_bands_info( NBND=nbnd, NUM_K_POINTS=lnkpts, &
-                                        NSPIN=nspin, EF=lefermi, &
-                                        NELEC=nelec, IERR=ierr )
+            IF ( ionode ) THEN
+                !
+                CALL qexml_read_bands_info( NBND=nbnd, NUM_K_POINTS=lnkpts, &
+                                            NSPIN=nspin, EF=lefermi, &
+                                            NELEC=nelec, IERR=ierr )
+                !
+            ENDIF
             !
             CALL mp_bcast( nbnd,    ionode_id )
             CALL mp_bcast( lnkpts,  ionode_id )
@@ -690,12 +693,10 @@ CONTAINS
             !
        CASE ( 'pw_export' )
             !
+            IF ( ionode ) &
             CALL qexpt_read_bands( NBND=nbnd, NUM_K_POINTS=lnkpts, &
                                    NSPIN=nspin, EF=lefermi(1), &
                                    NELEC=nelec, IERR=ierr )
-            !
-            ! 2 fermi energies not allowed
-            lefermi(2) = lefermi(1)
             !
             CALL mp_bcast( nbnd,    ionode_id )
             CALL mp_bcast( lnkpts,  ionode_id )
@@ -703,6 +704,9 @@ CONTAINS
             CALL mp_bcast( lefermi, ionode_id )
             CALL mp_bcast( nelec,   ionode_id )
             CALL mp_bcast( ierr,    ionode_id )
+            !
+            ! 2 fermi energies not allowed
+            lefermi(2) = lefermi(1)
             !
        CASE ( 'etsf_io' )
             !

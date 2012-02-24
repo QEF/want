@@ -2680,14 +2680,17 @@ CONTAINS
       CALL iotk_scan_dat  ( iunit, "NUMBER_OF_BANDS", nbnd_, IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_dat  ( iunit, "NUMBER_OF_K-POINTS", num_k_points_, IERR=ierr )
+      CALL iotk_scan_dat  ( iunit, "NUMBER_OF_K-POINTS", num_k_points_, FOUND=lfound, IERR=ierr )
       IF (ierr/=0) RETURN
+      IF ( .NOT. lfound ) num_k_points_ = 1
       !
       CALL iotk_scan_dat  ( iunit, "NUMBER_OF_SPIN_COMPONENTS", nspin_, IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_dat  ( iunit, "NON-COLINEAR_CALCULATION", noncolin_, IERR=ierr )
-      IF (ierr/=0) RETURN
+      IF ( PRESENT (noncolin) ) THEN
+          CALL iotk_scan_dat  ( iunit, "NON-COLINEAR_CALCULATION", noncolin_, IERR=ierr )
+          IF (ierr/=0) RETURN
+      ENDIF
       !
       CALL iotk_scan_dat  ( iunit, "NUMBER_OF_ATOMIC_WFC", natomwfc_, IERR=ierr )
       IF (ierr/=0) RETURN
@@ -2695,33 +2698,43 @@ CONTAINS
       CALL iotk_scan_dat  ( iunit, "NUMBER_OF_ELECTRONS", nelec_, IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_empty( iunit, "UNITS_FOR_K-POINTS", ATTR = attr, IERR=ierr )
-      IF (ierr/=0) RETURN
-      CALL iotk_scan_attr ( attr,   "UNITS", k_units_, IERR=ierr )
-      IF (ierr/=0) RETURN
+      IF ( PRESENT( k_units ) ) THEN
+          CALL iotk_scan_empty( iunit, "UNITS_FOR_K-POINTS", ATTR = attr, IERR=ierr )
+          IF (ierr/=0) RETURN
+          CALL iotk_scan_attr ( attr,   "UNITS", k_units_, IERR=ierr )
+          IF (ierr/=0) RETURN
+      ENDIF
       !
-      CALL iotk_scan_empty( iunit, "UNITS_FOR_ENERGIES", ATTR = attr, IERR=ierr )
-      IF (ierr/=0) RETURN
-      CALL iotk_scan_attr ( attr,   "UNITS", energy_units_, IERR=ierr )
-      IF (ierr/=0) RETURN
+      IF ( PRESENT( energy_units ) ) THEN
+          CALL iotk_scan_empty( iunit, "UNITS_FOR_ENERGIES", ATTR = attr, IERR=ierr )
+          IF (ierr/=0) RETURN
+          CALL iotk_scan_attr ( attr,   "UNITS", energy_units_, IERR=ierr )
+          IF (ierr/=0) RETURN
+      ENDIF
       !
       CALL iotk_scan_dat  ( iunit, "TWO_FERMI_ENERGIES", two_fermi_energies , FOUND=lfound, IERR=ierr )
       IF (ierr/=0) RETURN
       IF (.NOT. lfound ) two_fermi_energies=.FALSE.
       !
-      IF ( .NOT. two_fermi_energies ) THEN
+      IF ( PRESENT(ef) ) THEN
           !
-          CALL iotk_scan_dat  ( iunit, "FERMI_ENERGY", ef_(1) , IERR=ierr )
-          IF (ierr/=0) RETURN
-          !
-          ef_(2) = ef_(1)
-          !
-      ELSE
-          !
-          CALL iotk_scan_dat  ( iunit, "FERMI_ENERGY_UP", ef_(1) , IERR=ierr )
-          IF (ierr/=0) RETURN
-          CALL iotk_scan_dat  ( iunit, "FERMI_ENERGY_DOWN", ef_(2) , IERR=ierr )
-          IF (ierr/=0) RETURN
+          IF ( .NOT. two_fermi_energies ) THEN
+              !
+              CALL iotk_scan_dat  ( iunit, "FERMI_ENERGY", ef_(1), FOUND=lfound, IERR=ierr )
+              IF (ierr/=0) RETURN
+              !
+              IF ( .NOT. lfound ) ef_(1) = 0.0d0
+              !
+              ef_(2) = ef_(1)
+              !
+          ELSE
+              !
+              CALL iotk_scan_dat  ( iunit, "FERMI_ENERGY_UP", ef_(1) , IERR=ierr )
+              IF (ierr/=0) RETURN
+              CALL iotk_scan_dat  ( iunit, "FERMI_ENERGY_DOWN", ef_(2) , IERR=ierr )
+              IF (ierr/=0) RETURN
+              !
+          ENDIF
           !
       ENDIF
       !
