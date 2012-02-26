@@ -7,7 +7,7 @@ include ../../make.sys
 
 LIBNAME=libmagma.a
 PACKAGE=magma
-TARBALL=../archive/$(PACKAGE)-1.1.Y.tar.gz
+TARBALL=../archive/$(PACKAGE)_1.1.Y.tar.gz
 
 #
 # redefinitions
@@ -27,13 +27,12 @@ uncompress-stamp:
 	test -d $(INSTALL_DIR) || mkdir $(INSTALL_DIR)
 	touch uncompress-stamp
 
-configure-stamp: uncompress-stamp set_flags
+configure-stamp: uncompress-stamp
 	if test -d $(PACKAGE) ; then ( cd $(PACKAGE);  \
-		if test -e ./make.inc ; then rm ./make.inc ; fi \
-		if test -e ../../install/make_magma.inc ; \
-			then cp ../../install/make_magma.inc ./make.inc ; fi \
-		); \
-	fi
+		if test -e ./make.inc ; then rm ./make.inc ; fi; \
+		if test -e ../../install/make_magma.inc ; then \
+			cp ../../install/make_magma.inc ./make.inc ; fi; ) \
+	 	fi
 	touch configure-stamp
 
 	        #CFLAGS="-O3 --compiler-options '-fPIC'" \
