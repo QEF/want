@@ -17,6 +17,12 @@
 #if defined(__CUDA) && defined(__PHIGEMM)
   USE phigemm, ONLY : DGEMM => phidgemm , ZGEMM => phizgemm
 #endif
+!
+#if defined(__CUDA) && defined(__MAGMA)
+  USE magma
+  USE iso_c_binding
+  USE cuda_mem_alloc
+#endif
   !
   IMPLICIT NONE
   PRIVATE
@@ -577,6 +583,7 @@ END SUBROUTINE
    IF (ierr/=0)  CALL errore('dmat_svd','allocating work',ABS(ierr))
 
 
+   ! use magma if possible
    CALL DGESVD('A','A', m, n, atmp, m, s, u, SIZE(u,1), vt, SIZE(vt,1), &
                 work, lwork, info)
 
@@ -652,6 +659,7 @@ END SUBROUTINE dmat_svd
    IF (ierr/=0)  CALL errore('zmat_svd','allocating work',ABS(ierr))
 
 
+   ! use magma if possible
    CALL ZGESVD('A','A', m, n, atmp, m, s, u, SIZE(u,1), vt, SIZE(vt,1), &
                 work, lwork, rwork, info)
 
@@ -702,6 +710,7 @@ END SUBROUTINE zmat_svd
    ! make a local copy of a
    atmp(:,:) = a(1:n,1:n) 
 
+   ! use magma if possible
    CALL DGESV( n, nrhs, atmp, n, ipiv, b, SIZE(b,1), info)
 
    IF ( PRESENT(ierr) ) THEN
@@ -826,6 +835,8 @@ END SUBROUTINE dmat_sv_1
    info   =  0
    lwork  = -1
    !
+   ! use magma if possible
+   ! get proper dimensions here
    CALL DGELSD( m, n, nrhs, atmp, m, b, SIZE(b,1), sv_, rcond, rank_, &
                 workl, lwork, iwork, info)
    !
@@ -839,6 +850,7 @@ END SUBROUTINE dmat_sv_1
    atmp(:,:) = a(1:m,1:n) 
 
    !
+   ! use magma if possible
    CALL DGELSD( m, n, nrhs, atmp, m, b, SIZE(b,1), sv_, rcond, rank_, &
                 work, lwork, iwork, info)
 
@@ -953,6 +965,7 @@ END SUBROUTINE dmat_lsd_1
    ! make a local copy of a
    atmp(:,:) = a(1:n,1:n) 
 
+   ! use magma if possible
    CALL ZGESV( n, nrhs, atmp, n, ipiv, b, SIZE(b,1), info)
 
    IF ( PRESENT(ierr) ) THEN
@@ -1231,6 +1244,7 @@ END SUBROUTINE dmat_mul
    ENDDO
    ENDDO
 
+   ! use magma if possible
    CALL ZHPEVX( 'v', 'a', 'u', n, ap, ZERO, ZERO, 0, 0, -ONE, i, w, &
                  z, SIZE(z,1), work, rwork, iwork, ifail, info )
 
@@ -1280,6 +1294,7 @@ END SUBROUTINE zmat_hdiag
    ALLOCATE( iwork(5*n), STAT=ierr )
       IF(ierr/=0) CALL errore('zmat_hdiag','allocating iwork',ABS(ierr))
 
+   ! use magma if possible
    CALL ZHPEVX( 'v', 'a', uplo, n, ap, ZERO, ZERO, 0, 0, -ONE, i, w, &
                  z, SIZE(z,1), work, rwork, iwork, ifail, info )
 
@@ -1345,6 +1360,7 @@ END SUBROUTINE zmat_hdiag_pack
    ENDDO
    ENDDO
 
+   ! use magma if possible
    CALL ZHPGVX( 1, 'v', 'a', 'u', n, ap, bp, ZERO, ZERO, 0, 0, -ONE, i, w, &
                  z, SIZE(z,1), work, rwork, iwork, ifail, info )
 
@@ -1399,6 +1415,7 @@ END SUBROUTINE zmat_hdiag_gen
    ENDDO
    ENDDO
 
+   ! use magma if possible
    CALL DSPEVX( 'v', 'a', 'u', n, ap(1), ZERO, ZERO, 0, 0, -ONE, i, w(1), &
                  z(1,1), SIZE(z,1), work(1), iwork(1), ifail(1), info )
 
@@ -1448,6 +1465,7 @@ END SUBROUTINE dmat_hdiag
    IF(ierr/=0) CALL errore(subname,'allocating iwork',ABS(ierr))
 
 
+   ! use magma if possible
    CALL DSBEVX( 'v', 'a', 'u', n, kd, ab, ldab, qmat, SIZE(qmat,1), 0, 0, 0, 0, ZERO, &
                  m, w, z, SIZE(z,1), work, iwork, ifail, info )
 
@@ -1500,6 +1518,7 @@ END SUBROUTINE dmat_bnd_hdiag
    IF(ierr/=0) CALL errore(subname,'allocating iwork',ABS(ierr))
 
 
+   ! use magma if possible
    CALL DSBEVX( 'v', 'i', 'u', n, kd, ab, ldab, qmat, SIZE(qmat,1), 0, 0, il, iu, ZERO, &
                  m, w, z, SIZE(z,1), work, iwork, ifail, info )
 
@@ -1566,6 +1585,7 @@ END SUBROUTINE dmat_bnd_hdiag_ext
 
    a_(1:n,1:n) = a(1:n,1:n)
 
+   ! use magma if possible
    CALL ZGEEV( jobvl, jobvr, n, a_, SIZE(a_,1), w, vl, n, vr, n, work, &
                lwork, rwork, info )
 
@@ -1619,6 +1639,7 @@ END SUBROUTINE zmat_diag
    ! perform matrix inversion according to LAPACK
    !
    ! First get the optimum LWORK
+   ! check with the use of magma
    !
    nb = ILAENV( 1, 'ZGETRI', ' ', n, -1, -1, -1 )
    !
@@ -1628,6 +1649,7 @@ END SUBROUTINE zmat_diag
    IF ( ierr_/=0 ) CALL errore ('zmat_inv', 'allocating work', ABS (ierr_) )
    ! 
    !
+   ! use magma if possible
    CALL ZGETRF (n, n, z, ldz, ipiv, info)
    !
    IF ( PRESENT(ierr) ) THEN
@@ -1653,6 +1675,7 @@ END SUBROUTINE zmat_diag
       !
    ENDIF
    !
+   ! use magma if possible
    CALL ZGETRI (n, z, ldz, ipiv, work, lwork, info)
    !
    IF ( PRESENT(ierr) ) THEN
@@ -1717,6 +1740,7 @@ END SUBROUTINE zmat_inv
        z(i,i) = CONE
    ENDDO
    !
+   ! use magma if possible
    CALL ZGBSV (n, kl, ku, n, ab, ldab, ipiv, z, ldz, info)
 
 
@@ -1793,6 +1817,7 @@ END SUBROUTINE zmat_bnd_inv
    ! perform matrix inversion according to LAPACK
    !
    ! First get the optimum LWORK
+   ! check with magma
    !
    nb = ILAENV( 1, 'DGETRI', ' ', n, -1, -1, -1 )
    lwork = n * nb
@@ -1802,6 +1827,7 @@ END SUBROUTINE zmat_bnd_inv
    IF ( ierr_/=0 ) CALL errore ('dmat_inv', 'allocating work', ABS(ierr_) )
    ! 
    !
+   ! use magma if possible
    CALL DGETRF (n, n, z, ldz, ipiv, info)
    !
    IF ( PRESENT(ierr) ) THEN
@@ -1819,14 +1845,15 @@ END SUBROUTINE zmat_bnd_inv
    ! compute the determinan if required
    !
    IF ( PRESENT( det_a ) ) THEN
-      !
-      det_a = ONE
-      DO i = 1, n
-         det_a = det_a * z(i,i)
-      ENDDO
-      !
+       !
+       det_a = ONE
+       DO i = 1, n
+          det_a = det_a * z(i,i)
+       ENDDO
+       !
    ENDIF
    !
+   ! use magma if possible
    CALL DGETRI (n, z, ldz, ipiv, work, lwork, info)
    !
    IF ( PRESENT(ierr) ) THEN

@@ -41,13 +41,14 @@ configure-stamp: uncompress-stamp
 	
 package-ready-stamp: uncompress-stamp configure-stamp
 	if test -d $(PACKAGE) ; then \
-	( cd $(PACKAGE);  $(MAKE) all ) ; fi
+	( cd $(PACKAGE);  $(MAKE) lib ) ; fi
 	#
 	if test -d ./lib      ; then rm -rf ./lib      ; fi    ; mkdir ./lib ;
 	if test -d ./include  ; then rm -rf ./include  ; fi    ; mkdir ./include ;
 	#mv $(PACKAGE)/lib/lib*  ./lib ;
 	cp $(PACKAGE)/lib/lib*  ./lib ;
-	cp $(PACKAGE)/include/* ./include ;
+	cp $(PACKAGE)/include/*.h ./include ;
+	cp $(PACKAGE)/include/*.mod ./include ;
 	#if test -d ./bin      ; then rm -rf ./bin      ; fi    ; mkdir ./bin ;
 	#mv $(PACKAGE)/src/*.x ./bin ;
 	#
