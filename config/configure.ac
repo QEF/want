@@ -1793,8 +1793,9 @@ then
             
     if test "$use_magma" -eq 1; then
         magma_switch="internal"
-        magma_include="-I$topdir/magma/include -I$topdir/quark/include"
-        magma_libs="$topdir/magma/lib/libmagma.a $topdir/magma/lib/libmagmablas.a $topdir/magma/lib/libmagma.a" 
+        # AF
+        magma_include="-I$topdir/extlibs/magma/include -I$topdir/quark/include"
+        magma_libs="$topdir/extlibs/magma/lib/libmagma.a $topdir/extlibs/magma/lib/libmagmablas.a $topdir/extlibs/magma/lib/libmagma.a" 
         try_dflags="$try_dflags -D__MAGMA"
         
         # new MAGMA (1.1.0) requires this flag...
