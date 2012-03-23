@@ -365,10 +365,10 @@
                IF ( ionode ) THEN
                    !
                    IF ( use_condmin ) THEN 
-                       WRITE( stdout,"(/,2x,'Iteration = ',i5,3x, &
+                       WRITE( stdout,"(/,2x,'Iteration = ',i7,3x, &
                                & '(condit. minim, A = ',f9.4,' )')") ncount, a_condmin
                    ELSE
-                       WRITE( stdout,"(/,2x,'Iteration = ',i5) ") ncount
+                       WRITE( stdout,"(/,2x,'Iteration = ',i7) ") ncount
                    ENDIF
                    !
                    CALL localization_print(stdout, FMT="standard" )
@@ -429,7 +429,7 @@
           CALL write_header( stdout, "Convergence Achieved" )
       ENDIF
       !
-      IF (ionode) WRITE( stdout, "(/,2x,'Iteration # : ',i5,/)") ncount
+      IF (ionode) WRITE( stdout, "(/,2x,'Iteration # : ',i7,/)") ncount
 
 
       !
