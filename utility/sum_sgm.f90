@@ -370,25 +370,24 @@ PROGRAM sum_sgm
    DEALLOCATE( sgm, sgm_aux, STAT=ierr )
    IF (ierr/=0) CALL errore(subname, "deallocating sgm, sgm_aux", ierr)
 
-CONTAINS
-
-!*************************************************
-SUBROUTINE errore(routine, msg, ierr)
-   !*************************************************
-   IMPLICIT NONE
-   CHARACTER(*),    INTENT(in) :: routine, msg
-   INTEGER,         INTENT(in) :: ierr
-
-   !
-   WRITE( UNIT = 0, FMT = '(/,1X,78("*"))')
-   WRITE( UNIT = 0, &
-          FMT = '(5X,"from ",A," : error #",I10)' ) routine, ierr
-   WRITE( UNIT = 0, FMT = '(5X,A)' ) msg
-   WRITE( UNIT = 0, FMT = '(1X,78("*"),/)' )
-   !
-   STOP
-   RETURN
-END SUBROUTINE errore
-
 END PROGRAM sum_sgm
+
+!!*************************************************
+!SUBROUTINE errore(routine, msg, ierr)
+!   !*************************************************
+!   IMPLICIT NONE
+!   CHARACTER(*),    INTENT(in) :: routine, msg
+!   INTEGER,         INTENT(in) :: ierr
+!
+!   !
+!   WRITE( UNIT = 0, FMT = '(/,1X,78("%"))')
+!   WRITE( UNIT = 0, &
+!          FMT = '(5X,"from ",A," : error #",I10)' ) routine, ierr
+!   WRITE( UNIT = 0, FMT = '(5X,A)' ) msg
+!   WRITE( UNIT = 0, FMT = '(1X,78("%"),/)' )
+!   !
+!   STOP
+!   RETURN
+!END SUBROUTINE errore
+
 
