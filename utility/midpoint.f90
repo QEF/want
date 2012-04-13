@@ -26,7 +26,8 @@
    !                             $work_dir/$prefix.export/index.xml
    !      output_fmt       the fmt used to write the found midbond positions on output
    !                       ( "angstrom" | "bohr" | "alat" | "crystal" )
-   !      rcut             cutoff radius: bonds which are longer of rcut [Ang] are deleted
+   !      rcut             cutoff radius: bonds which are longer than rcut [Ang] are deleted
+   !      rcut_inf         lower bound cutoff radius: bonds which are shorter then rcut_inf [Ang] are deleted
    !      toll             the tolerance on bond length used to distinguish between
    !                       nearest and next nearest neigbors. (given in percentage on the
    !                       bond length)
@@ -52,11 +53,11 @@
    ! input variables
    !
    CHARACTER( 20 )  :: output_fmt    ! ( "angstrom" | "bohr" | "alat" | "crystal" )
-   REAL(dbl)        :: toll, rcut
+   REAL(dbl)        :: toll, rcut, rcut_inf
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, work_dir, output_fmt, toll, rcut
+   NAMELIST /INPUT/ prefix, work_dir, output_fmt, toll, rcut, rcut_inf
 
    !
    ! local variables
@@ -92,6 +93,7 @@
       work_dir                    = './'
       output_fmt                  = 'angstrom'
       rcut                        = 5.0     ! [Ang]
+      rcut_inf                    = 0.0     ! [Ang]
       toll                        = 0.10
       
 
@@ -110,12 +112,17 @@
 
       IF ( toll < 0.0 ) CALL errore('midpoint','invalid toll',3)
       IF ( rcut < 0.0 ) CALL errore('midpoint','invalid rcut',4)
+      !
+      IF ( rcut_inf < 0.0 )   CALL errore('midpoint','invalid rcut_inf',4)
+      IF ( rcut_inf > rcut )  CALL errore('midpoint','rcut_inf too large',4)
 
       !
       ! convert rcut to bohr
       ! to be consistent with internal units
       !
-      rcut = rcut / bohr
+      rcut     = rcut / bohr
+      rcut_inf = rcut_inf / bohr
+
 
 !
 ! Getting DFT data
@@ -138,9 +145,10 @@
       !
       CALL write_header( stdout, "Computing mid points of bonds" )
       !
-      WRITE( stdout,"(  2x,'      Output fmt :',3x,a)") TRIM(output_fmt)
-      WRITE( stdout,"(  2x,'  Bond len. toll :',3x,f9.4)") toll
-      WRITE( stdout,"(  2x,'   Cutoff radius :',3x,f9.4,' [Ang]')") rcut * bohr
+      WRITE( stdout,"(  2x,'       Output fmt :',3x,a)") TRIM(output_fmt)
+      WRITE( stdout,"(  2x,'   Bond len. toll :',3x,f9.4)") toll
+      WRITE( stdout,"(  2x,'Sup Cutoff radius :',3x,f9.4,' [Ang]')") rcut * bohr
+      WRITE( stdout,"(  2x,'Inf Cutoff radius :',3x,f9.4,' [Ang]')") rcut_inf * bohr
       WRITE( stdout,"(/)")
       !
       CALL flush_unit( stdout )
@@ -219,7 +227,7 @@
              !
              aux = DOT_PRODUCT( vect(:), vect(:) )
              !
-             IF ( aux < length(ipair) .AND. aux > EPS_m2 .AND. aux < rcut**2 ) THEN
+             IF ( aux < length(ipair) .AND. aux > EPS_m2 .AND. aux > rcut_inf**2 .AND. aux < rcut**2) THEN
                  !
                  length( ipair )        = aux
                  pair_is_valid( ipair ) = .TRUE.
@@ -287,7 +295,7 @@
               ! check whether we found a "good" bond
               !
               IF ( aux <= MIN ( length( ipair )*( ONE+toll ) , rcut**2 ) .AND. &
-                   aux > EPS_m2 ) THEN
+                   aux > EPS_m2 .AND. aux > rcut_inf**2 ) THEN
                  !
                  ALLOCATE( current, STAT=ierr)
                  IF ( ierr/=0 ) CALL errore('midpoint','allocating current',ABS(ierr))
