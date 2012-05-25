@@ -1690,8 +1690,10 @@ CONTAINS
       CALL iotk_scan_dat( iunit, "BRAVAIS_LATTICE", bravais_latt_, IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
-      CALL iotk_scan_dat( iunit, "CELL_SYMMETRY", symm_type_, IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
+      IF ( PRESENT(symm_type) ) THEN
+          CALL iotk_scan_dat( iunit, "CELL_SYMMETRY", symm_type, IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+      ENDIF
       !
       CALL iotk_scan_dat( iunit, "LATTICE_PARAMETER", alat_, ATTR=attr, IERR=ierr )
       IF (ierr/=0) RETURN
@@ -1739,7 +1741,6 @@ CONTAINS
       !
       ! 
       IF ( PRESENT(bravais_latt) )  bravais_latt = bravais_latt_
-      IF ( PRESENT(celldm) )        symm_type    = symm_type_
       IF ( PRESENT(symm_type) )     celldm       = celldm_
       IF ( PRESENT(alat) )          alat         = alat_
       IF ( PRESENT(a1) )            a1           = a1_
