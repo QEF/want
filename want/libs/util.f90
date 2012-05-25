@@ -15,13 +15,25 @@
   USE constants, ONLY : ZERO, ONE, CZERO, CONE, CI
   !
 #if defined(__CUDA) && defined(__PHIGEMM)
-  USE phigemm, ONLY : DGEMM => phidgemm , ZGEMM => phizgemm
+  USE phigemm,            ONLY : DGEMM => phidgemm , ZGEMM => phizgemm
 #endif
 !
 #if defined(__CUDA) && defined(__MAGMA)
-  USE magma
+  USE magma,              ONLY : DGESVD => magmaf_dgesvd, &
+                                 ZGESVD => magmaf_zgesvd, &
+                                 DGESV  => magmaf_dgesv,  &
+                                 !ZGBSV  => magmaf_zgbsv,  &
+                                 !DGELSD => magmaf_dgelsd, &
+                                 ZGEEV  => magmaf_zgeev,  &
+                                 !ZHPEVX => magmaf_zhpevx, &
+                                 !DSPEVX => magmaf_dspevx, &
+                                 !DSBEVX => magmaf_dsbevx, &
+                                 DGETRF => magmaf_dgetrf, &
+                                 !DGETRI => magmaf_dgetri, &
+                                 ZGETRF => magmaf_zgetrf!, &
+                                 !ZGETRI => magmaf_zgetri
   USE iso_c_binding
-  USE cuda_mem_alloc
+!  USE cuda_mem_alloc
 #endif
   !
   IMPLICIT NONE
