@@ -4,6 +4,8 @@
 =======================================================
 
 
+25 May 2012     qexml.f90 updated to deal with QE-5.0 (CELL_SYMMETRY now optional). (AF)
+
 13 Apr 2012     midpoint.f90 generalized to deal with lower bound cutoff. (AF)
 
 23 Feb 2012     qexml.f90 changed to allow postprocessing of CP runs. 
