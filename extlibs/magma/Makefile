@@ -46,7 +46,7 @@ package-ready-stamp: uncompress-stamp configure-stamp
 	if test -d ./lib      ; then rm -rf ./lib      ; fi    ; mkdir ./lib ;
 	if test -d ./include  ; then rm -rf ./include  ; fi    ; mkdir ./include ;
 	#mv $(PACKAGE)/lib/lib*  ./lib ;
-	cp $(PACKAGE)/lib/lib*  ./lib ;
+	cp $(PACKAGE)/lib*a   ./lib ;
 	cp $(PACKAGE)/include/*.h ./include ;
 	cp $(PACKAGE)/include/*.mod ./include ;
 	#if test -d ./bin      ; then rm -rf ./bin      ; fi    ; mkdir ./bin ;
