@@ -1,8 +1,0 @@
-&INPUTPP
-  prefix='copper_US'
-  outdir='./SCRATCH'
-  pseudo_dir = '../pseudo/'
-  psfile(1) = 'Cu.pbe-d-rrkjus.UPF'
-  single_file = .FALSE.
-  ascii = .FALSE.
-/

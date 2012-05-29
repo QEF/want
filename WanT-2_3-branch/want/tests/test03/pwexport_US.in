@@ -1,9 +1,0 @@
-&inputpp
-  prefix='benzene_US'
-  outdir='./SCRATCH'
-  pseudo_dir = '../pseudo/'
-  psfile(1) = 'C.pbe-van_bm.UPF'
-  psfile(2) = 'H.pbe-van_bm.UPF'
-  single_file = .FALSE.
-  ascii = .FALSE.
-/

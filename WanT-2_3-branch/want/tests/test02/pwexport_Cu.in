@@ -1,8 +1,0 @@
-&INPUTPP
-  prefix='copper'
-  outdir='./SCRATCH'
-  pseudo_dir = '../pseudo/'
-  psfile(1) = 'Cu.pw91-cpi.UPF'
-  single_file = .FALSE.
-  ascii = .FALSE.
-/

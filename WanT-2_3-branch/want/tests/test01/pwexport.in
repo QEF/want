@@ -1,7 +1,0 @@
-&inputpp
-  prefix='silicon'
-  outdir='./SCRATCH/'
-  pseudo_dir='../pseudo/'
-  psfile(1)='Si.vbc.UPF'
-  single_file= .FALSE.
-/

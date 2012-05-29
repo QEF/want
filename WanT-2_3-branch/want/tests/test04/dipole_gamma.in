@@ -1,6 +1,0 @@
-
-  &INPUTPP
-     prefix='guanine_gamma'
-     outdir='./SCRATCH'
-  /
-

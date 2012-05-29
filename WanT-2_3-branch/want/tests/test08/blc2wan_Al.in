@@ -1,9 +1,0 @@
-
-&INPUT
-   prefix = 'al1'
-   postfix = '_WanT'
-   work_dir = './SCRATCH/'
-   filein = "sigma_Al.xml"
-   fileout = "./SCRATCH/sigma_Al.wan.dat"
-   binary = .FALSE.
-/

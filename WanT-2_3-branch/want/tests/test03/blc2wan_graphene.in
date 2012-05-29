@@ -1,9 +1,0 @@
-
-&INPUT
-   prefix = 'graphene'
-   postfix = '_WanT'
-   work_dir = './SCRATCH/'
-   filein = "sigma_graphene.xml"
-   fileout = "./SCRATCH/sigma_graphene.wan.dat"
-   binary = .TRUE.
-/

@@ -1,7 +1,0 @@
-
-&INPUTPP
-  prefix='chain4'
-  outdir='./SCRATCH/LEADS/'
-  pseudo_dir = '../pseudo/'
-  psfile(1) = 'C.pbe-van_bm.UPF'
-/

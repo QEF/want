@@ -1,5 +1,0 @@
-&inputpp
-  prefix='nichain'
-  outdir='./SCRATCH'
-  filpdos='./SCRATCH/nichain'
-/

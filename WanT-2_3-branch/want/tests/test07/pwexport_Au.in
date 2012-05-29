@@ -1,8 +1,0 @@
-&inputpp
-  prefix='gold'
-  outdir='./SCRATCH/'
-  pseudo_dir = '../pseudo/'
-  psfile(1) = 'Au11pw91.mt.UPF'
-  single_file = .FALSE.
-  ascii = .FALSE.
-/
