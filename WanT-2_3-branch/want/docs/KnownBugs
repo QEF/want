@@ -1,0 +1,54 @@
+
+****************************************
+ List of the known bugs
+****************************************
+
+
+* g95 (gcc version 4.0.3 (g95 0.92!) Jun 25 2009)
+  on OSX seems to miscompile iotk when all the kinds are included.
+  Reducing the kinds everything goes smooth.
+  #
+  STATUS: workarounded
+
+* gfortran (gcc 4.3.3) miscompiles etsf-io
+  #
+  STATUS: unsolved
+
+* XLF90: runtime, the compiler complains when reading namelists with
+  arrays written with blanks:
+    var( 3 ) = xxx        does not work
+    var(3) = xxx          works
+  #
+  STATUS: unsolved
+
+* G95: at least ultil Apr 2006, G95 with debug options
+  (-g -fbounds-check -ftrace=full) is known to miscompile the 
+  internal lapack & blas libraries distributed with WanT.
+  Older versions of the compiler (last check Sep 2005) get
+  a broken test08 (NaN apper without any reason). Fixed in newer
+  versions of the compiler.
+  #
+  STATUS: unsolved (for old compiler versions)
+
+* INTEL ifort 8.1 (and previous versions) 
+  IOTK library is not properly working on large integer arrays.
+  When the array dimension overcomes a given threshold IOTK
+  scan (and sometimes write) gives an error.
+  This is a well known bug of the intel compiler.
+  Setting __IOTK_WORKAROUND3 in iotk_config.h file (IOTK_lib)
+  allows to run the code anyway.
+  #
+  STATUS: fixed
+
+* During recover (restart) procedure, but even in
+  ordinary calculations, unitary checks fail without any clear reason.
+  It happens on a IBM SP5 machine.
+  It seems to be a bug of the XLF IBM compiler badly managing
+  array dimensions through moduli and assumed shape interfaces.
+  Results are correct anyway, since
+  the failure involves only a check during the calculation: therefore
+  it is possible to comment the checks (at the end of Libs/subspace_init.f90
+  and Libs/localization_init.f90) to run the calculation anyway.
+  #
+  STATUS: fixed
+

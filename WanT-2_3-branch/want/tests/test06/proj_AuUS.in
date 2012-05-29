@@ -1,0 +1,5 @@
+&inputpp
+  prefix='gold_US'
+  outdir='./SCRATCH'
+  filpdos='./SCRATCH/gold_US'
+/

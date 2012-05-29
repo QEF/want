@@ -1,0 +1,26 @@
+
+&INPUT_CONDUCTOR
+   dimL = 8
+   dimC = 16
+   dimR = 8
+   ne = 1000
+   emin = -20.0
+   emax = 0.0
+   datafile_L = "./SCRATCH/LEADS/chain4_WanT.ham"
+   datafile_C = "./SCRATCH/COND/chain8_WanT.ham"
+   datafile_R = "./SCRATCH/LEADS/chain4_WanT.ham"
+   transport_dir = 1
+/
+
+<HAMILTONIAN_DATA>
+
+   <H00_C  rows="1-16" cols="1-16" />
+   <H_CR   rows="1-16" cols="1-8"  />
+   <H_LC   rows="9-16" cols="1-16" />
+   <H00_L  rows="1-8"  cols="1-8"  />
+   <H01_L  rows="1-8"  cols="1-8"  />
+   <H00_R  rows="1-8"  cols="1-8"  />
+   <H01_R  rows="1-8"  cols="1-8"  />
+
+</HAMILTONIAN_DATA>
+

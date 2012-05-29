@@ -1,0 +1,26 @@
+
+&CONTROL
+   prefix = 'cobalt_US'
+   postfix = '_WanT'
+   work_dir = './SCRATCH'
+   verbosity = 'high'
+/
+
+&SUBSPACE
+   dimwann = 6   
+/
+
+&LOCALIZATION
+   maxiter0_wan = 100
+   maxiter1_wan = 1500
+   ncg = 5    
+/
+
+WANNIER_CENTERS 
+atomic   1  0  0
+atomic   1  2 -2
+atomic   1  2 -1
+atomic   1  2  0
+atomic   1  2  1
+atomic   1  2  2
+

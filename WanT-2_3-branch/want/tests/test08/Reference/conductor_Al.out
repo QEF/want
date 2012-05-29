@@ -1,0 +1,170 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <conductor>  v. 2.1.0  starts ...
+  Date 19May2007 at  3:20:21 
+
+     Serial run.
+
+          BUILT :    Fri May 18 15:33:46 2007
+           HOST :    i686-pc-linux-gnu
+           ARCH :    ia32
+             CC :    cc
+            CPP :    cpp
+            F90 :    ifort
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW
+      BLAS LIBS :    -lblas
+    LAPACK LIBS :    -llapack
+       FFT LIBS :    -lfftw
+      MASS LIBS :    
+
+
+
+  ======================================================================
+  =                           INPUT Summary                            =
+  ======================================================================
+
+  <INPUT>
+       Calculation Type    :     bulk
+       prefix              :     
+       postfix             :     _Al
+       work_dir            :     ./
+               L-lead dim. :         4
+            conductor dim. :         4
+               R-lead dim. :         4
+       Conductance Formula :     landauer
+       Transport Direction :         3
+       Use Overlap         :     FALSE
+       Use Correlation     :     FALSE
+       Write k-data        :     FALSE
+       Max iteration number:       200
+
+       Print info each  20 energy step
+
+       Conductor data read from file  :     ./SCRATCH/al1_WanT.ham
+  </INPUT>
+
+
+  <ENERGY_GRID>
+       Dimension     :        200
+       Min Energy    :       -7.00000
+       Max Energy    :        2.50000
+       Energy Step   :        0.04774
+       Delta         :        0.00001
+       Smearing Type :     lorentzian
+       Smearing grid :      20000
+       Smearing gmax :       25.00000
+  </ENERGY_GRID>
+
+
+  <K-POINTS>
+       nkpts_par =    1
+       nrtot_par =    1
+        use_symm = FALSE
+
+       Parallel kpoints grid:        nk = (  1  1  1 )   s = (  0  0  0 )
+       k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+
+       Parallel R vector grid:      nr = (  1  1  1 )
+       R (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+  </K-POINTS>
+
+
+  <PARALLELISM>
+       Paralellization over frequencies
+       # of processes:     1
+  </PARALLELISM>
+
+
+  ======================================================================
+  =                           Frequency Loop                           =
+  ======================================================================
+
+  Computing E(     1 ) =  -7.00000 eV
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     0.17 secs
+
+  Computing E(    20 ) =  -6.09296 eV
+  T matrix converged after avg. # of iterations   20.000
+
+                              Total time spent up to now :     0.19 secs
+
+  Computing E(    40 ) =  -5.13819 eV
+  T matrix converged after avg. # of iterations   20.000
+
+                              Total time spent up to now :     0.22 secs
+
+  Computing E(    60 ) =  -4.18342 eV
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     0.25 secs
+
+  Computing E(    80 ) =  -3.22864 eV
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     0.32 secs
+
+  Computing E(   100 ) =  -2.27387 eV
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     0.35 secs
+
+  Computing E(   120 ) =  -1.31910 eV
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     0.38 secs
+
+  Computing E(   140 ) =  -0.36432 eV
+  T matrix converged after avg. # of iterations   20.000
+
+                              Total time spent up to now :     0.41 secs
+
+  Computing E(   160 ) =   0.59045 eV
+  T matrix converged after avg. # of iterations   20.000
+
+                              Total time spent up to now :     0.44 secs
+
+  Computing E(   180 ) =   1.54523 eV
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     0.47 secs
+
+  Computing E(   200 ) =   2.50000 eV
+  T matrix converged after avg. # of iterations   21.000
+
+                              Total time spent up to now :     0.50 secs
+
+
+  ======================================================================
+  =                           Writing Data                           =
+  ======================================================================
+
+
+  Conductance written on file:    cond_Al.dat
+          DOS written on file:    doscond_Al.dat
+
+  ======================================================================
+
+   <global routines>
+             clock number :     9
+
+                conductor :     0.00s CPU 
+ 
+            smearing_init :     0.14s CPU
+                   cft_1z :     0.10s CPU (       2 calls,   0.050 s avg)
+              read_matrix :     0.00s CPU (       2 calls,   0.002 s avg)
+              fourier_par :     0.00s CPU (       2 calls,   0.000 s avg)
+                 transfer :     0.30s CPU (     400 calls,   0.001 s avg)
+                    green :     0.01s CPU (     400 calls,   0.000 s avg)
+              gzero_maker :     0.00s CPU (     600 calls,   0.000 s avg)
+            transmittance :     0.02s CPU (     200 calls,   0.000 s avg)
+
+

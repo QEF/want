@@ -1,0 +1,28 @@
+
+
+  &INPUT_CONDUCTOR
+    postfix = '_AlH'
+    dimL = 4
+    dimC = 41
+    dimR = 4
+    ne = 1000
+    emin = -7.0
+    emax =  2.5
+    datafile_L = "./SCRATCH/alh_WanT.ham"
+    datafile_C = "./SCRATCH/alh_WanT.ham"
+    datafile_R = "./SCRATCH/alh_WanT.ham"
+    transport_dir = 3
+  /
+
+<HAMILTONIAN_DATA>
+
+   <H00_C   rows="1-41"  cols="1-41" />
+   <H_CR    rows="1-41"  cols="1-4"  />
+   <H_LC    rows="38-41" cols="1-41" />
+   <H00_L   rows="1-4"   cols="1-4"  />
+   <H01_L   rows="38-41" cols="1-4" />
+   <H00_R   rows="1-4"   cols="1-4"  />
+   <H01_R   rows="38-41" cols="1-4" />
+
+</HAMILTONIAN_DATA>
+

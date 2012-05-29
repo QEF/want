@@ -1,0 +1,125 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Copyright (C) 2005 WanT group                         %
+%  This file is distributed under the terms of the       %
+%  GNU General Public License.                           %
+%  See the file `License'  in the root directory of      %
+%  the present distribution,                             %
+%  or http://www.gnu.org/copyleft/gpl.txt                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\thispagestyle{empty}
+\begin{centering}
+{\LARGE \WANT\ Version \WANTVERSION}\\
+\end{centering}
+\vspace{0.35in}
+
+\noindent {\bf CREDITS.} The development and  maintenance of the
+\WANT\ code is promoted by the National Research Center on
+nanoStructures and bioSystems at Surfaces (S3) of the Italian
+INFM-CNR (\texttt{http://www.s3.infm.it}) and the Physics Department North
+Carolina State University (NCSU) (\texttt{http://ermes.physics.ncsu.edu}). \\
+
+\noindent The present release of the \WANT\ package has been
+realized by 
+Andrea Ferretti (S3, MIT, Uni Oxford), Apr 2010. \\
+
+\noindent The routines for the calculation of the
+maximally-localized Wannier functions were originally written by
+Nicola Marzari and David Vanderbilt (\copyright 1997);  Ivo Souza,
+Nicola Marzari and David Vanderbilt (\copyright 2002). \\ 
+
+\noindent The routines for the calculation of the quantum
+conductance were originally written by Marco Buongiorno Nardelli
+(\copyright 1998); Arrigo Calzolari, Nicola Marzari, and
+Marco Buongiorno Nardelli (\copyright 2003).\\
+
+\noindent For a full list of developers and contributors see the file
+\texttt{\~{}want/docs/CREDITS }. \\
+ \vspace{0.25in}
+
+\noindent {\bf GENERAL DESCRIPTION.} \WANT\ is an open-source, GNU
+General Public License suite of codes that provides an integrated
+approach for the study of coherent electronic transport in
+nanostructures. The core methodology combines state-of-the-art
+Density Functional Theory (DFT), plane-waves, pseudopotential
+calculations with a Green's functions method based on the Landauer
+formalism to describe quantum conductance. The essential
+connection between the two, and a crucial step in the calculation,
+is the use of the maximally-localized Wannier function
+representation to introduce naturally the ground-state electronic
+structure into the lattice Green's function approach at the basis
+of the evaluation of the quantum conductance. Moreover, the
+knowledge of Wannier functions allows for a
+direct link between the electronic transport properties of the
+device with the nature of the chemical bonds, providing insight
+into the mechanisms that govern electron flow at the nanoscale.\\
+
+\noindent The \WANT\ package operates, in principles, as a simple
+post-processing of any standard electronic structure code. The \WANT\ code
+is currently interfaced to the codes: 
+\begin{itemize}
+ \item[\mydot]  \QUANTUMESPRESSO\ distribution (\QUANTUMESPRESSOURL).
+ \item[\mydot]  \ABINIT\ (\ABINITURL).
+ \item[\mydot]  \textsc{CRYSTAL09} ({\tt http://www.crystal.unito.it}).
+ \item[\mydot]  \textsc{Sax} ({\tt http://www.sax-project.org}) .
+\end{itemize}
+
+\noindent \WANT\ capabilities include:
+\begin{itemize}
+\item[\mydot]   Calculation of maximally-localized Wannier functions (WF's);
+\item[\mydot]   WF's interpolation of the electronic structure of a given system
+                (calculation of bands, DOS, complex band structure).
+\item[\mydot]   Calculation of polarization for periodic systems through the
+                use of WFs (equivalent to the Berry phase formalism).
+\item[\mydot]   Calculation of quantum conductance spectrum 
+                for a lead-conductor-lead geometry. including
+                eigenchannel analysis.
+\item[\mydot]   Calculation of embedding dynamical and non-hermitean self-energies.
+\end{itemize}
+
+%\newpage
+\vspace{0.25in}
+\noindent{\bf TERMS OF USE.} Although users are not under any
+obligation in the spirit of the GNU General Public Licence, the
+developers of \WANT\ would appreciate the acknowledgment of the
+effort to produce such codes in the form of the following
+reference:\\
+
+\noindent In the text: ``The results of this work have been
+obtained using the \WANT\ package.[ref]''\\
+
+\noindent In references: ``[ref] \WANT\ code by A. Ferretti, B. Bonferroni, A. Calzolari, 
+and M. Buongiorno Nardelli, \texttt{http://www.wannier-transport.org}. 
+\\
+%See also: A. Calzolari, N. Marzari,
+%. Souza and M. Buongiorno Nardelli, Phys. Rev. B 69, 035108 (2004).''\\
+  \vspace{0.25in}
+
+\noindent{\bf DISCLAIMER.} While the developers of \WANT\ make
+every effort to deliver a high quality scientific software, we do
+not guarantee that our codes are free from defects. Our software
+is provided ``as is''. Users are solely responsible for determining
+the appropriateness of using this package and assume all risks
+associated with the use of it, including but not limited to the
+risks of program errors, damage to or loss of data, programs or
+equipment, and unavailability or interruption of operations. Due
+to the limited human resources involved in the development of this
+software package, no support will be given to individual users for
+either installation or execution of the codes. Finally, in the
+spirit of every open source project, any contribution from
+external users is welcome, encouraged and, if appropriate, will be
+included in future releases.\\
+  \vspace{0.25in}
+
+\noindent {\bf  LICENCE.} All the material included in this
+distribution is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the
+License, or (at your option) any later version. These programs are
+distributed in the hope that they will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+License for more details. You should have received a copy of the
+GNU General Public License along with this program; if not, write
+to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA
+02139, USA.

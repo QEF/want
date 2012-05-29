@@ -1,0 +1,250 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Copyright (C) 2005 WanT group                         %
+%  This file is distributed under the terms of the       %
+%  GNU General Public License.                           %
+%  See the file `License'  in the root directory of      %
+%  the present distribution,                             %
+%  or http://www.gnu.org/copyleft/gpl.txt                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\thispagestyle{empty}
+\section{What to do when things go wrong?}
+\label{sec:troubleshoot}
+%
+This section is not intended to be complete. Here we report
+a summary of the most frequent and well-known problems in the
+day-by-day practice with \WANT, and some tentative suggestions to
+solve them. Please, report any better solution or explanation you
+find to the maintainer of this manual to make it more detailed.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{When do things go really wrong ?}
+First it is necessary to understand which behaviors should be considered buggy and
+which may be conversely related to some failures of the implemented algorithms.
+This section is devoted to guide the user to understand whether the code is
+properly running or not. \\
+%
+%
+\begin{itemize}
+\item   {\bf Stops and crashes.} \\
+        When the code stops, it is expected either to have reached the end
+        of the calculation (which is marked in the output file by a summary
+        of the timing) or to print
+        out an error message and to give a fortran stop. Any different behavior
+        should be considered a bug and should be reported
+        (obviously it may be related to machine dependent problems,
+        independently of \WANT).
+
+\item   {\bf Problems connected to memory usage.} \\
+        Since the code is still serial, no distribution of the memory among
+        CPUs is performed and crashes may result. In these cases, both an
+        error message during allocations or a more drastic error (even segmentation
+        fault) may occur. The largest amount of memory is used by
+        {\tt disentangle.x} (which manage wave-functions), while {\tt wannier.x}
+        does not require that much. Post-processing ({\tt bands.x, blc2wan.x})
+        do not have special requirement too, while {\tt plot.x} needs a sensible
+        amount of memory, about half of {\tt disentangle.x}.
+
+\item   {\bf Convergence in disentanglement minimization.} \\
+        The iterative procedure in {\tt disentangle.x} is quite robust.
+        Non-monotonic behaviors of the invariant spread are unexpected
+        and are probably related to algorithm failures. Although, convergence
+        may be very slow, especially when some parameters are not properly set
+        (too many empty states in the main energy window, strange numbers of
+        requested WFs...) .
+
+\item   {\bf Convergence in Wannier localization.} \\
+        In the case of {\tt wannier.x}, convergence is less straightforward.
+        Particularly for large systems, it may happen that the total spread first 
+        decreases for several iterations and then it suddenly jumps to a much higher
+        value.  This cycle may be repeated several times.
+        From the expressions for the spread funcitonal in Ref.~\cite{nicola}, we see that
+        many evaluations of the imaginary part of complex logarithms are needed. 
+        These are the phases of the arguments, which in the present case are the overlap
+        integrals. Since logarithm in the complex plane
+        is a multivalued function, sudden jumps in the total spread (towards larger
+        values) can be related to changes in the logarithm branch. For instance, a phase
+        which is increasing from $0$ to $2\pi$ is suddenly taken to 0 (
+        {\it i.e.} to a different branch) when crossing the $2\pi$ value.
+
+        Such behaviors should be considered ordinary: the user is suggested to increase
+        the maximum number of iterations (50000 steps may be fully acceptable)
+        when running {\tt wannier.x} . Since this problem can be demonstrated to be 
+        connected with the use of
+        large $\mathbf{k}$-point meshes, it should luckily leave unaffected large scale
+        calculations (where we usually have large number of bands in a very small BZ).
+
+\item   {\bf How can I understand when my Wannier functions are well behaved ?} \\
+        Directly from the definition of {\it maximally localized} WFs, we basically
+        are interested in {\it localized} orbitals spanning the original subspace
+        of Bloch states. Our measure of localization (the spread functional $\Omega$)
+        is anyway a global property of the WF set as a whole.
+        This means that even if we are reaching lower and lower
+        values of the spread, the set of WFs we found is a good one only if {\it each}
+        WF is localized.
+
+        If our application of WFs is based on their localization property, then
+        a single WF not properly localized can make the whole set useless. This is
+        the case of the current application to transport (but it is not
+        for instance that of spontaneous polarization, which is a property of the 
+        occupied manyfold).
+
+        Taking in mind the above discussion,
+        it is possible to identify the following criteria:
+        %
+        %
+        \begin{itemize}
+        \item    Typical values for the average invariant spreads are
+                 lower than $7-10\,\, \text{Bohr}^2$. Note that this value is a sort of
+                 lower bound for the final spreads.
+        \item    the spread of each WF should be in a reasonable range
+                 ( $< 15-20\,\, \text{Bohr}^2$). Note that the current version of
+                 \WANT{} fully
+                 adopts Bohr units, while older versions ({\it e.g.} v1.0) use $\AA^2$
+                 for the spread in the {\tt wannier.x} output file.
+        \item    Since well-localized WFs are expected (by conjecture) to be almost real,
+                 their Hamiltonian matrix elements should be nearly real too.
+                 See the end of {\tt wannier.x} output file where these matrix elements
+                 are reported.
+        \item    The spatial decay of the Hamiltonian $H(\mathbf{R})$ on the WF basis
+                 is expected to have a nearly exponential decay wrt $\mathbf{R}$ when
+                 WF are well-localized.
+        \item    Using the {\tt bands.x} postprocessing, it is possible to interpolate
+                 the band structure using the computed $H(\mathbf{R})$ matrices.
+                 If WF are well-behaved, bands are usually reproduced using a small
+                 number of $\mathbf{R}$ vectors (since the real space decaying of
+                 the Hamiltonian). Otherwise this last assumption is not allowed and
+                 the band structure typically shows unphysical oscillations.
+        \end{itemize}
+
+\item   {\bf What about the symmetry properties of the WF set ?} \\
+        When computing WFs for the occupied manyfold of valence bands,
+        the total charge, which is fully symmetric, can be alternatively written as
+        the sum of the WF squared moduli.
+        WFs retain therefore a direct link to the symmetry properties of the crystal.
+        This is no longer guaranteed when we are mixing valence and conduction states
+        in the most general way (in the {\tt disentangle.x} run).
+        A total lack of symmetry in these cases is not intrinsically the sign of a bug, but
+        may be the sign of some unwanted behavior of the localization process. See
+        Sec.~\ref{subsec:troubleshoot} in order to try to avoid these results.
+
+
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Troubleshootting (sort of)}
+\label{subsec:troubleshoot}
+
+%
+%
+\begin{itemize}
+\item   {\bf Energy window and {\tt dimwin}} \\
+        If the {\tt disentangle.x} code complains when starting the run about
+        energy windows or about the variable {\tt dimwin}, it means that the chosen window
+        is probably too small.  For each $\mathbf{k}-$point the window
+        must contain a number of bands (called {\tt dimwin}) not smaller than
+        the number of required Wannier functions ({\tt dimwann}).
+
+\item   {\bf The code complains about $\mathbf{k}$-points} \\
+        The $\mathbf{k}$-point checking algorithm has been found to be quite stable,
+        and check failures are typically due to errors in calculation setup.
+        The most common problem is related to a non-regular Monkhorst-Pack 
+        mesh. The code is not yet able to take advantage of space symmetries (and
+        neither of time reversal) and therefore DFT calculations should be done using
+        a regular grid on the whole Brillouin Zone and not on its irreducible wedge only.
+        Please report other failures if any.
+
+\item   {\bf How can I set the starting Wannier centers ? } \\
+        The position and the type of starting centers are very important to speed up
+        the convergence of both {\tt disentangle.x} and {\tt wannier.x}. They are
+        anyway much less effective on the final results of the minimizations,
+        which usually do not depend that much on them. Standard positions for
+        centers are on the atomic sites (you can use both {\tt "1gauss"} and
+        {\tt "atomic"} types) and on the covalent bonds ( using {\tt "1gauss"} type
+        with s-symmetry). When using atomic positions, angular channels are usually
+        attributed on the basis of the related atomic orbitals.
+        When the chemical environment is more complex or you are
+        requiring a lot of WFs the choice may be more difficult but probably also
+        less effective on the minimization speed. Take a look at the
+        test suite to see how simple examples work.
+
+\item   {\bf When reading overlaps or projections the code exits with an error } \\
+        The flags {\tt overlaps="from\_file"} and {\tt projections="from\_file"}
+        (which are silently activated also in the restart procedure) make the
+        code to read overlaps and projections from a datafile of a previous run.
+        At the moment 
+        this operation is allowed only if the dimensions of these data are the
+        same as in the current calculation. Strictly speaking, if you want to use 
+        these flags you should not change the energy window, 
+        the number of Wannier functions, etc.
+
+\item   {\bf {\tt disentangle.x} does not converge } \\
+        This is a quite strange behavior: if it only takes so long, please enlarge
+        the maximum number of steps. On the contrary, if it largely oscillates
+        leaving no hope for a convergence, please report your input file to the
+        developers.
+
+\item   {\bf {\tt disentangle.x} converges, but average spread is large } \\
+        This usually means that some bands needed to achieve a better localization
+        are out of the energy window which should be enlarged. This operation should
+        be done with care since too large windows will lead to small spread on one
+        side, but the obtained subspace will acquire components on very high energy
+        Bloch states. Usually this must be avoided since we would like to represent
+        a physically interesting subspace.
+        Looking at the end of the {\tt disentangle.x} output file when setting the
+        variable {\tt verbosity="high"} you will be able to see all the projections
+        of the Bloch states onto the computed subspace.
+
+\item   {\bf $U^{\mathbf{k}}$ matrices are not unitary } \\
+        These failures are detected by {\tt WARNING} keywords in the {\tt disentangle.x}
+        output files and lead to calculations stopping in {\tt wannier.x} or
+        post-processing. If you are dealing with a very large systems
+        (hundreds of atoms) first try to enlarge the check threshold ({\tt unitary\_thr}).
+        Values larger than $10^{-6}, 10^{-5}$ (or even of the same order for small systems)
+        are usually a sign of numeric instability, probably due to porting issues.
+        Please report any failure of this kind.
+
+\item   {\bf Wannier functions does not converge} \\
+        The {\tt wannier.x} localization algorithm may take so long to reach the
+        convergence. Many large oscillations in the total spread may also happen.
+        If conditioned minimization are not used, be confident and let the code
+        going on in the iterative minimization (restart or enlarge the maximum number
+        of steps). If the minimization takes too long, consider it not converged and
+        look at the following point.
+
+\item   {\bf Wannier functions converge, but they are weird } \\
+        This is a very common case. The quality of WFs depends so much on the starting
+        subspace provided by {\tt disentangle.x}. Try to modify it (avoid high
+        energy Bloch state components) properly re-setting the energy window.
+        This is anyway a quite drastic measure. Before doing this you can try to
+        change the starting centers (in this case you should also re-run
+        {\tt disentangle.x} since projections must be re-calculated).
+
+        If you understand that WFs are not well-behaved since they got in strange
+        positions you may wonder to use conditioned minimization and penalty functionals.
+        See Sec.~\ref{subsubsec:penalty} for the theoretical details of the method.
+        In the current implementation, the conditioning tries to move the centers of
+        WFs as close as possible to the positions of the starting centers provided
+        in the input. Their importance is therefore crucial and bad centers are
+        easily detected since the minimization path is completely crazy.
+        The use of this conditioning is typically useful when the simulation cell
+        includes some vacuum regions.
+
+\item   {\bf Transport calculations have no physical meaning } \\
+        Unfortunately the input file for transport calculation (particularly the
+        card related to the real space Hamiltonians) must be carefully set.
+        When your transport calculations are completely wrong (weird oscillations or
+        narrow peaks in the transmittance) it is usually due to some error in
+        the input file ({\it e.g.} the indices of the required submatrices).
+
+\item   {\bf Transport calculations have has some sense but are noisy} \\
+        Numerical inaccuracies may be present. Typical effects are boring dips
+        in the transmittance curves. Make sure that your conductor
+        cell is converged wrt the bulk properties of the lead: if not, enlarge the cell.
+        Are your principal layer large enough to make their interaction decaying
+        just after nearest neighbors ?
+        Are the energy levels of your conductor and lead calculation the same ?
+        See Sec.~\ref{sec:run} about calculation setup to know how to check it.
+
+\end{itemize}

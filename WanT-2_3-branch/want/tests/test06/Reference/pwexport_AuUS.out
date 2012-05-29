@@ -1,0 +1,22 @@
+
+     Program POST-PROC v.4.0.3  starts ...
+     Today is 26Dec2008 at 12:11:19 
+
+     Parallel version (MPI)
+
+     Number of processors in use:       4
+     R & G space division:  proc/pool =    4
+
+     Planes per process (thick) : nr3 = 24 npp =   6 ncplane = 9216
+     Planes per process (smooth): nr3s= 15 npps=   4 ncplanes= 4096
+ 
+     Proc/  planes cols     G    planes cols    G      columns  G
+     Pool       (dense grid)       (smooth grid)      (wavefct grid)
+       1      6   1592    22586    4    795     8005    301     1869
+       2      6   1591    22585    4    795     8009    300     1868
+       3      6   1593    22585    4    795     8003    300     1868
+       4      6   1593    22585    3    796     8010    300     1868
+     tot     24   6369    90341   15   3181    32027   1201     7473
+ 
+
+     negative rho (up, down):  0.100E-02 0.000E+00

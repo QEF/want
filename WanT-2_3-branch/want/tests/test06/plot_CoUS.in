@@ -1,0 +1,10 @@
+
+ &INPUT
+   prefix = 'cobalt_US'
+   postfix = '_WanT'
+   work_dir = './SCRATCH'
+   datatype = 'modulus'
+   wann = '1-2,6'
+   r3min = -1.0
+   r3max =  1.0
+ /

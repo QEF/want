@@ -1,0 +1,24 @@
+
+&INPUT_CONDUCTOR
+   calculation_type = "bulk"
+   postfix = "_graphite"
+   dimC = 10
+   ne   = 400
+   emin =  -5.0
+   emax =   5.0
+   datafile_C = "./SCRATCH/graphite_WanT.ham"
+   transport_dir = 3
+   delta = 0.05
+   smearing_type = "gaussian"
+   use_symm = .TRUE.
+   nk(1) = 50
+   nk(2) = 50
+/
+
+<HAMILTONIAN_DATA>
+
+   <H00_C rows="ALL" cols="ALL" />
+   <H_CR  rows="ALL" cols="ALL" />
+
+</HAMILTONIAN_DATA>
+

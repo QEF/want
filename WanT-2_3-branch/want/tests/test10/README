@@ -1,0 +1,76 @@
+
+==============================================================================
+@title@   Conductance of C-C chains (general geometry)
+==============================================================================
+
+  Calculation of valence band transmittance for a dimerized Carbon chain (polyyne).
+  The computation is first done for bulk case.
+  Then the same is done coupling different lead and conductor calculations: 4 
+  atoms per cell have been used for the leads while 8 for the conductor. We used 
+  8 kpts along chain direction for the leads and 4 kpts for the conductor to 
+  sampling Brillouin zone, and a cutoff of 20 Ry for wfc (while 200 Ry for rho). 
+
+  The output of the calculations are the conductance (namely the transmittance) 
+  and the DOS for the bulk case (cond_bulk.dat and dos_bulk.dat) and for the general
+  geometry case (cond.dat and dos.dat). 
+  Afterwards, a different geometry is considered: transport calculation is carried out coupling 
+  the conductor (8 atom per cell, 16 WFs) with the leads (4 atoms, 8 WFs), extracting the 
+  coupling matrices directly from the supercell conductor calculation (see the 
+  manual for further details). Calculated conductance and dos are in the output 
+  files cond_auto.dat and dos_auto.dat. 
+
+  Disentangle calculation is performed for conductor within an energy window 
+  ranging up to -4.1536522 eV (-4.125121128 for leads). A conditioned minimization 
+  is carried out and the amplitude of the penalty functional is set to 10 (see 
+  manual for further details). Sixteen initial guess centers of 1gauss type are 
+  considered: 1 center (with s-geometry) or 3 centers (1 with s-geometry and 2 with 
+  p-geometry) are localized at the single or triple bond midpoints between C atoms.
+
+  Quantum conductance calculation is performed according to the Landauer formula.
+  DOS is calculated as the trace of conductor Green's function.
+
+
+RESULTS discussion
+
+  Disentangle convergence is achieved in only 1 iteration, because only occupied 
+  states are required in calculation. The final invariant spread for conductor is 
+  about 54.594 Bohr^2 (3.412 Bohr^2 on average), for leads is about 25.024 Bohr^2 
+  (3.128 Bohr^2 on average): this component of the spread will remain unchanged 
+  during the Wannier localization.
+
+  After about 610 iterations (350 for leads) Wannier convergence for conductor is 
+  achieved. A total spread of about 65.785 Bohr^2 for conductor is found 
+  (30.747 Bohr^2 for leads), 4.111 Bohr^2 on average (3.843 Bohr^2 for leads).
+
+  Transport calculation results are plotted in files:
+     $TESTDIR/cond_bulk.dat and   $TESTDIR/dos_bulk.dat
+     $TESTDIR/cond.dat      and   $TESTDIR/dos.dat
+     $TESTDIR/cond_auto.dat and   $TESTDIR/dos_auto.dat
+
+  In the bulk-like calculation conductance exhibit a stepwise behavior, with the
+  presence of a dip due to the lack of symmetry in the interactions simulated with 
+  8 atoms per cell. This stepwise behavior results are dramatically changed in the 
+  general geometry calculation (in particular near the Fermi energy).
+  This is due to numerical effects in matching the hamiltonian matrices of 
+  conductor and leads at the boundaries (see the manual for further details). In the 
+  "auto" calculation the conductance curve is irregular only near the Fermi energy, 
+  while it is well reproduced at lower energies. Interface principal layers, used 
+  in matching conductor and leads and extracted from conductor supercell calculation, 
+  are not completely equivalent. 
+  In every geometry considered, pronounced peaks are observable in the DOS plot, due 
+  to the van Hove singularities. The peaks are not exactly the same (with the same 
+  height) for all geometries. The DOS curve is affected by numerical noise rising 
+  from conductor-leads matching. 
+
+  The difference between the bulk case and the general geometry (results from 
+  conductor are less converged) is due to the number of atoms in the lead cell 
+  giving rise to a poor description of the so-called "principal layer" (you can try 
+  to increase the number of atoms to larger values in the lead and conductor 
+  calculations). 
+
+  In the present case, these numerical problems are magnified
+  since we are out-of-convergence concerning cell dimensions and the number of atoms per 
+  cell. Anyway, great care must be taken in the matching procedure when performing
+  real transport calculations.
+
+

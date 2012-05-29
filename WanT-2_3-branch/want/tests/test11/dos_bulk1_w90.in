@@ -1,0 +1,18 @@
+
+ &INPUT
+   prefix        = 'pt1_w90'
+   postfix       = '_WanT'
+   work_dir      = './SCRATCH'
+   datafile_dft  = './SCRATCH/wannier90_Pt1.chk'
+   fileout       = 'dos_bulk1_w90_NN.dat'
+   ircut(3)      = 1
+   nk(1)         = 1
+   nk(2)         = 1
+   nk(3)         = 400
+   delta         = 0.05
+   smearing_type = 'gaussian'
+   emin          = -10.0
+   emax          =   5.0
+   ne            = 1000
+ /
+

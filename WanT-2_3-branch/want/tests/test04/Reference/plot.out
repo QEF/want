@@ -1,0 +1,252 @@
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './/guanine_WanT_WFM025.cube'
+Output file (plot file):  './/guanine_WanT_WFM025.plt'
+Coordinate file (in CHARMM 'crd' format): './/guanine_WanT_WFM025.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 16, x-, y-, z-origin (in Angstrom): -7.937657,-5.159477,-7.937657
+Min value: 0.000000
+Max value: 0.142410
+Job done ...
+**********************************************************
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './/guanine_WanT_WFM026.cube'
+Output file (plot file):  './/guanine_WanT_WFM026.plt'
+Coordinate file (in CHARMM 'crd' format): './/guanine_WanT_WFM026.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 16, x-, y-, z-origin (in Angstrom): -7.937657,-5.159477,-7.937657
+Min value: 0.000000
+Max value: 0.157700
+Job done ...
+**********************************************************
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './/guanine_WanT_WFM027.cube'
+Output file (plot file):  './/guanine_WanT_WFM027.plt'
+Coordinate file (in CHARMM 'crd' format): './/guanine_WanT_WFM027.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 16, x-, y-, z-origin (in Angstrom): -7.937657,-5.159477,-7.937657
+Min value: 0.000000
+Max value: 0.213490
+Job done ...
+**********************************************************
+**********************************************************
+gCube2Plt conversion  ( .cube --> .plt )                
+
+Input file:      './/guanine_WanT_WFM028.cube'
+Output file (plot file):  './/guanine_WanT_WFM028.plt'
+Coordinate file (in CHARMM 'crd' format): './/guanine_WanT_WFM028.crd'
+
+ WanT
+ plot output - cube format
+Number of atoms: 16, x-, y-, z-origin (in Angstrom): -7.937657,-5.159477,-7.937657
+Min value: 0.000000
+Max value: 0.159550
+Job done ...
+**********************************************************
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <plot>  v. 2.1.0  starts ...
+  Date 14Oct2006 at  0:48:49 
+
+           HOST :    i686-pc-linux-gnu
+           ARCH :    ia32
+             CC :    gcc
+            CPP :    cpp
+            F90 :    g95
+            F77 :    g95
+         DFLAGS :    -D__LINUX -D__G95 -D__FFTW
+      BLAS LIBS :    -L/usr/local/lib/mkl -lmkl_ia32 -lguide -lpthread
+    LAPACK LIBS :    -lmkl_lapack
+       FFT LIBS :    -lfftw
+      MASS LIBS :    
+
+
+  DFT-data fmt automaticaly detected: pw_export
+  DFT-data read from file: guanine.export/index.xml
+
+  Subspace data read from file: guanine_WanT.space
+  Wannier data read from file: guanine_WanT.wan
+
+
+  ======================================================================
+  =                              DFT data                              =
+  ======================================================================
+
+ <LATTICE>
+  Alat  =      30.0000000 (Bohr)
+  Alat  =      15.8753100 (Ang )
+  Omega =   17550.0000000 (Bohr^3)
+  Omega =    2600.6385769 (Ang^3 )
+
+  Crystal axes:
+                in units of Bohr                 in Alat units
+    a(1) = ( 30.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = (  0.0000 19.5000  0.0000 )     (   0.0000  0.6500  0.0000 )
+    a(3) = (  0.0000  0.0000 30.0000 )     (   0.0000  0.0000  1.0000 )
+  Crystal axes: (Ang)
+    a(1) = ( 15.8753  0.0000  0.0000 )
+    a(2) = (  0.0000 10.3190  0.0000 )
+    a(3) = (  0.0000  0.0000 15.8753 )
+
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in 2Pi/Alat units
+    b(1) = (  0.2094  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    b(2) = (  0.0000  0.3222  0.0000 )     (   0.0000  1.5385  0.0000 )
+    b(3) = (  0.0000  0.0000  0.2094 )     (   0.0000  0.0000  1.0000 )
+ </LATTICE>
+
+ <K-POINTS>
+  nkpts =    1
+  Monkhorst-Pack grid:      nk = (  1  1  1 ),      shift = (  0  0  0 )
+
+  K-point calculation: (cart. coord. in Bohr^-1)
+    k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000000
+ </K-POINTS>
+
+
+  WARNING: USPP not fully implemented
+
+  Reading density G-grid from file: guanine.export/index.xml
+  Reading Wfc grids from file: guanine.export/index.xml
+
+
+          Energy cut-off for wfcs =         25.00 (Ry)
+                         for rho  =        200.00 (Ry)
+      Total number of PW for rho  =     838167
+        Max number of PW for wfc  =      37108
+      Total number of PW for wfcs =      37108
+        FFT grid components (rho) =  (   144   90  144 )
+
+
+  ======================================================================
+  =                     Wannier function plotting                      =
+  ======================================================================
+
+
+  nplot =    4 Wannier func.s to be plotted
+     wf (   1 ) =   25
+     wf (   2 ) =   26
+     wf (   3 ) =   27
+     wf (   4 ) =   28
+
+  Data type  :   modulus
+  Output fmt :   plt
+
+  Plotting Cell extrema [cryst. coord]:
+       r1 :   -0.5000 -->   0.5000
+       r2 :   -0.5000 -->   0.5000
+       r3 :   -0.5000 -->   0.5000
+
+  Grid dimensions:
+      nrx :       -72 -->       72
+      nry :       -45 -->       45
+      nrz :       -72 -->       72
+
+
+  Centers for the required Wannier functions:
+
+        in cartesian coord (Bohr)
+    Wf(  25 ) = (   -11.150022     2.608670    -1.329160 )
+    Wf(  26 ) = (    -8.670946     3.246422    -1.862321 )
+    Wf(  27 ) = (    -2.530591     2.665353    -3.627705 )
+    Wf(  28 ) = (    -6.875431     4.240852    -8.314335 )
+        in crystal coord
+    Wf(  25 ) = (    -0.371667     0.133778    -0.044305 )
+    Wf(  26 ) = (    -0.289032     0.166483    -0.062077 )
+    Wf(  27 ) = (    -0.084353     0.136685    -0.120923 )
+    Wf(  28 ) = (    -0.229181     0.217480    -0.277145 )
+
+
+  Atoms in the selected cell: (cart. coord. in Bohr)
+     N    tau(   1 ) = ( -10.5079551   3.1424297  -4.7490752 )
+     C    tau(   2 ) = ( -10.0894526   2.7570032  -2.1818447 )
+     N    tau(   3 ) = (  -7.6670649   2.7116559  -1.5984183 )
+     C    tau(   4 ) = (  -6.4202113   3.0834894  -3.8806151 )
+     C    tau(   5 ) = (  -3.7585162   3.2204697  -4.4510481 )
+     O    tau(   6 ) = (  -1.8664963   3.0472031  -3.0756762 )
+     N    tau(   7 ) = (  -3.4172305   3.6331398  -7.1098886 )
+     C    tau(   8 ) = (  -5.2922397   3.8743415  -8.9084016 )
+     N    tau(   9 ) = (  -4.5370101   4.2613395 -11.3389618 )
+     N    tau(  10 ) = (  -7.7449768   3.7475273  -8.3729764 )
+     C    tau(  11 ) = (  -8.1651493   3.3569092  -5.8742654 )
+     H    tau(  12 ) = ( -12.2026205   3.2505518  -5.6555459 )
+     H    tau(  13 ) = ( -11.6625602   2.5271001  -0.8670479 )
+     H    tau(  14 ) = (  -1.5644130   3.7529186  -7.6719366 )
+     H    tau(  15 ) = (  -5.9103135   4.4380589 -12.6615490 )
+     H    tau(  16 ) = (  -2.6825941   4.3723721 -11.8488073 )
+
+
+    Wfc Fourier Transf. for k-point    1
+                              Total time spent up to now :    10.49 secs
+
+
+  WF maximum values (normalization is one):
+
+    Wf(   1 )   -->     0.377376
+    Wf(   2 )   -->     0.397118
+    Wf(   3 )   -->     0.462047
+    Wf(   4 )   -->     0.399438
+
+
+  writing WF(  25) plot on file: .//guanine_WanT_WFM025.cube
+         atomic positions on file: .//guanine_WanT_WFM025.xyz
+  deleting tmp files: .//guanine_WanT_WFM025.cube
+                      .//guanine_WanT_WFM025.crd
+
+
+  writing WF(  26) plot on file: .//guanine_WanT_WFM026.cube
+         atomic positions on file: .//guanine_WanT_WFM026.xyz
+  deleting tmp files: .//guanine_WanT_WFM026.cube
+                      .//guanine_WanT_WFM026.crd
+
+
+  writing WF(  27) plot on file: .//guanine_WanT_WFM027.cube
+         atomic positions on file: .//guanine_WanT_WFM027.xyz
+  deleting tmp files: .//guanine_WanT_WFM027.cube
+                      .//guanine_WanT_WFM027.crd
+
+
+  writing WF(  28) plot on file: .//guanine_WanT_WFM028.cube
+         atomic positions on file: .//guanine_WanT_WFM028.xyz
+  deleting tmp files: .//guanine_WanT_WFM028.cube
+                      .//guanine_WanT_WFM028.crd
+
+
+
+
+  ======================================================================
+
+   <global routines>
+             clock number :    10
+
+                     plot :    43.00s CPU 
+
+             want_dftread :     0.64s CPU
+                want_init :     0.13s CPU
+          ggrids_read_ext :     0.92s CPU
+      wfc_data_grids_read :     0.02s CPU
+           wfc_data_kread :     0.39s CPU
+               kwann_calc :     4.71s CPU (       4 calls,   1.177 s avg)
+                   cfft3d :     1.24s CPU (       4 calls,   0.310 s avg)
+               cwann_calc :     1.81s CPU (       4 calls,   0.452 s avg)
+                 gcubeplt :    14.45s CPU (       4 calls,   3.612 s avg)
+
+

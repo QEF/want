@@ -1,0 +1,10 @@
+
+ &INPUT
+   prefix = 'nichain'
+   postfix = '_WanT_DW'
+   work_dir = './SCRATCH/'
+   datatype = 'modulus'
+   wann = '1,4'
+   r3min = -1.0
+   r3max =  1.0
+ /

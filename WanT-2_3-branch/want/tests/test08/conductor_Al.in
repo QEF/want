@@ -1,0 +1,20 @@
+
+
+  &INPUT_CONDUCTOR
+    postfix = '_Al'
+    dimC = 4
+    calculation_type = 'bulk'
+    ne = 200
+    emin = -7.0
+    emax =  2.5
+    datafile_C = "./SCRATCH/al1_WanT.ham"
+    transport_dir = 3
+  /
+
+<HAMILTONIAN_DATA>
+
+   <H00_C />
+   <H_CR  />
+
+</HAMILTONIAN_DATA>
+

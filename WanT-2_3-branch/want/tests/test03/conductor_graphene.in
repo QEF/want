@@ -1,0 +1,25 @@
+
+&INPUT_CONDUCTOR
+   calculation_type = "bulk"
+   postfix = "_graphene"
+   dimC =   5
+   ne   = 400
+   emin =  -5.0
+   emax =   5.0
+   datafile_C = "./SCRATCH/graphene_WanT.ham"
+   transport_dir = 2
+   delta = 0.05
+!   smearing_type = "lorentzian"
+   smearing_type = "gaussian"
+   use_symm = .TRUE.
+   nk(1) = 400
+   nk(2) =  1
+/
+
+<HAMILTONIAN_DATA>
+
+   <H00_C rows="ALL" cols="ALL" />
+   <H_CR  rows="ALL" cols="ALL" />
+
+</HAMILTONIAN_DATA>
+

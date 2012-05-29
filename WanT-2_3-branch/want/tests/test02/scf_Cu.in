@@ -1,0 +1,37 @@
+copper FCC bulk pw91
+3d in valence
+ &CONTROL
+    calculation = 'scf'
+    restart_mode='from_scratch',
+    prefix='copper',
+    tprnfor = .FALSE.
+    pseudo_dir = '../pseudo/'
+    outdir = './SCRATCH'
+ /
+ &SYSTEM
+      ibrav=2,
+      celldm(1)=6.9678
+      nat=1,
+      ntyp=1,
+      ecutwfc=130,
+      ecutrho=520,
+      occupations='smearing',
+      smearing='gaussian',
+      degauss=0.006,
+ /
+ &ELECTRONS
+    electron_maxstep = 50,
+    mixing_mode = 'plain'
+    mixing_beta = 0.3
+    conv_thr =  1.0d-8
+ /
+ATOMIC_SPECIES
+ Cu  63.546  Cu.pw91-cpi.UPF
+ATOMIC_POSITIONS (angstrom)
+Cu   0.00000000      0.00000000      0.00000000
+K_POINTS (automatic)
+12 12 12    1 1 1
+
+
+
+

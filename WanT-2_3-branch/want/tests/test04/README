@@ -1,0 +1,45 @@
+
+
+==============================================================================
+@title@   Guanine dipole moment
+==============================================================================
+
+  The dipole moment of Guanine molecule is computed.
+  DFT calculation is performed within ultrasoft pseudopotentials in a supercell 
+  approach and with a cutoff of 25 Ry for wfc and 200 Ry for rho.
+  The localization of the Wannier functions is carried out, in order to compute 
+  the electronic part of the dipole moment of the molecule.
+  
+  The electronic contribution to the dipole moment is calculated as:
+
+  Pel = 2 * e * R
+
+  where e stands for the electronic charge and R is the sum of Wannier functions
+  avarage position. Only valence states must be conbsidered in order to compute
+  dipole or polarization. Therefore the number of WFs is the same as the number 
+  of occupied states (bands).
+
+  Wannier calculation is carried out fixing twenty-eight initial-guess centers
+  of 1gauss type with s and p-type geometry.
+
+
+  RESULTS discussion
+
+  Disentangle convergence is achieved in only 1 iteration, because only occupied 
+  states are required in the calculation. The final invariant spread (\Omega_I) is 
+  about 61.261 Bohr^2, 2.188 Bohr^2 on average. 
+
+  After about 1600 iterations Wannier convergence is achieved. A total spread of
+  about 72.698 Bohr^2 is found, with an average of about 2.596 Bohr^2. 
+  As a rule of thumb, Wannier localization within the valence subspace 
+  (no disentanglement), turns out to be easier.
+
+  The dipole moment of the molecule is calculated also considering the ionic 
+  contribution and is found to be:
+
+  P = 7.12 D
+
+  in good agreement with results in the literature.
+  (see Sponer et al., J. Phys. Chem., Vol. 100, No. 5, 1966)
+
+

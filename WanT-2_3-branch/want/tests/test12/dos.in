@@ -1,0 +1,16 @@
+
+&INPUT
+   prefix = 'si111'
+   postfix = '_WanT'
+   work_dir = './SCRATCH/'
+   fileout = 'dos.dat'
+   nk(1) = 8
+   nk(2) = 4
+   nk(3) = 4
+   ne    = 4000
+   emin  = -15.0
+   emax  =  15.0
+   delta =  0.1
+   smearing_type = 'gaussian'
+/
+ 

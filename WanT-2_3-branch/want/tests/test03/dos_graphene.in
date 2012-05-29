@@ -1,0 +1,16 @@
+
+ &INPUT
+   prefix    = 'graphene'
+   postfix   = '_WanT'
+   work_dir  = './SCRATCH/'
+   fileout   = './dos_graphene.dat'
+   nk(1) = 100
+   nk(2) = 100
+   nk(3) = 1
+   ne    = 1000
+   emin  = -10.0
+   emax  =  10.0
+   delta =  0.05
+   smearing_type = 'gaussian'
+ /
+

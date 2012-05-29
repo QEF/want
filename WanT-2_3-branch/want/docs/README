@@ -1,0 +1,41 @@
+
+=====================================================================
+
+              ********* WanT documentation **********
+
+=====================================================================
+
+In the current directory it is possible to find more documentation
+about the theory and the usage of Wannier functions for transport
+calculations, as implemented in the WanT code.
+
+Files in the directory:
+
+README                the current file
+
+CREDITS               the file acknowledging developers, contributors and
+                      all the people who helped in maintaining and developing
+                      the package. 
+
+TODO                  the file containing the list of scheduled changes 
+
+want_manual.pdf       the WanT Manual file. It is also possible to generate
+                      the pdf file directly from the tex sources in tex/
+                      using the reported Makefile.
+
+                      Note that only want_manual.tex file should be compiled,
+                      while all the other tex sources are simply included 
+                      in the main file.
+
+README_<prog>.input   the file explaining how to set an input file for 
+                      program <prog> (wannier, conductor, and a number of 
+                      post-processing tools). 
+
+README.install        the file containing the instructions to configure and 
+                      compile the code.
+
+KnownBugs             the file containing the list of the known bugs
+
+tex                   the directory containing the tex sources and the Makefile 
+                      to generate the pdf file of the manual
+

@@ -1,0 +1,6 @@
+&inputpp
+  prefix='al5'
+  outdir='./SCRATCH/'
+  pseudo_dir = '../pseudo/'
+  psfile(1) = 'Al.pz-vbc.UPF'
+/

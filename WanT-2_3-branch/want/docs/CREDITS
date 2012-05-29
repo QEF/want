@@ -1,0 +1,106 @@
+
+==========================
+   CREDITS
+==========================
+
+The development and maintenance of the WanT code is promoted by: 
+
+  * the National Research Center on nanoStructures and bioSystems at Surfaces (S3) 
+    of the Italian INFM-CNR (http://www.s3.infm.it) 
+
+  * the North Carolina State University (NCSU)
+    (http://ermes.physics.ncsu.edu) 
+
+The present release of the WanT package has been realized
+by Andrea Ferretti (S3, MIT, Uni Oxford), Apr 2010.
+
+
+=========================================================================
+Full list of developers and contributors for each release of the code:
+=========================================================================
+
+
+Developers and contributors of WanT v2.2 and v2.3:
+===========================================
+
+Andrea Ferretti             S3, Modena    andrea.ferretti@unimore.it
+                            DMSE, MIT     ferretti@mit.edu
+                            Uni Oxford    andrea.ferretti@materials.ox.ac.uk
+
+We acknowledge contributions and help from:  
+
+Conor Hogan                 Uni Roma Tor Vergata, Rome
+Tonatiuh Rangel             Uni Catholique Louvain, Belgium
+Giuseppe Mallia             Imperial College, London, UK
+
+time stamp: Apr 2010
+
+
+Developers and contributors of WanT v2.1:
+===========================================
+
+Andrea Ferretti             S3, Modena    andrea.ferretti@unimore.it
+Benedetta Bonferroni        S3, Modena    bonferroni@unimore.it
+
+We acknowledge contributions and help from:  
+
+Carlo Cavazzoni             CINECA, S3
+Pierre Darancet             CNRS, Grenoble
+Vincent Meunier             ORNL, Tennessee
+Matias Nunez                NCSU
+
+time stamp: Jul 2007
+
+
+Developers and contributors of WanT v2.0:
+===========================================
+
+Andrea Ferretti             S3, Modena    andrea.ferretti@unimore.it
+Arrigo Calzolari            S3, Modena    calzolari.arrigo@unimore.it
+Marco Buongiorno Nardelli   NCSU          mbnardelli@ncsu.edu
+
+We acknowledge contributions and help from:  
+
+Benedetta Bonferroni        S3, Modena
+Giovanni Bussi              S3, Modena
+Carlo Cavazzoni             CINECA, S3
+
+time stamp: Dec 2005
+
+
+Developers and contributors of WanT v1.0:
+===========================================
+
+Arrigo Calzolari            S3, Modena    calzolari.arrigo@unimore.it
+Carlo Cavazzoni             CINECA, S3    carlo.cavazzoni@cineca.it
+Marco Buongiorno Nardelli   NCSU          mbnardelli@ncsu.edu
+Nicola Marzari              MIT           marzari@mit.edu
+
+We acknowledge contributions and help from:  
+
+Andrea Ferretti             S3, Modena
+
+time stamp: Nov 2004
+
+
+=========================================================================
+Original contributions
+=========================================================================
+
+The routines for the calculation of the maximally-localized Wannier functions 
+were originally written by: 
+
+- Nicola Marzari and David Vanderbilt (1997); 
+- Ivo Souza, Nicola Marzari and David Vanderbilt (2002); 
+
+
+The routines for the calculation of the quantum conductance were 
+originally written by:
+
+- Marco Buongiorno Nardelli (1998); 
+- Arrigo Calzolari, Nicola Marzari, and Marco Buongiorno Nardelli (2003).
+
+
+The iotk library is written and maintained by Giovanni Bussi (2002).
+
+

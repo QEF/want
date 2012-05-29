@@ -1,0 +1,41 @@
+Al wire, 5 atoms, 15 LDA NCPP
+a = 4.5 Bohr
+   &CONTROL
+      calculation = 'nscf',
+      restart_mode='from_scratch',
+      prefix='al5',
+      pseudo_dir = '../pseudo/'
+      outdir = './SCRATCH/'
+      wf_collect = .TRUE.
+   /
+   &SYSTEM
+      ibrav=6, 
+      celldm(1)=12.0,
+      celldm(3)=1.875,
+      nat=5, 
+      ntyp=1,
+      ecutwfc=15.0,
+      occupations='smearing',
+      smearing='methfessel-paxton',
+      degauss=0.01,
+      nbnd=50
+   /
+   &ELECTRONS
+      mixing_beta = 0.3,
+      conv_thr =  1.0d-8,
+   /
+ATOMIC_SPECIES
+  Al  26.98154  Al.pz-vbc.UPF
+ATOMIC_POSITIONS {crystal}
+Al    0.000    0.000   0.000
+Al    0.000    0.000   0.200
+Al    0.000    0.000   0.400
+Al    0.000    0.000   0.600
+Al    0.000    0.000   0.800
+K_POINTS {crystal}
+    4
+ 0.000000000   0.000000000   0.000000000  1.000
+ 0.000000000   0.000000000   0.250000000  1.000
+ 0.000000000   0.000000000   0.500000000  1.000
+ 0.000000000   0.000000000   0.750000000  1.000
+

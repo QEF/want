@@ -1,0 +1,15 @@
+
+ &INPUT
+   prefix    = 'graphene'
+   postfix   = '_WanT'
+   work_dir  = './SCRATCH/'
+   fileout   = './bands_graphene.dat'
+   nkpts_in  = 4
+   nkpts_max = 200
+ /
+
+K  0.3333   0.3333   0.0   
+G  0.0      0.0      0.0
+M  0.5      0.0      0.0
+K  0.3333   0.3333   0.0   
+

@@ -1,0 +1,65 @@
+
+==============================================================================
+@title@   Gold and Cobalt chains (NCPP and USPP)
+==============================================================================
+
+  This test performs the calculations for the bulk conductance of Gold and 
+  Cobalt chains, using both NC and US pseudopotentials in the Gold case, only 
+  US for Cobalt. 
+  Calculations are done setting one atom in the unit cell, using a 
+  (1 1 4, 0 0 1) (according to PWSCF notation) Monkhorst-Pack grid in the SCF 
+  run and a (1 1 4, 0 0 0) grid in the NSCF run. 
+  The wave-function and charge-density cutoff in the NCPP case has been chosen 
+  to be 20 Ry in order to make the test running fast, but results are of course 
+  not converged. A cutoff of 40 Ry or more will lead to more physical results.
+  In the USPP case instead, cutoff of 20 and 200 Ry are used for wfc and rho 
+  respectively. Note the larger ratio for wfc/rho cutoffs is due to the 
+  hardness of augmentation charges needed in the USPP case.
+
+  Disentangle calculation is performed within an energy window ranging up to
+  2 eV for Au with NC pseudopotential (1.8 eV for AuUS); states are frozen up
+  to -2 eV. Wannier functions for the s-d manifold (6-dim) of Gold are computed.
+
+  Bulk-like conductance is calculated: leads and conductor are made of the same 
+  material and conductance of the ideal and infinite structure is computed.
+  Quantum conductance calculation is performed according to the Landauer formula.
+  DOS is calculated as the trace of the conductor Green's function.
+
+
+  RESULTS discussion
+
+  Disentangle convergence is achieved in only 1 iteration for gold, because within 
+  the considered energy window gold bands are already disentagled (even if not
+  fully occupied, as in the case of the valence manyfold in semiconductors); 
+  the convergence in the Cobalt case requires about 120 iterations. 
+  The final invariant spread is about 22.209 Bohr^2 for Au (3.702 Bohr^2 on average), 
+  20.995 Bohr^2 for AuUS (3.499 Bohr^2 on average) and 16.901 Bohr^2 for Co 
+  (2.817 Bohr^2 on average).
+
+  After about 300 iterations Wannier convergence for Gold is achieved (340 for Cobalt).
+  A total spread of about 23.773 Bohr^2 for Au is found (22.899 Bohr^2 for AuUS,
+  17.604 Bohr^2 for Co), 3.955 Bohr^2 on average (3.816 Bohr^2 for AuUS, 2.934 Bohr^2
+  for Co). 
+
+  The main outputs of the transport calculation are written in the dos*.dat and 
+  cond*.dat files.
+  Transport calculations are performed considering nearest neighbors interactions
+  between principal layers (one atom per cell): s band-width are thus slightly 
+  different from the DFT ones. We are essentially setting to zero higher order
+  interaction terms (further neighbours) which are for sure non-negligible 
+  due to the small cell used.
+  Transport calculation results are plotted in files:
+     $TESTDIR/cond_Au.dat and $TESTDIR/dos_Au.dat
+     $TESTDIR/cond_AuUS.dat and $TESTDIR/dos_AuUS.dat
+     $TESTDIR/cond_CoUS.dat and $TESTDIR/dos_CoUS.dat
+
+  Conductance exhibits stepwise behaviour which is a typical bulk-like feature.
+  Pronounced peaks are present in the DOS plot, due to the 1D van Hove 
+  singularities (1/SQRT(E) devergencies at the band edges).
+ 
+  Note that the final conductance in the Au and AuUS cases are slightly different 
+  probably due to the different convergence level between NC and USPP (the second 
+  case is closer to convergence, which is around 25 Ry for wfc and 200 Ry for rho 
+  cutoff energies).
+
+

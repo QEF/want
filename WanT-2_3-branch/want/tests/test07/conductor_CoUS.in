@@ -1,0 +1,19 @@
+
+  &INPUT_CONDUCTOR
+    postfix = '_CoUS'
+    dimC = 12
+    calculation_type = 'bulk'
+    ne = 1000  
+    emin = -10.0
+    emax =  5.0 
+    transport_dir=3
+    datafile_C="./SCRATCH/cobalt_US_WanT.ham"
+  /
+
+<HAMILTONIAN_DATA>
+
+   <H00_C cols="ALL" rows="ALL" />
+   <H_CR  cols="ALL" rows="ALL" />
+
+</HAMILTONIAN_DATA>
+

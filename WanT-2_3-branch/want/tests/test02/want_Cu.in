@@ -1,0 +1,29 @@
+
+&CONTROL
+   prefix = 'copper'
+   postfix = '_WanT'
+   work_dir = './SCRATCH'
+/
+
+&SUBSPACE
+   win_max = 19.78
+   froz_max = 12.7979
+   dimwann = 6
+   maxiter_dis = 400
+/
+
+&LOCALIZATION
+   maxiter0_wan = 1
+   maxiter1_wan = 10000
+   alpha1_wan = 0.5
+   ncg = 9    
+/
+
+WANNIER_CENTERS 
+ atomic  1     0  0  
+ atomic  1     2  2  
+ atomic  1     2  1  
+ atomic  1     2  0  
+ atomic  1     2 -1  
+ atomic  1     2 -2  
+

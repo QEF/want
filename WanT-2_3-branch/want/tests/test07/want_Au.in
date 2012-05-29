@@ -1,0 +1,35 @@
+
+&CONTROL
+   prefix = 'gold'
+   postfix = '_WanT'
+   work_dir = './SCRATCH/'
+   verbosity = "high"
+/
+
+&SUBSPACE
+   dimwann = 12
+   win_max = 1.5
+   froz_min = -20.0
+   froz_max = -2.5
+/
+
+&LOCALIZATION
+   maxiter0_wan = 100
+   maxiter1_wan = 1500
+   ncg = 5    
+/
+
+WANNIER_CENTERS {crystal}
+atomic   1    0  0 
+atomic   1    2 -2 
+atomic   1    2 -1 
+atomic   1    2  0 
+atomic   1    2  1 
+atomic   1    2  2 
+atomic   2    0  0 
+atomic   2    2 -2 
+atomic   2    2 -1 
+atomic   2    2  0 
+atomic   2    2  1 
+atomic   2    2  2 
+

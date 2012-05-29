@@ -1,0 +1,95 @@
+
+==============================================================================
+@title@   Silicon bulk (NCPP & USPP), GaAs bulk (QE & Abinit)
+==============================================================================
+  
+  Wannier function calculation for Silicon bulk and GaAs. No transport calculation is done. 
+  All calculations are performed using both NC and US pseudopotentials (for Si)
+  and comparing Quantum-ESPRESSO and Abinit (for GaAs).
+  The band structure along standard symmetry lines is computed by the DFT code
+  (see the file $TESTDIR/Reference/dft_bands.dat) and then recalculated by 
+  interpolation on the Wannier function Hamiltonian. 
+  
+  We compute 4 WFs, spanning the valence manyfold. 
+  Four initial guess centers are considered: all of them are of 1gauss type (s-symmetry), 
+  localized on 4 bonds corresponding to sp3 hybridization.
+
+  At the end of this file, we report an example of input file to compute
+  8 WFs corresponding to the valence bands plus the first 4 conduction bands.
+
+
+  RESULTS discussion
+
+  Nearest neighbours b-shell vectors, computed by disentangle.x, and DFT eigenvalues 
+  are reported on the disentangle output file. Disentangle convergence is achieved
+  immediatly (1 iteration) since the subspace of WFs is already defined as the
+  valence band manyfold. Note that this is the case because we computed only the valence 
+  bands from the DFT calculations.
+  The invariant part of the spread (\Omega_I), obtained at the end of the disentangle procedure,
+  will remain unchanged during the Wannier localization.
+
+  After 8500 iterations, Wannier convergence is not fully achieved but can be considered 
+  adequate.  
+
+  Some points for verifying the computed localization of Wannier functions are:
+
+      * Final average total spreads are reasonable (here we see values in the 
+        range 7 - 8 Bohr^2, while values over 20 -- 50 Bohr^2
+        should be definitely considered too large)
+
+      * Since well-localized WFs are expected (by conjecture) to be almost real, the
+        Hamiltonian matrix elements should be nearly real. See the end of wannier.out 
+        file where these matrix elements are reported.
+
+      * The spatial decay of the Hamiltonian on the WF basis H(R) is well behaved, 
+        Usually a nearly exponential decay wrt R is expected, as it is the case here.
+
+      * The calculation of interpolated bands (computed by bands.x) can be used as 
+        a further check:
+        a comparison with DFT band structure shows that valence bands are almost exactly
+        represented.
+
+        Files to be plotted to this purpose are: 
+            $TESTDIR/Reference/dft_bands.dat
+            $TESTDIR/bands.dat               (or bands_US.dat  for USPP)
+  
+
+  Norm-conserving and Ultra-soft calculations show some small differences which
+  are attributed to the pseudopotentials and their different 
+  pseudization types.
+
+
+
+  COMPUTING WFs FOR EMPTY STATES
+
+  to compute WFs for some (the lowest lying) empty states, follow these instructions: 
+  
+      * enlarge the number of bands computed by DFT (add nbnd = 16 in nscf.in)
+      * change the WanT input file according to:
+
+      &CONTROL
+       ...
+      /
+
+      &SUBSAPCE
+         dimwann = 8
+         win_max =  14.95    !  cut at a certain point the eigenvalue window
+      /
+
+      &LOCALIZATION
+       ...
+      /
+
+     WANNIER_CENTERS {crystal}
+     1gauss   0.1250  0.1250  0.1250    -1  1    1.0       ! (centers for valence)
+     1gauss   0.1250 -0.1250 -0.1250    -1  2    1.0
+     1gauss  -0.1250  0.1250 -0.1250    -1  3    1.0
+     1gauss  -0.1250 -0.1250  0.1250    -1  4    1.0
+     2gauss   0.0625  0.0625  0.0625    0.1875  0.1875  0.1875  1.5    ! (centers for conduction)
+     2gauss  -0.1875  0.0625  0.0625   -0.5625  0.1875  0.1875  1.5
+     2gauss   0.0625 -0.1875  0.0625    0.1875 -0.5625  0.1875  1.5
+     2gauss   0.0625  0.0625 -0.1875    0.1875  0.1875 -0.5625  1.5
+
+
+
+

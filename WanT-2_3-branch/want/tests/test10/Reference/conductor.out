@@ -1,0 +1,372 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <conductor>  v. 2.1.0  starts ...
+  Date 15Jun2007 at 10:36:21 
+
+     Serial run.
+
+          BUILT :    Mon May 28 10:12:03 2007
+           HOST :    i686-pc-linux-gnu
+           ARCH :    ia32
+             CC :    cc
+            CPP :    cpp
+            F90 :    ifort
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW
+      BLAS LIBS :    -lblas
+    LAPACK LIBS :    -llapack
+       FFT LIBS :    -lfftw
+      MASS LIBS :    
+
+
+
+  ======================================================================
+  =  INPUT Summary                                                     =
+  ======================================================================
+
+  <INPUT>
+       Calculation Type    :     conductor
+       prefix              :     
+       postfix             :     
+       work_dir            :     ./
+               L-lead dim. :         8
+            conductor dim. :        16
+               R-lead dim. :         8
+       Conductance Formula :     landauer
+       Transport Direction :         1
+       Use Overlap         :     FALSE
+       Use Correlation     :     FALSE
+       Write k-data        :     FALSE
+       Max iteration number:       200
+
+       Print info each  20 energy step
+
+       Conductor data read from file  :     ./SCRATCH/COND/chain8_WanT.ham
+       Left lead data read from file  :     ./SCRATCH/LEADS/chain4_WanT.ham
+       Right lead data read from file :     ./SCRATCH/LEADS/chain4_WanT.ham
+  </INPUT>
+
+
+  <ENERGY_GRID>
+       Dimension     :       1000
+       Min Energy    :      -20.00000
+       Max Energy    :        0.00000
+       Energy Step   :        0.02002
+       Delta         :        0.00001
+       Smearing Type :     lorentzian
+       Smearing grid :      20000
+       Smearing gmax :       25.00000
+  </ENERGY_GRID>
+
+
+  <K-POINTS>
+       nkpts_par =    1
+       nrtot_par =    1
+        use_symm = FALSE
+
+       Parallel kpoints grid:        nk = (  1  1  1 )   s = (  0  0  0 )
+       k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+
+       Parallel R vector grid:      nr = (  1  1  1 )
+       R (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+  </K-POINTS>
+
+
+  <PARALLELISM>
+       Paralellization over frequencies
+       # of processes:     1
+  </PARALLELISM>
+
+
+  ======================================================================
+  =  Frequency Loop                                                    =
+  ======================================================================
+
+  Computing E(     1 ) = -20.00000 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     0.34 secs
+
+  Computing E(    20 ) = -19.61962 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     0.35 secs
+
+  Computing E(    40 ) = -19.21922 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     0.36 secs
+
+  Computing E(    60 ) = -18.81882 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     0.38 secs
+
+  Computing E(    80 ) = -18.41842 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     0.39 secs
+
+  Computing E(   100 ) = -18.01802 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     0.41 secs
+
+  Computing E(   120 ) = -17.61762 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     0.42 secs
+
+  Computing E(   140 ) = -17.21722 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     0.43 secs
+
+  Computing E(   160 ) = -16.81682 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     0.45 secs
+
+  Computing E(   180 ) = -16.41642 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     0.46 secs
+
+  Computing E(   200 ) = -16.01602 eV
+  T matrix converged after avg. # of iterations    2.000
+
+                              Total time spent up to now :     0.48 secs
+
+  Computing E(   220 ) = -15.61562 eV
+  T matrix converged after avg. # of iterations    2.000
+
+                              Total time spent up to now :     0.49 secs
+
+  Computing E(   240 ) = -15.21522 eV
+  T matrix converged after avg. # of iterations   18.000
+
+                              Total time spent up to now :     0.54 secs
+
+  Computing E(   260 ) = -14.81481 eV
+  T matrix converged after avg. # of iterations   18.000
+
+                              Total time spent up to now :     0.60 secs
+
+  Computing E(   280 ) = -14.41441 eV
+  T matrix converged after avg. # of iterations   18.000
+
+                              Total time spent up to now :     0.65 secs
+
+  Computing E(   300 ) = -14.01401 eV
+  T matrix converged after avg. # of iterations   18.000
+
+                              Total time spent up to now :     0.75 secs
+
+  Computing E(   320 ) = -13.61361 eV
+  T matrix converged after avg. # of iterations   18.000
+
+                              Total time spent up to now :     0.80 secs
+
+  Computing E(   340 ) = -13.21321 eV
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     0.83 secs
+
+  Computing E(   360 ) = -12.81281 eV
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     0.85 secs
+
+  Computing E(   380 ) = -12.41241 eV
+  T matrix converged after avg. # of iterations    2.000
+
+                              Total time spent up to now :     0.87 secs
+
+  Computing E(   400 ) = -12.01201 eV
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     0.89 secs
+
+  Computing E(   420 ) = -11.61161 eV
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     0.91 secs
+
+  Computing E(   440 ) = -11.21121 eV
+  T matrix converged after avg. # of iterations   18.000
+
+                              Total time spent up to now :     0.94 secs
+
+  Computing E(   460 ) = -10.81081 eV
+  T matrix converged after avg. # of iterations   19.000
+
+                              Total time spent up to now :     1.00 secs
+
+  Computing E(   480 ) = -10.41041 eV
+  T matrix converged after avg. # of iterations   19.000
+
+                              Total time spent up to now :     1.05 secs
+
+  Computing E(   500 ) = -10.01001 eV
+  T matrix converged after avg. # of iterations   19.000
+
+                              Total time spent up to now :     1.11 secs
+
+  Computing E(   520 ) =  -9.60961 eV
+  T matrix converged after avg. # of iterations   19.000
+
+                              Total time spent up to now :     1.17 secs
+
+  Computing E(   540 ) =  -9.20921 eV
+  T matrix converged after avg. # of iterations   19.000
+
+                              Total time spent up to now :     1.23 secs
+
+  Computing E(   560 ) =  -8.80881 eV
+  T matrix converged after avg. # of iterations   19.000
+
+                              Total time spent up to now :     1.29 secs
+
+  Computing E(   580 ) =  -8.40841 eV
+  T matrix converged after avg. # of iterations   18.000
+
+                              Total time spent up to now :     1.35 secs
+
+  Computing E(   600 ) =  -8.00801 eV
+  T matrix converged after avg. # of iterations   17.000
+
+                              Total time spent up to now :     1.41 secs
+
+  Computing E(   620 ) =  -7.60761 eV
+  T matrix converged after avg. # of iterations    2.000
+
+                              Total time spent up to now :     1.43 secs
+
+  Computing E(   640 ) =  -7.20721 eV
+  T matrix converged after avg. # of iterations    2.000
+
+                              Total time spent up to now :     1.44 secs
+
+  Computing E(   660 ) =  -6.80681 eV
+  T matrix converged after avg. # of iterations    2.000
+
+                              Total time spent up to now :     1.46 secs
+
+  Computing E(   680 ) =  -6.40641 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     1.48 secs
+
+  Computing E(   700 ) =  -6.00601 eV
+  T matrix converged after avg. # of iterations    1.000
+
+                              Total time spent up to now :     1.49 secs
+
+  Computing E(   720 ) =  -5.60561 eV
+  T matrix converged after avg. # of iterations    2.000
+
+                              Total time spent up to now :     1.51 secs
+
+  Computing E(   740 ) =  -5.20521 eV
+  T matrix converged after avg. # of iterations    2.000
+
+                              Total time spent up to now :     1.52 secs
+
+  Computing E(   760 ) =  -4.80480 eV
+  T matrix converged after avg. # of iterations    2.000
+
+                              Total time spent up to now :     1.54 secs
+
+  Computing E(   780 ) =  -4.40440 eV
+  T matrix converged after avg. # of iterations   16.000
+
+                              Total time spent up to now :     1.56 secs
+
+  Computing E(   800 ) =  -4.00400 eV
+  T matrix converged after avg. # of iterations   18.000
+
+                              Total time spent up to now :     1.61 secs
+
+  Computing E(   820 ) =  -3.60360 eV
+  T matrix converged after avg. # of iterations   19.000
+
+                              Total time spent up to now :     1.67 secs
+
+  Computing E(   840 ) =  -3.20320 eV
+  T matrix converged after avg. # of iterations   19.000
+
+                              Total time spent up to now :     1.72 secs
+
+  Computing E(   860 ) =  -2.80280 eV
+  T matrix converged after avg. # of iterations   19.000
+
+                              Total time spent up to now :     1.78 secs
+
+  Computing E(   880 ) =  -2.40240 eV
+  T matrix converged after avg. # of iterations   19.000
+
+                              Total time spent up to now :     1.84 secs
+
+  Computing E(   900 ) =  -2.00200 eV
+  T matrix converged after avg. # of iterations   19.000
+
+                              Total time spent up to now :     1.89 secs
+
+  Computing E(   920 ) =  -1.60160 eV
+  T matrix converged after avg. # of iterations   19.000
+
+                              Total time spent up to now :     1.95 secs
+
+  Computing E(   940 ) =  -1.20120 eV
+  T matrix converged after avg. # of iterations   19.000
+
+                              Total time spent up to now :     2.01 secs
+
+  Computing E(   960 ) =  -0.80080 eV
+  T matrix converged after avg. # of iterations    5.000
+
+                              Total time spent up to now :     2.06 secs
+
+  Computing E(   980 ) =  -0.40040 eV
+  T matrix converged after avg. # of iterations    3.000
+
+                              Total time spent up to now :     2.08 secs
+
+  Computing E(  1000 ) =   0.00000 eV
+  T matrix converged after avg. # of iterations    2.000
+
+                              Total time spent up to now :     2.10 secs
+
+
+  ======================================================================
+  =  Writing data                                                      =
+  ======================================================================
+
+
+  Conductance written on file:    cond.dat
+          DOS written on file:    doscond.dat
+
+  ======================================================================
+
+   <global routines>
+             clock number :     9
+
+                conductor :     2.00s CPU 
+ 
+            smearing_init :     0.09s CPU
+                   cft_1z :     0.06s CPU (       2 calls,   0.030 s avg)
+              read_matrix :     0.08s CPU (       7 calls,   0.011 s avg)
+              fourier_par :     0.00s CPU (       7 calls,   0.000 s avg)
+                 transfer :     1.38s CPU (    2000 calls,   0.001 s avg)
+                    green :     0.08s CPU (    2000 calls,   0.000 s avg)
+              gzero_maker :     0.03s CPU (    3000 calls,   0.000 s avg)
+            transmittance :     0.13s CPU (    1000 calls,   0.000 s avg)
+
+

@@ -1,0 +1,432 @@
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <disentangle>  v. 2.1.0  starts ...
+  Date 19May2007 at  2:45:34 
+
+     Serial run.
+
+          BUILT :    Fri May 18 15:33:46 2007
+           HOST :    i686-pc-linux-gnu
+           ARCH :    ia32
+             CC :    cc
+            CPP :    cpp
+            F90 :    ifort
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW
+      BLAS LIBS :    -lblas
+    LAPACK LIBS :    -llapack
+       FFT LIBS :    -lfftw
+      MASS LIBS :    
+
+
+  DFT-data fmt automaticaly detected: qexml
+  DFT-data read from file: al5.save/data-file.xml
+
+
+  ======================================================================
+  =                           INPUT Summary                            =
+  ======================================================================
+
+ <CONTROL>
+            Calculation title :     Wannier Transport Calculation
+                       prefix :     al5
+                      postfix :     _WanT
+                     work_dir :     ./SCRATCH/
+                  dftdata_fmt :     qexml  v1.2.0
+
+                 wantdata_fmt :     binary
+                    verbosity :     medium
+                 restart_mode :     from_scratch
+                  unitary_thr :       0.1000E-05
+               Calc. overlaps :     TRUE 
+            Calc. projections :     TRUE 
+
+           Read init subspace :     FALSE
+         Read init unit. mat. :     FALSE
+              Read pseudopot. :     TRUE 
+           Use penalty funct. :     TRUE 
+
+               Use debug mode :     FALSE
+ <CONTROL>
+
+ <SUBSPACE>
+                      dimwann :           20
+                subspace_init :     center_projections
+               spin_component :     none
+              disentangle_thr :       0.1000E-07
+                      win_max :      10.0000
+                     froz_max :       1.5000
+                    alpha_dis :       0.5000
+                  maxiter_dis :         1000
+                   nprint_dis :           50
+                    nsave_dis :          200
+ </SUBSPACE>
+
+ <LOCALIZATION>
+            localization_init :     center_projections
+                ordering_mode :     none
+                   collect_wf :     FALSE
+                  wannier_thr :       0.1000E-05
+                   alpha0_wan :       0.5000
+                   alpha1_wan :       0.5000
+                 maxiter0_wan :          100
+                 maxiter1_wan :         5000
+                          ncg :            5
+                   nprint_wan :           50
+                    nsave_wan :          200
+                    a_condmin :      20.0000
+                 dump_condmin :       0.0000
+                niter_condmin :         5100
+ </LOCALIZATION>
+
+ <TRIAL_CENTERS>
+  Trial centers: (cart. coord. in Bohr)
+
+      #    Type        l   m    Position                             Decay    Weight
+    ---- ----------- -------- ------------------------------------ --------- -------
+      1   1gauss       0   0   (   0.000000   0.000000   0.000000 )  0.60000   1.000
+      2   1gauss       1   0   (   0.000000   0.000000   2.250000 )  0.60000   1.000
+      3   1gauss       1  -1   (   0.000000   0.000000   0.000000 )  0.60000   1.000
+      4   1gauss       1   1   (   0.000000   0.000000   0.000000 )  0.60000   1.000
+      5   1gauss       0   0   (   0.000000   0.000000   4.500000 )  0.60000   1.000
+      6   1gauss       1   0   (   0.000000   0.000000   6.750000 )  0.60000   1.000
+      7   1gauss       1  -1   (   0.000000   0.000000   4.500000 )  0.60000   1.000
+      8   1gauss       1   1   (   0.000000   0.000000   4.500000 )  0.60000   1.000
+      9   1gauss       0   0   (   0.000000   0.000000   9.000000 )  0.60000   1.000
+     10   1gauss       1   0   (   0.000000   0.000000  11.250000 )  0.60000   1.000
+     11   1gauss       1  -1   (   0.000000   0.000000   9.000000 )  0.60000   1.000
+     12   1gauss       1   1   (   0.000000   0.000000   9.000000 )  0.60000   1.000
+     13   1gauss       0   0   (   0.000000   0.000000  13.500000 )  0.60000   1.000
+     14   1gauss       1   0   (   0.000000   0.000000  15.750000 )  0.60000   1.000
+     15   1gauss       1  -1   (   0.000000   0.000000  13.500000 )  0.60000   1.000
+     16   1gauss       1   1   (   0.000000   0.000000  13.500000 )  0.60000   1.000
+     17   1gauss       0   0   (   0.000000   0.000000  18.000000 )  0.60000   1.000
+     18   1gauss       1   0   (   0.000000   0.000000  20.250000 )  0.60000   1.000
+     19   1gauss       1  -1   (   0.000000   0.000000  18.000000 )  0.60000   1.000
+     20   1gauss       1   1   (   0.000000   0.000000  18.000000 )  0.60000   1.000
+
+ </TRIAL_CENTERS>
+
+
+  ======================================================================
+  =                              DFT data                              =
+  ======================================================================
+
+ <LATTICE>
+  Alat  =      12.0000000 (Bohr)
+  Alat  =       6.3501240 (Ang )
+  Omega =    3240.0000000 (Bohr^3)
+  Omega =     480.1178911 (Ang^3 )
+
+  Crystal axes:
+                in units of Bohr                 in Alat units
+    a(1) = ( 12.0000  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    a(2) = (  0.0000 12.0000  0.0000 )     (   0.0000  1.0000  0.0000 )
+    a(3) = (  0.0000  0.0000 22.5000 )     (   0.0000  0.0000  1.8750 )
+  Crystal axes: (Ang)
+    a(1) = (  6.3501  0.0000  0.0000 )
+    a(2) = (  0.0000  6.3501  0.0000 )
+    a(3) = (  0.0000  0.0000 11.9065 )
+
+   Reciprocal lattice vectors:
+                in units of Bohr^-1              in 2Pi/Alat units
+    b(1) = (  0.5236  0.0000  0.0000 )     (   1.0000  0.0000  0.0000 )
+    b(2) = (  0.0000  0.5236  0.0000 )     (   0.0000  1.0000  0.0000 )
+    b(3) = (  0.0000  0.0000  0.2793 )     (   0.0000  0.0000  0.5333 )
+ </LATTICE>
+
+ <IONS>
+  Number of chemical species =  1
+     Pseudo( 1) = Al.pz-vbc.UPF
+
+     Pseudo( 1) is Al         zval =  3.0   lmax= 1   lloc= 0
+     (in numerical form:   171 grid points, xmin =  0.00, dx = 0.0000)
+
+  Atomic positions: (cart. coord. in Bohr)
+     Al   tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
+     Al   tau(   2 ) = (   0.0000000   0.0000000   4.5000000 )
+     Al   tau(   3 ) = (   0.0000000   0.0000000   9.0000000 )
+     Al   tau(   4 ) = (   0.0000000   0.0000000  13.5000000 )
+     Al   tau(   5 ) = (   0.0000000   0.0000000  18.0000000 )
+ </IONS>
+
+ <SYMMETRY>
+  Number of symmetry operations = 16
+
+ </SYMMETRY>
+
+ <K-POINTS>
+  nkpts =     4
+  Monkhorst-Pack grid:      nk = (   1   1   4 ),      shift = (   0   0   0 )
+
+  K-point calculation: (cart. coord. in Bohr^-1)
+    k (    1) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      0.2500000
+    k (    2) =    (    0.0000000   0.0000000   0.0698132 ),   weight =      0.2500000
+    k (    3) =    (    0.0000000   0.0000000   0.1396263 ),   weight =      0.2500000
+    k (    4) =    (    0.0000000   0.0000000   0.2094395 ),   weight =      0.2500000
+ </K-POINTS>
+
+ <B-SHELL>
+  List of the  6 b-vectors : (Bohr^-1) 
+    b (    1) =    (   -0.5235988   0.0000000   0.0000000 ),   weight =      1.8237813
+    b (    2) =    (    0.5235988   0.0000000   0.0000000 ),   weight =      1.8237813
+    b (    3) =    (    0.0000000  -0.5235988   0.0000000 ),   weight =      1.8237813
+    b (    4) =    (    0.0000000   0.5235988   0.0000000 ),   weight =      1.8237813
+    b (    5) =    (    0.0000000   0.0000000   0.0698132 ),   weight =    102.5876984
+    b (    6) =    (    0.0000000   0.0000000  -0.0698132 ),   weight =    102.5876984
+
+  Total weight =     212.4705221
+ </B-SHELL>
+
+ <WINDOWS>
+  Definition of energy windows: (energies in eV)
+    outer window: E  = (  -inf ,   10.0000 )
+    Max number of bands within the energy window =    50
+
+  Electronic Structure from DFT calculation:
+    nkpts =   4,     nbnd =  50,
+    nspin =   1
+    Fermi energy =   -1.811527196 eV
+ !
+ !    kpt =    1 (   0.00000  0.00000  0.00000 )    dimwin =   50
+ !                                       imin =    1  imax =   50
+ !   Eigenvalues:
+ !    -8.4058  -7.3736  -7.3736  -4.4800  -4.4800  -2.2032  -2.2032  -1.2330
+ !    -1.2330  -1.2330  -1.2330   0.6137   0.6137   0.6407   1.6150   1.6150
+ !     1.6753   1.6753   1.6753   1.6753   1.9870   3.0431   3.0431   3.8231
+ !     4.8719   4.8719   5.1116   5.1116   5.1940   5.1940   5.8010   5.9606
+ !     5.9606   6.1976   6.1976   6.2313   6.2313   6.2313   6.2313   6.6077
+ !     6.6077   6.6077   6.6077   7.9374   7.9374   7.9745   7.9745   9.3467
+ !     9.3467   9.3467
+ !
+ !    kpt =    2 (   0.00000  0.00000  0.06981 )    dimwin =   50
+ !                                       imin =    1  imax =   50
+ !   Eigenvalues:
+ !    -8.3389  -7.8216  -6.8044  -5.3382  -3.6257  -2.1420  -2.1420  -1.6573
+ !    -1.6573  -0.6870  -0.6870  -0.4574   0.7042   0.7685   0.7685   1.1999
+ !     1.7404   2.0530   2.0903   2.5812   2.6921   2.6921   3.6366   3.8888
+ !     4.3265   4.4134   5.1023   5.2158   5.2194   5.2194   5.2590   5.2590
+ !     5.4601   5.7775   5.7775   5.8514   6.1145   6.1326   6.8149   6.8149
+ !     7.0177   7.2946   8.0309   8.1286   8.1286   8.3792   8.3792   8.6098
+ !     8.7365   9.0069
+ !
+ !    kpt =    3 (   0.00000  0.00000  0.13963 )    dimwin =   50
+ !                                       imin =    1  imax =   50
+ !   Eigenvalues:
+ !    -8.1444  -8.1444  -6.1227  -6.1227  -3.1543  -1.9604  -1.9604  -1.9604
+ !    -1.9604  -1.0083  -0.0200  -0.0200  -0.0200  -0.0200   0.8919   0.8919
+ !     2.2511   2.2511   2.3689   2.3689   3.5754   3.5754   4.0856   4.0856
+ !     4.2124   4.2124   4.2193   4.2193   4.3612   4.3612   5.4534   5.4534
+ !     5.4534   5.4534   5.9868   5.9868   6.1764   6.1764   6.9517   7.5281
+ !     7.5281   7.5281   7.5281   7.7858   8.2404   8.5852   8.5852   8.9310
+ !     9.4279   9.4279
+ !
+ !    kpt =    4 (   0.00000  0.00000  0.20944 )    dimwin =   50
+ !                                       imin =    1  imax =   50
+ !   Eigenvalues:
+ !    -8.3389  -7.8216  -6.8044  -5.3382  -3.6257  -2.1420  -2.1420  -1.6573
+ !    -1.6573  -0.6870  -0.6870  -0.4574   0.7042   0.7685   0.7685   1.1999
+ !     1.7404   2.0530   2.0903   2.5812   2.6921   2.6921   3.6366   3.8888
+ !     4.3265   4.4134   5.1023   5.2158   5.2194   5.2194   5.2590   5.2590
+ !     5.4601   5.7775   5.7775   5.8514   6.1145   6.1326   6.8149   6.8149
+ !     7.0177   7.2946   8.0309   8.1286   8.1286   8.3792   8.3792   8.6098
+ !     8.7365   9.0069
+
+    inner window: E  = (  -inf ,   1.5000 ) --> FROZEN STATES
+    there are  14 frozen states at k-point =     1
+    there are  16 frozen states at k-point =     2
+    there are  16 frozen states at k-point =     3
+    there are  16 frozen states at k-point =     4
+ </WINDOWS>
+
+
+
+  ======================================================================
+  =                      Overlaps and Projections                      =
+  ======================================================================
+
+  Reading density G-grid from file: al5.save/data-file.xml
+  Reading Wfc grids from file: al5.save/data-file.xml
+
+
+          Energy cut-off for wfcs =         15.00 (Ry)
+                         for rho  =         60.00 (Ry)
+      Total number of PW for rho  =      25439
+        Max number of PW for wfc  =       3235
+      Total number of PW for wfcs =       3636
+        FFT grid components (rho) =  (    30   30   60 )
+
+
+  Initializing global dft data
+    Overlaps or Projections calculation for k-point:    1
+    npw =   3235,    dimwin =   50
+                              Total time spent up to now :     1.16 secs
+
+    Overlaps or Projections calculation for k-point:    2
+    npw =   3192,    dimwin =   50
+                              Total time spent up to now :     2.07 secs
+
+    Overlaps or Projections calculation for k-point:    3
+    npw =   3220,    dimwin =   50
+                              Total time spent up to now :     3.11 secs
+
+    Overlaps or Projections calculation for k-point:    4
+    npw =   3192,    dimwin =   50
+                              Total time spent up to now :     4.08 secs
+
+
+  Overlaps and projections written on file: al5_WanT.ovp
+                              Total time spent up to now :     4.31 secs
+
+
+  ======================================================================
+  =                      Starting Iteration loop                      =
+  ======================================================================
+
+
+  Initial trial subspace: projected localized orbitals
+  There are frozen states
+
+  Iteration =     1     Omega_I =  285.364123      Error =      0.39615844
+  Iteration =     2     Omega_I =  198.181520      Error =      0.43991288
+  Iteration =     3     Omega_I =  176.843674      Error =      0.12065937
+  Iteration =     4     Omega_I =  166.120089      Error =      0.06455321
+  Iteration =     5     Omega_I =  158.493307      Error =      0.04812053
+  Iteration =     6     Omega_I =  152.745592      Error =      0.03762934
+  Iteration =     7     Omega_I =  148.305739      Error =      0.02993717
+  Iteration =     8     Omega_I =  144.826746      Error =      0.02402176
+  Iteration =     9     Omega_I =  142.074376      Error =      0.01937273
+  Iteration =    10     Omega_I =  139.881679      Error =      0.01567537
+  Iteration =    11     Omega_I =  138.125667      Error =      0.01271315
+  Iteration =    12     Omega_I =  136.713659      Error =      0.01032821
+  Iteration =    13     Omega_I =  135.574637      Error =      0.00840144
+  Iteration =    14     Omega_I =  134.653475      Error =      0.00684098
+  Iteration =    15     Omega_I =  133.906957      Error =      0.00557490
+  Iteration =    16     Omega_I =  133.300937      Error =      0.00454626
+  Iteration =    17     Omega_I =  132.808265      Error =      0.00370964
+  Iteration =    18     Omega_I =  132.407254      Error =      0.00302862
+  Iteration =    19     Omega_I =  132.080507      Error =      0.00247385
+  Iteration =    20     Omega_I =  131.814027      Error =      0.00202164
+  Iteration =    21     Omega_I =  131.596522      Error =      0.00165282
+  Iteration =    22     Omega_I =  131.418864      Error =      0.00135185
+  Iteration =    23     Omega_I =  131.273658      Error =      0.00110613
+  Iteration =    24     Omega_I =  131.154908      Error =      0.00090542
+  Iteration =    25     Omega_I =  131.057742      Error =      0.00074140
+  Iteration =    26     Omega_I =  130.978198      Error =      0.00060731
+  Iteration =    27     Omega_I =  130.913051      Error =      0.00049764
+  Iteration =    28     Omega_I =  130.859673      Error =      0.00040790
+  Iteration =    29     Omega_I =  130.815922      Error =      0.00033445
+  Iteration =    30     Omega_I =  130.780049      Error =      0.00027430
+  Iteration =    31     Omega_I =  130.750626      Error =      0.00022503
+  Iteration =    32     Omega_I =  130.726485      Error =      0.00018466
+  Iteration =    33     Omega_I =  130.706673      Error =      0.00015158
+  Iteration =    34     Omega_I =  130.690409      Error =      0.00012445
+  Iteration =    35     Omega_I =  130.677054      Error =      0.00010220
+  Iteration =    36     Omega_I =  130.666086      Error =      0.00008394
+  Iteration =    37     Omega_I =  130.657075      Error =      0.00006897
+  Iteration =    38     Omega_I =  130.649670      Error =      0.00005667
+  Iteration =    39     Omega_I =  130.643584      Error =      0.00004658
+  Iteration =    40     Omega_I =  130.638582      Error =      0.00003830
+  Iteration =    41     Omega_I =  130.634468      Error =      0.00003149
+  Iteration =    42     Omega_I =  130.631085      Error =      0.00002590
+  Iteration =    43     Omega_I =  130.628302      Error =      0.00002130
+  Iteration =    44     Omega_I =  130.626012      Error =      0.00001753
+  Iteration =    45     Omega_I =  130.624128      Error =      0.00001443
+  Iteration =    46     Omega_I =  130.622577      Error =      0.00001188
+  Iteration =    47     Omega_I =  130.621299      Error =      0.00000978
+  Iteration =    48     Omega_I =  130.620248      Error =      0.00000805
+  Iteration =    49     Omega_I =  130.619381      Error =      0.00000663
+  Iteration =    50     Omega_I =  130.618667      Error =      0.00000547
+
+                              Total time spent up to now :     5.27 secs
+
+  Iteration =    51     Omega_I =  130.618078      Error =      0.00000451
+  Iteration =    52     Omega_I =  130.617593      Error =      0.00000372
+  Iteration =    53     Omega_I =  130.617193      Error =      0.00000306
+  Iteration =    54     Omega_I =  130.616863      Error =      0.00000253
+  Iteration =    55     Omega_I =  130.616590      Error =      0.00000209
+  Iteration =    56     Omega_I =  130.616365      Error =      0.00000172
+  Iteration =    57     Omega_I =  130.616179      Error =      0.00000142
+  Iteration =    58     Omega_I =  130.616025      Error =      0.00000118
+  Iteration =    59     Omega_I =  130.615898      Error =      0.00000097
+  Iteration =    60     Omega_I =  130.615793      Error =      0.00000081
+  Iteration =    61     Omega_I =  130.615706      Error =      0.00000067
+  Iteration =    62     Omega_I =  130.615633      Error =      0.00000055
+  Iteration =    63     Omega_I =  130.615574      Error =      0.00000046
+  Iteration =    64     Omega_I =  130.615524      Error =      0.00000038
+  Iteration =    65     Omega_I =  130.615483      Error =      0.00000032
+  Iteration =    66     Omega_I =  130.615448      Error =      0.00000026
+  Iteration =    67     Omega_I =  130.615420      Error =      0.00000022
+  Iteration =    68     Omega_I =  130.615396      Error =      0.00000018
+  Iteration =    69     Omega_I =  130.615376      Error =      0.00000015
+  Iteration =    70     Omega_I =  130.615359      Error =      0.00000013
+  Iteration =    71     Omega_I =  130.615345      Error =      0.00000011
+  Iteration =    72     Omega_I =  130.615334      Error =      0.00000009
+  Iteration =    73     Omega_I =  130.615324      Error =      0.00000007
+  Iteration =    74     Omega_I =  130.615316      Error =      0.00000006
+  Iteration =    75     Omega_I =  130.615309      Error =      0.00000005
+  Iteration =    76     Omega_I =  130.615303      Error =      0.00000004
+  Iteration =    77     Omega_I =  130.615298      Error =      0.00000004
+  Iteration =    78     Omega_I =  130.615294      Error =      0.00000003
+  Iteration =    79     Omega_I =  130.615290      Error =      0.00000003
+  Iteration =    80     Omega_I =  130.615287      Error =      0.00000002
+  Iteration =    81     Omega_I =  130.615285      Error =      0.00000002
+  Iteration =    82     Omega_I =  130.615283      Error =      0.00000002
+  Iteration =    83     Omega_I =  130.615281      Error =      0.00000001
+  Iteration =    84     Omega_I =  130.615279      Error =      0.00000001
+  Iteration =    85     Omega_I =  130.615278      Error =      0.00000001
+  Iteration =    86     Omega_I =  130.615276      Error =      0.00000001
+
+
+  ======================================================================
+  =                        Convergence Achieved                        =
+  ======================================================================
+
+  Iteration # :    86
+  Final Omega_I (Bohr^2, Angstrom^2):     130.615276        36.575973
+   Avrg Omega_I                     :       6.530764         1.828799
+
+                              Total time spent up to now :     5.81 secs
+
+
+  Subspace data written on file: al5_WanT.space
+
+  ======================================================================
+
+   <global routines>
+             clock number :    24
+
+              disentangle :     5.00s CPU 
+ 
+             want_dftread :     0.14s CPU
+         windows_read_ext :     0.02s CPU
+                want_init :     0.00s CPU
+             bshells_init :     0.00s CPU
+             windows_init :     0.00s CPU
+              wfc_manager :     4.14s CPU
+          ggrids_read_ext :     0.04s CPU
+      wfc_data_grids_read :     0.01s CPU
+              struct_fact :     0.01s CPU
+           wfc_data_kread :     0.61s CPU (      16 calls,   0.038 s avg)
+                  overlap :     2.65s CPU (      12 calls,   0.221 s avg)
+           overlap_setmap :     0.04s CPU (      12 calls,   0.004 s avg)
+                    s_psi :     0.02s CPU (       4 calls,   0.006 s avg)
+               projection :     0.54s CPU (       4 calls,   0.135 s avg)
+       trial_center_setup :     0.16s CPU (      80 calls,   0.002 s avg)
+               iterations :     1.49s CPU
+            subspace_init :     0.03s CPU
+        projection_frozen :     0.02s CPU
+                   omegai :     0.01s CPU (      87 calls,   0.000 s avg)
+                  zmatrix :     0.34s CPU (     344 calls,   0.001 s avg)
+                mat_hdiag :     0.59s CPU (     352 calls,   0.002 s avg)
+            windows_write :     0.00s CPU
+           subspace_write :     0.01s CPU
+
+

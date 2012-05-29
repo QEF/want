@@ -1,0 +1,21 @@
+
+  &INPUT_CONDUCTOR
+    postfix='_H6_qe'
+    dimC = 6
+    calculation_type = 'bulk'
+    ne = 2000  
+    emin =  -5.0
+    emax =  10.0 
+    datafile_C = "./SCRATCH/hydrogen_H6_WanT.ham"
+    transport_dir = 3
+    delta = 0.0005
+    smearing_type = "lorentzian"
+  /
+
+<HAMILTONIAN_DATA>
+
+   <H00_C  cols="ALL" rows="ALL" />
+   <H_CR   cols="ALL" rows="ALL" />
+
+</HAMILTONIAN_DATA>
+

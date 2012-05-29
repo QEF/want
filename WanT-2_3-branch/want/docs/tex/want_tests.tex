@@ -1,0 +1,96 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Copyright (C) 2005 WanT group                         %
+%  This file is distributed under the terms of the       %
+%  GNU General Public License.                           %
+%  See the file `License'  in the root directory of      %
+%  the present distribution,                             %
+%  or http://www.gnu.org/copyleft/gpl.txt                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\thispagestyle{empty}
+\section{The test suite}
+\label{section:test}
+%
+\WANT{} package is distributed with a suite of tests which are
+intended to check the portability of the code and to show its
+features. Along these lines, reference results as well as detailed
+explanations are supplied.  A discussion on how to fruitfully use
+the test suite is reported in the following.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{HOW TO set up the environment}
+     In order to get started with running tests you should modify the
+     {\tt \~{}want/tests/environment.conf} file according to your system.
+     You should provide the location of the executables for DFT calculation
+     (at present, tests are suited for the \PWSCF{} code) and the directory
+     that will be used for temporary files ({\tt scratch}).
+     In the case of parallel machines you are also requested to
+     specify some special commands to run the DFT codes within an
+     MPI environment.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{HOW TO run the tests}
+     After environment setting, you can directly start running tests. The
+     script {\tt run.sh} in {\tt \~{}want/tests/} (type {\tt ./run.sh} to get a
+     short manual) manages all operations on the tests.
+     The script should be run with the following arguments: \\
+
+     {\tt  ./run.sh -r <what>  [<test\_list>] } \\
+
+     \noindent
+     {\tt <test\_list>} is optional and is the list of the tests we want to
+     perform. A missing list performs all tests.
+     Possible actions ({\tt <what>}) to be performed are: \\
+
+     %
+     %
+     \begin{tabular}{ll}
+{\tt help}     &       print the manual  \\
+{\tt info}     &       print detailed info about the implemented tests \\
+{\tt all}      &       perform all the calculations \\
+{\tt dft}      &       perform DFT calculations only \\
+{\tt want}     &       perform \WANT{} calculations only \\
+{\tt check}    &       check results with the reference outputs \\
+{\tt clean}    &       delete all output files and the temporary directory \\
+\end{tabular}
+%
+%
+\\
+
+     \noindent
+     Tests can also be performed
+     by cd-ing in the specific test directory and running the local script
+     typing {\tt ./run.sh <flag>}.
+     The list of possible {\tt <flag>}'s and a brief explanation is printed by
+     executing {\tt ./run.sh} (typical flags with obvious meanings are
+     {\tt scf, nscf, disentangle, wannier})
+     If you type {\tt ./run.sh all}, inside a specific
+     test directory, the test will be completely performed.
+     Note that some tests contain more than one \WANT{} calculation; each of them
+     has its specific {\tt run\_\$suffix.sh} script.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{HOW TO check the tests}
+%
+     In each test directory you will find the {\tt Reference} directory
+     containing the distributed reference output files.
+     Each {\tt run.sh} script accepts the flag {\tt check}: this
+     prints a short version of the {\tt diff} between the current output files and
+     the reference ones.
+     If you need more detail (as in the case of a clear failure), you are advised
+     to directly check your output with a simple {\tt diff} command: \\
+
+        {\tt diff myreport.out Reference/myreport.out } \\
+
+     \noindent
+     Doing this, remember that you will usually obtain a large amount of data:
+     since for instance the phases of the wave-functions are almost
+     randomized, the initial steps both in disentanglement and Wannier minimizations
+     may be very different.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{HOW TO understand the tests}
+     In each test directory you will find a {\tt README} file describing the
+     physics of the test and the results obtained in the calculation.
+     Some tricky and subtle problems about the input files
+     are eventually raised and discussed.

@@ -1,0 +1,100 @@
+
+==============================================================================
+
+                  ********* code: dos.x  **********
+
+==============================================================================
+
+INPUT file layout
+-----------------------------------
+
+&INPUT
+   ...
+/
+
+-----------------------------------
+
+==============================================================================
+
+NAMELIST &INPUT
+
+prefix        STRING
+              the first part of the name of all the file written by the code
+              should be equal to the value given in the main calculations.
+              DEFAULT: mandatory
+
+postfix       STRING
+              the tail of the names of the above mentioned files (useful e.g. to
+              distinguish among different calculations having a common part).
+              should be equal to the value given in the main calculations.
+              DEFAULT: ""
+
+work_dir      STRING
+              the scratch directory where the massive data file will be written
+              DEFAULT: "./"
+
+datafile_dft  STRING
+              the name of the datafile for DFT when importing data from 
+              CRYSTAL06.
+              DEFAULT: " "
+
+datafile_sgm  STRING
+              If specified, the code reads the file to search for a static or dynamical
+              self-energy operator to be taken into account in the calculation of the DOS. 
+              DEFAULT : ""
+
+fileout       STRING
+              the file used to write the computed DOS.
+              DEFAULT: "$work_dir/${prefix}${suffix}_dos.dat"
+
+nk(3)         INTEGER
+              the 3D k-points mesh used to computed the DOS.
+              DEFAULT: mandatory.
+
+s(3)          INTEGER
+              the shift vector used to generate the Monkhorst-Pack k-point mesh.
+              DEFAULT: 0, 0, 0
+
+ne            INTEGER
+              dimension of the energy grid for DOS calculation.
+              DEFAULT : 1000
+
+emin          REAL
+              lower limit [eV] of the energy grid.
+              DEFAULT : -10.0
+
+emax          REAL
+              upper limit [eV] of the energy grid.
+              DEFAULT : +10.0
+
+delta         REAL
+              the smearing parameter [eV] used in the calculation of the DOS.
+              DEFAULT : 0.1
+
+smearing_type STRING
+              ( "lorantzian" | "gaussian" | "fermi-dirac", "fd" | "methfessel-paxton", "mp" |
+                "marzari-vanderbilt", "mv" )
+              the shape of the used smearing function.
+              DEFAULT : "gaussian"
+
+ircut(1:3)    INTEGER
+              if different for zero along direction i, the hamiltonian is cutoff
+              (and so the corresponding sgm) for values of R larger than ircut(i).
+              ircut is intended to be in crystal units.
+              DEFAULT : 0, 0, 0
+
+projdos       LOGICAL
+              if .TRUE. computes and writes WF projected-DOS.
+              DEFAULT : .FALSE.
+
+debug_level   INTEGER
+              level of debug report; values <= 0 switch the debug_mode off 
+              DEFAULT: 0
+
+nprint        INTEGER
+              every nprint energy steps write to stdout.
+              DEFAULT : 20
+
+
+==============================================================================
+

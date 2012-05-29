@@ -1,0 +1,471 @@
+
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <disentangle>  v. 2.3.0  starts ...
+  Date  6Apr2010 at  7:52:34 
+
+     Parallel run, # proc:    6
+
+          BUILT :    Tue Apr  6 07:04:52 2010
+           HOST :    x86_64-unknown-linux-gnu
+           ARCH :    x86_64
+             CC :    icc
+            CPP :    cpp
+            F90 :    mpif90
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA
+      BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
+    LAPACK LIBS :    
+       FFT LIBS :    
+      MASS LIBS :    
+
+
+  checking for fmt wannier90... no
+  checking for fmt crystal... no
+  checking for fmt qexml... ok
+
+  DFT-data fmt automaticaly detected: qexml
+  DFT-data read from file: pt1.save/data-file.xml
+
+
+  ======================================================================
+  =  INPUT Summary                                                     =
+  ======================================================================
+
+ <CONTROL>
+            Calculation title :     Wannier Transport Calculation
+                       prefix :     pt1
+                      postfix :     _WanT
+                     work_dir :     ./SCRATCH/
+                  dftdata_fmt :     qexml  v1.4.0
+
+                 wantdata_fmt :     binary
+                    verbosity :     medium
+                 restart_mode :     from_scratch
+                  unitary_thr :       0.1000E-05
+               Calc. overlaps :     TRUE 
+            Calc. projections :     TRUE 
+
+           Read init subspace :     FALSE
+         Read init unit. mat. :     FALSE
+              Read pseudopot. :     TRUE 
+           Use penalty funct. :     FALSE
+
+               Use debug mode :     FALSE
+ <CONTROL>
+
+ <SUBSPACE>
+                      dimwann :            6
+                subspace_init :     center_projections
+               spin_component :     none
+              disentangle_thr :       0.1000E-07
+                      win_max :       2.0000
+                     froz_max :      -4.5000
+                    alpha_dis :       0.5000
+                  maxiter_dis :         1000
+                   nprint_dis :           50
+                    nsave_dis :          200
+ </SUBSPACE>
+
+ <LOCALIZATION>
+            localization_init :     center_projections
+                ordering_mode :     none
+                   collect_wf :     FALSE
+                  wannier_thr :       0.1000E-05
+                   alpha0_wan :       0.5000
+                   alpha1_wan :       0.5000
+                 maxiter0_wan :          100
+                 maxiter1_wan :         1500
+                          ncg :            5
+                   nprint_wan :           50
+                    nsave_wan :          200
+ </LOCALIZATION>
+
+ <TRIAL_CENTERS>
+  Trial centers: (cart. coord. in Bohr)
+
+      #     Type          l   m       Position                              Decay
+    ----  ------------  --------   ------------------------------------   ---------
+      1    atomic  Pt     2  -2    (   0.000000   0.000000   0.000000 )    0.00000
+      2    atomic  Pt     2  -1    (   0.000000   0.000000   0.000000 )    0.00000
+      3    atomic  Pt     2   0    (   0.000000   0.000000   0.000000 )    0.00000
+      4    atomic  Pt     2   1    (   0.000000   0.000000   0.000000 )    0.00000
+      5    atomic  Pt     2   2    (   0.000000   0.000000   0.000000 )    0.00000
+      6    1gauss         0   0    (   0.000000   0.000000   2.277121 )    0.50000
+
+ </TRIAL_CENTERS>
+
+
+  ======================================================================
+  =  DFT data                                                          =
+  ======================================================================
+
+ <LATTICE>
+  Alat  =      18.0000000 (Bohr)
+  Alat  =       9.5251860 (Ang )
+  Omega =    1475.5743354 (Bohr^3)
+  Omega =     218.6572957 (Ang^3 )
+
+  Crystal axes:
+                in Bohr units                           in Alat units
+    a(1) = (   18.00000    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    a(2) = (    0.00000   18.00000    0.00000 )    (    0.00000    1.00000    0.00000 )
+    a(3) = (    0.00000    0.00000    4.55424 )    (    0.00000    0.00000    0.25301 )
+                in Ang units
+    a(1) = (    9.52519    0.00000    0.00000 )
+    a(2) = (    0.00000    9.52519    0.00000 )
+    a(3) = (    0.00000    0.00000    2.41000 )
+
+   Reciprocal lattice vectors:
+                in Bohr^-1 units                        in 2Pi/Alat units
+    b(1) = (    0.34907    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    b(2) = (    0.00000    0.34907    0.00000 )    (    0.00000    1.00000    0.00000 )
+    b(3) = (    0.00000    0.00000    1.37963 )    (    0.00000    0.00000    3.95236 )
+ </LATTICE>
+
+ <IONS>
+  Number of chemical species =  1
+  Calculation is done within US pseudopot.
+
+     Pseudo( 1) = Pt.pz-rrkjus.UPF
+
+     PseudoPot. # 1 for Pt read from file Pt.pz-rrkjus.UPF
+     Pseudo is Ultrasoft, Zval = 10.0
+     Generated by new atomic code, or converted to UPF format
+     Using radial grid of 1547 points,  3 beta functions with: 
+                l(1) =   1
+                l(2) =   2
+                l(3) =   2
+     Q(r) pseudized with 0 coefficients 
+
+
+  Atomic positions: (cart. coord. in Bohr)
+     Pt   tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
+ </IONS>
+
+ <K-POINTS>
+         nproc =     6   (Parallelism over kpts)
+  global nkpts =    16
+   local nkpts =     3
+  Monkhorst-Pack grid:      nk = (   1   1  16 ),      shift = (   0   0   0 )
+
+  K-point calculation: (cart. coord. in Bohr^-1)
+    k (    1) =    (    0.0000000   0.0000000  -0.6898168 ),   weight =      0.0625000
+    k (    2) =    (    0.0000000   0.0000000  -0.6035897 ),   weight =      0.0625000
+    k (    3) =    (    0.0000000   0.0000000  -0.5173626 ),   weight =      0.0625000
+    k (    4) =    (    0.0000000   0.0000000  -0.4311355 ),   weight =      0.0625000
+    k (    5) =    (    0.0000000   0.0000000  -0.3449084 ),   weight =      0.0625000
+    k (    6) =    (    0.0000000   0.0000000  -0.2586813 ),   weight =      0.0625000
+    k (    7) =    (    0.0000000   0.0000000  -0.1724542 ),   weight =      0.0625000
+    k (    8) =    (    0.0000000   0.0000000  -0.0862271 ),   weight =      0.0625000
+    k (    9) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      0.0625000
+    k (   10) =    (    0.0000000   0.0000000   0.0862271 ),   weight =      0.0625000
+    k (   11) =    (    0.0000000   0.0000000   0.1724542 ),   weight =      0.0625000
+    k (   12) =    (    0.0000000   0.0000000   0.2586813 ),   weight =      0.0625000
+    k (   13) =    (    0.0000000   0.0000000   0.3449084 ),   weight =      0.0625000
+    k (   14) =    (    0.0000000   0.0000000   0.4311355 ),   weight =      0.0625000
+    k (   15) =    (    0.0000000   0.0000000   0.5173626 ),   weight =      0.0625000
+    k (   16) =    (    0.0000000   0.0000000   0.6035897 ),   weight =      0.0625000
+ </K-POINTS>
+
+ <B-SHELL>
+  List of the  6 b-vectors : (Bohr^-1) 
+    b (    1) =    (   -0.3490659   0.0000000   0.0000000 ),   weight =      4.1035079
+    b (    2) =    (    0.0000000   0.3490659   0.0000000 ),   weight =      4.1035079
+    b (    3) =    (    0.0000000   0.0000000   0.0862271 ),   weight =     67.2484685
+    b (    4) =    (    0.3490659   0.0000000   0.0000000 ),   weight =      4.1035079
+    b (    5) =    (    0.0000000  -0.3490659   0.0000000 ),   weight =      4.1035079
+    b (    6) =    (    0.0000000   0.0000000  -0.0862271 ),   weight =     67.2484685
+
+  Total weight =     150.9109688
+ </B-SHELL>
+
+ <WINDOWS>
+  Definition of energy windows: [eV]
+
+    outer window: E  = (  -inf ,    2.0000 )
+    Max number of bands in the outer window (dimwinx) =     9
+
+  Electronic Structure from DFT calculation:
+    nkpts =  16,     nbnd =   9,
+    nspin =   1
+    Fermi energy =   -4.954528890 eV
+ !
+ !    kpt =     1 (   0.00000  0.00000 -0.68982 )    dimwin =    6
+ !                                       imin =    1  imax =    6
+ !   Eigenvalues:
+ !    -8.7120  -8.7120  -5.3229  -5.3229  -4.6020  -0.0813   3.5287   5.2729
+ !     5.2729
+ !
+ !    kpt =     2 (   0.00000  0.00000 -0.60359 )    dimwin =    6
+ !                                       imin =    1  imax =    6
+ !   Eigenvalues:
+ !    -8.5955  -8.5955  -5.3642  -5.3641  -4.7367  -1.2179   4.5636   4.5636
+ !     4.6356
+ !
+ !    kpt =     3 (   0.00000  0.00000 -0.51736 )    dimwin =    6
+ !                                       imin =    1  imax =    6
+ !   Eigenvalues:
+ !    -8.2528  -8.2528  -5.4799  -5.4798  -5.1735  -3.1404   3.4032   3.4032
+ !     4.7707
+ !
+ !    kpt =     4 (   0.00000  0.00000 -0.43114 )    dimwin =    6
+ !                                       imin =    1  imax =    6
+ !   Eigenvalues:
+ !    -7.7033  -7.7033  -6.2074  -5.6487  -5.6486  -4.6342   2.2885   2.2885
+ !     3.6782
+ !
+ !    kpt =     5 (   0.00000  0.00000 -0.34491 )    dimwin =    8
+ !                                       imin =    1  imax =    8
+ !   Eigenvalues:
+ !    -7.8525  -6.9824  -6.9824  -5.8413  -5.8412  -5.3663   1.2877   1.2877
+ !     2.7887
+ !
+ !    kpt =     6 (   0.00000  0.00000 -0.25868 )    dimwin =    8
+ !                                       imin =    1  imax =    8
+ !   Eigenvalues:
+ !    -9.4125  -6.1449  -6.1449  -6.0275  -6.0274  -5.8339   0.4036   0.4036
+ !     2.0990
+ !
+ !    kpt =     7 (   0.00000  0.00000 -0.17245 )    dimwin =    9
+ !                                       imin =    1  imax =    9
+ !   Eigenvalues:
+ !   -10.6178  -6.1807  -6.1805  -6.1676  -5.2774  -5.2774  -0.3693  -0.3693
+ !     1.6069
+ !
+ !    kpt =     8 (   0.00000  0.00000 -0.08623 )    dimwin =    9
+ !                                       imin =    1  imax =    9
+ !   Eigenvalues:
+ !   -11.3716  -6.3725  -6.2807  -6.2806  -4.5325  -4.5325  -0.9903  -0.9903
+ !     1.3116
+ !
+ !    kpt =     9 (   0.00000  0.00000  0.00000 )    dimwin =    9
+ !                                       imin =    1  imax =    9
+ !   Eigenvalues:
+ !   -11.6275  -6.4417  -6.3154  -6.3154  -4.2043  -4.2043  -1.2638  -1.2638
+ !     1.2132
+ !
+ !    kpt =    10 (   0.00000  0.00000  0.08623 )    dimwin =    9
+ !                                       imin =    1  imax =    9
+ !   Eigenvalues:
+ !   -11.3716  -6.3725  -6.2807  -6.2806  -4.5325  -4.5325  -0.9903  -0.9903
+ !     1.3116
+ !
+ !    kpt =    11 (   0.00000  0.00000  0.17245 )    dimwin =    9
+ !                                       imin =    1  imax =    9
+ !   Eigenvalues:
+ !   -10.6178  -6.1807  -6.1805  -6.1676  -5.2774  -5.2774  -0.3693  -0.3693
+ !     1.6069
+ !
+ !    kpt =    12 (   0.00000  0.00000  0.25868 )    dimwin =    8
+ !                                       imin =    1  imax =    8
+ !   Eigenvalues:
+ !    -9.4125  -6.1449  -6.1449  -6.0275  -6.0274  -5.8339   0.4036   0.4036
+ !     2.0990
+ !
+ !    kpt =    13 (   0.00000  0.00000  0.34491 )    dimwin =    8
+ !                                       imin =    1  imax =    8
+ !   Eigenvalues:
+ !    -7.8525  -6.9824  -6.9824  -5.8413  -5.8412  -5.3663   1.2877   1.2877
+ !     2.7887
+ !
+ !    kpt =    14 (   0.00000  0.00000  0.43114 )    dimwin =    6
+ !                                       imin =    1  imax =    6
+ !   Eigenvalues:
+ !    -7.7033  -7.7033  -6.2074  -5.6487  -5.6486  -4.6342   2.2885   2.2885
+ !     3.6782
+ !
+ !    kpt =    15 (   0.00000  0.00000  0.51736 )    dimwin =    6
+ !                                       imin =    1  imax =    6
+ !   Eigenvalues:
+ !    -8.2528  -8.2528  -5.4799  -5.4798  -5.1735  -3.1404   3.4032   3.4032
+ !     4.7707
+ !
+ !    kpt =    16 (   0.00000  0.00000  0.60359 )    dimwin =    6
+ !                                       imin =    1  imax =    6
+ !   Eigenvalues:
+ !    -8.5955  -8.5955  -5.3642  -5.3641  -4.7367  -1.2179   4.5636   4.5636
+ !     4.6356
+
+    inner window:
+
+       froz_min = -inf
+       froz_max =  -4.5000
+
+    k(    1 )  -->     5  frozen states
+    k(    2 )  -->     5  frozen states
+    k(    3 )  -->     5  frozen states
+    k(    4 )  -->     6  frozen states
+    k(    5 )  -->     6  frozen states
+    k(    6 )  -->     6  frozen states
+    k(    7 )  -->     6  frozen states
+    k(    8 )  -->     6  frozen states
+    k(    9 )  -->     4  frozen states
+    k(   10 )  -->     6  frozen states
+    k(   11 )  -->     6  frozen states
+    k(   12 )  -->     6  frozen states
+    k(   13 )  -->     6  frozen states
+    k(   14 )  -->     6  frozen states
+    k(   15 )  -->     5  frozen states
+    k(   16 )  -->     5  frozen states
+
+ </WINDOWS>
+
+
+  ======================================================================
+  =  Overlaps and Projections                                          =
+  ======================================================================
+
+  Reading density G-grid from file: pt1.save/data-file.xml
+  Reading Wfc grids from file: pt1.save/data-file.xml
+
+
+          Energy cut-off for rho  =        176.00 (Ry)
+      Total number of PW for rho  =      58211
+                    (smooth grid) =      20553
+        FFT grid components (rho) =  (    80   80   20 )
+                    (smooth grid) =  (    54   54   15 )
+
+          Energy cut-off for wfcs =         22.00 (Ry)
+        Max number of PW for wfc  =       2595
+
+
+  Initializing global dft data
+  Initializing US pseudopot. data
+  Total number Nkb of beta functions:    13
+
+  Initializing atomic wfc
+
+ <MEMORY_USAGE>
+                 kpoints:          0.001 MB
+                   rgrid:          0.001 MB
+                 bshells:          0.002 MB
+                    ions:          0.002 MB
+                 windows:          0.003 MB
+                subspace:          0.014 MB
+                 overlap:          0.026 MB
+                  ggrids:          2.561 MB
+                wfc_data:          0.914 MB
+            trial_center:          0.001 MB
+             struct_fact:          0.937 MB
+           workspace_dis:          0.029 MB
+                      us:         18.236 MB
+                    uspp:          0.561 MB
+
+     Total alloc. Memory:         23.287 MB
+      Real alloc. Memory:          7.724 MB
+ </MEMORY_USAGE>
+
+
+    Overlaps or Projections calculation for k-point:    1
+    npw =   2542,    dimwin =    6
+                              Total time spent up to now :     1.01 secs
+
+    Overlaps or Projections calculation for k-point:    2
+    npw =   2534,    dimwin =    6
+                              Total time spent up to now :     1.03 secs
+
+    Overlaps or Projections calculation for k-point:    3
+    npw =   2559,    dimwin =    6
+                              Total time spent up to now :     1.05 secs
+
+
+  Overlaps and projections written on file: pt1_WanT.ovp
+                              Total time spent up to now :     1.30 secs
+
+ <MEMORY_USAGE>
+                 kpoints:          0.001 MB
+                   rgrid:          0.001 MB
+                 bshells:          0.002 MB
+                    ions:          0.002 MB
+                 windows:          0.003 MB
+                subspace:          0.014 MB
+                 overlap:          0.026 MB
+            trial_center:          0.001 MB
+             struct_fact:          0.937 MB
+           workspace_dis:          0.029 MB
+                      us:         18.236 MB
+                    uspp:          0.021 MB
+
+     Total alloc. Memory:         19.272 MB
+      Real alloc. Memory:          8.520 MB
+ </MEMORY_USAGE>
+
+
+  ======================================================================
+  =  Starting Iteration loop                                           =
+  ======================================================================
+
+  Initial trial subspace: projected localized orbitals
+  There are frozen states
+
+  Iteration =     1     Omega_I =   24.200206      Error =      0.00000000
+
+
+  ======================================================================
+  =  Convergence Achieved                                              =
+  ======================================================================
+
+  Iteration # :     1
+  Final Omega_I (Bohr^2, Angstrom^2):      24.200206         6.776742
+   Avrg Omega_I                     :       4.033368         1.129457
+
+                              Total time spent up to now :     1.31 secs
+
+
+  Subspace data written on file: pt1_WanT.space
+
+  ======================================================================
+
+   <global routines>
+             clock number :    39
+
+              disentangle :     1.00s CPU 
+
+             want_dftread :     0.08s CPU
+         windows_read_ext :     0.01s CPU
+                want_init :     0.00s CPU
+       para_get_poolindex :     0.00s CPU (      16 calls,   0.000 s avg)
+             bshells_init :     0.00s CPU
+             windows_init :     0.00s CPU
+              wfc_manager :     1.10s CPU
+          ggrids_read_ext :     0.03s CPU
+      wfc_data_grids_read :     0.01s CPU
+              struct_fact :     0.00s CPU
+                init_us_1 :     0.70s CPU
+                init_at_1 :     0.03s CPU
+           wfc_data_kread :     0.02s CPU (      12 calls,   0.002 s avg)
+                init_us_2 :     0.01s CPU (      15 calls,   0.001 s avg)
+                  ccalbec :     0.01s CPU (      12 calls,   0.001 s avg)
+                  overlap :     0.01s CPU (       9 calls,   0.002 s avg)
+           overlap_setmap :     0.01s CPU (       9 calls,   0.001 s avg)
+          overlap_augment :     0.00s CPU (       9 calls,   0.000 s avg)
+                    s_psi :     0.00s CPU (       3 calls,   0.002 s avg)
+               projection :     0.01s CPU (       3 calls,   0.002 s avg)
+       trial_center_setup :     0.00s CPU (      18 calls,   0.000 s avg)
+               atomic_wfc :     0.00s CPU (      15 calls,   0.000 s avg)
+            overlap_write :     0.01s CPU
+               mp_get_ovp :     0.01s CPU (      32 calls,   0.000 s avg)
+            overlap_bsymm :     0.00s CPU
+                   mp_put :     0.00s CPU (      48 calls,   0.000 s avg)
+               iterations :     0.00s CPU
+            subspace_init :     0.00s CPU
+        projection_frozen :     0.00s CPU
+         para_poolrecover :     0.00s CPU (       3 calls,   0.000 s avg)
+                   mp_sum :     0.00s CPU (       3 calls,   0.000 s avg)
+                   omegai :     0.00s CPU (       2 calls,   0.000 s avg)
+             mp_sum_omega :     0.00s CPU (       2 calls,   0.000 s avg)
+                  zmatrix :     0.00s CPU (       3 calls,   0.000 s avg)
+                mat_hdiag :     0.00s CPU (       6 calls,   0.000 s avg)
+              mp_sum_lamp :     0.00s CPU
+            windows_write :     0.00s CPU
+           subspace_write :     0.00s CPU
+
+
