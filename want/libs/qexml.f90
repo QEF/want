@@ -426,14 +426,14 @@ CONTAINS
       CHARACTER(LEN=*), INTENT(IN)  :: dirname
       INTEGER,          INTENT(OUT) :: ierr
       !
-      INTEGER(i4b), EXTERNAL        :: c_mkdir
+      INTEGER(i4b), EXTERNAL        :: c_mkdir_int
       INTEGER  :: iunaux
       !
       !
       ierr = 0
       CALL iotk_free_unit( iunaux )
       !
-      ierr = c_mkdir( TRIM( dirname ), LEN_TRIM( dirname ) )
+      ierr = c_mkdir_int( TRIM( dirname ), LEN_TRIM( dirname ) )
       IF ( ierr/=0 ) RETURN
 
       !
@@ -1418,7 +1418,7 @@ CONTAINS
          !
          DO ib = 1, nbnd
             !
-            CALL iotk_write_dat( iunaux, "evc" // TRIM(iotk_index( ib )), wf( 1: ngw, ib) )
+            CALL iotk_write_dat( iunaux, "evc" // TRIM(iotk_index( ib )), wf( 1: igwx, ib) )
             !
          ENDDO
          !
@@ -1690,8 +1690,10 @@ CONTAINS
       CALL iotk_scan_dat( iunit, "BRAVAIS_LATTICE", bravais_latt_, IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
-      CALL iotk_scan_dat( iunit, "CELL_SYMMETRY", symm_type_, IERR=ierr )
-      IF ( ierr /= 0 ) RETURN
+      IF ( PRESENT(symm_type) ) THEN
+          CALL iotk_scan_dat( iunit, "CELL_SYMMETRY", symm_type, IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+      ENDIF
       !
       CALL iotk_scan_dat( iunit, "LATTICE_PARAMETER", alat_, ATTR=attr, IERR=ierr )
       IF (ierr/=0) RETURN
@@ -1739,7 +1741,6 @@ CONTAINS
       !
       ! 
       IF ( PRESENT(bravais_latt) )  bravais_latt = bravais_latt_
-      IF ( PRESENT(celldm) )        symm_type    = symm_type_
       IF ( PRESENT(symm_type) )     celldm       = celldm_
       IF ( PRESENT(alat) )          alat         = alat_
       IF ( PRESENT(a1) )            a1           = a1_
@@ -2662,13 +2663,13 @@ CONTAINS
       !
       INTEGER,      OPTIONAL, INTENT(OUT) :: nbnd, num_k_points, nspin, natomwfc
       LOGICAL,      OPTIONAL, INTENT(OUT) :: noncolin
-      REAL(dbl),    OPTIONAL, INTENT(OUT) :: ef, nelec
+      REAL(dbl),    OPTIONAL, INTENT(OUT) :: ef(2), nelec
       CHARACTER(*), OPTIONAL, INTENT(OUT) :: energy_units, k_units
       INTEGER,                INTENT(OUT) :: ierr
       !
       INTEGER        :: nbnd_, num_k_points_, nspin_, natomwfc_
-      LOGICAL        :: noncolin_
-      REAL(dbl)      :: ef_, nelec_
+      LOGICAL        :: noncolin_, lfound, two_fermi_energies
+      REAL(dbl)      :: ef_(2), nelec_
       CHARACTER(256) :: energy_units_, k_units_
 
       ierr = 0
@@ -2680,14 +2681,17 @@ CONTAINS
       CALL iotk_scan_dat  ( iunit, "NUMBER_OF_BANDS", nbnd_, IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_dat  ( iunit, "NUMBER_OF_K-POINTS", num_k_points_, IERR=ierr )
+      CALL iotk_scan_dat  ( iunit, "NUMBER_OF_K-POINTS", num_k_points_, FOUND=lfound, IERR=ierr )
       IF (ierr/=0) RETURN
+      IF ( .NOT. lfound ) num_k_points_ = 1
       !
       CALL iotk_scan_dat  ( iunit, "NUMBER_OF_SPIN_COMPONENTS", nspin_, IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_dat  ( iunit, "NON-COLINEAR_CALCULATION", noncolin_, IERR=ierr )
-      IF (ierr/=0) RETURN
+      IF ( PRESENT (noncolin) ) THEN
+          CALL iotk_scan_dat  ( iunit, "NON-COLINEAR_CALCULATION", noncolin_, IERR=ierr )
+          IF (ierr/=0) RETURN
+      ENDIF
       !
       CALL iotk_scan_dat  ( iunit, "NUMBER_OF_ATOMIC_WFC", natomwfc_, IERR=ierr )
       IF (ierr/=0) RETURN
@@ -2695,18 +2699,45 @@ CONTAINS
       CALL iotk_scan_dat  ( iunit, "NUMBER_OF_ELECTRONS", nelec_, IERR=ierr )
       IF (ierr/=0) RETURN
       !
-      CALL iotk_scan_empty( iunit, "UNITS_FOR_K-POINTS", ATTR = attr, IERR=ierr )
-      IF (ierr/=0) RETURN
-      CALL iotk_scan_attr ( attr,   "UNITS", k_units_, IERR=ierr )
-      IF (ierr/=0) RETURN
+      IF ( PRESENT( k_units ) ) THEN
+          CALL iotk_scan_empty( iunit, "UNITS_FOR_K-POINTS", ATTR = attr, IERR=ierr )
+          IF (ierr/=0) RETURN
+          CALL iotk_scan_attr ( attr,   "UNITS", k_units_, IERR=ierr )
+          IF (ierr/=0) RETURN
+      ENDIF
       !
-      CALL iotk_scan_empty( iunit, "UNITS_FOR_ENERGIES", ATTR = attr, IERR=ierr )
-      IF (ierr/=0) RETURN
-      CALL iotk_scan_attr ( attr,   "UNITS", energy_units_, IERR=ierr )
-      IF (ierr/=0) RETURN
+      IF ( PRESENT( energy_units ) ) THEN
+          CALL iotk_scan_empty( iunit, "UNITS_FOR_ENERGIES", ATTR = attr, IERR=ierr )
+          IF (ierr/=0) RETURN
+          CALL iotk_scan_attr ( attr,   "UNITS", energy_units_, IERR=ierr )
+          IF (ierr/=0) RETURN
+      ENDIF
       !
-      CALL iotk_scan_dat  ( iunit, "FERMI_ENERGY", ef_ , IERR=ierr )
+      CALL iotk_scan_dat  ( iunit, "TWO_FERMI_ENERGIES", two_fermi_energies , FOUND=lfound, IERR=ierr )
       IF (ierr/=0) RETURN
+      IF (.NOT. lfound ) two_fermi_energies=.FALSE.
+      !
+      IF ( PRESENT(ef) ) THEN
+          !
+          IF ( .NOT. two_fermi_energies ) THEN
+              !
+              CALL iotk_scan_dat  ( iunit, "FERMI_ENERGY", ef_(1), FOUND=lfound, IERR=ierr )
+              IF (ierr/=0) RETURN
+              !
+              IF ( .NOT. lfound ) ef_(1) = 0.0d0
+              !
+              ef_(2) = ef_(1)
+              !
+          ELSE
+              !
+              CALL iotk_scan_dat  ( iunit, "FERMI_ENERGY_UP", ef_(1) , IERR=ierr )
+              IF (ierr/=0) RETURN
+              CALL iotk_scan_dat  ( iunit, "FERMI_ENERGY_DOWN", ef_(2) , IERR=ierr )
+              IF (ierr/=0) RETURN
+              !
+          ENDIF
+          !
+      ENDIF
       !
       CALL iotk_scan_end( iunit, "BAND_STRUCTURE_INFO", IERR=ierr )
       IF (ierr/=0) RETURN
@@ -2718,7 +2749,7 @@ CONTAINS
       IF ( PRESENT( noncolin ) )         noncolin       = noncolin_
       IF ( PRESENT( natomwfc ) )         natomwfc       = natomwfc_
       IF ( PRESENT( nelec ) )            nelec          = nelec_
-      IF ( PRESENT( ef ) )               ef             = ef_
+      IF ( PRESENT( ef ) )               ef(1:2)        = ef_(1:2)
       IF ( PRESENT( energy_units ) )     energy_units   = TRIM( energy_units_ )
       IF ( PRESENT( k_units ) )          k_units        = TRIM( k_units_ )
       !
