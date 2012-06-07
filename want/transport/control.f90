@@ -24,6 +24,7 @@
    CHARACTER(nstrx)          :: conduct_formula
    !
    CHARACTER(nstrx)          :: datafile_L, datafile_C, datafile_R
+   LOGICAL                   :: do_orthoovp = .FALSE.
    !
    INTEGER                   :: transport_dir
    INTEGER                   :: debug_level
@@ -54,6 +55,7 @@
    PUBLIC :: calculation_type
    PUBLIC :: conduct_formula
    PUBLIC :: datafile_L, datafile_C, datafile_R
+   PUBLIC :: do_orthoovp
    !
    PUBLIC :: transport_dir
    PUBLIC :: debug_level

@@ -159,6 +159,14 @@ correlation.o : ../libs/kind.o
 correlation.o : ../libs/log_module.o
 correlation.o : ../libs/parameters.o
 correlation.o : subspace.o
+cp2k_tools.o : get_rgrid.o
+cp2k_tools.o : ../libs/constants.o
+cp2k_tools.o : ../libs/kind.o
+cp2k_tools.o : ../libs/log_module.o
+cp2k_tools.o : ../libs/parameters.o
+cp2k_tools.o : ../libs/parser.o
+cp2k_tools.o : ../libs/timing.o
+cp2k_tools.o : ../libs/util.o
 crystal_tools.o : converters.o
 crystal_tools.o : ../libs/constants.o
 crystal_tools.o : ../libs/crystal_io.o
@@ -167,6 +175,7 @@ crystal_tools.o : ../libs/log_module.o
 crystal_tools.o : ../libs/parameters.o
 crystal_tools.o : ../libs/parser.o
 crystal_tools.o : ../libs/timing.o
+datafiles.o : cp2k_tools.o
 datafiles.o : crystal_tools.o
 datafiles.o : internal_tools.o
 datafiles.o : io_module.o

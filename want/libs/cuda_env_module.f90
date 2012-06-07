@@ -9,9 +9,14 @@
 !==-----------------------------------------------------------------------==!
 MODULE cuda_env
   !==-----------------------------------------------------------------------==!
+#ifdef __CUDA
   USE ISO_C_BINDING
   !
   INTEGER(C_INT), BIND(C) :: ngpus_detected, ngpus_used, ngpus_per_process
+  !
+#endif
+  !
+  INTEGER :: cuda_env_i__
   !
   !==-----------------------------------------------------------------------==!
 END MODULE cuda_env

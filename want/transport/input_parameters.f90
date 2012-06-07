@@ -191,6 +191,12 @@
        ! the name of the file containing correlation self-energy
        ! 00R, 01R regions
 
+   LOGICAL :: do_orthoovp = .FALSE.
+       !
+       ! if a non-orthogonal set is used, it is lowdin-orthogonalized
+       ! during conversion
+       !
+
    REAL(dbl) :: shift_L = 0.0
        ! global energy shift [eV] to be applied to the matrix elements
        ! of the left lead (H00_L, H01_L)
@@ -218,7 +224,7 @@
 
    NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type,             &
                  conduct_formula, niterx, ne, ne_buffer, emin, emax,            &
-                 nprint, delta, bias,                                           &
+                 nprint, delta, bias, do_orthoovp,                              &
                  datafile_L,     datafile_C,     datafile_R, datafile_sgm,      &
                  datafile_L_sgm, datafile_C_sgm, datafile_R_sgm,                &
                  transport_dir, smearing_type, do_eigenchannels, do_eigplot,    &
@@ -233,7 +239,7 @@
    PUBLIC :: ne, ne_buffer, emin, emax, nprint, delta, bias, delta_ratio, xmax 
    PUBLIC :: datafile_L,     datafile_C,     datafile_R,     datafile_sgm, transport_dir
    PUBLIC :: datafile_L_sgm, datafile_C_sgm, datafile_R_sgm
-   PUBLIC :: nk, s, use_symm, debug_level
+   PUBLIC :: nk, s, use_symm, debug_level, do_orthoovp
    PUBLIC :: work_dir, prefix, postfix, ispin, write_kdata, write_lead_sgm, write_gf 
    PUBLIC :: do_eigenchannels, neigchnx, do_eigplot, ie_eigplot, ik_eigplot
    PUBLIC :: shift_L, shift_C, shift_R, shift_corr, nfailx
@@ -313,6 +319,7 @@ CONTAINS
       CALL mp_bcast( datafile_L_sgm,     ionode_id)      
       CALL mp_bcast( datafile_C_sgm,     ionode_id)      
       CALL mp_bcast( datafile_R_sgm,     ionode_id)      
+      CALL mp_bcast( do_orthoovp,        ionode_id)      
       CALL mp_bcast( shift_L,            ionode_id)      
       CALL mp_bcast( shift_C,            ionode_id)      
       CALL mp_bcast( shift_R,            ionode_id)      

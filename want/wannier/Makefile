@@ -23,6 +23,7 @@ compute_rham.o \
 control.o \
 converters.o \
 correlation.o \
+cp2k_tools.o \
 crystal_tools.o \
 datafiles.o \
 domega_aux.o \

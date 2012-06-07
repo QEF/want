@@ -1042,9 +1042,11 @@ END SUBROUTINE zmat_sv_1
    COMPLEX(dbl), INTENT(IN)  :: a(:,:)
    COMPLEX(dbl), INTENT(IN)  :: b(:,:)
    COMPLEX(dbl), INTENT(OUT) :: c(:,:)
-   CHARACTER, INTENT(IN) :: opa, opb
-   INTEGER, INTENT(IN) :: m, n, k
-   INTEGER :: i, j, l
+   CHARACTER,    INTENT(IN)  :: opa, opb
+   INTEGER,      INTENT(IN)  :: m, n, k
+   !
+   INTEGER :: i, j, l, ierr
+   COMPLEX(dbl), ALLOCATABLE :: c_(:,:)
    !
    ! According to BLAS convention:
    ! C = opa(A) * opb(B)      op* = 'N' normal, 'C' complx conjg (i.e. herm conjg)
@@ -1053,6 +1055,9 @@ END SUBROUTINE zmat_sv_1
    IF ( m <= 0 .OR. n<=0 .OR. k<=0) CALL errore('zmat_mul','Invalid DIM',1)
    IF( opb /= 'N' .AND. opb /= 'C' ) &
      CALL errore('zmat_mul','argument value not allowed', 5 )
+
+   ALLOCATE( c_( SIZE(c,1),SIZE(c,2) ), STAT=ierr )
+   IF ( ierr/=0 ) CALL errore('zmat_mul','allocating c_',ABS(ierr))
 
    !
    ! this filter value has to be checked. Here we try to use BLAS
@@ -1067,9 +1072,9 @@ END SUBROUTINE zmat_sv_1
            !
            DO j = 1, n
            DO i = 1, m
-               c(i,j) = CZERO
+               c_(i,j) = CZERO
                DO l = 1, k
-                   c(i,j) = c(i,j) + a(i,l) * b(l,j)
+                   c_(i,j) = c_(i,j) + a(i,l) * b(l,j)
                ENDDO
            ENDDO
            ENDDO
@@ -1081,9 +1086,9 @@ END SUBROUTINE zmat_sv_1
            !
            DO j = 1, n
            DO i = 1, m
-               c(i,j) = CZERO
+               c_(i,j) = CZERO
                DO l = 1, k
-                   c(i,j) = c(i,j) + a(i,l) * CONJG( b(j,l) )
+                   c_(i,j) = c_(i,j) + a(i,l) * CONJG( b(j,l) )
                ENDDO
            ENDDO
            ENDDO
@@ -1095,9 +1100,9 @@ END SUBROUTINE zmat_sv_1
            !
            DO j = 1, n
            DO i = 1, m
-               c(i,j) = CZERO
+               c_(i,j) = CZERO
                DO l = 1, k
-                   c(i,j) = c(i,j) + CONJG( a(l,i) )* b(l,j) 
+                   c_(i,j) = c_(i,j) + CONJG( a(l,i) )* b(l,j) 
                ENDDO
            ENDDO
            ENDDO
@@ -1109,9 +1114,9 @@ END SUBROUTINE zmat_sv_1
            !
            DO j = 1, n
            DO i = 1, m
-               c(i,j) = CZERO
+               c_(i,j) = CZERO
                DO l = 1, k
-                   c(i,j) = c(i,j) + CONJG( a(l,i) )* CONJG( b(j,l) )
+                   c_(i,j) = c_(i,j) + CONJG( a(l,i) )* CONJG( b(j,l) )
                ENDDO
            ENDDO
            ENDDO
@@ -1119,8 +1124,14 @@ END SUBROUTINE zmat_sv_1
    ELSE
 
        CALL ZGEMM( opa, opb, m, n, k, CONE, a, SIZE(a,1), &
-                   b, SIZE(b,1), CZERO, c, SIZE(c,1) )
+                   b, SIZE(b,1), CZERO, c_, SIZE(c,1) )
    ENDIF
+   !
+   c(:,:) = c_(:,:)
+   !
+   DEALLOCATE( c_, STAT=ierr)
+   IF ( ierr/=0 ) CALL errore('zmat_mul','deallocating c_', ABS(ierr))
+   !
 END SUBROUTINE zmat_mul
 
 
@@ -1131,9 +1142,11 @@ END SUBROUTINE zmat_mul
    REAL(dbl), INTENT(IN)  :: a(:,:)
    REAL(dbl), INTENT(IN)  :: b(:,:)
    REAL(dbl), INTENT(OUT) :: c(:,:)
-   CHARACTER, INTENT(IN) :: opa, opb
-   INTEGER, INTENT(IN) :: m, n, k
-   INTEGER :: i, j, l
+   CHARACTER, INTENT(IN)  :: opa, opb
+   INTEGER,   INTENT(IN)  :: m, n, k
+   !
+   INTEGER :: i, j, l, ierr
+   REAL(dbl), ALLOCATABLE :: c_(:,:)
    !
    ! According to BLAS convention:
    ! C = opa(A) * opb(B)      op* = 'N' normal, 'T' transpose 
@@ -1142,6 +1155,9 @@ END SUBROUTINE zmat_mul
    IF ( m <= 0 .OR. n<=0 .OR. k<=0) CALL errore('dmat_mul','Invalid DIM',1)
    IF( opb /= 'N' .AND. opb /= 'T' ) &
      CALL errore('dmat_mul','argument value not allowed ', 5 )
+
+   ALLOCATE( c_( SIZE(c,1),SIZE(c,2) ), STAT=ierr )
+   IF ( ierr/=0 ) CALL errore('dmat_mul','allocating c_',ABS(ierr))
 
    !
    ! this filter value has to be checked. Here we try to use BLAS
@@ -1156,9 +1172,9 @@ END SUBROUTINE zmat_mul
            !
            DO j = 1, n
            DO i = 1, m
-               c(i,j) = ZERO
+               c_(i,j) = ZERO
                DO l = 1, k
-                   c(i,j) = c(i,j) + a(i,l) * b(l,j)
+                   c_(i,j) = c_(i,j) + a(i,l) * b(l,j)
                ENDDO
            ENDDO
            ENDDO
@@ -1170,9 +1186,9 @@ END SUBROUTINE zmat_mul
            !
            DO j = 1, n
            DO i = 1, m
-               c(i,j) = ZERO
+               c_(i,j) = ZERO
                DO l = 1, k
-                   c(i,j) = c(i,j) + a(i,l) * b(j,l)
+                   c_(i,j) = c_(i,j) + a(i,l) * b(j,l)
                ENDDO
            ENDDO
            ENDDO
@@ -1184,9 +1200,9 @@ END SUBROUTINE zmat_mul
            !
            DO j = 1, n
            DO i = 1, m
-               c(i,j) = ZERO
+               c_(i,j) = ZERO
                DO l = 1, k
-                   c(i,j) = c(i,j) + a(l,i) * b(l,j) 
+                   c_(i,j) = c_(i,j) + a(l,i) * b(l,j) 
                ENDDO
            ENDDO
            ENDDO
@@ -1198,9 +1214,9 @@ END SUBROUTINE zmat_mul
            !
            DO j = 1, n
            DO i = 1, m
-               c(i,j) = ZERO
+               c_(i,j) = ZERO
                DO l = 1, k
-                   c(i,j) = c(i,j) + a(l,i) * b(j,l) 
+                   c_(i,j) = c_(i,j) + a(l,i) * b(j,l) 
                ENDDO
            ENDDO
            ENDDO
@@ -1208,8 +1224,14 @@ END SUBROUTINE zmat_mul
    ELSE
 
        CALL DGEMM( opa, opb, m, n, k, ONE, a, SIZE(a,1), &
-                   b, SIZE(b,1), ZERO, c, SIZE(c,1) )
+                   b, SIZE(b,1), ZERO, c_, SIZE(c,1) )
    ENDIF
+   !
+   c(:,:) = c_(:,:)
+   !
+   DEALLOCATE( c_, STAT=ierr)
+   IF ( ierr/=0 ) CALL errore('dmat_mul','deallocating c_', ABS(ierr))
+   !
 END SUBROUTINE dmat_mul
 
 

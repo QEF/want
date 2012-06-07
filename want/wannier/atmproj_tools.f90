@@ -1,5 +1,5 @@
 !
-! Copyright (C) 2008 WanT Group
+! Copyright (C) 2012 WanT Group
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License\'
@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*********************************************
-   MODULE crystal_tools_module
+   MODULE atmproj_tools_module
 !*********************************************
    !
    USE kinds,              ONLY : dbl
@@ -25,19 +25,19 @@
    SAVE
    !
    ! contains:
-   ! SUBROUTINE  crystal_to_internal( filein, fileout, filetype, do_orthoovp )
-   ! FUNCTION    file_is_crystal( filein )
+   ! SUBROUTINE  atmproj_to_internal( filein, fileout, filetype )
+   ! FUNCTION    file_is_atmproj( filein )
    !
-   PUBLIC :: crystal_to_internal
-   PUBLIC :: file_is_crystal
+   PUBLIC :: atmproj_to_internal
+   PUBLIC :: file_is_atmproj
 
 CONTAINS
 
 !**********************************************************
-   SUBROUTINE crystal_to_internal( filein, fileout, filetype, do_orthoovp )
+   SUBROUTINE atmproj_to_internal( filein, fileout, filetype )
    !**********************************************************
    !
-   ! Convert the datafile written by the CRYSTAL06/09 program to
+   ! Convert the datafile written by the projwfc program (QE suite) to
    ! the internal representation.
    !
    ! FILETYPE values are:
@@ -54,7 +54,6 @@ CONTAINS
    CHARACTER(*), INTENT(IN) :: filein
    CHARACTER(*), INTENT(IN) :: fileout
    CHARACTER(*), INTENT(IN) :: filetype
-   LOGICAL, OPTIONAL, INTENT(IN) :: do_orthoovp
    
    !
    ! local variables
@@ -62,7 +61,7 @@ CONTAINS
    INTEGER                     :: iunit, ounit
    LOGICAL                     :: do_orthoovp_
    !
-   CHARACTER(19)               :: subname="crystal_to_internal"
+   CHARACTER(19)               :: subname="atmproj_to_internal"
    !
    CHARACTER(nstrx)            :: attr, r_units, a_units, b_units, k_units, h_units, e_units
    CHARACTER(nstrx)            :: filetype_
@@ -112,15 +111,10 @@ CONTAINS
       CALL errore(subname, 'invalid filetype: '//TRIM(filetype_), 71 )
    END SELECT
 
-   do_orthoovp_ = .FALSE.
-   IF ( PRESENT( do_orthoovp ) ) do_orthoovp_ = do_orthoovp
-   !
-   IF ( do_orthoovp_ ) CALL errore(subname,"orthogonalization not yet implemented",10)
-
 
 !
 !---------------------------------
-! read from filein (CRYSTAL06/9 fmt)
+! read from filein (by projwfc, QE suite)
 !---------------------------------
 !
    CALL crio_open_file( UNIT=iunit, FILENAME=filein, ACTION='read', IERR=ierr )

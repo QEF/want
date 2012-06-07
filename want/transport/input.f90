@@ -86,6 +86,7 @@ CONTAINS
                                            datafile_L,        &
                                            datafile_C,        &
                                            datafile_R,        &
+                                           do_orthoovp,       &
                                            write_kdata,       &
                                            write_lead_sgm,    &
                                            write_gf,          &
@@ -107,6 +108,7 @@ CONTAINS
                                            datafile_L_        => datafile_L, &
                                            datafile_C_        => datafile_C, &
                                            datafile_R_        => datafile_R, &
+                                           do_orthoovp_       => do_orthoovp, &
                                            write_kdata_       => write_kdata, &
                                            write_lead_sgm_    => write_lead_sgm, &
                                            write_gf_          => write_gf, &
@@ -128,6 +130,7 @@ CONTAINS
       datafile_L          = datafile_L_
       datafile_C          = datafile_C_
       datafile_R          = datafile_R_
+      do_orthoovp         = do_orthoovp_
       transport_dir       = transport_dir_
       write_kdata         = write_kdata_
       write_lead_sgm      = write_lead_sgm_
