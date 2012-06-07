@@ -36,6 +36,7 @@ WANNIER_OBJS= \
 ../wannier/compute_rham.o \
 ../wannier/control.o \
 ../wannier/converters.o \
+../wannier/cp2k_tools.o \
 ../wannier/crystal_tools.o \
 ../wannier/datafiles.o \
 ../wannier/etsf_io_data.o \

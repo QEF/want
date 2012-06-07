@@ -181,6 +181,11 @@ datafile_sgm    STRING
             This variable is obsolete and should be substituted by datafile_C_sgm
             DEFAULT : ""
 
+do_orthoovp LOGICAL
+            if a non-orthogonal set is used, it is lowdin-orthogonalized
+            during conversion
+            DEFAULT : .FALSE.
+
 shift_L     REAL
             global energy shift [eV] to be applied to the matrix elements
             of the left lead (H00_L, H01_L).

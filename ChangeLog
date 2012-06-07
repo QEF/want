@@ -4,6 +4,13 @@
 =======================================================
 
 
+07 Jun 2012     atomicproj_tools.f90 added: it is meant to convert atomic projection data
+		from QE to produce a real-space representation of the KS Hamiltonian. (AF)
+
+06 Jun 2012     cp2k_tools.f90 added; interface to cp2k (transport only) implemented and
+		testing started. The contribution of C.A. Pignedoli and L. Talirz is
+		acknowledged. Interface is working. (AF)
+
 25 May 2012     qexml.f90 updated to deal with QE-5.0 (CELL_SYMMETRY now optional). (AF)
 
 13 Apr 2012     midpoint.f90 generalized to deal with lower bound cutoff. (AF)

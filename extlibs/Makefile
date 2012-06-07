@@ -79,4 +79,5 @@ clean wash:
 	 if test -d lapack ;  then ( cd lapack;  $(MAKE) $@ ) ; fi
 	 if test -d iotk ;    then ( cd iotk;    $(MAKE) $@ ) ; fi
 	 if test -d phiGEMM ; then ( cd phiGEMM; $(MAKE) $@ ) ; fi
+	 if test -d magma ;   then ( cd magma;   $(MAKE) $@ ) ; fi
 

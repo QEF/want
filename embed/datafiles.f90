@@ -20,6 +20,7 @@
    USE log_module,              ONLY : log_push, log_pop
    USE crystal_tools_module,    ONLY : crystal_to_internal, file_is_crystal
    USE wannier90_tools_module,  ONLY : wannier90_to_internal, file_is_wannier90
+   USE cp2k_tools_module,       ONLY : cp2k_to_internal, file_is_cp2k
    USE datafiles_module,        ONLY : datafiles_check_fmt, file_is_internal
    USE E_control_module,        ONLY : datafile_tot 
    USE iotk_module
@@ -104,7 +105,7 @@ CONTAINS
                !
                CALL crystal_to_internal( filename, TRIM(filename)//'.ham', 'hamiltonian' )
                !
-               WRITE( stdout, "(2x, A,' converted to internal fmt' )") &
+               WRITE( stdout, "(2x, A,' converted from CRYSTAL to internal fmt' )") &
                    TRIM( filename )
                !
                filelist(i) = TRIM(filelist(i))//'.ham' 
@@ -113,7 +114,16 @@ CONTAINS
                !
                CALL wannier90_to_internal( TRIM(filename), TRIM(filename)//'.ham', 'hamiltonian' )
                !
-               WRITE( stdout, "(2x, A,' converted to internal fmt' )") &
+               WRITE( stdout, "(2x, A,' converted from Wannier90 to internal fmt' )") &
+                   TRIM( filename )
+               !
+               filelist(i) = TRIM(filelist(i))//'.ham' 
+               !
+           CASE( 'cp2k' )
+               !
+               CALL cp2k_to_internal( TRIM(filename), TRIM(filename)//'.ham', 'hamiltonian' )
+               !
+               WRITE( stdout, "(2x, A,' converted from CP2K to internal fmt' )") &
                    TRIM( filename )
                !
                filelist(i) = TRIM(filelist(i))//'.ham' 
