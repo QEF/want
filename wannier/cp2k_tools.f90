@@ -649,7 +649,7 @@ END SUBROUTINE cp2k_to_internal
      CLOSE ( iunit, IOSTAT=ierr )
      IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(filename), ABS(ierr) )
      !
-     IF ( .NOT. lfound ) THEN
+     IF ( .NOT. lfound .OR. lerror ) THEN
          file_is_cp2k = .FALSE.
          RETURN
      ENDIF

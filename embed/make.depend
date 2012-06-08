@@ -26,6 +26,8 @@ datafiles.o : ../libs/log_module.o
 datafiles.o : ../libs/mp.o
 datafiles.o : ../libs/parameters.o
 datafiles.o : ../libs/timing.o
+datafiles.o : ../wannier/atmproj_tools.o
+datafiles.o : ../wannier/cp2k_tools.o
 datafiles.o : ../wannier/crystal_tools.o
 datafiles.o : ../wannier/datafiles.o
 datafiles.o : ../wannier/io_module.o

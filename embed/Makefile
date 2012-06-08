@@ -22,6 +22,7 @@ workspace.o
 
 
 WANNIER_OBJS= \
+../wannier/atmproj_tools.o \
 ../wannier/compute_kham.o \
 ../wannier/compute_rham.o \
 ../wannier/control.o \

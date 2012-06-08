@@ -22,6 +22,7 @@
    USE crystal_tools_module,    ONLY : crystal_to_internal, file_is_crystal
    USE wannier90_tools_module,  ONLY : wannier90_to_internal, file_is_wannier90
    USE cp2k_tools_module,       ONLY : cp2k_to_internal, file_is_cp2k
+   USE atmproj_tools_module,    ONLY : atmproj_to_internal, file_is_atmproj
    USE internal_tools_module,   ONLY : file_is_internal
    USE iotk_module
    !
@@ -98,6 +99,8 @@ CONTAINS
        !
        CALL datafiles_check_fmt( filein, fmtstr )
        !
+       WRITE( stdout, "(2x, ' file fmt: ', A )") TRIM( fmtstr )
+       !
        SELECT CASE( TRIM(fmtstr) )
        CASE ( 'crystal' )
            !
@@ -126,6 +129,16 @@ CONTAINS
            !
            !fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
            !CALL wannier90_to_internal( filein, fileout, 'subspace' )
+           !
+           WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
+           !
+       CASE ( 'atmproj' )
+           !
+           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
+           CALL atmproj_to_internal( filein, fileout, 'hamiltonian' )
+           !
+           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
+           CALL atmproj_to_internal( filein, fileout, 'subspace' )
            !
            WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
            !
@@ -161,6 +174,8 @@ END SUBROUTINE datafiles_init
    ! * internal
    ! * crystal
    ! * wannier90
+   ! * cp2k
+   ! * atmproj
    ! 
    ! an empty string is returned when no known fmt is found
    !
@@ -188,6 +203,13 @@ END SUBROUTINE datafiles_init
      IF ( file_is_wannier90( filename ) ) THEN 
          !
          fmtstr = 'wannier90'
+         RETURN
+         !
+     ENDIF
+     !
+     IF ( file_is_atmproj( filename ) ) THEN 
+         !
+         fmtstr = 'atmproj'
          RETURN
          !
      ENDIF

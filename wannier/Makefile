@@ -8,6 +8,7 @@ include ../make.sys
 
 OBJS= \
 allocate_nlpot.o \
+atmproj_tools.o \
 atom.o \
 atomic.o \
 atomic_wfc.o \
