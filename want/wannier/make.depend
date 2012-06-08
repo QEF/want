@@ -9,6 +9,17 @@ allocate_nlpot.o : ../libs/parameters.o
 allocate_nlpot.o : pwcom.o
 allocate_nlpot.o : uspp.o
 allocate_nlpot.o : windows.o
+atmproj_tools.o : converters.o
+atmproj_tools.o : get_rgrid.o
+atmproj_tools.o : ../libs/constants.o
+atmproj_tools.o : ../libs/files.o
+atmproj_tools.o : ../libs/kind.o
+atmproj_tools.o : ../libs/log_module.o
+atmproj_tools.o : ../libs/parameters.o
+atmproj_tools.o : ../libs/parser.o
+atmproj_tools.o : ../libs/qexml.o
+atmproj_tools.o : ../libs/timing.o
+atmproj_tools.o : ../libs/util.o
 atomic_wfc.o : ggrids.o
 atomic_wfc.o : ions.o
 atomic_wfc.o : lattice.o
@@ -175,6 +186,7 @@ crystal_tools.o : ../libs/log_module.o
 crystal_tools.o : ../libs/parameters.o
 crystal_tools.o : ../libs/parser.o
 crystal_tools.o : ../libs/timing.o
+datafiles.o : atmproj_tools.o
 datafiles.o : cp2k_tools.o
 datafiles.o : crystal_tools.o
 datafiles.o : internal_tools.o

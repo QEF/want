@@ -18,10 +18,11 @@
    USE mp,                      ONLY : mp_bcast
    USE timing_module,           ONLY : timing
    USE log_module,              ONLY : log_push, log_pop
-   USE crystal_tools_module,    ONLY : crystal_to_internal, file_is_crystal
-   USE wannier90_tools_module,  ONLY : wannier90_to_internal, file_is_wannier90
-   USE cp2k_tools_module,       ONLY : cp2k_to_internal, file_is_cp2k
-   USE datafiles_module,        ONLY : datafiles_check_fmt, file_is_internal
+   USE crystal_tools_module,    ONLY : crystal_to_internal
+   USE wannier90_tools_module,  ONLY : wannier90_to_internal
+   USE cp2k_tools_module,       ONLY : cp2k_to_internal
+   USE atmproj_tools_module,    ONLY : atmproj_to_internal
+   USE datafiles_module,        ONLY : datafiles_check_fmt
    USE E_control_module,        ONLY : datafile_tot 
    USE iotk_module
    !
@@ -100,6 +101,8 @@ CONTAINS
            !
            CALL datafiles_check_fmt( filename, fmtstr )
            !
+           WRITE( stdout, "(2x, A,' file fmt: ', A )") TRIM(filename), TRIM(fmtstr)
+           !
            SELECT CASE( TRIM(fmtstr) )
            CASE ( 'crystal' )
                !
@@ -124,6 +127,15 @@ CONTAINS
                CALL cp2k_to_internal( TRIM(filename), TRIM(filename)//'.ham', 'hamiltonian' )
                !
                WRITE( stdout, "(2x, A,' converted from CP2K to internal fmt' )") &
+                   TRIM( filename )
+               !
+               filelist(i) = TRIM(filelist(i))//'.ham' 
+               !
+           CASE( 'atmproj' )
+               !
+               CALL atmproj_to_internal( TRIM(filename), TRIM(filename)//'.ham', 'hamiltonian' )
+               !
+               WRITE( stdout, "(2x, A,' converted from ATMPROJ to internal fmt' )") &
                    TRIM( filename )
                !
                filelist(i) = TRIM(filelist(i))//'.ham' 

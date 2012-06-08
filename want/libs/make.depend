@@ -37,7 +37,6 @@ timing.o : mp_global.o
 timing.o : mp.o
 util.o : constants.o
 util.o : kind.o
-# util.o : @magma@
 warning.o : io_global.o
 write_header.o : io_global.o
 ylmr2.o : constants.o
