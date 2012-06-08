@@ -69,7 +69,7 @@ case $INPUT in
    (nscf)           NSCF=yes ;;
    (pwexport)       PWEXPORT=yes ;;
    (proj)           PROJ=yes ;;
-   (dft)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; PROJ=yes ;;
+   (dft)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; PROJ=no ;;
    (disentangle)    DISENTANGLE=yes ;;
    (wannier)        WANNIER=yes ;;
    (bands)          BANDS=yes ;;
@@ -78,7 +78,7 @@ case $INPUT in
    (conductor)      CONDUCTOR=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ;
                     BANDS=yes ; DOS=yes ; PLOT=yes; CONDUCTOR=yes ;;
-   (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; PROJ=yes ;
+   (all)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; PROJ=no ;
                     DISENTANGLE=yes ; WANNIER=yes ; PLOT=yes ;
                     BANDS=yes ; DOS=yes ; CONDUCTOR=yes ;;
    (check)          CHECK=yes ;;

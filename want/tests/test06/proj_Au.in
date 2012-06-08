@@ -1,4 +1,4 @@
-&inputpp
+&projwfc
   prefix='gold'
   outdir='./SCRATCH'
   filpdos='./SCRATCH/gold'

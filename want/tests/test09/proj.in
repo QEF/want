@@ -1,4 +1,4 @@
-&inputpp
+&projwfc
   prefix='nichain'
   outdir='./SCRATCH'
   filpdos='./SCRATCH/nichain'
