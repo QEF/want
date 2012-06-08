@@ -100,15 +100,19 @@ run_dft  NAME=SCF   SUFFIX=$SUFFIX  RUN=$SCF
 #
 # running DIPOLE
 #
-# compute dipole dipole.x form the Espresso suite
+# compute dipole by using dipole.x from the Espresso suite
 #
 if [ "$DIPOLE" = "yes" ] ; then
    #
    #   run  NAME="DIPOLE_PP" EXEC=$QE_BIN/pp.x INPUT=pp$SUFFIX.in OUTPUT=pp$SUFFIX.out \
    #                         PARALLEL=yes
    #
-   run  NAME="DIPOLE"    EXEC=$QE_BIN/dipole.x INPUT=dipole$SUFFIX.in \
-                         OUTPUT=dipole$SUFFIX.out PARALLEL=yes
+   if [ -x $QE_BIN/dipole.x ] ; then
+       
+       run  NAME="DIPOLE"    EXEC=$QE_BIN/dipole.x INPUT=dipole$SUFFIX.in \
+                             OUTPUT=dipole$SUFFIX.out PARALLEL=yes
+   fi
+   #
 fi
 
 #
