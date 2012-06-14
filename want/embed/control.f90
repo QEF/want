@@ -26,6 +26,7 @@
    CHARACTER(nstrx)          :: datafile_sgm_emb
    !
    LOGICAL                   :: write_embed_sgm
+   LOGICAL                   :: do_orthoovp
    !
    INTEGER                   :: transport_dir
    INTEGER                   :: debug_level
@@ -47,6 +48,7 @@
    PUBLIC :: transport_dir
    PUBLIC :: debug_level
    PUBLIC :: use_debug_mode
+   PUBLIC :: do_orthoovp
    !
    PUBLIC :: nprint
 

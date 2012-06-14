@@ -83,6 +83,7 @@ CONTAINS
                                            datafile_sgm_emb,  &
                                            write_embed_sgm,   &
                                            debug_level,       &
+                                           do_orthoovp,       &
                                            use_debug_mode
                                             
       USE E_input_parameters_module,ONLY : nprint_            => nprint, &
@@ -92,7 +93,8 @@ CONTAINS
                                            datafile_sgm_      => datafile_sgm, &
                                            datafile_sgm_emb_  => datafile_sgm_emb, &
                                            write_embed_sgm_   => write_embed_sgm, &
-                                           debug_level_       => debug_level
+                                           debug_level_       => debug_level, &
+                                           do_orthoovp_       => do_orthoovp
 
       IMPLICIT NONE
 
@@ -103,6 +105,7 @@ CONTAINS
       datafile_sgm_emb    = datafile_sgm_emb_
       transport_dir       = transport_dir_
       debug_level         = debug_level_
+      do_orthoovp         = do_orthoovp_
       write_embed_sgm     = write_embed_sgm_
 
       use_debug_mode = .FALSE.

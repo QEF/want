@@ -11,7 +11,8 @@
 !*********************************************
    !
    USE kinds,              ONLY : dbl
-   USE constants,          ONLY : BOHR => bohr_radius_angs, ZERO, ONE, TWO, RYD, EPS_m8
+   USE constants,          ONLY : BOHR => bohr_radius_angs, ZERO, ONE, TWO, &
+                                  RYD, EPS_m8, TPI
    USE parameters,         ONLY : nstrx
    USE timing_module,      ONLY : timing
    USE log_module,         ONLY : log_push, log_pop
@@ -37,7 +38,7 @@
    LOGICAL            :: init = .FALSE.
 
    ! contains:
-   ! SUBROUTINE  atmproj_to_internal( filein, fileout, filetype )
+   ! SUBROUTINE  atmproj_to_internal( filein, fileout, filetype, do_orthoovp )
    ! FUNCTION    file_is_atmproj( filein )
    !
    PUBLIC :: atmproj_to_internal
@@ -100,7 +101,7 @@ END SUBROUTINE atmproj_tools_init
 
 
 !**********************************************************
-   SUBROUTINE atmproj_to_internal( filein, fileout, filetype )
+   SUBROUTINE atmproj_to_internal( filein, fileout, filetype, do_orthoovp )
    !**********************************************************
    !
    ! Convert the datafile written by the projwfc program (QE suite) to
@@ -110,9 +111,8 @@ END SUBROUTINE atmproj_tools_init
    !  - ham, hamiltonian
    !  - space, subspace
    !
-! XXX
-USE util_module
-! XXX
+   USE util_module
+   !
    IMPLICIT NONE
 
    LOGICAL, PARAMETER :: binary = .TRUE.
@@ -123,20 +123,21 @@ USE util_module
    CHARACTER(*), INTENT(IN) :: filein
    CHARACTER(*), INTENT(IN) :: fileout
    CHARACTER(*), INTENT(IN) :: filetype
+   LOGICAL, OPTIONAL, INTENT(IN) :: do_orthoovp
    
    !
    ! local variables
    !
    CHARACTER(19)     :: subname="atmproj_to_internal"
    INTEGER           :: iunit, ounit
+   LOGICAL           :: do_orthoovp_
    !
    CHARACTER(nstrx)  :: attr, energy_units
    CHARACTER(nstrx)  :: filetype_
    LOGICAL           :: write_ham, write_space
-   REAL(dbl)         :: avec(3,3), bvec(3,3), norm, efermi, nelec
+   REAL(dbl)         :: avec(3,3), bvec(3,3), norm, alat, efermi, nelec
    INTEGER           :: dimwann, natomwfc, nkpts, nspin, nbnd
    INTEGER           :: nk(3), shift(3), nrtot, nr(3)
-   INTEGER           :: auxdim1, auxdim2, auxdim3
    INTEGER           :: i, j, ir, ik, ib, isp
    INTEGER           :: ierr
    !
@@ -145,8 +146,10 @@ USE util_module
    REAL(dbl),      ALLOCATABLE :: eig(:,:,:)
    COMPLEX(dbl),   ALLOCATABLE :: rham(:,:,:,:), kham(:,:,:)
    COMPLEX(dbl),   ALLOCATABLE :: proj(:,:,:,:)
-! XXX
-   COMPLEX(dbl),   ALLOCATABLE :: zaux(:,:)
+   COMPLEX(dbl),   ALLOCATABLE :: kovp(:,:,:,:), rovp(:,:,:,:)
+   !
+   COMPLEX(dbl),   ALLOCATABLE :: zaux(:,:), ztmp(:,:)
+   COMPLEX(dbl),   ALLOCATABLE :: kovp_sq(:,:)
    REAL(dbl),      ALLOCATABLE :: w(:)
  
 !
@@ -190,6 +193,12 @@ USE util_module
       CALL errore(subname, 'invalid filetype: '//TRIM(filetype_), 71 )
    END SELECT
 
+   !
+   ! orthogonalization controlled by input
+   ! NOTE: states are orthogonal by default
+   !
+   do_orthoovp_ = .TRUE.
+   IF ( PRESENT( do_orthoovp ) ) do_orthoovp_ = do_orthoovp
 
 !
 !---------------------------------
@@ -210,6 +219,16 @@ USE util_module
    !
    CALL qexml_closefile( "read", IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname,"closing "//TRIM(file_data), ABS(ierr) )
+
+   !
+   ! bvec is in 2pi/a units
+   ! convert it to bohr^-1
+   !
+   alat = DOT_PRODUCT( avec(:,1), avec(:,1) )
+   alat = SQRT(alat)
+   !
+   bvec = bvec * TPI / alat
+
 
    !
    ! reading dimensions
@@ -239,12 +258,30 @@ USE util_module
    !
    ! read-in massive data
    !
-   CALL atmproj_read_ext( filein, VKPT=vkpt, WK=wk, EIG=eig, PROJ=proj, IERR=ierr )
+   IF ( do_orthoovp_ ) THEN
+       !
+       ALLOCATE( kovp(1,1,1,1), STAT=ierr )
+       IF (ierr/=0) CALL errore(subname, 'allocating kovp I', ABS(ierr))
+       !
+       CALL atmproj_read_ext( filein, VKPT=vkpt, WK=wk, EIG=eig, PROJ=proj, IERR=ierr )
+       !
+   ELSE
+       !
+       ALLOCATE( kovp(natomwfc,natomwfc,nkpts,nspin), STAT=ierr )
+       IF (ierr/=0) CALL errore(subname, 'allocating kovp II', ABS(ierr))
+       !
+       CALL atmproj_read_ext( filein, VKPT=vkpt, WK=wk, EIG=eig, PROJ=proj, KOVP=kovp, IERR=ierr )
+       !
+   ENDIF
+   !
+   IF ( ierr/=0 ) CALL errore(subname, "reading data II", ABS(ierr))
 
-   IF ( ierr/=0 ) CALL errore(subname, "reading dimensions II", ABS(ierr))
 
    !
-   ! units (we want vkpt to be re-written in crystal units)
+   ! units (first we convert to bohr^-1, 
+   ! then we want vkpt to be re-written in crystal units)
+   !
+   vkpt = vkpt * TPI / alat
    !
    vkpt_cry = vkpt
    CALL cart2cry( vkpt_cry, bvec ) 
@@ -303,11 +340,6 @@ USE util_module
       CALL errore( subname, 'unknown units for efermi: '//TRIM(energy_units), 72)
    END SELECT
 
-   !
-   ! fermi energy is taken into accout
-   !
-! XXX
-!   eig(:,:,:) = eig(:,:,:) -efermi
 
 
 
@@ -320,6 +352,12 @@ USE util_module
        IF ( ierr/=0 ) CALL errore(subname, 'allocating rham', ABS(ierr) )
        ALLOCATE( kham(dimwann, dimwann, nkpts), STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname, 'allocating kham', ABS(ierr) )
+       !
+       IF ( .NOT. do_orthoovp_ ) THEN
+           ALLOCATE( rovp(natomwfc,natomwfc,nrtot,nspin), STAT=ierr )
+           IF (ierr/=0) CALL errore(subname, 'allocating rovp', ABS(ierr))
+       ENDIF
+
 
        DO isp = 1, nspin
 
@@ -347,15 +385,82 @@ USE util_module
                !
                IF ( .NOT. mat_is_herm( dimwann, kham(:,:,ik), TOLL=EPS_m8 ) ) &
                    CALL errore(subname,'kham not hermitean',10)
+
+!!
+!! XXXX DEBUG
+!!
+!      ALLOCATE( zaux( dimwann, dimwann), w(dimwann) )
+!      ! 
+!      WRITE(0,"(/, 2x, 'DEBUG: ik =', i4)") ik
+!      CALL mat_hdiag( zaux, w, kham(:,:,ik), dimwann )
+!      WRITE(0,"(2x,8f13.8)") w( 1: MIN(dimwann,nbnd) )
+!      WRITE(0,*)
+!      ! 
+!      DEALLOCATE( zaux, w )
+!! 
+
                !
-               ! XXXX
-               !ALLOCATE( zaux( dimwann, dimwann), w(dimwann) )
+               ! fermi energy is taken into accout
+               ! The energy shift is performed on the final matrix
+               ! and not on the DFT eigenvalues            
+               ! as     eig(:,:,:) = eig(:,:,:) -efermi
+               ! because the atomic basis is typically very large 
+               ! and would require a lot of bands to be described
                !
-               !WRITE(0,"(/, 2x, 'DEBUG: ik =', i4)") ik
-               !CALL mat_hdiag( zaux, w, kham(:,:,ik), dimwann )
-               !WRITE(0,"(2x,8f10.6)") w(1:nbnd)
+               DO i = 1, dimwann
+                   !
+                   kham(i,i,ik) = kham(i,i,ik) -efermi
+                   !
+               ENDDO
+
                !
-               !DEALLOCATE( zaux, w )
+               ! overlaps
+               ! projections are read orthogonals, if non-orthogonality
+               ! is required, we multiply by S^1/2
+               !
+               IF ( .NOT. do_orthoovp_ ) THEN
+                   !
+                   ALLOCATE( zaux(dimwann,dimwann), ztmp(dimwann,dimwann), STAT=ierr )
+                   IF ( ierr/=0 ) CALL errore(subname, 'allocating raux-rtmp', ABS(ierr) )
+                   ALLOCATE( w(dimwann), kovp_sq(dimwann,dimwann), STAT=ierr )
+                   IF ( ierr/=0 ) CALL errore(subname, 'allocating w, kovp_sq', ABS(ierr) )
+                   !
+                   CALL mat_hdiag( zaux, w(:), kovp(:,:,ik,isp), dimwann)
+                   !              
+                   DO i = 1, dimwann
+                       !
+                       IF ( w(i) <= ZERO ) CALL errore(subname,'unexpected eig < = 0 ',i)
+                       w(i) = SQRT( w(i) )
+                       !
+                   ENDDO
+                   !
+                   DO j = 1, dimwann
+                   DO i = 1, dimwann
+                       !
+                       ztmp(i,j) = zaux(i,j) * w(j)
+                       !
+                   ENDDO
+                   ENDDO
+                   !
+                   CALL mat_mul( kovp_sq, ztmp, 'N', zaux, 'C', dimwann, dimwann, dimwann)
+                   !
+                   IF ( .NOT. mat_is_herm( dimwann, kovp_sq, TOLL=EPS_m8 ) ) &
+                       CALL errore(subname,'kovp_sq not hermitean',10)
+
+                   !
+                   ! apply the basis change to the Hamiltonian
+                   ! multiply kovp_sq (S^1/2) to the right and the left of kham
+                   !
+                   CALL mat_mul( zaux, kovp_sq,      'N', kham(:,:,ik), 'N', dimwann, dimwann, dimwann)
+                   CALL mat_mul( kham(:,:,ik), zaux, 'N', kovp_sq,      'N', dimwann, dimwann, dimwann)
+                   !
+                   !
+                   DEALLOCATE( zaux, ztmp, STAT=ierr)
+                   IF ( ierr/=0 ) CALL errore(subname,'deallocating zaux, ztmp',ABS(ierr))
+                   DEALLOCATE( w, kovp_sq, STAT=ierr)
+                   IF ( ierr/=0 ) CALL errore(subname,'deallocating w, kovp_sq',ABS(ierr))
+                   !
+               ENDIF
                !
            ENDDO
 
@@ -366,6 +471,13 @@ USE util_module
                !
                CALL compute_rham( dimwann, vr(:,ir), rham(:,:,ir,isp), &
                                   nkpts, vkpt, wk, kham )
+               !
+               IF ( .NOT. do_orthoovp_ ) THEN
+                   !
+                    CALL compute_rham( dimwann, vr(:,ir), rovp(:,:,ir,isp), &
+                                       nkpts, vkpt, wk, kovp(:,:,:,isp) )
+                   !
+               ENDIF
                !
            ENDDO
            !
@@ -378,7 +490,33 @@ USE util_module
    !
    DEALLOCATE( proj, STAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'deallocating proj', ABS(ierr) )
+   !
+   IF ( ALLOCATED( kovp ) ) THEN
+       DEALLOCATE( kovp, STAT=ierr)
+       IF ( ierr/=0 ) CALL errore(subname, 'deallocating kovp', ABS(ierr) )
+   ENDIF
 
+
+!! XXX
+!! DEBUG: ridiagonalize
+!WRITE(0,"(2/, 'REDIAGONALIZATION')" )
+!isp = 1
+!
+!ALLOCATE( kovp( dimwann, dimwann, nkpts, 1) )
+!ALLOCATE( kham( dimwann, dimwann, nkpts) )
+!ALLOCATE( zaux( dimwann, dimwann), w(dimwann) )
+!
+!DO ik = 1, nkpts
+!    !
+!    CALL compute_kham( dimwann, nrtot, vr, wr, rham(:,:,:,isp), vkpt(:,ik), kham(:,:,ik) )
+!    CALL compute_kham( dimwann, nrtot, vr, wr, rovp(:,:,:,isp), vkpt(:,ik), kovp(:,:,ik,isp) )
+!    !
+!    CALL mat_hdiag( zaux, w, kham(:,:,ik), kovp(:,:,ik,isp), dimwann )
+!    WRITE(0,"(2x,8f13.8)") w( 1: MIN(dimwann,nbnd) )
+!    WRITE(0,*)
+!    !
+!ENDDO
+! XXX
 
 !
 !---------------------------------
@@ -398,7 +536,7 @@ USE util_module
        CALL iotk_write_attr( attr,"shift",shift)
        CALL iotk_write_attr( attr,"nrtot",nrtot)
        CALL iotk_write_attr( attr,"nr",nr)
-       CALL iotk_write_attr( attr,"have_overlap", .FALSE. )
+       CALL iotk_write_attr( attr,"have_overlap", .NOT. do_orthoovp_ )
        CALL iotk_write_attr( attr,"fermi_energy", 0.0_dbl )
        CALL iotk_write_empty( ounit,"DATA",ATTR=attr)
        !
@@ -431,6 +569,12 @@ USE util_module
           DO ir = 1, nrtot
               !
               CALL iotk_write_dat( ounit,"VR"//TRIM(iotk_index(ir)), rham(:,:, ir, isp) )
+              !
+              IF ( .NOT. do_orthoovp_ ) THEN
+                  CALL iotk_write_dat( ounit,"OVERLAP"//TRIM(iotk_index(ir)), &
+                                       rovp( :, :, ir, isp) )
+              ENDIF
+              !
               !
           ENDDO
           !
@@ -533,6 +677,10 @@ USE util_module
        DEALLOCATE( rham, STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname, 'deallocating rham', ABS(ierr) )
    ENDIF
+   IF( ALLOCATED( rovp ) ) THEN
+       DEALLOCATE( rovp, STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname, 'deallocating rovp', ABS(ierr) )
+   ENDIF
    
 
    CALL log_pop( subname )
@@ -584,7 +732,7 @@ END SUBROUTINE atmproj_to_internal
 
 !*************************************************
 SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
-                              efermi, energy_units, vkpt, wk, eig, proj, ierr )
+                              efermi, energy_units, vkpt, wk, eig, proj, kovp, ierr )
    !*************************************************
    !
    USE kinds,          ONLY : dbl 
@@ -598,6 +746,7 @@ SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
    CHARACTER(*), OPTIONAL, INTENT(OUT)  :: energy_units
    REAL(dbl),    OPTIONAL, INTENT(OUT)  :: vkpt(:,:), wk(:), eig(:,:,:)
    COMPLEX(dbl), OPTIONAL, INTENT(OUT)  :: proj(:,:,:,:)
+   COMPLEX(dbl), OPTIONAL, INTENT(OUT)  :: kovp(:,:,:,:)
    INTEGER,                INTENT(OUT)  :: ierr
    !
    !
@@ -756,6 +905,38 @@ SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
        !
        !
        CALL iotk_scan_end( iunit, "PROJECTIONS", IERR=ierr )
+       IF ( ierr/=0 ) RETURN
+       !
+   ENDIF
+
+   ! 
+   ! reading overlaps
+   ! 
+   IF ( PRESENT( kovp ) ) THEN
+       !
+       CALL iotk_scan_begin( iunit, "OVERLAPS", IERR=ierr )
+       IF ( ierr/=0 ) RETURN
+       !
+       !
+       DO ik = 1, nkpt_
+           !
+           !
+           CALL iotk_scan_begin( iunit, "K-POINT"//TRIM(iotk_index(ik)), IERR=ierr )
+           IF ( ierr/=0 ) RETURN
+           !
+           DO isp = 1, nspin_
+               !
+               CALL iotk_scan_dat(iunit, "OVERLAP"//TRIM(iotk_index(isp)), kovp( :, :, ik, isp ), IERR=ierr)
+               IF ( ierr/=0 ) RETURN
+               !
+           ENDDO
+           !
+           CALL iotk_scan_end( iunit, "K-POINT"//TRIM(iotk_index(ik)), IERR=ierr )
+           IF ( ierr/=0 ) RETURN
+           !
+       ENDDO
+       !
+       CALL iotk_scan_end( iunit, "OVERLAPS", IERR=ierr )
        IF ( ierr/=0 ) RETURN
        !
    ENDIF

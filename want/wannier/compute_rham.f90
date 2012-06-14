@@ -17,7 +17,7 @@
    !
    ! units of vr and vkpt are considered consistent in
    ! such a way that  sum_i vr_i(:) * vkpt_i(:) 
-   ! is the adimensional scalr product k dot R (given in cartesian coordinates)
+   ! is the adimensional scalar product k dot R (given in cartesian coordinates)
    !
    ! Note that in the case we are using parallelism we have to get rid of
    ! that independently

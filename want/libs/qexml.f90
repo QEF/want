@@ -702,7 +702,8 @@ CONTAINS
       CALL iotk_write_dat( ounit, &
                            "BRAVAIS_LATTICE", TRIM( bravais_lattice ) )
       !
-      CALL iotk_write_dat( ounit, "CELL_SYMMETRY", symm_type )
+      IF ( LEN_TRIM( symm_type ) ) &
+          CALL iotk_write_dat( ounit, "CELL_SYMMETRY", symm_type )
       !
       CALL iotk_write_attr( attr, "UNITS", TRIM(alat_units), FIRST = .TRUE. )
       CALL iotk_write_dat( ounit, "LATTICE_PARAMETER", alat, ATTR = attr )
@@ -1675,7 +1676,7 @@ CONTAINS
       CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: alat_units, a_units, b_units
       INTEGER,                     INTENT(OUT) :: ierr
       !
-      CHARACTER(256)     :: bravais_latt_, symm_type_
+      CHARACTER(256)     :: bravais_latt_
       CHARACTER(256)     :: alat_units_, a_units_, b_units_
       REAL(dbl)          :: celldm_(6), alat_ 
       REAL(dbl)          :: a1_(3), a2_(3), a3_(3)
@@ -1741,7 +1742,7 @@ CONTAINS
       !
       ! 
       IF ( PRESENT(bravais_latt) )  bravais_latt = bravais_latt_
-      IF ( PRESENT(symm_type) )     celldm       = celldm_
+      IF ( PRESENT(celldm) )        celldm       = celldm_
       IF ( PRESENT(alat) )          alat         = alat_
       IF ( PRESENT(a1) )            a1           = a1_
       IF ( PRESENT(a2) )            a2           = a2_
