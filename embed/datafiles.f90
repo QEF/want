@@ -23,7 +23,7 @@
    USE cp2k_tools_module,       ONLY : cp2k_to_internal
    USE atmproj_tools_module,    ONLY : atmproj_to_internal
    USE datafiles_module,        ONLY : datafiles_check_fmt
-   USE E_control_module,        ONLY : datafile_tot 
+   USE E_control_module,        ONLY : datafile_tot, do_orthoovp 
    USE iotk_module
    !
    IMPLICIT NONE
@@ -106,7 +106,7 @@ CONTAINS
            SELECT CASE( TRIM(fmtstr) )
            CASE ( 'crystal' )
                !
-               CALL crystal_to_internal( filename, TRIM(filename)//'.ham', 'hamiltonian' )
+               CALL crystal_to_internal( filename, TRIM(filename)//'.ham', 'hamiltonian', do_orthoovp )
                !
                WRITE( stdout, "(2x, A,' converted from CRYSTAL to internal fmt' )") &
                    TRIM( filename )
@@ -124,7 +124,7 @@ CONTAINS
                !
            CASE( 'cp2k' )
                !
-               CALL cp2k_to_internal( TRIM(filename), TRIM(filename)//'.ham', 'hamiltonian' )
+               CALL cp2k_to_internal( TRIM(filename), TRIM(filename)//'.ham', 'hamiltonian', do_orthoovp )
                !
                WRITE( stdout, "(2x, A,' converted from CP2K to internal fmt' )") &
                    TRIM( filename )
@@ -133,7 +133,7 @@ CONTAINS
                !
            CASE( 'atmproj' )
                !
-               CALL atmproj_to_internal( TRIM(filename), TRIM(filename)//'.ham', 'hamiltonian' )
+               CALL atmproj_to_internal( TRIM(filename), TRIM(filename)//'.ham', 'hamiltonian', do_orthoovp )
                !
                WRITE( stdout, "(2x, A,' converted from ATMPROJ to internal fmt' )") &
                    TRIM( filename )

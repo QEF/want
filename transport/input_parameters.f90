@@ -192,10 +192,8 @@
        ! 00R, 01R regions
 
    LOGICAL :: do_orthoovp = .FALSE.
-       !
        ! if a non-orthogonal set is used, it is lowdin-orthogonalized
        ! during conversion
-       !
 
    REAL(dbl) :: shift_L = 0.0
        ! global energy shift [eV] to be applied to the matrix elements

@@ -85,8 +85,7 @@
        WRITE(iunit,"( 7x,'       Write k-data :',5x,a)") log2char(write_kdata)
        WRITE(iunit,"( 7x,'     Write sgm lead :',5x,a)") log2char(write_lead_sgm)
        WRITE(iunit,"( 7x,'         Write gf C :',5x,a)") log2char(write_gf)
-       WRITE(iunit,"( 7x,'Max iteration number:',5x,i5)") niterx
-       WRITE(iunit,"( )")
+       WRITE(iunit,"( 7x,'    Max iter number :',5x,i5)") niterx
        WRITE(iunit,"( 7x,'             nprint :',5x,i5)") nprint
        WRITE(iunit,"( )")
        WRITE(iunit,"( 7x,' Conductor datafile :',5x,a)") TRIM(datafile_C)

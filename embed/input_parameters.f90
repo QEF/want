@@ -119,6 +119,10 @@
    CHARACTER(nstrx) :: datafile_sgm_emb = ' '
        ! the name of the file containing the embedding sgm
 
+   LOGICAL :: do_orthoovp = .FALSE.
+       ! if a non-orthogonal set is used, it is lowdin-orthogonalized
+       ! during conversion
+
    REAL(dbl) :: shift_tot = 0.0
        ! global energy shift [eV] to be applied to the matrix elements
        ! of the hamiltonian
@@ -138,14 +142,14 @@
                  use_symm, write_embed_sgm, &
                  delta, smearing_type, delta_ratio, xmax,                    &
                  transport_dir, nk, s, debug_level,                          &
-                 work_dir, prefix, postfix, shift_tot, ispin
+                 work_dir, prefix, postfix, shift_tot, ispin, do_orthoovp
 
    PUBLIC :: dim_tot, dim_emb, ne, ne_buffer, emin, emax, nprint
    PUBLIC :: datafile_tot, datafile_emb, datafile_sgm, datafile_sgm_emb
    PUBLIC :: use_symm, write_embed_sgm
    PUBLIC :: transport_dir, nk, s, debug_level
    PUBLIC :: delta, smearing_type, delta_ratio, xmax
-   PUBLIC :: work_dir, prefix, postfix, shift_tot, ispin
+   PUBLIC :: work_dir, prefix, postfix, shift_tot, ispin, do_orthoovp
    PUBLIC :: INPUT
 
 
@@ -208,6 +212,7 @@ CONTAINS
       CALL mp_bcast( datafile_sgm_emb,   ionode_id)      
       CALL mp_bcast( shift_tot,          ionode_id)      
       CALL mp_bcast( ispin,              ionode_id)      
+      CALL mp_bcast( do_orthoovp,        ionode_id)      
 
       !
       ! ... checking parameters
