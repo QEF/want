@@ -218,6 +218,7 @@ CONTAINS
       ! Whether using IOTK
       ! 
       fmt_iotk = .TRUE.
+      NULLIFY (tags)
       IF ( TRIM(path_) == "none" .OR. TRIM(path_) == "NONE" ) THEN 
          fmt_iotk = .FALSE.
       ELSE
@@ -366,6 +367,7 @@ CONTAINS
       ! Whether using IOTK
       ! 
       fmt_iotk = .TRUE.
+      NULLIFY (tags )
       IF ( TRIM(path_) == "none" .OR. TRIM(path_) == "NONE") THEN 
          fmt_iotk = .FALSE.
       ELSE

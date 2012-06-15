@@ -648,7 +648,7 @@ CONTAINS
        CHARACTER(16)      :: subname="windows_read_ext"
        CHARACTER(nstrx)   :: str
        INTEGER            :: lnkpts, ierr, ik
-       REAL(dbl)          :: lefermi
+       REAL(dbl)          :: lefermi(2)
        REAL(dbl), ALLOCATABLE :: leig(:,:,:)
        !
 #ifdef __ETSF_IO
@@ -682,7 +682,7 @@ CONTAINS
        CASE ( 'pw_export' )
             !
             CALL qexpt_read_bands( NBND=nbnd, NUM_K_POINTS=lnkpts, &
-                                   NSPIN=nspin, EF=lefermi, &
+                                   NSPIN=nspin, EF=lefermi(1), &
                                    NELEC=nelec, IERR=ierr )
             !
             CALL mp_bcast( nbnd,    ionode_id )
@@ -691,6 +691,9 @@ CONTAINS
             CALL mp_bcast( lefermi, ionode_id )
             CALL mp_bcast( nelec,   ionode_id )
             CALL mp_bcast( ierr,    ionode_id )
+            !
+            ! 2 fermi energies not allowed
+            lefermi(2) = lefermi(1)
             !
        CASE ( 'etsf_io' )
             !
@@ -815,7 +818,9 @@ CONTAINS
             str = "Hartree"
             !
             leig( 1:nbnd, 1:nkpts_g, 1:nspin) = eigenvalues(:,:,:)
-            lefermi = fermi_energy
+            !
+            ! two-fermi-energies not allowed
+            lefermi(1:2) = fermi_energy
             !
             DEALLOCATE( eigenvalues )
             !
@@ -854,7 +859,7 @@ CONTAINS
        !
        ! check whether fermi energy is read from dftdata_file
        !
-       IF ( read_efermi ) efermi = lefermi
+       IF ( read_efermi ) efermi = lefermi(ispin)
 
        !
        ! define EIG, which contains only the kpts related to the current pool
