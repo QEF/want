@@ -380,8 +380,12 @@
           !
       ENDIF
       !
-      CALL mp_bcast(  A_loc,    ionode_id )
-      CALL mp_bcast(  S_loc,    ionode_id )
+      DO j = 1, SIZE( A_loc, 2)
+          !
+          CALL mp_bcast(  A_loc(:,j),    ionode_id )
+          CALL mp_bcast(  S_loc(:,j),    ionode_id )
+          !
+      ENDDO
 
 
       !
