@@ -25,6 +25,7 @@
    USE datafiles_module,        ONLY : datafiles_check_fmt
    USE T_control_module,        ONLY : datafile_L, datafile_C, datafile_R, &
                                        calculation_type, do_orthoovp
+   USE files_module,            ONLY : file_delete
    USE iotk_module
    !
    IMPLICIT NONE
@@ -57,7 +58,7 @@ CONTAINS
    CHARACTER(14)          :: subname="datafiles_init"
    CHARACTER(nstrx)       :: fmtstr
    !
-   INTEGER                :: i, nfile
+   INTEGER                :: i, j, nfile
    LOGICAL                :: exists
    CHARACTER(nstrx)       :: filelist(3), filename
 
@@ -83,6 +84,16 @@ CONTAINS
        filelist(3) = TRIM( datafile_R )
        !
    ENDIF
+   !
+   ! checks
+   !
+   DO i = 1, nfile
+       !
+       DO j = i+1, nfile
+           IF ( TRIM(filelist(i)) == TRIM(filelist(j)) )  filelist(j) = " "
+       ENDDO
+       !
+   ENDDO
        
 
    !
@@ -90,6 +101,10 @@ CONTAINS
    !
    file_loop:&
    DO i = 1, nfile
+       !
+       ! don't do anything if the filename is empty
+       !
+       IF ( LEN_TRIM( filelist(i) ) == 0 ) CYCLE
        !
        filename = filelist( i )
 
@@ -99,6 +114,7 @@ CONTAINS
        IF ( ionode ) THEN
            !
            INQUIRE( FILE=filename, EXIST=exists ) 
+           !
        ENDIF
        !
        CALL mp_bcast( exists, ionode_id ) 
@@ -113,6 +129,10 @@ CONTAINS
            CALL datafiles_check_fmt( filename, fmtstr )
            !
            WRITE( stdout, "(2x, A,' file fmt: ', A )") TRIM(filename), TRIM(fmtstr)
+           !
+           ! removing old versions of the file
+           CALL file_delete( TRIM(filename)//'.ham' )
+           !
            !
            SELECT CASE( TRIM(fmtstr) )
            CASE ( 'crystal' )
