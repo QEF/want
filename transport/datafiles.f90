@@ -59,6 +59,7 @@ CONTAINS
    CHARACTER(nstrx)       :: fmtstr
    !
    INTEGER                :: i, j, nfile
+   INTEGER                :: filemap(3)
    LOGICAL                :: exists
    CHARACTER(nstrx)       :: filelist(3), filename
 
@@ -90,7 +91,12 @@ CONTAINS
    DO i = 1, nfile
        !
        DO j = i+1, nfile
-           IF ( TRIM(filelist(i)) == TRIM(filelist(j)) )  filelist(j) = " "
+           !
+           IF ( TRIM(filelist(i)) == TRIM(filelist(j)) )  THEN
+               filelist(j) = " "
+               filemap(j) = i
+           ENDIF
+           !
        ENDDO
        !
    ENDDO
@@ -104,7 +110,12 @@ CONTAINS
        !
        ! don't do anything if the filename is empty
        !
-       IF ( LEN_TRIM( filelist(i) ) == 0 ) CYCLE
+       IF ( LEN_TRIM( filelist(i) ) == 0 ) THEN
+           !
+           filelist(i) = filelist( filemap(i) )
+           CYCLE
+           !
+       ENDIF
        !
        filename = filelist( i )
 
