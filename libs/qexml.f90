@@ -702,7 +702,7 @@ CONTAINS
       CALL iotk_write_dat( ounit, &
                            "BRAVAIS_LATTICE", TRIM( bravais_lattice ) )
       !
-      IF ( LEN_TRIM( symm_type ) ) &
+      IF ( LEN_TRIM( symm_type ) /= 0 ) &
           CALL iotk_write_dat( ounit, "CELL_SYMMETRY", symm_type )
       !
       CALL iotk_write_attr( attr, "UNITS", TRIM(alat_units), FIRST = .TRUE. )
