@@ -4,6 +4,8 @@
 =======================================================
 
 
+21 Jun 2012     write_ham.f90 (written by MBN) inlcuded in the main distribution. (AF)
+
 08 Jun 2012     implementation of the atmproj basis done (minimal working case). (AF)
 
 07 Jun 2012     atomicproj_tools.f90 added: it is meant to convert atomic projection data

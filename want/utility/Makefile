@@ -87,7 +87,8 @@ BIN_DEPS=      $(OBJS) $(WANNIER_OBJS) $(EXTERNAL_LIBS)
 #
 # main targets
 #
-all: midpoint.x wfk2etsf.x kgrid.x sumpdos sum_sgm.x sax2qexml.x decay.x gcube2plt.x
+all: midpoint.x wfk2etsf.x kgrid.x sumpdos sum_sgm.x \
+     sax2qexml.x decay.x gcube2plt.x write_ham.x
 
 
 midpoint.x: midpoint.o $(BIN_DEPS)
@@ -127,6 +128,11 @@ sax2qexml.x: sax2qexml.o $(OBJS)
 	       $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../bin ; ln -sf ../utility/$@ . )
 	- ( cd ../bin ; ln -sf ../utility/sax2qexml . )
+
+write_ham.x: write_ham.o $(OBJS)
+	$(LD) $(LDFLAGS) -o $@ write_ham.o \
+	       $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
+	- ( cd ../bin ; ln -sf ../utility/$@ . )
 
 clean:
 	rm -rf *.o *.a *core *.F90 work.pc work.pcl *.mod *.x sumpdos
