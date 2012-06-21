@@ -84,7 +84,7 @@ BIN_DEPS=      $(OBJS) $(WANNIER_OBJS) $(EXTERNAL_LIBS)
 #
 # main targets
 #
-all: midpoint.x wfk2etsf.x kgrid.x sumpdos gcube2plt.x
+all: midpoint.x wfk2etsf.x kgrid.x sumpdos gcube2plt.x write_ham.x
 
 
 midpoint.x: midpoint.o $(BIN_DEPS)
@@ -107,6 +107,11 @@ gcube2plt.x: gcube2plt.o
 
 sumpdos: sumpdos.o
 	$(LD) $(LDFLAGS) -o $@ sumpdos.o
+	- ( cd ../bin ; ln -sf ../utility/$@ . )
+
+write_ham.x: write_ham.o
+	$(LD) $(LDFLAGS) -o $@ write_ham.o \
+	     $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../bin ; ln -sf ../utility/$@ . )
 
 clean:

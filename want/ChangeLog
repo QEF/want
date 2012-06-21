@@ -5,8 +5,10 @@
 
 
 -------------------------------------------------
-Date: 29 May 2012    Version: WanT-2.3.1
+Date: 18 Jun 2012    Version: WanT-2.3.1
 -------------------------------------------------
+
+Jun 18 2012      write_ham.f90 (by MBN) added to utility dir. (AF)
 
 May 29 2012      qexml.f90 lib updated according to QE-5.0. (AF)
 
