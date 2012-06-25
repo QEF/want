@@ -81,14 +81,6 @@
    ! print data to output
    !
    CALL summary( stdout )
-   !
-   ! memory usage
-   !
-   IF ( ionode ) WRITE( stdout, "()" )
-   CALL memusage( stdout )
-   !
-   CALL flush_unit( stdout )
-
 
    !
    ! do the main task
@@ -186,6 +178,15 @@ END PROGRAM conductor
    ! local variable allocations
    !
    CALL workspace_allocate()
+
+   !
+   ! memory usage
+   !
+   IF ( ionode ) WRITE( stdout, "()" )
+   CALL memusage( stdout )
+   !
+   CALL flush_unit( stdout )
+
 
    ALLOCATE ( dos_k(ne,nkpts_par), STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'allocating dos_k', ABS(ierr) )
