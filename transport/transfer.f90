@@ -22,7 +22,7 @@
    USE log_module,              ONLY : log_push, log_pop
    USE util_module,             ONLY : mat_mul, mat_inv
    USE T_smearing_module,       ONLY : delta
-   USE T_control_module,        ONLY : nfail, nfailx, niterx
+   USE T_control_module,        ONLY : nfail, nfailx, niterx, transfer_thr
    USE T_operator_blc_module
    !
    IMPLICIT NONE
@@ -191,7 +191,7 @@
           ENDDO
           ENDDO
           !
-          IF ( conver < EPS_m7 .AND. conver2 < EPS_m7 ) THEN 
+          IF ( conver < transfer_thr .AND. conver2 < transfer_thr ) THEN 
               lconverged = .TRUE.
               EXIT
           ENDIF

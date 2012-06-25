@@ -97,6 +97,7 @@ CONTAINS
                                            do_eigplot,        &
                                            ie_eigplot,        &
                                            ik_eigplot,        &
+                                           transfer_thr,      &
                                            nfailx
                                             
       USE T_input_parameters_module,ONLY : calculation_type_  => calculation_type, &
@@ -118,6 +119,7 @@ CONTAINS
                                            do_eigplot_        => do_eigplot, &
                                            ie_eigplot_        => ie_eigplot, &
                                            ik_eigplot_        => ik_eigplot, &
+                                           transfer_thr_      => transfer_thr, &
                                            nfailx_            => nfailx
 
       IMPLICIT NONE
@@ -142,6 +144,7 @@ CONTAINS
       ie_eigplot          = ie_eigplot_
       ik_eigplot          = ik_eigplot_
       nfailx              = nfailx_
+      transfer_thr        = transfer_thr_
 
       use_debug_mode = .FALSE.
       IF ( debug_level_ > 0 )  use_debug_mode  = .TRUE.

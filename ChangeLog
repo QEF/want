@@ -4,7 +4,8 @@
 =======================================================
 
 
-25 Jun 2012     memusage report moved after workspace allocation in transport. (AF)
+25 Jun 2012     memusage report moved after workspace allocation in transport. 
+		Variable transfer_thr added to conductor namelist. (AF)
 
 21 Jun 2012     write_ham.f90 (written by MBN) inlcuded in the main distribution. (AF)
 

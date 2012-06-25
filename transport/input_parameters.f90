@@ -128,6 +128,10 @@
    INTEGER :: nfailx = 5
        ! max allowed number of failures during lead-sgm calculation
 
+   REAL(dbl) :: transfer_thr = 1.0d-7
+       ! Threshold for the convergence of the iterative procedure
+       ! to compute the transfer matrices (lead self-energies)
+
    LOGICAL :: write_kdata = .FALSE.
        ! write kpoint-resolved dos an transmittance to output
 
@@ -230,7 +234,7 @@
                  delta_ratio, xmax, nk, s, use_symm, debug_level,               &
                  work_dir, prefix, postfix, ispin,                              &
                  write_kdata, write_lead_sgm, write_gf,                         &
-                 shift_L, shift_C, shift_R, shift_corr, nfailx 
+                 shift_L, shift_C, shift_R, shift_corr, nfailx, transfer_thr
 
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx, smearing_type
@@ -240,7 +244,7 @@
    PUBLIC :: nk, s, use_symm, debug_level, do_orthoovp
    PUBLIC :: work_dir, prefix, postfix, ispin, write_kdata, write_lead_sgm, write_gf 
    PUBLIC :: do_eigenchannels, neigchnx, do_eigplot, ie_eigplot, ik_eigplot
-   PUBLIC :: shift_L, shift_C, shift_R, shift_corr, nfailx
+   PUBLIC :: shift_L, shift_C, shift_R, shift_corr, nfailx, transfer_thr
    PUBLIC :: INPUT_CONDUCTOR
 
 
@@ -322,7 +326,8 @@ CONTAINS
       CALL mp_bcast( shift_C,            ionode_id)      
       CALL mp_bcast( shift_R,            ionode_id)      
       CALL mp_bcast( shift_corr,         ionode_id)      
-      CALL mp_bcast( nfailx,             ionode_id)      
+      CALL mp_bcast( nfailx,             ionode_id)
+      CALL mp_bcast( transfer_thr,       ionode_id)
 
       !
       ! ... checking parameters
@@ -435,6 +440,9 @@ CONTAINS
       !
       IF ( ( write_lead_sgm .OR. write_gf ) .AND. use_symm ) &
            CALL errore(subname,'use_symm and write_sgm or write_gf not implemented',1)
+
+      IF ( transfer_thr <= ZERO ) CALL errore(subname,'invalid value for transfer_thr',10)
+
 
       CALL log_pop( 'read_namelist_input_conductor' )
 

@@ -41,6 +41,7 @@
    !
    INTEGER                   :: niterx
    INTEGER                   :: nfailx
+   REAL(dbl)                 :: transfer_thr
    INTEGER                   :: neigchnx, neigchn
    INTEGER                   :: nfail = 0
    !
@@ -71,9 +72,9 @@
    PUBLIC :: write_lead_sgm
    PUBLIC :: write_gf
    !
-   PUBLIC :: niterx
-   PUBLIC :: nfailx
+   PUBLIC :: niterx, nfailx
    PUBLIC :: nfail
+   PUBLIC :: transfer_thr
    !
    PUBLIC :: nprint
    !
