@@ -211,6 +211,11 @@ nfailx      INTEGER
             at most nfailx times. Then a fatal error is issued. 
             DEFAULT : 5
 
+transfer_thr REAL
+            Threshold for the convergence of the iterative procedure
+            to compute the transfer matrices (lead self-energies)
+            DEFAULT : 1.0d-7
+
 ispin       INTEGER
             spin component to be taken into account. At the moment this is 
             only used when reading datafiles produced by CRYSTAL.

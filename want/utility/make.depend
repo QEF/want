@@ -43,7 +43,6 @@ sum_sgm.o : ../libs/kind.o
 sum_sgm.o : ../wannier/io_module.o
 sum_sgm.o : ../wannier/operator.o
 wfk2etsf.o : ../wannier/atomic.o
-# write_ham.o : @iotk_module@
 write_ham.o : ../libs/io_global.o
 write_ham.o : ../libs/kind.o
 gcube2plt.o : ../include/c_defs.h

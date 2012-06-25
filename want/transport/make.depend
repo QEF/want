@@ -50,6 +50,7 @@ current.o : ../libs/timing.o
 current.o : ../wannier/io_module.o
 current.o : ../wannier/version.o
 datafiles.o : control.o
+datafiles.o : ../libs/files.o
 datafiles.o : ../libs/log_module.o
 datafiles.o : ../libs/mp.o
 datafiles.o : ../libs/parameters.o
