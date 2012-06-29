@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***********************************************************************
-   SUBROUTINE transfer_mtrx( ndim, opr00, opr01, tot, tott, niter )
+   SUBROUTINE transfer_mtrx( ndim, opr00, opr01, ldt, tot, tott, niter )
    !***********************************************************************
    !
    !...  Iterative construction of the transfer matrix
@@ -31,11 +31,11 @@
       !
       ! I/O variables
       !
-      INTEGER,                 INTENT(IN)    :: ndim
+      INTEGER,                 INTENT(IN)    :: ndim, ldt
       TYPE(operator_blc),      INTENT(IN)    :: opr00, opr01
       INTEGER,                 INTENT(OUT)   :: niter
-      COMPLEX(dbl),            INTENT(OUT)   :: tot(ndim,ndim)
-      COMPLEX(dbl),            INTENT(OUT)   :: tott(ndim,ndim)
+      COMPLEX(dbl),            INTENT(OUT)   :: tot(ldt,ndim)
+      COMPLEX(dbl),            INTENT(OUT)   :: tott(ldt,ndim)
 
 
 
@@ -63,6 +63,8 @@
 
       IF ( .NOT. opr00%alloc )   CALL errore(subname,'opr00 not alloc',1)
       IF ( .NOT. opr01%alloc )   CALL errore(subname,'opr01 not alloc',1)
+
+      IF ( ldt < ndim )          CALL errore(subname,'invalid ldt',1)
 
       ALLOCATE( tau(ndim, ndim, 2), taut(ndim, ndim, 2), STAT=ierr)
       IF (ierr/=0) CALL errore(subname,'allocating tau, taut',ABS(ierr))
@@ -103,14 +105,14 @@
       !
       ! Initialize T
       !
-      tot ( :, :) = tau ( :, :, 1)
+      tot ( 1:ndim, 1:ndim) = tau ( :, :, 1)
       tsum( :, :) = taut( :, :, 1)
 
       !
       ! Initialize T^bar
       !
-      tott(:,:) = taut(:,:,1)
-      tsumt(:,:) = tau(:,:,1)
+      tott( 1:ndim, 1:ndim) = taut(:,:,1)
+      tsumt( :, :) = tau(:,:,1)
 
 
       !
@@ -162,14 +164,14 @@
           CALL mat_mul( t11, tsum, 'N', tau(:,:,2),  'N', ndim, ndim, ndim)
           CALL mat_mul( s1,  tsum, 'N', taut(:,:,2), 'N', ndim, ndim, ndim)
   
-          tot = tot + t11
+          tot( 1:ndim, 1:ndim ) = tot( 1:ndim, 1:ndim) + t11
           tsum = s1
 
 
           CALL mat_mul(t11, tsumt, 'N', taut(:,:,2), 'N', ndim, ndim, ndim)
           CALL mat_mul(s1,  tsumt, 'N', tau(:,:,2),  'N', ndim, ndim, ndim)
 
-          tott  = tott + t11
+          tott(1:ndim, 1:ndim)  = tott(1:ndim,1:ndim) + t11(:,:)
           tsumt = s1
           !
           tau(:,:,1)  = tau(:,:,2)
@@ -185,7 +187,7 @@
           DO j = 1, ndim
           DO i = 1, ndim
               !
-              conver = conver +   REAL( tau(i,j,2)  * CONJG( tau(i,j,2) )) 
+              conver  =  conver + REAL( tau(i,j,2)  * CONJG( tau(i,j,2) )) 
               conver2 = conver2 + REAL( taut(i,j,2) * CONJG( taut(i,j,2) )) 
               !
           ENDDO

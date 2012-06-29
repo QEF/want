@@ -42,6 +42,7 @@
    INTEGER                   :: niterx
    INTEGER                   :: nfailx
    REAL(dbl)                 :: transfer_thr
+   LOGICAL                   :: leads_are_identical = .FALSE.
    INTEGER                   :: neigchnx, neigchn
    INTEGER                   :: nfail = 0
    !
@@ -75,6 +76,7 @@
    PUBLIC :: niterx, nfailx
    PUBLIC :: nfail
    PUBLIC :: transfer_thr
+   PUBLIC :: leads_are_identical
    !
    PUBLIC :: nprint
    !

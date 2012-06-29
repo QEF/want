@@ -123,15 +123,15 @@ END PROGRAM conductor
    USE T_control_module,     ONLY : conduct_formula, nprint, transport_dir, &
                                     write_kdata, write_lead_sgm, write_gf, &
                                     do_eigenchannels, neigchn, neigchnx, &
-                                    do_eigplot, ie_eigplot, ik_eigplot
+                                    do_eigplot, ie_eigplot, ik_eigplot, leads_are_identical
    USE T_egrid_module,       ONLY : ne, egrid, &
                                     ne_buffer, egrid_buffer_doread, egrid_buffer_iend
    USE T_kpoints_module,     ONLY : nkpts_par, vkpt_par3D, wk_par, ivr_par3D, &
                                     vr_par3D, nrtot_par
-   USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx,             &
+   USE T_hamiltonian_module, ONLY : dimL, dimR, dimC, dimx, dimx_lead,  &
                                     blc_00L, blc_01L, blc_00R, blc_01R, &
                                     blc_00C, blc_LC,  blc_CR
-   USE T_workspace_module,   ONLY : totL, tottL, totR, tottR, &
+   USE T_workspace_module,   ONLY : tsum, tsumt, work, &
                                     gR, gL, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
                                     rsgm_L, rsgm_R, kgC, rgC, workspace_allocate
    USE T_correlation_module, ONLY : lhave_corr, ldynam_corr, &
@@ -159,7 +159,6 @@ END PROGRAM conductor
    REAL(dbl),    ALLOCATABLE :: conduct_k(:,:,:), conduct(:,:)
    REAL(dbl),    ALLOCATABLE :: dos_k(:,:), dos(:), cond_aux(:)
    COMPLEX(dbl), ALLOCATABLE :: z_eigplot(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: work(:,:)
    !
    ! end of declarations
    !
@@ -221,9 +220,6 @@ END PROGRAM conductor
    !
    ALLOCATE ( cond_aux(dimC), STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'allocating cond_aux', ABS(ierr) )
-   !
-   ALLOCATE ( work(dimx,dimx), STAT=ierr )
-   IF( ierr /=0 ) CALL errore(subname,'allocating work', ABS(ierr) )
 
 
 !
@@ -347,20 +343,31 @@ END PROGRAM conductor
 
           !
           ! right lead
-          CALL transfer_mtrx( dimR, blc_00R, blc_01R, totR, tottR, niter )
+          !
+          CALL transfer_mtrx( dimR, blc_00R, blc_01R, dimx_lead, tsum, tsumt, niter )
           avg_iter = avg_iter + REAL(niter)
           !
-          CALL green( dimR, blc_00R, blc_01R, totR, tottR, gR, 1 )
+          CALL green( dimR, blc_00R, blc_01R, dimx_lead, tsum, tsumt, gR, 1 )
           !
           CALL mat_mul(work, blc_CR%aux, 'N', gR,    'N', dimC, dimR, dimR)
           CALL mat_mul(sgm_R(:,:,ik), work, 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
  
           ! 
-          ! left lead 
-          CALL transfer_mtrx( dimL, blc_00L, blc_01L, totL, tottL, niter )
-          avg_iter = avg_iter + REAL(niter)
+          ! left lead (if needed)
           !
-          CALL green( dimL, blc_00L, blc_01L, totL, tottL, gL, -1 )
+          IF ( .NOT. leads_are_identical ) THEN
+              !
+              CALL transfer_mtrx( dimL, blc_00L, blc_01L, dimx_lead, tsum, tsumt, niter )
+              avg_iter = avg_iter + REAL(niter)
+              !
+              CALL green( dimL, blc_00L, blc_01L, dimx_lead, tsum, tsumt, gL, -1 )
+              !
+          ELSE
+              !
+              CALL green( dimR, blc_00R, blc_01R, dimx_lead, tsum, tsumt, gL, -1 )
+              !
+          ENDIF
+          !
           !
           CALL mat_mul(work, blc_LC%aux, 'C', gL,    'N', dimC, dimL, dimL)
           CALL mat_mul(sgm_L(:,:,ik), work, 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
@@ -617,9 +624,6 @@ END PROGRAM conductor
    !
    DEALLOCATE ( cond_aux, STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'deallocating cond_aux', ABS(ierr) )
-   !
-   DEALLOCATE ( work, STAT=ierr )
-   IF( ierr /=0 ) CALL errore(subname,'deallocating work', ABS(ierr) )
    !
    IF ( do_eigenchannels .AND. do_eigplot ) THEN
        !

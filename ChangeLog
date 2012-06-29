@@ -4,6 +4,9 @@
 =======================================================
 
 
+29 Jun 2012     computational time and memusage partly optimized in transport
+		calculation to deal with cp2k basis (thanks to Leopold Talirz for help). (AF)
+
 25 Jun 2012     memusage report moved after workspace allocation in transport. 
 		Variable transfer_thr added to conductor namelist. (AF)
 

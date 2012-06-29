@@ -28,7 +28,7 @@
                                     datafile_C, datafile_L, datafile_R, &
                                     transport_dir, niterx, nprint, & 
                                     write_kdata, write_lead_sgm, write_gf, &
-                                    do_orthoovp
+                                    do_orthoovp, leads_are_identical
    USE T_egrid_module,       ONLY : ne, emin, emax, de, ne_buffer
    USE T_smearing_module,    ONLY : delta, smearing_type, nx_smear => nx, xmax
    USE T_kpoints_module,     ONLY : nkpts_par, nk_par, s_par, vkpt_par3D, wk_par, use_symm, &
@@ -98,6 +98,7 @@
           WRITE(iunit,"( 7x,'     C-Sgm datafile :',5x,a)") TRIM(datafile_C_sgm)
           WRITE(iunit,"( 7x,'     R-Sgm datafile :',5x,a)") TRIM(datafile_R_sgm)
        ENDIF
+       WRITE(iunit,"( 7x,'leads are identical :',5x,a)") log2char(leads_are_identical)
        WRITE(iunit,"( 7x,'  ovp orthogonaliz. :',5x,a)") log2char(do_orthoovp)
        WRITE( iunit,"( 2x,'</INPUT>',2/)" )
     

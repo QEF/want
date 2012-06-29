@@ -64,15 +64,29 @@
    !
    ! hamiltonian and overlap
    !
-   blc_00L%aux(:,:)  =  (omg -shift_L) * blc_00L%S(:,:,ik) -blc_00L%H(:,:,ik)
-   blc_01L%aux(:,:)  =  (omg -shift_L) * blc_01L%S(:,:,ik) -blc_01L%H(:,:,ik)
+   IF ( blc_00L%alloc ) THEN
+       blc_00L%aux(:,:)  =  (omg -shift_L) * blc_00L%S(:,:,ik) -blc_00L%H(:,:,ik)
+   ENDIF
+   IF ( blc_01L%alloc ) THEN
+       blc_01L%aux(:,:)  =  (omg -shift_L) * blc_01L%S(:,:,ik) -blc_01L%H(:,:,ik)
+   ENDIF
    !
-   blc_00R%aux(:,:)  =  (omg -shift_R) * blc_00R%S(:,:,ik) -blc_00R%H(:,:,ik)
-   blc_01R%aux(:,:)  =  (omg -shift_R) * blc_01R%S(:,:,ik) -blc_01R%H(:,:,ik)
+   IF ( blc_00R%alloc ) THEN
+       blc_00R%aux(:,:)  =  (omg -shift_R) * blc_00R%S(:,:,ik) -blc_00R%H(:,:,ik)
+   ENDIF
+   IF ( blc_01R%alloc ) THEN
+       blc_01R%aux(:,:)  =  (omg -shift_R) * blc_01R%S(:,:,ik) -blc_01R%H(:,:,ik)
+   ENDIF
    ! 
-   blc_00C%aux(:,:)  =  (omg -shift_C) * blc_00C%S(:,:,ik) -blc_00C%H(:,:,ik)
-   blc_LC%aux(:,:)   =  (omg -shift_C) * blc_LC%S(:,:,ik) -blc_LC%H(:,:,ik)
-   blc_CR%aux(:,:)   =  (omg -shift_C) * blc_CR%S(:,:,ik) -blc_CR%H(:,:,ik)
+   IF ( blc_00C%alloc ) THEN
+       blc_00C%aux(:,:)  =  (omg -shift_C) * blc_00C%S(:,:,ik) -blc_00C%H(:,:,ik)
+   ENDIF
+   IF ( blc_LC%alloc ) THEN
+       blc_LC%aux(:,:)   =  (omg -shift_C) * blc_LC%S(:,:,ik) -blc_LC%H(:,:,ik)
+   ENDIF
+   IF ( blc_CR%alloc ) THEN
+       blc_CR%aux(:,:)   =  (omg -shift_C) * blc_CR%S(:,:,ik) -blc_CR%H(:,:,ik)
+   ENDIF
 
    !
    ! correlation
@@ -108,13 +122,29 @@
    !
    ! finalize setup
    !
-   CALL operator_blc_update( IE=ie_g, IK=ik, IE_BUFF=ie_bl, OBJ=blc_00C )
-   CALL operator_blc_update( IE=ie_g, IK=ik, IE_BUFF=ie_bl, OBJ=blc_LC  )
-   CALL operator_blc_update( IE=ie_g, IK=ik, IE_BUFF=ie_bl, OBJ=blc_CR  )
-   CALL operator_blc_update( IE=ie_g, IK=ik, IE_BUFF=ie_bl, OBJ=blc_00L )
-   CALL operator_blc_update( IE=ie_g, IK=ik, IE_BUFF=ie_bl, OBJ=blc_01L )
-   CALL operator_blc_update( IE=ie_g, IK=ik, IE_BUFF=ie_bl, OBJ=blc_00R )
-   CALL operator_blc_update( IE=ie_g, IK=ik, IE_BUFF=ie_bl, OBJ=blc_01R )
+   IF ( blc_00C%alloc ) THEN
+       CALL operator_blc_update( IE=ie_g, IK=ik, IE_BUFF=ie_bl, OBJ=blc_00C )
+   ENDIF
+   IF ( blc_LC%alloc ) THEN
+       CALL operator_blc_update( IE=ie_g, IK=ik, IE_BUFF=ie_bl, OBJ=blc_LC  )
+   ENDIF
+   IF ( blc_CR%alloc ) THEN
+       CALL operator_blc_update( IE=ie_g, IK=ik, IE_BUFF=ie_bl, OBJ=blc_CR  )
+   ENDIF
+   !
+   IF ( blc_00L%alloc ) THEN
+       CALL operator_blc_update( IE=ie_g, IK=ik, IE_BUFF=ie_bl, OBJ=blc_00L )
+   ENDIF
+   IF ( blc_01L%alloc ) THEN
+       CALL operator_blc_update( IE=ie_g, IK=ik, IE_BUFF=ie_bl, OBJ=blc_01L )
+   ENDIF
+   !
+   IF ( blc_00R%alloc ) THEN
+       CALL operator_blc_update( IE=ie_g, IK=ik, IE_BUFF=ie_bl, OBJ=blc_00R )
+   ENDIF
+   IF ( blc_01R%alloc ) THEN
+       CALL operator_blc_update( IE=ie_g, IK=ik, IE_BUFF=ie_bl, OBJ=blc_01R )
+   ENDIF
    
    CALL timing( subname, OPR='STOP' )
    CALL log_pop( subname )
