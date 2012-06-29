@@ -115,15 +115,15 @@ CONTAINS
       obj%tag=" " 
       NULLIFY( obj%icols )
       NULLIFY( obj%irows )
+      NULLIFY( obj%ivr )
       NULLIFY( obj%icols_sgm )
       NULLIFY( obj%irows_sgm )
+      NULLIFY( obj%ivr_sgm )
       NULLIFY( obj%H )
       NULLIFY( obj%S )
       NULLIFY( obj%sgm )
       NULLIFY( obj%aux )
       NULLIFY( obj%sgm_aux )
-      NULLIFY( obj%ivr )
-      NULLIFY( obj%ivr_sgm )
       obj%alloc=.FALSE.
       !
    END SUBROUTINE operator_blc_init
@@ -487,11 +487,14 @@ CONTAINS
        CHARACTER(*)        :: memtype
        !
        !
-       LOGICAL   :: do_ham = .FALSE.
-       LOGICAL   :: do_corr = .FALSE.
+       LOGICAL   :: do_ham 
+       LOGICAL   :: do_corr
        !
        REAL(dbl) :: cost
        !
+       !
+       do_ham  = .FALSE.
+       do_corr = .FALSE.
        !
        SELECT CASE ( TRIM(memtype) )
        CASE ( "ham", "hamiltonian" )
