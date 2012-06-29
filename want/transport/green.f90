@@ -8,7 +8,7 @@
 !      or http://www.gnu.org/copyleft/gpl.txt .
 !
 !***********************************************************************************
-   SUBROUTINE green( ndim, opr00, opr01, tot, tott, g, igreen)
+   SUBROUTINE green( ndim, opr00, opr01, ldt, tot, tott, g, igreen)
    !***********************************************************************************
    !
    !  Construct green's functions
@@ -29,10 +29,10 @@
    !
    ! I/O variables
    !
-   INTEGER,                 INTENT(IN)    :: ndim
+   INTEGER,                 INTENT(IN)    :: ndim, ldt
    TYPE(operator_blc),      INTENT(IN)    :: opr00, opr01
    INTEGER,                 INTENT(IN)    :: igreen
-   COMPLEX(dbl),            INTENT(IN)    :: tot(ndim,ndim), tott(ndim,ndim)
+   COMPLEX(dbl),            INTENT(IN)    :: tot(ldt,ndim), tott(ldt,ndim)
    COMPLEX(dbl),            INTENT(OUT)   :: g(ndim, ndim)
 
    !
@@ -69,7 +69,7 @@
       ! Construct the surface green's function g00 
       !
 
-      CALL mat_mul(s1, opr01%aux, 'N', tot, 'N', ndim, ndim, ndim)
+      CALL mat_mul(s1, opr01%aux, 'N', tot(1:ndim,:), 'N', ndim, ndim, ndim)
       eh0(:,:) = g0inv(:,:) -s1(:,:)
     
    CASE( -1 )
@@ -77,7 +77,7 @@
       ! Construct the dual surface green's function gbar00 
       !
 
-      CALL mat_mul(s1, opr01%aux, 'C', tott, 'N', ndim, ndim, ndim)
+      CALL mat_mul(s1, opr01%aux, 'C', tott(1:ndim,:), 'N', ndim, ndim, ndim)
       eh0(:,:) = g0inv(:,:) -s1(:,:)
     
    CASE ( 0 )
@@ -85,8 +85,8 @@
       ! Construct the bulk green's function gnn or (if surface=.true.) the
       ! sub-surface green's function
       !
-      CALL mat_mul(s1, opr01%aux, 'N', tot,  'N', ndim, ndim, ndim)
-      CALL mat_mul(s2, opr01%aux, 'C', tott, 'N', ndim, ndim, ndim)
+      CALL mat_mul(s1, opr01%aux, 'N', tot(1:ndim,:),  'N', ndim, ndim, ndim)
+      CALL mat_mul(s2, opr01%aux, 'C', tott(1:ndim,:), 'N', ndim, ndim, ndim)
       !
       eh0(:,:) = g0inv(:,:) -s1(:,:) -s2(:,:)
     

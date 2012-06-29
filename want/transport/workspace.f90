@@ -12,7 +12,8 @@
    !
    USE kinds,                ONLY : dbl
    USE constants,            ONLY : ZERO
-   USE T_hamiltonian_module, ONLY : dimL, dimC, dimR
+   USE T_hamiltonian_module, ONLY : dimL, dimC, dimR, dimx, dimx_lead, &
+                                    ham_alloc => alloc
    USE T_kpoints_module,     ONLY : nkpts_par, nrtot_par, kpoints_alloc => alloc
    USE T_control_module,     ONLY : write_lead_sgm, write_gf
    !
@@ -23,12 +24,8 @@
    !
    ! Contains workspace used through transport calcs
    ! 
-   COMPLEX(dbl), ALLOCATABLE :: totL(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: totR(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: tottL(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: tottR(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: tot(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: tott(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: tsum(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: tsumt(:,:)
    COMPLEX(dbl), ALLOCATABLE :: gamma_R(:,:)
    COMPLEX(dbl), ALLOCATABLE :: gamma_L(:,:)
    COMPLEX(dbl), ALLOCATABLE :: sgm_L(:,:,:)
@@ -42,6 +39,8 @@
    COMPLEX(dbl), ALLOCATABLE :: rgC(:,:,:)
    COMPLEX(dbl), ALLOCATABLE :: kgC(:,:,:)
    !
+   COMPLEX(dbl), ALLOCATABLE :: work(:,:)
+   !
    LOGICAL :: alloc = .FALSE.
 
 
@@ -50,10 +49,9 @@
 !
 
    PUBLIC :: dimL, dimR, dimC     
+   PUBLIC :: dimx, dimx_lead
    !
-   !
-   PUBLIC :: totL, tottL
-   PUBLIC :: totR, tottR
+   PUBLIC :: tsum, tsumt, work
    !
    PUBLIC :: gR, gL, gC
    PUBLIC :: gamma_R, gamma_L
@@ -81,19 +79,22 @@ CONTAINS
 
       IF ( alloc )       CALL errore(subname,'already allocated', 1 )
       IF ( .NOT. kpoints_alloc ) &
-                         CALL errore(subname,'kpoints modukle not alloc', 2 )
+                         CALL errore(subname,'kpoints module not alloc', 2 )
+      IF ( .NOT. ham_alloc ) &
+                         CALL errore(subname,'hamiltonian module not alloc', 2 )
+      !
       IF ( dimL <= 0 )   CALL errore(subname,'invalid dimL', 3 )
       IF ( dimR <= 0 )   CALL errore(subname,'invalid dimR', 3 )
       IF ( dimC <= 0 )   CALL errore(subname,'invalid dimC', 3 )
+      IF ( dimx_lead <= 0 )   CALL errore(subname,'invalid dimx_lead', 3 )
       !
-      ALLOCATE ( totL(dimL,dimL), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'allocating totL', ABS(ierr) )
-      ALLOCATE ( totR(dimR,dimR), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'allocating totR', ABS(ierr) )
-      ALLOCATE ( tottL(dimL,dimL), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'allocating tottL', ABS(ierr) )
-      ALLOCATE ( tottR(dimR,dimR), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'allocating tottR', ABS(ierr) )
+      ALLOCATE ( tsum(dimx_lead,dimx_lead), STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname,'allocating tsum', ABS(ierr) )
+      ALLOCATE ( tsumt(dimx_lead,dimx_lead), STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname,'allocating tsumt', ABS(ierr) )
+      !
+      ALLOCATE ( work(dimx,dimx), STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname,'allocating work', ABS(ierr) )
       ! 
       ALLOCATE ( sgm_L(dimC,dimC,nkpts_par), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating sgm_L', ABS(ierr) )
@@ -144,11 +145,11 @@ CONTAINS
 
       IF ( .NOT. alloc ) RETURN
       !
-      DEALLOCATE ( totL, tottL, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'deallocating totL, tottL', ABS(ierr) )
-      DEALLOCATE ( totR, tottR, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'deallocating totR, tottR', ABS(ierr) )
-   
+      DEALLOCATE ( tsum, tsumt, STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname,'deallocating tsum, tsumt', ABS(ierr) )
+      DEALLOCATE ( work, STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname,'deallocating work', ABS(ierr) )
+      ! 
       DEALLOCATE ( sgm_L, sgm_R, STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'deallocating sgm_L, sgm_R ', ABS(ierr) )
       !
@@ -188,10 +189,9 @@ CONTAINS
        REAL(dbl) :: cost
        !
        cost = ZERO
-       IF ( ALLOCATED(totL) )     cost = cost + REAL(SIZE(totL))       * 16.0_dbl
-       IF ( ALLOCATED(totR) )     cost = cost + REAL(SIZE(totR))       * 16.0_dbl
-       IF ( ALLOCATED(tottL) )    cost = cost + REAL(SIZE(tottL))      * 16.0_dbl
-       IF ( ALLOCATED(tottR) )    cost = cost + REAL(SIZE(tottR))      * 16.0_dbl
+       IF ( ALLOCATED(tsum) )     cost = cost + REAL(SIZE(tsum))       * 16.0_dbl
+       IF ( ALLOCATED(tsumt) )    cost = cost + REAL(SIZE(tsumt))      * 16.0_dbl
+       IF ( ALLOCATED(work) )     cost = cost + REAL(SIZE(work))       * 16.0_dbl
        IF ( ALLOCATED(gamma_R) )  cost = cost + REAL(SIZE(gamma_R))    * 16.0_dbl
        IF ( ALLOCATED(gamma_L) )  cost = cost + REAL(SIZE(gamma_L))    * 16.0_dbl
        !

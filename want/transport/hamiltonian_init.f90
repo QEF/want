@@ -44,7 +44,8 @@
    USE mp,                   ONLY : mp_bcast
    USE util_module,          ONLY : mat_herm
    USE T_control_module,     ONLY : calculation_type, idir => transport_dir, &
-                                    datafile_L, datafile_C, datafile_R
+                                    datafile_L, datafile_C, datafile_R, &
+                                    leads_are_identical
    USE T_hamiltonian_module, ONLY : hamiltonian_allocate, ispin,        &
                                     blc_00L, blc_01L, blc_00R, blc_01R, &
                                     blc_00C, blc_LC,  blc_CR
@@ -185,6 +186,23 @@
        ! 
    ENDDO
    
+
+   !
+   ! finally check whether the two leads are the same
+   !
+   leads_are_identical = .FALSE.
+   !
+   IF ( ALL( blc_00L%icols(:) == blc_00R%icols(:) ) .AND. &
+        ALL( blc_00L%irows(:) == blc_00R%irows(:) ) .AND. &  
+        ALL( blc_01L%icols(:) == blc_01R%icols(:) ) .AND. &  
+        ALL( blc_01L%irows(:) == blc_01R%irows(:) ) ) THEN 
+       !
+       leads_are_identical = .TRUE.
+       !
+       CALL operator_blc_deallocate( OBJ=blc_00L )
+       CALL operator_blc_deallocate( OBJ=blc_01L )
+       !
+   ENDIF
 
    CALL timing( subname, OPR='STOP' )
    CALL log_pop( subname )

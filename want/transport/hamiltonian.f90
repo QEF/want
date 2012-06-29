@@ -27,10 +27,10 @@
     ! 
     ! dimensions
     !
-    INTEGER                   :: dimL  
-    INTEGER                   :: dimC       
-    INTEGER                   :: dimR       
-    INTEGER                   :: dimx
+    INTEGER                   :: dimL
+    INTEGER                   :: dimC
+    INTEGER                   :: dimR
+    INTEGER                   :: dimx, dimx_lead
     !
     INTEGER                   :: nspin
     INTEGER                   :: ispin
@@ -54,7 +54,7 @@
 ! end delcarations
 !
 
-   PUBLIC :: dimL, dimC, dimR, dimx
+   PUBLIC :: dimL, dimC, dimR, dimx, dimx_lead
    PUBLIC :: nspin, ispin
    PUBLIC :: nkpts_par
    !
@@ -95,7 +95,8 @@ CONTAINS
       IF ( dimC <= 0 )   CALL errore(subname,'invalid dimC', 1 )
       IF ( nkpts_par <= 0 )   CALL errore(subname,'invalid nkpts_par', 1 )
       !
-      dimx = MAX( dimC, dimR, dimL )
+      dimx      = MAX( dimC, dimR, dimL )
+      dimx_lead = MAX( dimR, dimL )
 
       !
       ! init data
@@ -138,15 +139,15 @@ CONTAINS
 
       IF ( .NOT. alloc ) RETURN
 
-      CALL operator_blc_deallocate( OBJ=blc_00L )
-      CALL operator_blc_deallocate( OBJ=blc_01L )
+      IF ( blc_00L%alloc ) CALL operator_blc_deallocate( OBJ=blc_00L )
+      IF ( blc_01L%alloc ) CALL operator_blc_deallocate( OBJ=blc_01L )
       !
-      CALL operator_blc_deallocate( OBJ=blc_00R )
-      CALL operator_blc_deallocate( OBJ=blc_01R )
+      IF ( blc_00R%alloc ) CALL operator_blc_deallocate( OBJ=blc_00R )
+      IF ( blc_01R%alloc ) CALL operator_blc_deallocate( OBJ=blc_01R )
       !
-      CALL operator_blc_deallocate( OBJ=blc_00C )
-      CALL operator_blc_deallocate( OBJ=blc_LC )
-      CALL operator_blc_deallocate( OBJ=blc_CR )
+      IF ( blc_00C%alloc ) CALL operator_blc_deallocate( OBJ=blc_00C )
+      IF ( blc_LC%alloc  ) CALL operator_blc_deallocate( OBJ=blc_LC )
+      IF ( blc_CR%alloc  ) CALL operator_blc_deallocate( OBJ=blc_CR )
       !
       alloc = .FALSE.   
 
