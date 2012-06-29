@@ -133,7 +133,7 @@ END PROGRAM conductor
                                     blc_00L, blc_01L, blc_00R, blc_01R, &
                                     blc_00C, blc_LC,  blc_CR
    USE T_workspace_module,   ONLY : tsum, tsumt, work, &
-                                    gR, gL, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
+                                    g_lead, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
                                     rsgm_L, rsgm_R, kgC, rgC, workspace_allocate
    USE T_correlation_module, ONLY : lhave_corr, ldynam_corr, &
                                     correlation_read, correlation_finalize
@@ -213,9 +213,11 @@ END PROGRAM conductor
    !
    IF ( do_eigenchannels .AND. do_eigplot ) THEN
        !
-       ALLOCATE ( z_eigplot(dimC, neigchn ), STAT=ierr )
+       ALLOCATE ( z_eigplot(dimC, dimC ), STAT=ierr )
        IF( ierr /=0 ) CALL errore(subname,'allocating z_eigplot', ABS(ierr) )
        !
+   ELSE
+       ALLOCATE ( z_eigplot( 1, 1) )
    ENDIF
    !
    !
@@ -348,10 +350,12 @@ END PROGRAM conductor
           CALL transfer_mtrx( dimR, blc_00R, blc_01R, dimx_lead, tsum, tsumt, niter )
           avg_iter = avg_iter + REAL(niter)
           !
-          CALL green( dimR, blc_00R, blc_01R, dimx_lead, tsum, tsumt, gR, 1 )
+          CALL green( dimR, blc_00R, blc_01R, dimx_lead, tsum, tsumt, g_lead, 1 )
           !
-          CALL mat_mul(work, blc_CR%aux, 'N', gR,    'N', dimC, dimR, dimR)
-          CALL mat_mul(sgm_R(:,:,ik), work, 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
+        !  CALL mat_mul( work,    blc_CR%aux, 'N',     g_lead, 'N', dimC, dimR, dimR)
+        !  CALL mat_mul( sgm_R(:,:,ik), work, 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
+          CALL mat_mul( sgm_R(:,:,ik),    blc_CR%aux, 'N',     g_lead, 'N', dimC, dimR, dimR)
+          CALL mat_mul( sgm_R(:,:,ik), sgm_R(:,:,ik), 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
  
           ! 
           ! left lead (if needed)
@@ -361,36 +365,39 @@ END PROGRAM conductor
               CALL transfer_mtrx( dimL, blc_00L, blc_01L, dimx_lead, tsum, tsumt, niter )
               avg_iter = avg_iter + REAL(niter)
               !
-              CALL green( dimL, blc_00L, blc_01L, dimx_lead, tsum, tsumt, gL, -1 )
+              CALL green( dimL, blc_00L, blc_01L, dimx_lead, tsum, tsumt, g_lead, -1 )
               !
           ELSE
               !
-              CALL green( dimR, blc_00R, blc_01R, dimx_lead, tsum, tsumt, gL, -1 )
+              CALL green( dimR, blc_00R, blc_01R, dimx_lead, tsum, tsumt, g_lead, -1 )
               !
           ENDIF
           !
           !
-          CALL mat_mul(work, blc_LC%aux, 'C', gL,    'N', dimC, dimL, dimL)
-          CALL mat_mul(sgm_L(:,:,ik), work, 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
+          !CALL mat_mul( work,    blc_LC%aux, 'C',     g_lead, 'N', dimC, dimL, dimL)
+          !CALL mat_mul( sgm_L(:,:,ik), work, 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
+          CALL mat_mul( sgm_L(:,:,ik),    blc_LC%aux, 'C',     g_lead, 'N', dimC, dimL, dimL)
+          CALL mat_mul( sgm_L(:,:,ik), sgm_L(:,:,ik), 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
  
-          !
-          ! gamma_L & gamma_R
-          !
-          gamma_L(:,:) = CI * (  sgm_L(:,:,ik) - CONJG( TRANSPOSE( sgm_L(:,:,ik) ) )  )
-          gamma_R(:,:) = CI * (  sgm_R(:,:,ik) - CONJG( TRANSPOSE( sgm_R(:,:,ik) ) )  )
- 
-
           !
           !=================================== 
           ! Construct the conductor green's function
           ! gC = work^-1  (retarded)
           !=================================== 
           !
+          ALLOCATE( work(dimC, dimC), STAT=ierr ) 
+          IF ( ierr/=0 ) CALL errore(subname,"allocating work", ABS(ierr) )
+          ALLOCATE( gC(dimC, dimC), STAT=ierr ) 
+          IF ( ierr/=0 ) CALL errore(subname,"allocating gC", ABS(ierr) )
+          !
           CALL gzero_maker ( dimC, blc_00C, dimx, work, 'inverse', ' ')
           !
-          work(1:dimC,1:dimC) = work(1:dimC,1:dimC) -sgm_L(:,:,ik) -sgm_R(:,:,ik)
+          work(:,:) = work(:,:) -sgm_L(:,:,ik) -sgm_R(:,:,ik)
           !
           CALL mat_inv( dimC, work, gC)
+          !
+          DEALLOCATE( work, STAT=ierr ) 
+          IF ( ierr/=0 ) CALL errore(subname,"deallocating work", ABS(ierr) )
           !
           !
           IF ( write_gf ) THEN
@@ -411,6 +418,22 @@ END PROGRAM conductor
 
           !
           !=================================== 
+          ! Coupling matrices
+          !=================================== 
+          !
+          ! gamma_L & gamma_R
+          !
+          ALLOCATE( gamma_L(dimC, dimC), STAT=ierr ) 
+          IF ( ierr/=0 ) CALL errore(subname,"allocating gamma_L", ABS(ierr) )
+          ALLOCATE( gamma_R(dimC, dimC), STAT=ierr ) 
+          IF ( ierr/=0 ) CALL errore(subname,"allocating gamma_R", ABS(ierr) )
+
+          gamma_L(:,:) = CI * (  sgm_L(:,:,ik) - CONJG( TRANSPOSE( sgm_L(:,:,ik) ) )  )
+          gamma_R(:,:) = CI * (  sgm_R(:,:,ik) - CONJG( TRANSPOSE( sgm_R(:,:,ik) ) )  )
+
+
+          !
+          !=================================== 
           ! Transmittance
           !=================================== 
           !
@@ -419,9 +442,20 @@ END PROGRAM conductor
           ! from PRL 94, 116802 (2005)
           !
           CALL transmittance( dimC, gamma_L, gamma_R, gC, blc_00C, conduct_formula, &
-                              cond_aux, do_eigenchannels, do_eigplot, work(1:dimC,1:dimC) )
+                              cond_aux, do_eigenchannels, do_eigplot, z_eigplot )
+
+          !
+          ! free some memory
+          !
+          DEALLOCATE( gamma_L, gamma_R, STAT=ierr ) 
+          IF ( ierr/=0 ) CALL errore(subname,"deallocating gamma_L, gamma_R", ABS(ierr) )
+          DEALLOCATE( gC, STAT=ierr ) 
+          IF ( ierr/=0 ) CALL errore(subname,"deallocating gC", ABS(ierr) )
+
+
           !
           ! get the total trace
+          !
           DO i=1,dimC
               !
               conduct(1,ie_g)       = conduct(1,ie_g)      + wk_par(ik) * cond_aux(i)
@@ -445,7 +479,6 @@ END PROGRAM conductor
           IF ( do_eigenchannels .AND. do_eigplot .AND. &
                ik == ik_eigplot .AND. ie_g == ie_eigplot ) THEN
               !
-              z_eigplot = work( 1:dimC, 1:neigchn )
               write_eigchn = .TRUE.
               !
           ELSE
@@ -626,11 +659,9 @@ END PROGRAM conductor
    DEALLOCATE ( cond_aux, STAT=ierr )
    IF( ierr /=0 ) CALL errore(subname,'deallocating cond_aux', ABS(ierr) )
    !
-   IF ( do_eigenchannels .AND. do_eigplot ) THEN
-       !
+   IF ( ALLOCATED( z_eigplot) ) THEN
        DEALLOCATE ( z_eigplot, STAT=ierr )
        IF( ierr /=0 ) CALL errore(subname,'deallocating z_eigplot', ABS(ierr) )
-       !
    ENDIF
 
 

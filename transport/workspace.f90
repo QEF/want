@@ -32,8 +32,7 @@
    COMPLEX(dbl), ALLOCATABLE :: sgm_R(:,:,:)
    COMPLEX(dbl), ALLOCATABLE :: rsgm_L(:,:,:)
    COMPLEX(dbl), ALLOCATABLE :: rsgm_R(:,:,:)
-   COMPLEX(dbl), ALLOCATABLE :: gL(:,:)
-   COMPLEX(dbl), ALLOCATABLE :: gR(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: g_lead(:,:)
    COMPLEX(dbl), ALLOCATABLE :: gC(:,:)
    !
    COMPLEX(dbl), ALLOCATABLE :: rgC(:,:,:)
@@ -53,9 +52,10 @@
    !
    PUBLIC :: tsum, tsumt, work
    !
-   PUBLIC :: gR, gL, gC
+   PUBLIC :: g_lead, gC
    PUBLIC :: gamma_R, gamma_L
-   PUBLIC :: sgm_L,  sgm_R
+   PUBLIC :: sgm_L,   sgm_R
+   !
    PUBLIC :: rsgm_L, rsgm_R
    PUBLIC :: rgC, kgC
    !
@@ -93,8 +93,9 @@ CONTAINS
       ALLOCATE ( tsumt(dimx_lead,dimx_lead), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating tsumt', ABS(ierr) )
       !
-      ALLOCATE ( work(dimx,dimx), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'allocating work', ABS(ierr) )
+! XXX
+    !  ALLOCATE ( work(dimx,dimx), STAT=ierr )
+    !  IF( ierr /=0 ) CALL errore(subname,'allocating work', ABS(ierr) )
       ! 
       ALLOCATE ( sgm_L(dimC,dimC,nkpts_par), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating sgm_L', ABS(ierr) )
@@ -119,17 +120,15 @@ CONTAINS
           !
       ENDIF
       !
-      ALLOCATE ( gamma_R(dimC,dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'allocating gamma_R', ABS(ierr) )
-      ALLOCATE ( gamma_L(dimC,dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'allocating gamma_L', ABS(ierr) )
+    !  ALLOCATE ( gamma_R(dimC,dimC), STAT=ierr )
+    !  IF( ierr /=0 ) CALL errore(subname,'allocating gamma_R', ABS(ierr) )
+    !  ALLOCATE ( gamma_L(dimC,dimC), STAT=ierr )
+    !  IF( ierr /=0 ) CALL errore(subname,'allocating gamma_L', ABS(ierr) )
       !
-      ALLOCATE ( gL(dimL,dimL), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'allocating gL', ABS(ierr) )
-      ALLOCATE ( gR(dimR,dimR), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'allocating gR', ABS(ierr) )
-      ALLOCATE ( gC(dimC,dimC), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'allocating gC', ABS(ierr) )
+      ALLOCATE ( g_lead(dimx_lead,dimx_lead), STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname,'allocating g_lead', ABS(ierr) )
+    !  ALLOCATE ( gC(dimC,dimC), STAT=ierr )
+    !  IF( ierr /=0 ) CALL errore(subname,'allocating gC', ABS(ierr) )
       !
       alloc = .TRUE.
       !
@@ -145,13 +144,46 @@ CONTAINS
 
       IF ( .NOT. alloc ) RETURN
       !
-      DEALLOCATE ( tsum, tsumt, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'deallocating tsum, tsumt', ABS(ierr) )
-      DEALLOCATE ( work, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'deallocating work', ABS(ierr) )
+      IF ( ALLOCATED( tsum ) ) THEN
+          DEALLOCATE ( tsum, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'deallocating tsum', ABS(ierr) )
+      ENDIF
+      IF ( ALLOCATED( tsumt ) ) THEN
+          DEALLOCATE ( tsumt, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'deallocating tsumt', ABS(ierr) )
+      ENDIF
+      !
+      IF ( ALLOCATED( work ) ) THEN
+          DEALLOCATE ( work, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'deallocating work', ABS(ierr) )
+      ENDIF
       ! 
-      DEALLOCATE ( sgm_L, sgm_R, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'deallocating sgm_L, sgm_R ', ABS(ierr) )
+      IF ( ALLOCATED( sgm_L ) ) THEN
+          DEALLOCATE ( sgm_L, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'deallocating sgm_L', ABS(ierr) )
+      ENDIF
+      IF ( ALLOCATED( sgm_R ) ) THEN
+          DEALLOCATE ( sgm_R, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'deallocating sgm_R', ABS(ierr) )
+      ENDIF
+      !
+      IF ( ALLOCATED( gamma_L) ) THEN
+          DEALLOCATE ( gamma_L, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'deallocating gamma_L', ABS(ierr) )
+      ENDIF
+      IF ( ALLOCATED( gamma_R) ) THEN
+          DEALLOCATE ( gamma_R, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'deallocating gamma_R', ABS(ierr) )
+      ENDIF
+      !
+      IF ( ALLOCATED( g_lead ) ) THEN
+          DEALLOCATE ( g_lead, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'deallocating g_lead', ABS(ierr) )
+      ENDIF
+      IF ( ALLOCATED( gC) ) THEN
+          DEALLOCATE ( gC, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'deallocating gC', ABS(ierr) )
+      ENDIF
       !
       IF ( write_lead_sgm ) THEN
           !
@@ -168,13 +200,6 @@ CONTAINS
           IF( ierr /=0 ) CALL errore(subname,'deallocating kgC', ABS(ierr) )
           !
       ENDIF
-      !
-      DEALLOCATE ( gamma_R, gamma_L, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'deallocating gamma_R, gamma_L ', ABS(ierr) )
-      DEALLOCATE ( gR, gL, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'deallocating gR, gL ', ABS(ierr) )
-      DEALLOCATE ( gC, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'deallocating gC ', ABS(ierr) )
       !
       alloc = .FALSE.   
       !
@@ -200,8 +225,7 @@ CONTAINS
        IF ( ALLOCATED(rsgm_L) )   cost = cost + REAL(SIZE(rsgm_L))     * 16.0_dbl
        IF ( ALLOCATED(rsgm_R) )   cost = cost + REAL(SIZE(rsgm_R))     * 16.0_dbl
        !
-       IF ( ALLOCATED(gL) )       cost = cost + REAL(SIZE(gL))         * 16.0_dbl
-       IF ( ALLOCATED(gR) )       cost = cost + REAL(SIZE(gR))         * 16.0_dbl
+       IF ( ALLOCATED(g_lead) )   cost = cost + REAL(SIZE(g_lead))     * 16.0_dbl
        IF ( ALLOCATED(gC) )       cost = cost + REAL(SIZE(gC))         * 16.0_dbl
        IF ( ALLOCATED(rgC) )      cost = cost + REAL(SIZE(rgC))        * 16.0_dbl
        IF ( ALLOCATED(kgC) )      cost = cost + REAL(SIZE(kgC))        * 16.0_dbl
