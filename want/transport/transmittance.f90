@@ -60,11 +60,18 @@
    CALL timing(subname, OPR='start')
    CALL log_push(subname)
 
-   ALLOCATE( work(dimC,dimC), work1(dimC,dimC), work2(dimC,dimC), STAT=ierr )
-   IF (ierr/=0) CALL errore(subname,'allocating work, work1, work2',ABS(ierr))
+   ALLOCATE( work(dimC,dimC), work2(dimC,dimC), STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,'allocating work, work2',ABS(ierr))
    !
-   ALLOCATE( lambda(dimC,dimC), STAT=ierr )
-   IF (ierr/=0) CALL errore(subname,'allocating lambda',ABS(ierr))
+   IF ( TRIM(which_formula) == "generalized" ) THEN
+       !
+       ALLOCATE( lambda(dimC,dimC), STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'allocating lambda',ABS(ierr))
+       !
+       ALLOCATE( work1(dimC,dimC), STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'allocating work1',ABS(ierr))
+       !
+   ENDIF
    !
    IF ( do_eigenchannels ) THEN
        !
@@ -102,23 +109,17 @@
        ENDDO
        !
        CALL mat_sv(dimC, dimC, work, lambda)
+
        !
-   ELSE
+       ! adding the identity matrix
        !
-       ! ordinary formula
-       !
-       lambda(:,:) = CZERO
+       DO i=1,dimC
+           !
+           lambda(i,i) = lambda(i,i) + CONE
+           !
+       ENDDO
        !
    ENDIF
-
-   ! 
-   ! adding the identity matrix
-   ! 
-   DO i=1,dimC
-       !
-       lambda(i,i) = lambda(i,i) + CONE
-       !
-   ENDDO
 
 
 !
@@ -159,9 +160,7 @@
            !
            CALL mat_mul(work1, work, 'N', lambda, 'N', dimC, dimC, dimC)
            !
-       ELSE
-           !
-           work1 = work
+           work = work1
            !
        ENDIF
 
@@ -169,7 +168,7 @@
        ! select the data to compute the trace
        !
        DO i=1,dimC
-           conduct(i) = REAL( work1(i,i), dbl )
+           conduct(i) = REAL( work(i,i), dbl )
        ENDDO
        
 
@@ -185,6 +184,8 @@
        !
        ! To do this, we need to compute gamma_R^1/2  ( stored in work )
        !
+       ALLOCATE( work1(dimC,dimC), STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'allocating work1',ABS(ierr))
        !
        IF ( opr00%lhave_ovp ) THEN
            CALL mat_hdiag( z, w, gamma_R, opr00%S(:,:,ik), dimC ) 
@@ -253,6 +254,9 @@
        ! basically, we diagonalize   ( G^adv Gamma_L G^ret )^1/2  Gamma_R  ( G^adv Gamma_L G^ret )^1/2
        !
        !
+       ALLOCATE( work1(dimC,dimC), STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'allocating work1',ABS(ierr))
+       !
        IF ( opr00%lhave_ovp ) THEN
            CALL mat_hdiag( z, w, work2, opr00%S(:,:,ik), dimC ) 
        ELSE
@@ -315,11 +319,22 @@
    !
    ! local memopry clean
    !
-   DEALLOCATE( work, work1, work2, STAT=ierr )
-   IF (ierr/=0) CALL errore(subname,'deallocating work, work1, work2',ABS(ierr))
-   !
-   DEALLOCATE( lambda, STAT=ierr )
-   IF (ierr/=0) CALL errore(subname,'deallocating lambda',ABS(ierr))
+   IF ( ALLOCATED( work  ) ) THEN
+       DEALLOCATE( work , STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'deallocating work ',ABS(ierr))
+   ENDIF
+   IF ( ALLOCATED( work1 ) ) THEN
+       DEALLOCATE( work1, STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'deallocating work1',ABS(ierr))
+   ENDIF
+   IF ( ALLOCATED( work2 ) ) THEN
+       DEALLOCATE( work2, STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'deallocating work2',ABS(ierr))
+   ENDIF
+   IF ( ALLOCATED( lambda ) ) THEN
+       DEALLOCATE( lambda, STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'deallocating lambda',ABS(ierr))
+   ENDIF
    !      
    IF ( do_eigenchannels ) THEN
        !

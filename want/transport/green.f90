@@ -33,15 +33,15 @@
    TYPE(operator_blc),      INTENT(IN)    :: opr00, opr01
    INTEGER,                 INTENT(IN)    :: igreen
    COMPLEX(dbl),            INTENT(IN)    :: tot(ldt,ndim), tott(ldt,ndim)
-   COMPLEX(dbl),            INTENT(OUT)   :: g(ndim, ndim)
+   COMPLEX(dbl),            INTENT(OUT)   :: g(ldt, ndim)
 
    !
    ! local variables
    !
    CHARACTER(5)              :: subname='green'
    INTEGER                   :: ierr
-   COMPLEX(dbl), ALLOCATABLE :: eh0(:,:), s1(:,:), s2(:,:)
-   COMPLEX(dbl)              :: g0inv(ndim,ndim)
+   COMPLEX(dbl), ALLOCATABLE :: eh0(:,:), s1(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: g0inv(:,:)
 
 !
 !----------------------------------------
@@ -54,13 +54,13 @@
    IF ( .NOT. opr00%alloc )   CALL errore(subname,'opr00 not alloc',1)
    IF ( .NOT. opr01%alloc )   CALL errore(subname,'opr01 not alloc',1)
 
-   ALLOCATE( eh0(ndim,ndim), s1(ndim,ndim), s2(ndim,ndim), STAT=ierr)
+   ALLOCATE( eh0(ndim,ndim), g0inv(ndim,ndim), s1(ndim,ndim), STAT=ierr)
    IF (ierr/=0) CALL errore(subname,'allocating eh0,s1,s2',ABS(ierr))
 
    !
    ! opr00%aux = ene * s00 - h00
    !
-   CALL gzero_maker(ndim, opr00, ndim, g0inv, 'inverse', ' ')
+   CALL gzero_maker(ndim, opr00, ndim, eh0, 'inverse', ' ')
 
    SELECT CASE ( igreen )
 
@@ -68,17 +68,15 @@
       !
       ! Construct the surface green's function g00 
       !
-
       CALL mat_mul(s1, opr01%aux, 'N', tot(1:ndim,:), 'N', ndim, ndim, ndim)
-      eh0(:,:) = g0inv(:,:) -s1(:,:)
+      eh0(:,:) = eh0 -s1(:,:)
     
    CASE( -1 )
       !
       ! Construct the dual surface green's function gbar00 
       !
-
       CALL mat_mul(s1, opr01%aux, 'C', tott(1:ndim,:), 'N', ndim, ndim, ndim)
-      eh0(:,:) = g0inv(:,:) -s1(:,:)
+      eh0(:,:) = eh0 -s1(:,:)
     
    CASE ( 0 )
       !
@@ -86,9 +84,12 @@
       ! sub-surface green's function
       !
       CALL mat_mul(s1, opr01%aux, 'N', tot(1:ndim,:),  'N', ndim, ndim, ndim)
-      CALL mat_mul(s2, opr01%aux, 'C', tott(1:ndim,:), 'N', ndim, ndim, ndim)
       !
-      eh0(:,:) = g0inv(:,:) -s1(:,:) -s2(:,:)
+      eh0(:,:) = eh0(:,:) -s1(:,:)
+      !
+      CALL mat_mul(s1, opr01%aux, 'C', tott(1:ndim,:), 'N', ndim, ndim, ndim)
+      !
+      eh0(:,:) = eh0(:,:) -s1(:,:)
     
    CASE DEFAULT 
       CALL errore(subname,'invalid igreen', ABS(igreen))
@@ -99,13 +100,13 @@
    !
    ! set the identity and compute G inverting eh0
    !
-   CALL mat_inv( ndim, eh0, g)
+   CALL mat_inv( ndim, eh0, g(1:ndim,:) )
 
    !
    ! local cleaning
    !
-   DEALLOCATE( eh0, s1, s2, STAT=ierr)
-   IF (ierr/=0) CALL errore(subname,'deallocating eh0, s1, s2',ABS(ierr))
+   DEALLOCATE( eh0, s1, STAT=ierr)
+   IF (ierr/=0) CALL errore(subname,'deallocating eh0, s1',ABS(ierr))
 
    CALL timing(subname,OPR='stop')
    CALL log_pop(subname)
