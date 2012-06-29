@@ -184,6 +184,11 @@ END SUBROUTINE datafiles_init
      CHARACTER(*), INTENT(IN)  :: filename 
      CHARACTER(*), INTENT(OUT) :: fmtstr
      !
+     CHARACTER(19) :: subname='datafiles_check_fmt' 
+     
+     CALL timing( subname, OPR="start" )
+     CALL log_push( subname )
+     !
      fmtstr=' '
      !
      IF ( file_is_internal( filename ) ) THEN 
@@ -196,13 +201,6 @@ END SUBROUTINE datafiles_init
      IF ( file_is_crystal( filename ) ) THEN 
          !
          fmtstr = 'crystal'
-         RETURN
-         !
-     ENDIF
-     !
-     IF ( file_is_wannier90( filename ) ) THEN 
-         !
-         fmtstr = 'wannier90'
          RETURN
          !
      ENDIF
@@ -220,6 +218,16 @@ END SUBROUTINE datafiles_init
          RETURN
          !
      ENDIF
+     !
+     IF ( file_is_wannier90( filename ) ) THEN 
+         !
+         fmtstr = 'wannier90'
+         RETURN
+         !
+     ENDIF
+     !
+     CALL log_pop( subname )
+     CALL timing( subname, OPR="stop" )
      !
      RETURN
    END SUBROUTINE datafiles_check_fmt

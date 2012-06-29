@@ -66,6 +66,7 @@ CONTAINS
    INTEGER       :: iunit, ierr
    INTEGER       :: num, ldim, dimbset_
    
+   CALL timing( subname, OPR="start" )
    CALL log_push( subname )
    !
    CALL iotk_free_unit( iunit )
@@ -112,6 +113,7 @@ CONTAINS
   
    !
    CALL log_pop( subname )
+   CALL timing( subname, OPR="stop" )
    RETURN
    !
 END SUBROUTINE cp2k_tools_get_dims
@@ -619,6 +621,9 @@ END SUBROUTINE cp2k_to_internal
    LOGICAL          :: lerror, lexist, lfound
      !
      !
+     CALL timing( subname, OPR='start' )
+     CALL log_push( subname )
+     !
      CALL iotk_free_unit( iunit )
      !
      file_is_cp2k = .FALSE.
@@ -660,6 +665,9 @@ END SUBROUTINE cp2k_to_internal
      ENDIF
      !
      file_is_cp2k = .TRUE.
+     !
+     CALL log_pop( subname )
+     CALL timing( subname, OPR='stop' )
      !
   END FUNCTION file_is_cp2k
 
