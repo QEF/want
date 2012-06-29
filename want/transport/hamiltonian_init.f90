@@ -77,7 +77,6 @@
    !
    CALL hamiltonian_allocate()
 
-
    !
    ! Read the HAMILTONIAN_DATA card from input file
    !
@@ -203,6 +202,7 @@
        CALL operator_blc_deallocate( OBJ=blc_01L )
        !
    ENDIF
+
 
    CALL timing( subname, OPR='STOP' )
    CALL log_pop( subname )
