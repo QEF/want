@@ -34,6 +34,7 @@
    INTEGER,             INTENT(IN)  :: dimC
    COMPLEX(dbl),        INTENT(IN)  :: gamma_L(dimC,dimC), gamma_R(dimC,dimC)
    COMPLEX(dbl),        INTENT(IN)  :: G_ret(dimC,dimC)
+   !COMPLEX(dbl),        INTENT(INOUT) :: G_ret(dimC,dimC)
    TYPE(operator_blc),  INTENT(IN)  :: opr00
    CHARACTER(*),        INTENT(IN)  :: which_formula
    LOGICAL,             INTENT(IN)  :: do_eigenchannels, do_eigplot
@@ -60,7 +61,7 @@
    CALL timing(subname, OPR='start')
    CALL log_push(subname)
 
-   ALLOCATE( work(dimC,dimC), work2(dimC,dimC), STAT=ierr )
+   ALLOCATE( work(dimC,dimC), STAT=ierr )
    IF (ierr/=0) CALL errore(subname,'allocating work, work2',ABS(ierr))
    !
    IF ( TRIM(which_formula) == "generalized" ) THEN
@@ -77,6 +78,14 @@
        !
        ALLOCATE( z(dimC,dimC), w(dimC), STAT=ierr )
        IF (ierr/=0) CALL errore(subname,'allocating z, w',ABS(ierr))
+       !
+       ALLOCATE( work2(dimC, dimC), STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'allocating work2',ABS(ierr))
+       !
+       IF ( .NOT. ALLOCATED( work1 ) ) THEN
+           ALLOCATE( work1(dimC, dimC), STAT=ierr )
+           IF (ierr/=0) CALL errore(subname,'allocating work1',ABS(ierr))
+       ENDIF
        !
    ENDIF
 
@@ -137,7 +146,21 @@
    ! WORK2 = G_adv * gamma_L * G_ret
    ! this array will be stored to be used to compute eigenchannels
    !
-   CALL mat_mul(work2, G_ret, 'C', work, 'N', dimC, dimC, dimC)
+   IF ( do_eigenchannels ) THEN
+       !
+       CALL mat_mul(work2, G_ret, 'C', work, 'N', dimC, dimC, dimC)
+       !
+   ELSE
+       !
+       CALL mat_mul(work, G_ret, 'C', work, 'N', dimC, dimC, dimC)
+       !
+   ENDIF
+
+   !
+   ! NOTE: G_ret is no longer used from here on, 
+   !       in principles it would be possible to save memory by 
+   !       using G_ret as workspace
+   !
 
 
    !
@@ -150,7 +173,8 @@
        !
        ! WORK  = G_adv * gamma_L * G_ret * gamma_R
        !
-       CALL mat_mul(work, work2, 'N', gamma_R, 'N', dimC, dimC, dimC)
+       !CALL mat_mul(work, work2, 'N', gamma_R, 'N', dimC, dimC, dimC)
+       CALL mat_mul(work, work, 'N', gamma_R, 'N', dimC, dimC, dimC)
 
        !
        ! WORK1 = G_adv * gamma_L * G_ret * gamma_R * Lambda
@@ -183,9 +207,6 @@
        ! which is a hermitean matrix.
        !
        ! To do this, we need to compute gamma_R^1/2  ( stored in work )
-       !
-       ALLOCATE( work1(dimC,dimC), STAT=ierr )
-       IF (ierr/=0) CALL errore(subname,'allocating work1',ABS(ierr))
        !
        IF ( opr00%lhave_ovp ) THEN
            CALL mat_hdiag( z, w, gamma_R, opr00%S(:,:,ik), dimC ) 
@@ -253,9 +274,6 @@
        !
        ! basically, we diagonalize   ( G^adv Gamma_L G^ret )^1/2  Gamma_R  ( G^adv Gamma_L G^ret )^1/2
        !
-       !
-       ALLOCATE( work1(dimC,dimC), STAT=ierr )
-       IF (ierr/=0) CALL errore(subname,'allocating work1',ABS(ierr))
        !
        IF ( opr00%lhave_ovp ) THEN
            CALL mat_hdiag( z, w, work2, opr00%S(:,:,ik), dimC ) 
