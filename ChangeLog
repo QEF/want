@@ -4,6 +4,8 @@
 =======================================================
 
 
+30 Jun 2012     further save of memory usage in transport calculations. (AF)
+
 29 Jun 2012     computational time and memusage partly optimized in transport
 		calculation to deal with cp2k basis (thanks to Leopold Talirz for help). 
 		Bug fixed in writing correlation memory (transport). 
