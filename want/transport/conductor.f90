@@ -133,7 +133,7 @@ END PROGRAM conductor
                                     blc_00L, blc_01L, blc_00R, blc_01R, &
                                     blc_00C, blc_LC,  blc_CR
    USE T_workspace_module,   ONLY : tsum, tsumt, work, &
-                                    g_lead, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
+                                    gL, gR, gC, gamma_R, gamma_L, sgm_L, sgm_R, &
                                     rsgm_L, rsgm_R, kgC, rgC, workspace_allocate
    USE T_correlation_module, ONLY : lhave_corr, ldynam_corr, &
                                     correlation_read, correlation_finalize
@@ -147,7 +147,7 @@ END PROGRAM conductor
    !
    CHARACTER(12)    :: subname="do_conductor"
    !
-   INTEGER          :: i, ir, ik, ierr, niter
+   INTEGER          :: i, ir, ik, ik_eff, ierr, niter
    INTEGER          :: ie_g
    INTEGER          :: iomg_s, iomg_e
    INTEGER          :: ie_buff, ie_buff_s, ie_buff_e
@@ -344,18 +344,24 @@ END PROGRAM conductor
           !=================================== 
           ! 
 
+          ALLOCATE ( tsum(dimx_lead,dimx_lead), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating tsum', ABS(ierr) )
+          ALLOCATE ( tsumt(dimx_lead,dimx_lead), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating tsumt', ABS(ierr) )
+          !
+          ALLOCATE ( gL(dimL,dimL), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating gL', ABS(ierr) )
+          ALLOCATE ( gR(dimR,dimR), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating gR', ABS(ierr) )
+
           !
           ! right lead
           !
           CALL transfer_mtrx( dimR, blc_00R, blc_01R, dimx_lead, tsum, tsumt, niter )
           avg_iter = avg_iter + REAL(niter)
           !
-          CALL green( dimR, blc_00R, blc_01R, dimx_lead, tsum, tsumt, g_lead, 1 )
+          CALL green( dimR, blc_00R, blc_01R, dimx_lead, tsum, tsumt, gR, 1 )
           !
-        !  CALL mat_mul( work,    blc_CR%aux, 'N',     g_lead, 'N', dimC, dimR, dimR)
-        !  CALL mat_mul( sgm_R(:,:,ik), work, 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
-          CALL mat_mul( sgm_R(:,:,ik),    blc_CR%aux, 'N',     g_lead, 'N', dimC, dimR, dimR)
-          CALL mat_mul( sgm_R(:,:,ik), sgm_R(:,:,ik), 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
  
           ! 
           ! left lead (if needed)
@@ -365,20 +371,54 @@ END PROGRAM conductor
               CALL transfer_mtrx( dimL, blc_00L, blc_01L, dimx_lead, tsum, tsumt, niter )
               avg_iter = avg_iter + REAL(niter)
               !
-              CALL green( dimL, blc_00L, blc_01L, dimx_lead, tsum, tsumt, g_lead, -1 )
+              CALL green( dimL, blc_00L, blc_01L, dimx_lead, tsum, tsumt, gL, -1 )
               !
           ELSE
               !
-              CALL green( dimR, blc_00R, blc_01R, dimx_lead, tsum, tsumt, g_lead, -1 )
+              CALL green( dimR, blc_00R, blc_01R, dimx_lead, tsum, tsumt, gL, -1 )
               !
           ENDIF
           !
+          DEALLOCATE( tsum, tsumt, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,"deallocating tsum, tsumt", ABS(ierr))
+
+
           !
-          !CALL mat_mul( work,    blc_LC%aux, 'C',     g_lead, 'N', dimC, dimL, dimL)
-          !CALL mat_mul( sgm_L(:,:,ik), work, 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
-          CALL mat_mul( sgm_L(:,:,ik),    blc_LC%aux, 'C',     g_lead, 'N', dimC, dimL, dimL)
-          CALL mat_mul( sgm_L(:,:,ik), sgm_L(:,:,ik), 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
+          ! lead self-energies
+          !
+          IF ( .NOT. write_lead_sgm ) THEN
+              !
+              ALLOCATE( sgm_R(dimC,dimC,1), STAT=ierr )
+              IF( ierr /=0 ) CALL errore(subname,'allocating sgm_R', ABS(ierr) )
+              ALLOCATE( sgm_L(dimC,dimC,1), STAT=ierr )
+              IF( ierr /=0 ) CALL errore(subname,'allocating sgm_L', ABS(ierr) )
+              !
+              ik_eff = 1
+              !
+          ELSE
+              ik_eff = ik
+          ENDIF
+
+          !
+          ! sgm_R
+          !
+          !CALL mat_mul( work,    blc_CR%aux, 'N',         gR, 'N', dimC, dimR, dimR)
+          !CALL mat_mul( sgm_R(:,:,ik_eff), work, 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
+          CALL mat_mul( sgm_R(:,:,ik_eff),    blc_CR%aux, 'N',         gR, 'N', dimC, dimR, dimR)
+          CALL mat_mul( sgm_R(:,:,ik_eff), sgm_R(:,:,ik), 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
+          !
+          ! sgm_L
+          !
+          !CALL mat_mul( work,    blc_LC%aux, 'C',         gL, 'N', dimC, dimL, dimL)
+          !CALL mat_mul( sgm_L(:,:,ik_eff), work, 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
+          CALL mat_mul( sgm_L(:,:,ik_eff),    blc_LC%aux, 'C',         gL, 'N', dimC, dimL, dimL)
+          CALL mat_mul( sgm_L(:,:,ik_eff), sgm_L(:,:,ik), 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
  
+
+          DEALLOCATE( gR, gL, STAT=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,"deallocating gR, gL", ABS(ierr))
+
+
           !
           !=================================== 
           ! Construct the conductor green's function
@@ -392,7 +432,7 @@ END PROGRAM conductor
           !
           CALL gzero_maker ( dimC, blc_00C, dimx, work, 'inverse', ' ')
           !
-          work(:,:) = work(:,:) -sgm_L(:,:,ik) -sgm_R(:,:,ik)
+          work(:,:) = work(:,:) -sgm_L(:,:,ik_eff) -sgm_R(:,:,ik_eff)
           !
           CALL mat_inv( dimC, work, gC)
           !
@@ -428,8 +468,16 @@ END PROGRAM conductor
           ALLOCATE( gamma_R(dimC, dimC), STAT=ierr ) 
           IF ( ierr/=0 ) CALL errore(subname,"allocating gamma_R", ABS(ierr) )
 
-          gamma_L(:,:) = CI * (  sgm_L(:,:,ik) - CONJG( TRANSPOSE( sgm_L(:,:,ik) ) )  )
-          gamma_R(:,:) = CI * (  sgm_R(:,:,ik) - CONJG( TRANSPOSE( sgm_R(:,:,ik) ) )  )
+          gamma_L(:,:) = CI * (  sgm_L(:,:,ik_eff) - CONJG( TRANSPOSE( sgm_L(:,:,ik_eff) ) )  )
+          gamma_R(:,:) = CI * (  sgm_R(:,:,ik_eff) - CONJG( TRANSPOSE( sgm_R(:,:,ik_eff) ) )  )
+
+
+          IF ( .NOT. write_lead_sgm ) THEN
+              !
+              DEALLOCATE( sgm_L, sgm_R, STAT=ierr)
+              IF ( ierr/=0 ) CALL errore(subname,"deallocating sgm_L, sgm_R", ABS(ierr) )
+              !
+          ENDIF
 
 
           !

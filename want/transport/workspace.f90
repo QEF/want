@@ -32,7 +32,8 @@
    COMPLEX(dbl), ALLOCATABLE :: sgm_R(:,:,:)
    COMPLEX(dbl), ALLOCATABLE :: rsgm_L(:,:,:)
    COMPLEX(dbl), ALLOCATABLE :: rsgm_R(:,:,:)
-   COMPLEX(dbl), ALLOCATABLE :: g_lead(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: gL(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: gR(:,:)
    COMPLEX(dbl), ALLOCATABLE :: gC(:,:)
    !
    COMPLEX(dbl), ALLOCATABLE :: rgC(:,:,:)
@@ -52,7 +53,7 @@
    !
    PUBLIC :: tsum, tsumt, work
    !
-   PUBLIC :: g_lead, gC
+   PUBLIC :: gL, gR, gC
    PUBLIC :: gamma_R, gamma_L
    PUBLIC :: sgm_L,   sgm_R
    !
@@ -88,21 +89,21 @@ CONTAINS
       IF ( dimC <= 0 )   CALL errore(subname,'invalid dimC', 3 )
       IF ( dimx_lead <= 0 )   CALL errore(subname,'invalid dimx_lead', 3 )
       !
-      ALLOCATE ( tsum(dimx_lead,dimx_lead), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'allocating tsum', ABS(ierr) )
-      ALLOCATE ( tsumt(dimx_lead,dimx_lead), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'allocating tsumt', ABS(ierr) )
+    !  ALLOCATE ( tsum(dimx_lead,dimx_lead), STAT=ierr )
+    !  IF( ierr /=0 ) CALL errore(subname,'allocating tsum', ABS(ierr) )
+    !  ALLOCATE ( tsumt(dimx_lead,dimx_lead), STAT=ierr )
+    !  IF( ierr /=0 ) CALL errore(subname,'allocating tsumt', ABS(ierr) )
       !
-! XXX
     !  ALLOCATE ( work(dimx,dimx), STAT=ierr )
     !  IF( ierr /=0 ) CALL errore(subname,'allocating work', ABS(ierr) )
       ! 
-      ALLOCATE ( sgm_L(dimC,dimC,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'allocating sgm_L', ABS(ierr) )
-      ALLOCATE ( sgm_R(dimC,dimC,nkpts_par), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'allocating sgm_R', ABS(ierr) )
       !
       IF ( write_lead_sgm ) THEN
+          !
+          ALLOCATE ( sgm_L(dimC,dimC,nkpts_par), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating sgm_L', ABS(ierr) )
+          ALLOCATE ( sgm_R(dimC,dimC,nkpts_par), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating sgm_R', ABS(ierr) )
           !
           ALLOCATE ( rsgm_L(dimC,dimC,nrtot_par), STAT=ierr )
           IF( ierr /=0 ) CALL errore(subname,'allocating rsgm_L', ABS(ierr) )
@@ -125,8 +126,10 @@ CONTAINS
     !  ALLOCATE ( gamma_L(dimC,dimC), STAT=ierr )
     !  IF( ierr /=0 ) CALL errore(subname,'allocating gamma_L', ABS(ierr) )
       !
-      ALLOCATE ( g_lead(dimx_lead,dimx_lead), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname,'allocating g_lead', ABS(ierr) )
+    !  ALLOCATE ( gL(dimL,dimL), STAT=ierr )
+    !  IF( ierr /=0 ) CALL errore(subname,'allocating gL', ABS(ierr) )
+    !  ALLOCATE ( gR(dimR,dimR), STAT=ierr )
+    !  IF( ierr /=0 ) CALL errore(subname,'allocating gR', ABS(ierr) )
     !  ALLOCATE ( gC(dimC,dimC), STAT=ierr )
     !  IF( ierr /=0 ) CALL errore(subname,'allocating gC', ABS(ierr) )
       !
@@ -176,9 +179,13 @@ CONTAINS
           IF( ierr /=0 ) CALL errore(subname,'deallocating gamma_R', ABS(ierr) )
       ENDIF
       !
-      IF ( ALLOCATED( g_lead ) ) THEN
-          DEALLOCATE ( g_lead, STAT=ierr )
-          IF( ierr /=0 ) CALL errore(subname,'deallocating g_lead', ABS(ierr) )
+      IF ( ALLOCATED( gL ) ) THEN
+          DEALLOCATE ( gL, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'deallocating gL', ABS(ierr) )
+      ENDIF
+      IF ( ALLOCATED( gR ) ) THEN
+          DEALLOCATE ( gR, STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'deallocating gR', ABS(ierr) )
       ENDIF
       IF ( ALLOCATED( gC) ) THEN
           DEALLOCATE ( gC, STAT=ierr )
@@ -225,7 +232,8 @@ CONTAINS
        IF ( ALLOCATED(rsgm_L) )   cost = cost + REAL(SIZE(rsgm_L))     * 16.0_dbl
        IF ( ALLOCATED(rsgm_R) )   cost = cost + REAL(SIZE(rsgm_R))     * 16.0_dbl
        !
-       IF ( ALLOCATED(g_lead) )   cost = cost + REAL(SIZE(g_lead))     * 16.0_dbl
+       IF ( ALLOCATED(gL) )       cost = cost + REAL(SIZE(gL))         * 16.0_dbl
+       IF ( ALLOCATED(gR) )       cost = cost + REAL(SIZE(gR))         * 16.0_dbl
        IF ( ALLOCATED(gC) )       cost = cost + REAL(SIZE(gC))         * 16.0_dbl
        IF ( ALLOCATED(rgC) )      cost = cost + REAL(SIZE(rgC))        * 16.0_dbl
        IF ( ALLOCATED(kgC) )      cost = cost + REAL(SIZE(kgC))        * 16.0_dbl
