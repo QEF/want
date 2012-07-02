@@ -3,9 +3,10 @@
 		WanT code:  Log of Changes 
 =======================================================
 
+
 02 Jul 2012     atomic projections from QE/projwfc.x can be used for want-postproc, 
 		including transport. OVerlaps can be used ( from QE > 5.0 ) to
-		better exploit order(N) techniques. (AF)
+		better exploit order(N) techniques. Test11 updated. (AF)
 
 30 Jun 2012     further save of memory usage in transport calculations. (AF)
 
