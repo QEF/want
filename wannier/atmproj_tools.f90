@@ -77,7 +77,7 @@ CONTAINS
    
    !
    IF ( file_proj_(ilen-14:ilen) == "atomic_proj.xml" .OR. &
-        file_proj_(ilen-14:ilen) == "atomic_proj.xml" ) THEN
+        file_proj_(ilen-14:ilen) == "atomic_proj.dat" ) THEN
        !
        savedir = file_proj_(1:ilen-15)
        !
@@ -270,6 +270,8 @@ END SUBROUTINE atmproj_tools_init
        ALLOCATE( kovp(natomwfc,natomwfc,nkpts,nspin), STAT=ierr )
        IF (ierr/=0) CALL errore(subname, 'allocating kovp II', ABS(ierr))
        !
+       ! reading < beta_i | evc_n >
+       !
        CALL atmproj_read_ext( filein, VKPT=vkpt, WK=wk, EIG=eig, PROJ=proj, KOVP=kovp, IERR=ierr )
        !
    ENDIF
@@ -374,8 +376,8 @@ END SUBROUTINE atmproj_tools_init
                    DO ib = 1, nbnd
                        !
                        kham(i,j,ik) = kham(i,j,ik) + &
-                                                CONJG( proj(ib,i,ik,isp) ) * eig(ib,ik,isp) * &
-                                                       proj(ib,j,ik,isp)
+                                                ( proj(ib,i,ik,isp) ) * eig(ib,ik,isp) * &
+                                           CONJG( proj(ib,j,ik,isp) )
                        !
                    ENDDO
                    !
@@ -386,18 +388,6 @@ END SUBROUTINE atmproj_tools_init
                IF ( .NOT. mat_is_herm( dimwann, kham(:,:,ik), TOLL=EPS_m8 ) ) &
                    CALL errore(subname,'kham not hermitean',10)
 
-!!
-!! XXXX DEBUG
-!!
-!      ALLOCATE( zaux( dimwann, dimwann), w(dimwann) )
-!      ! 
-!      WRITE(0,"(/, 2x, 'DEBUG: ik =', i4)") ik
-!      CALL mat_hdiag( zaux, w, kham(:,:,ik), dimwann )
-!      WRITE(0,"(2x,8f13.8)") w( 1: MIN(dimwann,nbnd) )
-!      WRITE(0,*)
-!      ! 
-!      DEALLOCATE( zaux, w )
-!! 
 
                !
                ! fermi energy is taken into accout
@@ -496,27 +486,6 @@ END SUBROUTINE atmproj_tools_init
        IF ( ierr/=0 ) CALL errore(subname, 'deallocating kovp', ABS(ierr) )
    ENDIF
 
-
-!! XXX
-!! DEBUG: ridiagonalize
-!WRITE(0,"(2/, 'REDIAGONALIZATION')" )
-!isp = 1
-!
-!ALLOCATE( kovp( dimwann, dimwann, nkpts, 1) )
-!ALLOCATE( kham( dimwann, dimwann, nkpts) )
-!ALLOCATE( zaux( dimwann, dimwann), w(dimwann) )
-!
-!DO ik = 1, nkpts
-!    !
-!    CALL compute_kham( dimwann, nrtot, vr, wr, rham(:,:,:,isp), vkpt(:,ik), kham(:,:,ik) )
-!    CALL compute_kham( dimwann, nrtot, vr, wr, rovp(:,:,:,isp), vkpt(:,ik), kovp(:,:,ik,isp) )
-!    !
-!    CALL mat_hdiag( zaux, w, kham(:,:,ik), kovp(:,:,ik,isp), dimwann )
-!    WRITE(0,"(2x,8f13.8)") w( 1: MIN(dimwann,nbnd) )
-!    WRITE(0,*)
-!    !
-!ENDDO
-! XXX
 
 !
 !---------------------------------

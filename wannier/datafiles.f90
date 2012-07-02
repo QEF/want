@@ -195,9 +195,9 @@ END SUBROUTINE datafiles_init
          !
      ENDIF
      !
-     IF ( file_is_crystal( filename ) ) THEN 
+     IF ( file_is_cp2k( filename ) ) THEN 
          !
-         fmtstr = 'crystal'
+         fmtstr = 'cp2k'
          RETURN
          !
      ENDIF
@@ -209,9 +209,9 @@ END SUBROUTINE datafiles_init
          !
      ENDIF
      !
-     IF ( file_is_cp2k( filename ) ) THEN 
+     IF ( file_is_crystal( filename ) ) THEN 
          !
-         fmtstr = 'cp2k'
+         fmtstr = 'crystal'
          RETURN
          !
      ENDIF
