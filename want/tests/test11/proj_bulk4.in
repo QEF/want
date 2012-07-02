@@ -1,0 +1,9 @@
+Pt 4 atoms
+
+   &PROJWFC
+      prefix='pt4',
+      outdir = './SCRATCH'
+      filpdos='./SCRATCH/pt4'
+      lwrite_overlaps = .TRUE.
+   /
+

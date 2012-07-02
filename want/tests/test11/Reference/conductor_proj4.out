@@ -1,0 +1,204 @@
+
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <conductor>  v. 2.5.0alpha1  starts ...
+  Date  2Jul2012 at 16:52:14 
+
+     Number of MPI processes:       6
+
+
+
+          BUILT :    Mon 02 Jul 2012 04:51:09 PM CEST
+           HOST :    x86_64-unknown-linux-gnu
+           ARCH :    x86_64
+             CC :    icc
+            CPP :    cpp
+            F90 :    mpif90
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA
+      BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
+    LAPACK LIBS :    
+       FFT LIBS :    
+      MASS LIBS :    
+
+
+
+  ======================================================================
+  =  Conductor Init                                                    =
+  ======================================================================
+
+  ./SCRATCH/pt_h2_pt.save/atomic_proj.xml file fmt: atmproj
+  ./SCRATCH/pt_h2_pt.save/atomic_proj.xml converted from ATMPROJ to internal fmt
+  ./SCRATCH/pt4.save/atomic_proj.xml file fmt: atmproj
+  ./SCRATCH/pt4.save/atomic_proj.xml converted from ATMPROJ to internal fmt
+
+  ======================================================================
+  =  INPUT Summary                                                     =
+  ======================================================================
+
+  <INPUT>
+          Calculation Type :     conductor
+                    prefix :     
+                   postfix :     _proj4
+                  work_dir :     ./
+               L-lead dim. :        24
+            conductor dim. :        50
+               R-lead dim. :        24
+       Conductance Formula :     landauer
+       Transport Direction :         3
+          Have Correlation :     FALSE
+              Write k-data :     FALSE
+            Write sgm lead :     FALSE
+                Write gf C :     FALSE
+           Max iter number :       200
+                    nprint :        20
+
+        Conductor datafile :     ./SCRATCH/pt_h2_pt.save/atomic_proj.xml.ham
+           L-lead datafile :     ./SCRATCH/pt4.save/atomic_proj.xml.ham
+           R-lead datafile :     ./SCRATCH/pt4.save/atomic_proj.xml.ham
+       leads are identical :     TRUE 
+         ovp orthogonaliz. :     FALSE
+  </INPUT>
+
+
+  <ENERGY_GRID>
+                 Dimension :       1000
+                 Buffering :          1
+                Min Energy :       -8.00000
+                Max Energy :        2.00000
+               Energy Step :        0.01001
+                     Delta :        0.00500
+             Smearing Type :     lorentzian
+             Smearing grid :      20000
+             Smearing gmax :       25.00000
+                   Shift_L :        0.00000
+                   Shift_C :        0.00000
+                   Shift_R :        0.00000
+                Shift_corr :        0.00000
+  </ENERGY_GRID>
+
+
+  <K-POINTS>
+       nkpts_par =    1
+       nrtot_par =    1
+        use_symm = TRUE
+
+       Parallel kpoints grid:        nk = (  1  1  1 )   s = (  0  0  0 )
+       k (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+
+       Parallel R vector grid:       nr = (  1  1  1 )
+       R (   1) =    (   0.00000  0.00000  0.00000 ),   weight =   1.0000
+  </K-POINTS>
+
+
+  <PARALLELISM>
+       Paralellization over frequencies
+       # of processes:     6
+  </PARALLELISM>
+
+
+ <MEMORY_USAGE>
+                smearing:          0.480 MB
+                 kpoints:          0.000 MB
+        hamiltonian data:          0.292 MB
+        correlation data:          0.001 MB
+               workspace:          0.000 MB
+
+     Total alloc. Memory:          0.773 MB
+ </MEMORY_USAGE>
+
+
+  ======================================================================
+  =  Frequency Loop                                                    =
+  ======================================================================
+
+  Computing E(     1 ) =     -8.00000 eV
+  T matrix converged after avg. # of iterations      0.500
+
+                              Total time spent up to now :     0.96 secs
+
+  Computing E(    20 ) =     -7.80981 eV
+  T matrix converged after avg. # of iterations      0.500
+
+                              Total time spent up to now :     0.99 secs
+
+  Computing E(    40 ) =     -7.60961 eV
+  T matrix converged after avg. # of iterations      0.500
+
+                              Total time spent up to now :     1.03 secs
+
+  Computing E(    60 ) =     -7.40941 eV
+  T matrix converged after avg. # of iterations      0.500
+
+                              Total time spent up to now :     1.07 secs
+
+  Computing E(    80 ) =     -7.20921 eV
+  T matrix converged after avg. # of iterations      1.000
+
+                              Total time spent up to now :     1.11 secs
+
+  Computing E(   100 ) =     -7.00901 eV
+  T matrix converged after avg. # of iterations      1.000
+
+                              Total time spent up to now :     1.15 secs
+
+  Computing E(   120 ) =     -6.80881 eV
+  T matrix converged after avg. # of iterations      1.000
+
+                              Total time spent up to now :     1.19 secs
+
+  Computing E(   140 ) =     -6.60861 eV
+  T matrix converged after avg. # of iterations      3.000
+
+                              Total time spent up to now :     1.24 secs
+
+  Computing E(   160 ) =     -6.40841 eV
+  T matrix converged after avg. # of iterations      4.500
+
+                              Total time spent up to now :     1.31 secs
+
+  Computing E(   167 ) =     -6.33834 eV
+  T matrix converged after avg. # of iterations      4.500
+
+                              Total time spent up to now :     1.34 secs
+
+
+  ======================================================================
+  =  Writing data                                                      =
+  ======================================================================
+
+
+  conductance written on file:    cond_proj4.dat
+
+  doscond written on file:    doscond_proj4.dat
+
+  ======================================================================
+
+   <global routines>
+             clock number :    15
+
+                conductor :     1.00s CPU 
+
+           datafiles_init :     0.93s CPU
+      atmproj_to_internal :     0.72s CPU (       2 calls,   0.360 s avg)
+             compute_rham :     0.00s CPU (      20 calls,   0.000 s avg)
+            smearing_init :     0.01s CPU
+                   cft_1z :     0.01s CPU (       2 calls,   0.005 s avg)
+         hamiltonian_init :     0.01s CPU
+              read_matrix :     0.01s CPU (       7 calls,   0.002 s avg)
+              fourier_par :     0.00s CPU (      14 calls,   0.000 s avg)
+             do_conductor :     0.69s CPU
+        hamiltonian_setup :     0.01s CPU (     167 calls,   0.000 s avg)
+            transfer_mtrx :     0.17s CPU (     167 calls,   0.001 s avg)
+                    green :     0.03s CPU (     334 calls,   0.000 s avg)
+              gzero_maker :     0.01s CPU (     501 calls,   0.000 s avg)
+            transmittance :     0.08s CPU (     167 calls,   0.000 s avg)
+
+

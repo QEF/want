@@ -1,0 +1,28 @@
+
+&INPUT_CONDUCTOR
+   postfix = '_proj4'
+   dimL = 24
+   dimC = 50
+   dimR = 24
+   ne = 1000
+   emin = -8.0
+   emax = 2.0
+   datafile_L = "./SCRATCH/pt4.save/atomic_proj.xml"
+   datafile_C = "./SCRATCH/pt_h2_pt.save/atomic_proj.xml"
+   datafile_R = "./SCRATCH/pt4.save/atomic_proj.xml"
+   transport_dir = 3
+   delta = 0.005
+/
+
+<HAMILTONIAN_DATA>
+
+   <H00_C   rows="1-50"  cols="1-50" />
+   <H_CR    rows="1-50"  cols="1-24" />
+   <H_LC    rows="27-50" cols="1-50" />
+   <H00_L   rows="1-24"  cols="1-24" />
+   <H01_L   rows="1-24"  cols="1-24" />
+   <H00_R   rows="1-24"  cols="1-24" />
+   <H01_R   rows="1-24"  cols="1-24" />
+
+</HAMILTONIAN_DATA>
+
