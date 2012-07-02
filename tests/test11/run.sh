@@ -14,10 +14,12 @@ MANUAL=" Usage
  
  scf             DFT self-consistent calculation
  nscf            DFT non-self-consistent calculation
+ proj            ATMPROJ data
  scf_bulk1       DFT self-consistent calculation for Pt bulk (1atom)
  nscf_bulk1      DFT non-self-consistent calculation for Pt bulk (1atom)
  scf_bulk4       DFT self-consistent calculation for Pt bulk (4atoms)
  nscf_bulk4      DFT non-self-consistent calculation for Pt bulk (4atoms)
+ proj_bulk4      ATMPROJ data
  dft             perform all the above together
 
  disentangle     select the optimal subspace on which perform
@@ -41,6 +43,7 @@ MANUAL=" Usage
                  using leads with 4 atons
  conductor_auto  evaluate the transmittance taking all the matrix elements
                  from the same calculation (not recommended in general)
+ conductor_proj4 conductance by using ATMPROJ
  conductor_bulk1 evaluate the bulk transmittance for the leads (1 atom)
  conductor_bulk4 evaluate the bulk transmittance for the leads (4 atoms)
  current_lead1   compute the current from the results of conductor_lead1
@@ -74,10 +77,12 @@ SUFFIX=
 
 SCF=
 NSCF=
+PROJ=
 SCF_BULK1=
 NSCF_BULK1=
 SCF_BULK4=
 NSCF_BULK4=
+PROJ_BULK4=
 
 DISENTANGLE=
 WANNIER=
@@ -99,6 +104,7 @@ CONDUCTOR_BULK4=
 CONDUCTOR_LEAD1=
 CONDUCTOR_LEAD4=
 CONDUCTOR_AUTO=
+CONDUCTOR_PROJ4=
 CURRENT_LEAD1=
 CURRENT_LEAD4=
 
@@ -111,10 +117,12 @@ INPUT=`echo $1 | tr [:upper:] [:lower:]`
 case $INPUT in 
    (scf)            SCF=yes ;;
    (nscf)           NSCF=yes ;;
+   (proj)           PROJ=yes ;;
    (scf_bulk1)      SCF_BULK1=yes ;;
    (nscf_bulk1)     NSCF_BULK1=yes ;;
    (scf_bulk4)      SCF_BULK4=yes ;;
    (nscf_bulk4)     NSCF_BULK4=yes ;;
+   (proj_bulk4)     PROJ_BULK4=yes ;;
 
    (dft)            SCF=yes ; NSCF=yes ; 
                     SCF_BULK1=yes ; NSCF_BULK1=yes ;
@@ -140,6 +148,7 @@ case $INPUT in
    (conductor_lead1)      CONDUCTOR_LEAD1=yes ;;
    (conductor_lead4)      CONDUCTOR_LEAD4=yes ;;
    (conductor_auto)       CONDUCTOR_AUTO=yes ;;
+   (conductor_proj4)      CONDUCTOR_PROJ4=yes ;;
    (current_lead1)        CURRENT_LEAD1=yes ;;
    (current_lead4)        CURRENT_LEAD4=yes ;;
  
@@ -210,6 +219,16 @@ run_dft  NAME=SCF   SUFFIX=$SUFFIX  RUN=$SCF
 #
 run_dft  NAME=NSCF  SUFFIX=$SUFFIX  RUN=$NSCF
 
+#
+# running DFT PROJ
+#
+if [ "$PROJ" = "yes" ] ; then
+   #
+   run  NAME="PROJ"  EXEC=$QE_BIN/projwfc.x  INPUT=proj$SUFFIX.in \
+        OUTPUT=proj$SUFFIX.out PARALLEL=yes
+fi
+
+
 
 #
 # running DFT SCF BULK1
@@ -231,6 +250,15 @@ run_dft  NAME=SCF_BULK4   SUFFIX=${SUFFIX}  RUN=$SCF_BULK4
 # running DFT NSCF BULK4
 #
 run_dft  NAME=NSCF_BULK4   SUFFIX=${SUFFIX}  RUN=$NSCF_BULK4
+
+#
+# running DFT PROJ_BULK4
+#
+if [ "$PROJ_BULK4" = "yes" ] ; then
+   #
+   run  NAME="PROJ_BULK4"  EXEC=$QE_BIN/projwfc.x  INPUT=proj_bulk4$SUFFIX.in \
+        OUTPUT=proj_bulk4$SUFFIX.out PARALLEL=yes
+fi
 
 
 
@@ -311,6 +339,11 @@ run_conductor NAME=CONDUCTOR_LEAD4  SUFFIX=${SUFFIX}_lead4  RUN=$CONDUCTOR_LEAD4
 #
 run_conductor NAME=CONDUCTOR_AUTO  SUFFIX=${SUFFIX}_auto  RUN=$CONDUCTOR_AUTO
 if [ -e eigchn_auto.dat ] ; then mv eigchn_auto.dat ./SCRATCH ; fi
+
+#
+# running CONDUCTOR_PROJ
+#
+run_conductor NAME=CONDUCTOR_PROJ4  SUFFIX=${SUFFIX}_proj4  RUN=$CONDUCTOR_PROJ4
 
 #
 # running CURRENT
