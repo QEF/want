@@ -661,8 +661,6 @@ END SUBROUTINE cp2k_to_internal
          RETURN
      ENDIF
      !
-     file_is_cp2k = .TRUE.
-     !
   END FUNCTION file_is_cp2k
 
 
