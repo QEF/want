@@ -161,12 +161,12 @@ END SUBROUTINE atmproj_tools_init
    CALL log_push( subname )
 
 
-   IF ( .NOT. init ) THEN 
-       !
-       CALL atmproj_tools_init( filein, ierr )
-       IF ( ierr/=0 ) CALL errore(subname,'initializing atmproj',10)
-       !
-   ENDIF
+   !
+   ! re-initialize all the times
+   !
+   CALL atmproj_tools_init( filein, ierr )
+   IF ( ierr/=0 ) CALL errore(subname,'initializing atmproj',10)
+
 
    !
    ! search for units indipendently of io_module
