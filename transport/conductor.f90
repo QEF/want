@@ -22,11 +22,12 @@
    USE T_input_module,       ONLY : input_manager
    USE T_control_module,     ONLY : datafile_C, transport_dir
    USE T_smearing_module,    ONLY : smearing_init
-   USE T_egrid_module,       ONLY : egrid_init, egrid_alloc => alloc
+   USE T_egrid_module,       ONLY : egrid_init, egrid_init_ph, egrid_alloc => alloc
    USE T_kpoints_module,     ONLY : kpoints_init
    USE T_datafiles_module,   ONLY : datafiles_init
    USE T_correlation_module, ONLY : lhave_corr, ldynam_corr, correlation_init, &
                                     correlation_read
+   USE T_input_parameters_module, ONLY : carriers
    !
    IMPLICIT NONE
 
@@ -76,7 +77,10 @@
        !
    ENDIF   
    !
-   IF ( .NOT. egrid_alloc ) CALL egrid_init( )
+   IF ( .NOT. egrid_alloc) THEN
+        IF ( TRIM(carriers) == 'electrons') CALL egrid_init( )
+        IF ( TRIM(carriers) == 'phonons') CALL egrid_init_ph( )
+   ENDIF
 
    !
    ! print data to output
@@ -139,6 +143,7 @@ END PROGRAM conductor
                                     correlation_read, correlation_finalize
    USE T_write_data_module,  ONLY : wd_write_data, wd_write_eigchn
    USE T_operator_blc_module
+   USE T_input_parameters_module, ONLY : carriers
    !
    IMPLICIT NONE
 
@@ -163,6 +168,9 @@ END PROGRAM conductor
    !
    ! end of declarations
    !
+
+    REAL(dbl) :: rydcm1 = 13.6058d0*8065.5d0
+    REAL(dbl) :: amconv = 1.66042d-24/9.1095d-28*0.5d0
 
 !
 !------------------------------
@@ -292,13 +300,18 @@ END PROGRAM conductor
       !
       IF ( (MOD( ie_g, nprint) == 0 .OR. ie_g == iomg_s .OR. ie_g == iomg_e ) &
            .AND. ionode ) THEN
-           WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f12.5, ' eV' )") &
+            IF (TRIM(carriers) == 'phonons') THEN
+                WRITE(stdout,"(2x, 'Computing omega( ',i5,' ) = ', f12.5, ' cm-1' )") &
+                ie_g, dsqrt(egrid(ie_g)*rydcm1**2/amconv)
+            ELSE
+            WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f12.5, ' eV' )") &
                          ie_g, egrid(ie_g)
+            ENDIF
       ENDIF
 
 
       !
-      ! get correlaiton self-energy if the case
+      ! get correlation self-energy if the case
       !
       IF ( lhave_corr .AND. ldynam_corr ) THEN
           !
@@ -637,6 +650,9 @@ END PROGRAM conductor
    !
    CALL write_header( stdout, "Writing data" )
    CALL flush_unit( stdout )
+
+    IF ( TRIM(carriers) == 'phonons') egrid(:)=dsqrt(egrid(:)*rydcm1**2/amconv)
+
    ! 
    CALL wd_write_data(aux_unit, ne, egrid, SIZE(conduct,1), conduct, 'conductance' ) 
    !
