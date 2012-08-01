@@ -34,6 +34,7 @@
    USE T_kpoints_module,     ONLY : nkpts_par, nk_par, s_par, vkpt_par3D, wk_par, use_symm, &
                                     kpoints_alloc => alloc, kpoints_imask
    USE T_kpoints_module,     ONLY : nrtot_par, nr_par, ivr_par3D, wr_par
+   USE T_input_parameters_module, ONLY : carriers
    !
    IMPLICIT NONE
 
@@ -52,6 +53,9 @@
    !
    ! end of declaration
    !
+
+    REAL(dbl) :: rydcm1 = 13.6058d0*8065.5d0
+    REAL(dbl) :: amconv = 1.66042d-24/9.1095d-28*0.5d0
 
 !
 !------------------------------
@@ -80,6 +84,7 @@
        WRITE(iunit,"( 7x,'     conductor dim. :',5x,i5)") dimC
        WRITE(iunit,"( 7x,'        R-lead dim. :',5x,i5)") dimR
        WRITE(iunit,"( 7x,'Conductance Formula :',5x,a)") TRIM(conduct_formula)
+       WRITE(iunit,"( 7x,'           Carriers :',5x,a)") TRIM(carriers)
        WRITE(iunit,"( 7x,'Transport Direction :',8x,i2)") transport_dir
        WRITE(iunit,"( 7x,'   Have Correlation :',5x,a)") log2char(lhave_corr)
        WRITE(iunit,"( 7x,'       Write k-data :',5x,a)") log2char(write_kdata)
@@ -105,9 +110,15 @@
        WRITE(iunit,"( 2x,'<ENERGY_GRID>')" )
        WRITE(iunit,"( 7x,'          Dimension :',5x,i6)")    ne
        WRITE(iunit,"( 7x,'          Buffering :',5x,i6)")    ne_buffer
+       IF (TRIM(carriers) == 'phonons') THEN
+       WRITE(iunit,"( 7x,'      Min Frequency :',5x,f10.5)") emin*(rydcm1/dsqrt(amconv))**2
+       WRITE(iunit,"( 7x,'      Max Frequency :',5x,f10.5)") emax*(rydcm1/dsqrt(amconv))**2
+       WRITE(iunit,"( 7x,'        Energy Step :',5x,f10.5)") de*(rydcm1/dsqrt(amconv))**2
+       ELSE
        WRITE(iunit,"( 7x,'         Min Energy :',5x,f10.5)") emin
        WRITE(iunit,"( 7x,'         Max Energy :',5x,f10.5)") emax
        WRITE(iunit,"( 7x,'        Energy Step :',5x,f10.5)") de
+       ENDIF
        WRITE(iunit,"( 7x,'              Delta :',5x,f10.5)") delta
        WRITE(iunit,"( 7x,'      Smearing Type :',5x,a)")     TRIM(smearing_type)
        WRITE(iunit,"( 7x,'      Smearing grid :',5x,i6)")    nx_smear

@@ -40,7 +40,7 @@
    PUBLIC :: egrid
    PUBLIC :: alloc
    !
-   PUBLIC :: egrid_init, de
+   PUBLIC :: egrid_init, egrid_init_ph, de
    PUBLIC :: egrid_buffer_doread
    PUBLIC :: egrid_buffer_iend
    PUBLIC :: egrid_deallocate
@@ -81,6 +81,41 @@ CONTAINS
        CALL log_pop ( 'egrid_init' )
        !
    END SUBROUTINE egrid_init
+
+   !**********************************************************
+   SUBROUTINE egrid_init_ph()
+   !**********************************************************
+   IMPLICIT NONE
+       CHARACTER(10) :: subname="egrid_init_ph"
+       INTEGER       :: ie, ierr
+       !
+       CALL log_push ( 'egrid_init_ph' )
+
+       IF ( alloc )   CALL errore(subname,'already allocated', 1 )
+       IF ( ne <= 0 ) CALL errore(subname,'invalid ne', -ne+1 )
+       IF ( ne_buffer <= 0 ) CALL errore(subname,'invalid ne_buffer', -ne_buffer+1 )
+
+       
+       ALLOCATE( egrid(ne), STAT=ierr )
+       IF (ierr/=0) CALL errore(subname,'allocating egrid', ABS(ierr))
+
+       !
+       ! setting the energy grid
+       !
+       de = (emax - emin) / REAL(ne -1, dbl)
+       !
+       DO ie = 1, ne
+          egrid(ie) = emin + de * REAL(ie -1, dbl)
+       ENDDO
+       egrid(1)=egrid(2)/100.0
+
+       alloc = .TRUE.
+       CALL log_pop ( 'egrid_init_ph' )
+       !
+   END SUBROUTINE egrid_init_ph
+
+
+
 
 
 !**********************************************************

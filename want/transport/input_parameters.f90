@@ -73,6 +73,14 @@
    DATA conduct_formula_allowed / 'landauer',  'generalized' /
        ! the allowed values for conduct_formula
 
+   CHARACTER(nstrx) :: carriers = 'electrons'
+       ! ( 'electrons' | 'phonons' )
+	   ! electron or phonon case
+
+   CHARACTER(nstrx) :: carriers_allowed(2)
+   DATA carriers_allowed / 'electrons',  'phonons' /
+       ! the allowed values for the carriers
+
    INTEGER :: ne = 1000  
        ! the dimension of the energy grid
 
@@ -230,7 +238,7 @@
                  datafile_L,     datafile_C,     datafile_R, datafile_sgm,      &
                  datafile_L_sgm, datafile_C_sgm, datafile_R_sgm,                &
                  transport_dir, smearing_type, do_eigenchannels, do_eigplot,    &
-                 ie_eigplot, ik_eigplot, neigchnx,                              &
+                 ie_eigplot, ik_eigplot, neigchnx, carriers,                             &
                  delta_ratio, xmax, nk, s, use_symm, debug_level,               &
                  work_dir, prefix, postfix, ispin,                              &
                  write_kdata, write_lead_sgm, write_gf,                         &
@@ -239,7 +247,7 @@
 
    PUBLIC :: dimL, dimC, dimR, calculation_type, conduct_formula, niterx, smearing_type
    PUBLIC :: ne, ne_buffer, emin, emax, nprint, delta, bias, delta_ratio, xmax 
-   PUBLIC :: datafile_L,     datafile_C,     datafile_R,     datafile_sgm, transport_dir
+   PUBLIC :: datafile_L,     datafile_C,     datafile_R,     datafile_sgm, transport_dir, carriers
    PUBLIC :: datafile_L_sgm, datafile_C_sgm, datafile_R_sgm
    PUBLIC :: nk, s, use_symm, debug_level, do_orthoovp
    PUBLIC :: work_dir, prefix, postfix, ispin, write_kdata, write_lead_sgm, write_gf 
@@ -269,6 +277,9 @@ CONTAINS
       LOGICAL :: allowed, exists
       INTEGER :: i, ios
 
+    REAL(dbl) :: rydcm1 = 13.6058d0*8065.5d0
+    REAL(dbl) :: amconv = 1.66042d-24/9.1095d-28*0.5d0
+
       CALL log_push( 'read_namelist_input_conductor' )
 
       IF ( ionode ) THEN
@@ -277,6 +288,24 @@ CONTAINS
          IF (ios/=0) CALL errore(subname,'reading INPUT_CONDUCTOR namelist',ABS(ios))
          !
       ENDIF
+
+
+      ! scale energies depending of carriers
+
+    CALL change_case(carriers,'lower')
+    allowed=.FALSE.
+    DO i=1,SIZE(carriers_allowed)
+        IF ( TRIM(carriers) == carriers_allowed(i) ) allowed=.TRUE. 
+    ENDDO
+    IF (.NOT. allowed) &
+        CALL errore(subname,'Invalid carriers ='//TRIM(carriers),10)
+
+    IF ( TRIM(carriers) == 'phonons') THEN
+        emin=emin**2/(rydcm1/dsqrt(amconv))**2
+        IF ( emin < 0.0) CALL errore(subname,'Invalid emin',1)
+        emax=emax**2/(rydcm1/dsqrt(amconv))**2
+
+    ENDIF
 
       !
       ! variable bcasting
@@ -293,7 +322,8 @@ CONTAINS
       CALL mp_bcast( emax,               ionode_id)      
       CALL mp_bcast( delta,              ionode_id)      
       CALL mp_bcast( smearing_type,      ionode_id)      
-      CALL mp_bcast( delta_ratio,        ionode_id)      
+      CALL mp_bcast( delta_ratio,        ionode_id)
+      CALL mp_bcast( carriers,     	     ionode_id)
       CALL mp_bcast( xmax,               ionode_id)      
       CALL mp_bcast( bias,               ionode_id)      
       CALL mp_bcast( nprint,             ionode_id)      
@@ -375,6 +405,14 @@ CONTAINS
       ENDDO
       IF (.NOT. allowed) &
           CALL errore(subname,'Invalid smearing_type ='//TRIM(smearing_type),10)
+
+      CALL change_case(carriers,'lower')
+      allowed=.FALSE.
+      DO i=1,SIZE(carriers_allowed)
+          IF ( TRIM(carriers) == carriers_allowed(i) ) allowed=.TRUE. 
+      ENDDO
+      IF (.NOT. allowed) &
+          CALL errore(subname,'Invalid carriers ='//TRIM(carriers),10)
 
       IF ( TRIM(calculation_type) == 'conductor' ) THEN
            IF ( dimL <= 0) CALL errore(subname,'Invalid dimL',1)
