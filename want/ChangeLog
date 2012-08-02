@@ -4,6 +4,9 @@
 =======================================================
 
 
+01 Aug 2012     Added capability for phonon transport. updated Makefile for q2trans 
+		in utility for QE-5.0.1. (MBN)
+
 02 Jul 2012     atomic projections from QE/projwfc.x can be used for want-postproc, 
 		including transport. OVerlaps can be used ( from QE > 5.0 ) to
 		better exploit order(N) techniques. Test11 updated. (AF)
@@ -69,7 +72,7 @@ Oct 11 2011     datafile_urot input var added to blc2wan, to allow for and extra
 		an old bug in SaX. (AF)
 
 Apr 19 2011     memusage routines added to transport and embed. 
-		Problem with ne_buffer fixed (wasn't it already). (AF)
+		Problem with ne_buffer fixed (wasn't it before). (AF)
 
 Mar 17 2011     150th anniversary of unified Italy. FOund and fixed a bug showing up
 		when damping to file lead-self-energies or conductor green's functions:
@@ -83,7 +86,7 @@ Feb 14 2011     want repository moved to qe-forge and converted to svn.
 
 Jan 25 2011     memstat.c updated from QE-4.2. Courtesy of Yifeng Chen.  (AF)
 
-Dec 07 2010     Cleanup in embed and transport. vars for correlation sgm's 
+Dec 07 2010     Cleanup in embed and transport. Vars for correlation sgm's 
 		in the leads added. Big changes in correlation module to
 		be consistent with the new treatment of the self-energies. 
 		Test03 updated including a case study of the Klein paradox. (AF)
@@ -154,145 +157,144 @@ May 02 2010     fmt "internal" added to available choices. Postprocs
 Date: 15 Apr 2010    Version: WanT-2.3.0
 -------------------------------------------------
 
-Apr 11 2010      WanT manual updated. (AF)
+Apr 11 2010     WanT manual updated. (AF)
 
-Apr 10 2010      Test suite further cleaned. explicit check on ETSF-IO support 
-                 added. Bug fixed in overlaps and projections under the option
-                 gamma_only. (AF)
+Apr 10 2010     Test suite further cleaned. explicit check on ETSF-IO support 
+		added. Bug fixed in overlaps and projections under the option
+		gamma_only. (AF)
 
-Apr 09 2010      Cleanup of hamiltonian data in trnasport. 
-                 test12 updated, including references. 
-                 Bug fixed in configure when issued with --with-etsf-io flag. 
-                 Interface to abinit 6.0.3 checked. libtest updated. (AF)
+Apr 09 2010     Cleanup of hamiltonian data in trnasport. 
+		test12 updated, including references. 
+		Bug fixed in configure when issued with --with-etsf-io flag. 
+		Interface to abinit 6.0.3 checked. libtest updated. (AF)
 
-Apr 08 2010      gamma_only option spreaded to plot.x .
-                 Test03 and Test04 updated. Overall documentation updated. 
-                 Test13 finalized and added to repository. Test14 added. (AF)
+Apr 08 2010     gamma_only option spreaded to plot.x .
+		Test03 and Test04 updated. Overall documentation updated. 
+		Test13 finalized and added to repository. Test14 added. (AF)
 
-Apr 07 2010      gamma_only option included in ccalbec. Test04 updated. 
-                 Parallelism over kpt included in plot.x . (AF)
+Apr 07 2010     gamma_only option included in ccalbec. Test04 updated. 
+		Parallelism over kpt included in plot.x . (AF)
 
-Apr 06 2010      Configure wrapper updated. Eigenchannel writing fixed. 
-                 Bug fixed in the implementation of overlaps within gamma_only. 
-                 Test03 and Test04 updated. (AF)
+Apr 06 2010     Configure wrapper updated. Eigenchannel writing fixed. 
+		Bug fixed in the implementation of overlaps within gamma_only. 
+		Test03 and Test04 updated. (AF)
 
-Apr 02 2010      Bug fixed in the write_eigchn procedure (conductor). 
-                 Cleanup of the transport part. Test11 updated. 
-                 nproc > nkpts allowed. (AF)
+Apr 02 2010     Bug fixed in the write_eigchn procedure (conductor). 
+		Cleanup of the transport part. Test11 updated. 
+		nproc > nkpts allowed. (AF)
 
-18 Mar 2010      configure.ac updated using todays QE cvs version. Changes to
-                 makefile system (in particular related to the build_date var). 
-                 ~want/install dir added. (AF)
+18 Mar 2010     configure.ac updated using todays QE cvs version. Changes to
+		makefile system (in particular related to the build_date var). 
+		~want/install dir added. (AF)
 
-16 Mar 2010      Portability on Sun f95 compiler added. (AF)
+16 Mar 2010     Portability on Sun f95 compiler added. (AF)
 
-15 Mar 2010      iotk moved to extlibs. A number of related minor changes done. 
-                 Version updated to 2.3.0 .(AF)
+15 Mar 2010     iotk moved to extlibs. A number of related minor changes done. 
+		Version updated to 2.3.0 .(AF)
 
-19 Jan 2010      erorr given when trying to use smearing and correlation
-                 self-energies. The condition can be made looser (just avoid
-                 non-hermitean self-energies), or the general case can be
-                 implemented. (AF)
-                 Bug fixed in embed when using dynamical self-energies to build
-                 the lead self-energies. The same problem is still present in 
-                 the transport part. (AF)
+19 Jan 2010     erorr given when trying to use smearing and correlation
+		self-energies. The condition can be made looser (just avoid
+		non-hermitean self-energies), or the general case can be
+		implemented. (AF)
+		Bug fixed in embed when using dynamical self-energies to build
+		the lead self-energies. The same problem is still present in 
+		the transport part. (AF)
 
-18 Jan 2010      Bug fixed in transport/kpoints.f90. It was affecting the
-                 dumping of sgm lead data and embed. Pointed out by D. Prezzi. (AF)
+18 Jan 2010     Bug fixed in transport/kpoints.f90. It was affecting the
+		dumping of sgm lead data and embed. Pointed out by D. Prezzi. (AF)
 
-22 Nov 2009      IOTK lib updated with today's CVS version. 
-                 extlibs directory added; blas and lapack moved there;
-                 configure.ac updated using the one from espresso cvs;
-                 other install falies updated; Makefile system changed in plugins. (AF)
+22 Nov 2009     IOTK lib updated with today's CVS version. 
+		extlibs directory added; blas and lapack moved there;
+		configure.ac updated using the one from espresso cvs;
+		other install falies updated; Makefile system changed in plugins. (AF)
 
-10 Nov 2009      npkx parameter increased to 10000. Checks added. 
-                 fmt for kpt writing updated. (AF)
+10 Nov 2009     npkx parameter increased to 10000. Checks added. 
+		fmt for kpt writing updated. (AF)
 
-25 Oct 2009      Auxiliary data to plot the eigenchannel analysis are written on demand
-                 by conductor.x. Some input vars added. (AF)
+25 Oct 2009     Auxiliary data to plot the eigenchannel analysis are written on demand
+		by conductor.x. Some input vars added. (AF)
 
-26 Aug 2009      Makefiles in plug-ins fixed for -z option in tar. (AF)
+26 Aug 2009     Makefiles in plug-ins fixed for -z option in tar. (AF)
 
-28 Jul 2009      Cleanup using gfortran debug options; couple of more serious
-                 bugs (out-of-bound arrays) fixed. (AF)
+28 Jul 2009     Cleanup using gfortran debug options; couple of more serious
+		bugs (out-of-bound arrays) fixed. (AF)
 
-17 Jun 2009      Read in of self-energy generalized to take into account different
-                 dimensions of sgm wrt H or S. Bug fixed in operator_* system. (AF)
+17 Jun 2009     Read in of self-energy generalized to take into account different
+		dimensions of sgm wrt H or S. Bug fixed in operator_* system. (AF)
 
-10 Jun 2009      Bug in embed/correlation.f90 find by Deborah Prezzi in the
-                 allocation ob blc_EB. Fixed. Other bug fixed in correlation init. (AF)
+10 Jun 2009     Bug in embed/correlation.f90 find by Deborah Prezzi in the
+		allocation ob blc_EB. Fixed. Other bug fixed in correlation init. (AF)
 
-09 Jun 2009      Bug fixed in conductor.x when writing lead sgm. Variables related
-                 to 2D kpt and R grids modified in transport and embed. (AF)
+09 Jun 2009     Bug fixed in conductor.x when writing lead sgm. Variables related
+		to 2D kpt and R grids modified in transport and embed. (AF)
 
-08 Jun 2009      Bug fixed in embed.f90: dos was not recover of frequencies. (AF)
+08 Jun 2009     Bug fixed in embed.f90: dos was not recover of frequencies. (AF)
 
-07 Jun 2009      Parallel read-in of selfenergies added to embed.x . (AF)
+07 Jun 2009     Parallel read-in of selfenergies added to embed.x . (AF)
 
-05 Jun 2009      Embedding code completed and partly tested. (AF)
+05 Jun 2009     Embedding code completed and partly tested. (AF)
 
-04 Jun 2009      Embedding dir added; Changes spread all over accordingly. (AF)
+04 Jun 2009     Embedding dir added; Changes spread all over accordingly. (AF)
 
-24 May 2009      Write part of lead self-energy IO in transport completed. (AF)
+24 May 2009     Write part of lead self-energy IO in transport completed. (AF)
 
-12 May 2009      Begun the implementation of lead self-energy IO in transport. (AF)
+12 May 2009     Begun the implementation of lead self-energy IO in transport. (AF)
 
-01 May 2009      Bug fixed in *.space file (windows_write) in the case of
-                 spin polarized systems. (AF)
+01 May 2009     Bug fixed in *.space file (windows_write) in the case of
+		spin polarized systems. (AF)
 
-28 Apr 2009      Routine read_upf_v2.f90 updated according to QEspresso cvs.
-                 Bugs fixed in that routine to allow reading of 1/r potentials. (AF)
+28 Apr 2009     Routine read_upf_v2.f90 updated according to QEspresso cvs.
+		Bugs fixed in that routine to allow reading of 1/r potentials. (AF)
 
-16 Apr 2009      Changes in test04 because the usage of dipole.x in QE
-                 is changed. (AF)
+16 Apr 2009     Changes in test04 because the usage of dipole.x in QE
+		is changed. (AF)
 
-13 Apr 2009      Orthogonalization of ovp added to cmplx_bands.f90 to 
-                 improve numerical accuracy. (AF)
+13 Apr 2009     Orthogonalization of ovp added to cmplx_bands.f90 to 
+		improve numerical accuracy. (AF)
 
-08 Apr 2009      Updates in the script lib to run tests. (AF)
+08 Apr 2009     Updates in the script lib to run tests. (AF)
 
-31 Mar 2009      Bug fixed in dealing with CRYSTAL06 datafiles: wan_eig are
-                 no longer requested to be in .space file. (AF)
+31 Mar 2009     Bug fixed in dealing with CRYSTAL06 datafiles: wan_eig are
+		no longer requested to be in .space file. (AF)
 
-27 Mar 2009      Bug fixed in configure.ac. (AF) 
+27 Mar 2009     Bug fixed in configure.ac. (AF) 
 
-16 Mar 2009      Bug fixed in compilation without __ETSF_IO support. (AF)
+16 Mar 2009     Bug fixed in compilation without __ETSF_IO support. (AF)
 
-13 Mar 2009      Bug fixed in kpt generation algorithm when interpolating bands
-                 (one point was missing). Bug fixed in io_open_dftdata routine
-                 when using the crystal interface. (AF)
+13 Mar 2009     Bug fixed in kpt generation algorithm when interpolating bands;
+		one point was missing. Bug fixed in io_open_dftdata routine
+		when using the crystal interface. (AF)
 
-21 Feb 2009      Bug fixed in the documentation of kpoints.f90 (courtesy of
-                 Y.P.Wang). (AF)
+21 Feb 2009     Bug fixed in the documentation of kpoints.f90 (courtesy of
+		Y.P.Wang). (AF)
 
-18 Feb 2009      kpt sorting (and symmetrization) implemented in blc2wan.f90 .
-                 (AF and Tonatiuh Rangel)
+18 Feb 2009     kpt sorting (and symmetrization) implemented in blc2wan.f90 .
+		AF and Tonatiuh Rangel
 
-17 Feb 2009      Bugs fixed in conductor.f90: dos was not computed correctly;
-                 conductance array was going out-of-bounds. Bug fixed when
-                 reading efermi from input file. Bug fixed when trying to
-                 get the .ham fmt in the case of wannier90 files (failure of
-                 iotk getting tags). (AF)
-                 wfk2etsf.x utility (abinit binary to etsf converter) added to
-                 WanT. (Tonatiuh Rangel)
+17 Feb 2009     Bugs fixed in conductor.f90: dos was not computed correctly;
+		conductance array was going out-of-bounds. Bug fixed when
+		reading efermi from input file. Bug fixed when trying to
+		get the .ham fmt in the case of wannier90 files (failure of
+		iotk getting tags). (AF)
+		wfk2etsf.x utility (abinit binary to etsf converter) added to
+		WanT. (Tonatiuh Rangel)
 
-13 Feb 2009      Bug in autoconf found. output of ETSF_IO_LINE in configure.msg
-                 removed to workaround the bug. Support of Wannier90 datafiles
-                 added, courtesy of Tonatiuh Rangel; related tests added in
-                 test11. (AF)
-		 Bug fixed in atomic.f90. (Tonatiuh Rangel)
+13 Feb 2009     Bug in autoconf found. output of ETSF_IO_LINE in configure.msg
+		removed to workaround the bug. Support of Wannier90 datafiles
+		added, courtesy of Tonatiuh Rangel; related tests added in
+		test11. (AF)
+		Bug fixed in atomic.f90. (Tonatiuh Rangel)
 
-12 Feb 2009      wannier90 fmt supported in transport; etsf_error handler
-                 added (according to a former implementation of Conor Hogan).
-                 (AF)
+12 Feb 2009     wannier90 fmt supported in transport; etsf_error handler
+		added (according to a former implementation of Conor Hogan). (AF)
 
-10 Feb 2009      Input files for abinit calculations made more standard
-                 (thanks to Tonatiuh Rangel). Test03 improved and references
-                 updated. Stdout made more clear when selecting DFT datafiles. 
-                 ETSF_IO updated to version v1.0.2 . Variable efermi added. (AF)
+10 Feb 2009     Input files for abinit calculations made more standard,
+		thanks to Tonatiuh Rangel. Test03 improved and references
+		updated. Stdout made more clear when selecting DFT datafiles. 
+		ETSF_IO updated to version v1.0.2 . Variable efermi added. (AF)
 
-06 Feb 2009      Makefile system in plugins cleaned up. Bug fixed in mp.f90
-                 (mpi extention removed). (AF)
+06 Feb 2009     Makefile system in plugins cleaned up. Bug fixed in mp.f90:
+		mpi extention removed. (AF)
 
 05 Feb 2009      Cleanup in plot.f90 . (AF)
 
