@@ -55,6 +55,7 @@
 ! SUBROUTINE   mat_mul( c, a, opa, b, opb, m, n, k)
 ! SUBROUTINE   mat_hdiag( z, w, a, n[, uplo][, il, iu])
 ! SUBROUTINE   mat_inv( n, a, z [, kl, ku, ldab] [,det_a] [,ierr] )
+! SUBROUTINE   mat_hsqrt( n, a, [,ldab, ka] z [,ierr] )
 ! SUBROUTINE  zmat_diag( z, w, a, n, side)
 ! COMPLEX/REAL FUNCTION   mat_dotp( m, n, a, b)
 ! COMPLEX/REAL FUNCTION   mat_hdotp( m, a, b)
@@ -119,6 +120,8 @@ END INTERFACE
 INTERFACE mat_lsd
    MODULE PROCEDURE dmat_lsd
    MODULE PROCEDURE dmat_lsd_1
+   MODULE PROCEDURE zmat_lsd
+   MODULE PROCEDURE zmat_lsd_1
 END INTERFACE
 !
 ! rank calculation
@@ -142,6 +145,13 @@ INTERFACE mat_inv
    MODULE PROCEDURE zmat_inv
    MODULE PROCEDURE zmat_bnd_inv
    MODULE PROCEDURE dmat_inv
+END INTERFACE
+!
+! matrix sqrt
+INTERFACE mat_hsqrt
+   MODULE PROCEDURE zmat_hsqrt
+   MODULE PROCEDURE dmat_bnd_hsqrt
+   MODULE PROCEDURE dmat_hsqrt
 END INTERFACE
 !
 ! matrix dot product
@@ -169,6 +179,7 @@ PUBLIC ::  mat_lsd
 PUBLIC ::  mat_mul
 PUBLIC ::  mat_hdiag
 PUBLIC ::  mat_inv
+PUBLIC ::  mat_hsqrt
 PUBLIC :: zmat_diag
 PUBLIC :: zmat_is_unitary
 PUBLIC ::  mat_is_herm
@@ -938,6 +949,172 @@ END SUBROUTINE dmat_lsd
 
    RETURN
 END SUBROUTINE dmat_lsd_1
+
+
+!**********************************************************
+   SUBROUTINE zmat_lsd(m, n, nrhs, a, b, rcond, sv, rank, ierr)
+   !**********************************************************
+   !
+   !  Computes the minimum-norm solution of the real system of linear equations
+   !     A * X = B,
+   !  where A is an M-by-N matrix and X and B are N-by-NRHS matrices.
+   !
+   !  The solutions found are:   min 2-norm| B-AX |
+   !
+   !  The SVD method is used, see the manual of ZGELSD
+   !  Singular values and rank can be provided in output
+   !
+   !  Only square matrices are treated
+   !
+   IMPLICIT NONE
+   INTEGER,      INTENT(IN)       :: m, n, nrhs
+   REAL(dbl),    INTENT(IN)       :: rcond
+   COMPLEX(dbl), INTENT(IN)       :: a(:,:)
+   COMPLEX(dbl), INTENT(INOUT)    :: b(:,:)
+   REAL(dbl),    OPTIONAL, INTENT(OUT) :: sv(:)
+   INTEGER,      OPTIONAL, INTENT(OUT) :: rank
+   INTEGER,      OPTIONAL, INTENT(OUT) :: ierr
+   !
+   CHARACTER(8)              :: subname="zmat_lsd"
+   INTEGER                   :: ierr_, rank_, info
+   INTEGER,      ALLOCATABLE :: iwork(:)
+   REAL(dbl),    ALLOCATABLE :: rwork(:), sv_(:)
+   COMPLEX(dbl), ALLOCATABLE :: atmp(:,:), work(:)
+   !
+   REAL(dbl)         :: rworkl
+   COMPLEX(dbl)      :: workl
+   INTEGER           :: smlsiz, minmn, nlvl, lwork, lrwork, liwork
+   INTEGER, EXTERNAL :: ILAENV
+
+
+
+   IF ( PRESENT(ierr) ) ierr=0
+   !
+   IF ( m > SIZE(a,1) .OR. n > SIZE(a,2) ) CALL errore(subname,'matrix A too small',1)
+   IF ( n > SIZE(b,1) ) CALL errore(subname,'matrix B too small (I)',1)
+   IF ( nrhs > SIZE(b,2) ) CALL errore(subname,'matrix B too small (II)',1)
+
+   !
+   ! dimensions
+   !
+   minmn  = MIN(m,n)
+   smlsiz = ILAENV( 9, 'ZGELSD', ' ', 0, 0, 0, 0 )
+   nlvl   = MAX( INT( LOG( DBLE( minmn ) / DBLE( smlsiz+1 ) ) /  &
+            LOG( 2.0d0 ) ) + 1, 0 )
+   !
+   !mnthr  = ILAENV( 6, 'ZGELSD', ' ', m, n, nrhs, -1 )
+   liwork = MAX(1, 3 * minmn * nlvl + 11 * minmn)
+   !
+
+   !
+   ! workspace
+   !
+   ALLOCATE( atmp(m,n), STAT=ierr_ )
+   IF (ierr_/=0) CALL errore(subname,'allocating atmp',ABS(ierr_))
+   ALLOCATE( sv_(MIN(m,n)), STAT=ierr_ )
+   IF (ierr_/=0) CALL errore(subname,'allocating sv_',ABS(ierr_))
+   ALLOCATE( iwork(liwork), STAT=ierr_ )
+   IF (ierr_/=0) CALL errore(subname,'allocating iwork',ABS(ierr_))
+   !
+   ! get lwork
+   !
+   info   =  0
+   lwork  = -1
+   !
+   ! use magma if possible
+   ! get proper dimensions here
+   CALL ZGELSD( m, n, nrhs, atmp, m, b, SIZE(b,1), sv_, rcond, rank_, &
+                workl, lwork, rworkl, iwork, info)
+   !
+   lwork  = INT( workl )
+   lrwork = INT( rworkl )
+   !
+   ALLOCATE( work(lwork), STAT=ierr_ )
+   IF (ierr_/=0) CALL errore(subname,'allocating work',ABS(ierr_))
+   ALLOCATE( rwork(lrwork), STAT=ierr_ )
+   IF (ierr_/=0) CALL errore(subname,'allocating rwork',ABS(ierr_))
+
+   !
+   ! make a local copy of a
+   atmp(:,:) = a(1:m,1:n) 
+
+   !
+   ! use magma if possible
+   CALL ZGELSD( m, n, nrhs, atmp, m, b, SIZE(b,1), sv_, rcond, rank_, &
+                work, lwork, rwork, iwork, info)
+
+   IF ( PRESENT(ierr) ) THEN
+        IF (info/=0) ierr= info
+   ELSE
+        IF ( info < 0 ) CALL errore(subname, 'ZGELSD: info illegal value', -info )
+        IF ( info > 0 ) CALL errore(subname, 'ZGELSD: algorithm failure', info )
+   ENDIF
+   !
+   IF ( PRESENT(sv) )     sv(1:minmn) = sv_(1:minmn)
+   IF ( PRESENT(rank) )   rank        = rank_
+    
+
+   DEALLOCATE( atmp, STAT=ierr_)
+   IF(ierr_/=0) CALL errore(subname,'deallocating atmp',ABS(ierr_))
+   DEALLOCATE( sv_, STAT=ierr_)
+   IF(ierr_/=0) CALL errore(subname,'deallocating atmp',ABS(ierr_))
+   DEALLOCATE( work, rwork, iwork, STAT=ierr_)
+   IF(ierr_/=0) CALL errore(subname,'deallocating work, rwork, iwork',ABS(ierr_))
+
+   RETURN
+END SUBROUTINE zmat_lsd
+
+
+!**********************************************************
+   SUBROUTINE zmat_lsd_1(m, n, nrhs, a, b, rcond, sv, rank, ierr)
+   !**********************************************************
+   !
+   ! Interface to zmat_lsd when nrhs = 1
+   !
+   IMPLICIT NONE
+   INTEGER,   INTENT(IN)       :: m, n, nrhs
+   REAL(dbl), INTENT(IN)       :: rcond
+   COMPLEX(dbl), INTENT(IN)    :: a(:,:)
+   COMPLEX(dbl), INTENT(INOUT) :: b(:)
+   REAL(dbl), OPTIONAL, INTENT(OUT) :: sv(:)
+   INTEGER,   OPTIONAL, INTENT(OUT) :: rank
+   INTEGER,   OPTIONAL, INTENT(OUT) :: ierr
+   !
+   CHARACTER(10)             :: subname="dmat_lsd_1"
+   INTEGER                   :: ierr_, rank_, info
+   COMPLEX(dbl), ALLOCATABLE :: bl(:,:)
+   REAL(dbl),    ALLOCATABLE :: sv_(:)
+
+   IF ( PRESENT(ierr) ) ierr=0
+   !
+   IF ( nrhs /= 1) CALL errore(subname,'more than 1 rhs ? ',ABS(nrhs)+1)
+   IF ( n > SIZE(b,1) ) CALL errore(subname,'vector b too small',2)
+   !
+   ALLOCATE( bl(n,1), STAT=ierr_ )
+   IF (ierr_/=0) CALL errore(subname,'allocating bl',ABS(ierr_))
+   ALLOCATE( sv_(MIN(m,n)), STAT=ierr_ )
+   IF (ierr_/=0) CALL errore(subname,'allocating sv_',ABS(ierr_))
+
+   bl(:,1) = b(1:n)
+   CALL zmat_lsd( m, n, 1, a, bl, rcond, SV=sv_, RANK=rank_, IERR=info)
+   !
+   IF ( PRESENT(ierr) ) THEN 
+       ierr=info
+   ELSE
+       IF (info /=0) CALL errore(subname,'info/=0',ABS(info))
+   ENDIF
+   IF ( PRESENT(sv) )    sv(1:MIN(m,n))  = sv_(:)
+   IF ( PRESENT(rank) )  rank            = rank_
+   !
+   b(1:n) = bl(1:n,1)
+
+   DEALLOCATE( bl, STAT=ierr_)
+   IF (ierr_/=0) CALL errore(subname,'deallocating bl',ABS(ierr_))
+   DEALLOCATE( sv_, STAT=ierr_)
+   IF (ierr_/=0) CALL errore(subname,'deallocating sv_',ABS(ierr_))
+
+   RETURN
+END SUBROUTINE zmat_lsd_1
 
 
 !**********************************************************
@@ -1901,6 +2078,170 @@ END SUBROUTINE zmat_bnd_inv
    IF ( ierr_/=0 ) CALL errore ('dmat_inv', 'deallocating work', ABS (ierr_) )
    !
 END SUBROUTINE dmat_inv 
+
+
+!**********************************************************
+   SUBROUTINE zmat_hsqrt( n, a, z, ierr )
+   !**********************************************************
+   !
+   ! compute Z = sqrt( A ) for a Hermitean matrix A
+   !
+   IMPLICIT NONE
+   INTEGER,                INTENT(IN)  :: n
+   COMPLEX(dbl),           INTENT(IN)  :: a(:,:)
+   COMPLEX(dbl),           INTENT(OUT) :: z(:,:)
+   INTEGER,      OPTIONAL, INTENT(OUT) :: ierr
+   !
+   COMPLEX(dbl), ALLOCATABLE :: work(:,:), work1(:,:)
+   REAL(dbl),    ALLOCATABLE :: w(:)
+   INTEGER  :: ierr_, i, j
+   !
+   IF ( PRESENT( ierr ) ) ierr=0
+   !
+   ALLOCATE( work(n,n), w(n), STAT=ierr_ )
+   IF ( ierr_/=0 ) CALL errore("zmat_hsqrt","allocating work, w", ABS(ierr_))
+   ALLOCATE( work1(n,n), STAT=ierr_ )
+   IF ( ierr_/=0 ) CALL errore("zmat_hsqrt","allocating work1", ABS(ierr_))
+   !
+   ! diagonalize A
+   CALL mat_hdiag( work, w, a, n )
+   !
+   DO i = 1, n
+       IF ( w(i) <= 0.0d0 ) THEN
+           ierr=1
+           RETURN
+       ELSE
+           w(i) = SQRT(w(i))
+       ENDIF
+   ENDDO
+   !
+   DO j = 1, n
+   DO i = 1, n
+       !   
+       work1(i,j) = work(i,j) * w(j)
+       !   
+   ENDDO
+   ENDDO
+   !   
+   CALL mat_mul( z, work1, 'N', work, 'C', n, n, n)   
+   !
+   DEALLOCATE( work, work1, w, STAT=ierr_ )
+   IF ( ierr_/=0 ) CALL errore("zmat_hsqrt","deallocating work -- w", ABS(ierr_))
+   !
+   RETURN
+   !
+END SUBROUTINE zmat_hsqrt
+
+
+!**********************************************************
+   SUBROUTINE dmat_hsqrt( n, a, z, ierr )
+   !**********************************************************
+   !
+   ! compute Z = sqrt( A ) for a real hermitean (symmetric) matrix A
+   !
+   IMPLICIT NONE
+   INTEGER,                INTENT(IN)  :: n
+   REAL(dbl),              INTENT(IN)  :: a(:,:)
+   REAL(dbl),              INTENT(OUT) :: z(:,:)
+   INTEGER,      OPTIONAL, INTENT(OUT) :: ierr
+   !
+   REAL(dbl),  ALLOCATABLE :: work(:,:), work1(:,:)
+   REAL(dbl),  ALLOCATABLE :: w(:)
+   INTEGER  :: ierr_, i, j
+   !
+   IF ( PRESENT( ierr ) ) ierr=0
+   !
+   ALLOCATE( work(n,n), w(n), STAT=ierr_ )
+   IF ( ierr_/=0 ) CALL errore("dmat_hsqrt","allocating work, w", ABS(ierr_))
+   ALLOCATE( work1(n,n), STAT=ierr_ )
+   IF ( ierr_/=0 ) CALL errore("dmat_hsqrt","allocating work1", ABS(ierr_))
+   !
+   ! diagonalize A
+   CALL mat_hdiag( work, w, a, n )
+   !
+   DO i = 1, n
+       IF ( w(i) <= 0.0d0 ) THEN
+           ierr=1
+           RETURN
+       ELSE
+           w(i) = SQRT(w(i))
+       ENDIF
+   ENDDO
+   !
+   DO j = 1, n
+   DO i = 1, n
+       !   
+       work1(i,j) = work(i,j) * w(j)
+       !   
+   ENDDO
+   ENDDO
+   !   
+   CALL mat_mul( z, work1, 'N', work, 'T', n, n, n)   
+   !
+   DEALLOCATE( work, work1, w, STAT=ierr_ )
+   IF ( ierr_/=0 ) CALL errore("dmat_hsqrt","deallocating work -- w", ABS(ierr_))
+   !
+   RETURN
+   !
+END SUBROUTINE dmat_hsqrt
+
+
+!**********************************************************
+   !SUBROUTINE dmat_bnd_hsqrt( n, ab, ldab, ka, zb, ldzb, kz, ierr )
+   SUBROUTINE dmat_bnd_hsqrt( n, ab, ldab, ka, z, ierr )
+   !**********************************************************
+   !
+   ! compute Z = sqrt( A ) for a real BANDED hermitean (symmetric) matrix A
+   !
+   IMPLICIT NONE
+   INTEGER,                INTENT(IN)  :: n, ldab, ka
+   REAL(dbl),              INTENT(IN)  :: ab(:,:)
+   REAL(dbl),              INTENT(OUT) :: z(:,:)
+   !INTEGER,                INTENT(OUT) :: kz
+   INTEGER,      OPTIONAL, INTENT(OUT) :: ierr
+   !
+   REAL(dbl),  ALLOCATABLE :: work(:,:), work1(:,:)
+   REAL(dbl),  ALLOCATABLE :: w(:)
+   INTEGER  :: ierr_, i, j
+   !
+   IF ( PRESENT( ierr ) ) ierr=0
+   !
+   ALLOCATE( work(n,n), w(n), STAT=ierr_ )
+   IF ( ierr_/=0 ) CALL errore("dmat_bnd_hsqrt","allocating work, w", ABS(ierr_))
+   !
+   ! diagonalize A
+   CALL dmat_bnd_hdiag( work, w, ab, ldab, n, ka )
+   !
+   ALLOCATE( work1(n,n), STAT=ierr_ )
+   IF ( ierr_/=0 ) CALL errore("dmat_bnd_hsqrt","allocating work1", ABS(ierr_))
+   !ALLOCATE( z(n,n), STAT=ierr_ )
+   !IF ( ierr_/=0 ) CALL errore("dmat_bnd_hsqrt","allocating z", ABS(ierr_))
+   !
+   DO i = 1, n
+       IF ( w(i) <= 0.0d0 ) THEN
+           ierr=1
+           RETURN
+       ELSE
+           w(i) = SQRT(w(i))
+       ENDIF
+   ENDDO
+   !
+   DO j = 1, n
+   DO i = 1, n
+       !   
+       work1(i,j) = work(i,j) * w(j)
+       !   
+   ENDDO
+   ENDDO
+   !   
+   CALL mat_mul( z, work1, 'N', work, 'T', n, n, n)   
+   !
+   DEALLOCATE( work, work1, w, STAT=ierr_ )
+   IF ( ierr_/=0 ) CALL errore("dmat_hsqrt","deallocating work -- w", ABS(ierr_))
+   !
+   RETURN
+   !
+END SUBROUTINE dmat_bnd_hsqrt
 
 
 !**********************************************************
