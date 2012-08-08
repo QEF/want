@@ -10,12 +10,12 @@
    MODULE T_smearing_module
    !*********************************************
    !
-   USE kinds,           ONLY : dbl
-   USE constants,       ONLY : ZERO, ONE, TWO, PI, SQRTPI, SQRT2, CZERO, CONE, CI, EPS_m1
-   USE timing_module,   ONLY : timing
-   USE log_module,      ONLY : log_push, log_pop
-   USE fft_scalar,      ONLY : cft_1z, good_fft_order_1dz
-   USE smearing_module, ONLY : smearing_func
+   USE kinds,                ONLY : dbl
+   USE constants,            ONLY : ZERO, ONE, TWO, PI, SQRTPI, SQRT2, CZERO, CONE, CI, EPS_m1
+   USE timing_module,        ONLY : timing
+   USE log_module,           ONLY : log_push, log_pop
+   USE fft_scalar,           ONLY : cft_1z, good_fft_order_1dz
+   USE smearing_base_module, ONLY : smearing_func
    !
    IMPLICIT NONE
    PRIVATE 

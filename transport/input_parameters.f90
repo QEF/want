@@ -323,7 +323,7 @@ CONTAINS
       CALL mp_bcast( delta,              ionode_id)      
       CALL mp_bcast( smearing_type,      ionode_id)      
       CALL mp_bcast( delta_ratio,        ionode_id)
-      CALL mp_bcast( carriers,     	     ionode_id)
+      CALL mp_bcast( carriers,           ionode_id)
       CALL mp_bcast( xmax,               ionode_id)      
       CALL mp_bcast( bias,               ionode_id)      
       CALL mp_bcast( nprint,             ionode_id)      
