@@ -86,7 +86,7 @@ recips.o \
 s_psi.o \
 setqf.o \
 shutdown.o \
-smearing.o \
+smearing_base.o \
 sort_gvec.o \
 startup.o \
 struct_fact_data.o \

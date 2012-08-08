@@ -38,7 +38,7 @@ WANNIER_OBJS= \
 ../wannier/monkpack.o \
 ../wannier/operator.o \
 ../wannier/startup.o \
-../wannier/smearing.o \
+../wannier/smearing_base.o \
 ../wannier/shutdown.o \
 ../wannier/version.o \
 ../wannier/wannier90_tools.o 
@@ -50,7 +50,7 @@ TRANSPORT_OBJS= \
 ../transport/kpoints.o \
 ../transport/operator_blc.o \
 ../transport/read_matrix.o \
-../transport/smearing.o
+../transport/smearing_T.o
 
 BIN= \
 embed.x 

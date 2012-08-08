@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*********************************************
-   MODULE smearing_module
+   MODULE smearing_base_module
 !*********************************************
    USE kinds,         ONLY : dbl
    USE constants,     ONLY : ONE, TWO, PI, SQRTPI, SQRT2
@@ -108,5 +108,5 @@ CONTAINS
 
    END FUNCTION smearing_func
 
-END MODULE smearing_module
+END MODULE smearing_base_module
 

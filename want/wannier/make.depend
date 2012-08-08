@@ -249,7 +249,7 @@ dos.o : ../libs/parser.o
 dos.o : ../libs/timing.o
 dos.o : ../libs/util.o
 dos.o : operator.o
-dos.o : smearing.o
+dos.o : smearing_base.o
 dos.o : version.o
 dos.o : want_interfaces.o
 dos.o : windows.o
@@ -681,8 +681,8 @@ shutdown.o : io_module.o
 shutdown.o : ../libs/log_module.o
 shutdown.o : ../libs/mp.o
 shutdown.o : ../libs/timing.o
-smearing.o : ../libs/constants.o
-smearing.o : ../libs/kind.o
+smearing_base.o : ../libs/constants.o
+smearing_base.o : ../libs/kind.o
 sort_gvec.o : ../libs/constants.o
 sort_gvec.o : ../libs/kind.o
 s_psi.o : ions.o

@@ -24,7 +24,7 @@ kpoints.o \
 memusage.o \
 operator_blc.o \
 read_matrix.o \
-smearing.o \
+smearing_T.o \
 summary.o \
 transfer.o \
 transmittance.o \
@@ -48,7 +48,7 @@ WANNIER_OBJS= \
 ../wannier/monkpack.o \
 ../wannier/operator.o \
 ../wannier/startup.o \
-../wannier/smearing.o \
+../wannier/smearing_base.o \
 ../wannier/shutdown.o \
 ../wannier/version.o \
 ../wannier/wannier90_tools.o 

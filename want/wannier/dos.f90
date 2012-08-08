@@ -281,7 +281,7 @@ END PROGRAM dos_main
    USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nrtot, vr, wr 
    USE windows_module,       ONLY : nspin
-   USE smearing_module,      ONLY : smearing_func
+   USE smearing_base_module, ONLY : smearing_func
    USE hamiltonian_module,   ONLY : dimwann, rham, rovp, lhave_overlap
    USE correlation_module,   ONLY : lhave_sgm, ldynam_sgm, rsgm, correlation_allocate
    USE correlation_module,   ONLY : omg_grid, omg_nint

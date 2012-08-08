@@ -25,6 +25,15 @@ midpoint.o : ../wannier/ions.o
 midpoint.o : ../wannier/lattice.o
 midpoint.o : ../wannier/version.o
 midpoint.o : ../wannier/want_interfaces.o
+# q2trans.o : @dynamicalq@
+# q2trans.o : @environment@
+# q2trans.o : @io_dyn_mat@
+# q2trans.o : @io_global@
+q2trans.o : ../libs/constants.o
+q2trans.o : ../libs/fft_scalar.o
+q2trans.o : ../libs/kind.o
+q2trans.o : ../libs/mp_global.o
+q2trans.o : ../libs/mp.o
 sax2qexml.o : ../libs/constants.o
 sax2qexml.o : ../libs/kind.o
 sax2qexml.o : ../libs/log_module.o

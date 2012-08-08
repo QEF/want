@@ -1,7 +1,7 @@
 cleanup.o : hamiltonian.o
 cleanup.o : ../transport/egrid.o
 cleanup.o : ../transport/kpoints.o
-cleanup.o : ../transport/smearing.o
+cleanup.o : ../transport/smearing_T.o
 cleanup.o : workspace.o
 control.o : ../libs/kind.o
 control.o : ../libs/parameters.o
@@ -49,7 +49,7 @@ embed.o : ../libs/util.o
 embed.o : ../transport/egrid.o
 embed.o : ../transport/kpoints.o
 embed.o : ../transport/operator_blc.o
-embed.o : ../transport/smearing.o
+embed.o : ../transport/smearing_T.o
 embed.o : ../wannier/io_module.o
 embed.o : ../wannier/operator.o
 embed.o : ../wannier/version.o
@@ -71,7 +71,7 @@ hamiltonian.o : ../libs/log_module.o
 hamiltonian.o : ../libs/parameters.o
 hamiltonian.o : ../transport/kpoints.o
 hamiltonian.o : ../transport/operator_blc.o
-hamiltonian.o : ../transport/smearing.o
+hamiltonian.o : ../transport/smearing_T.o
 hamiltonian_setup.o : hamiltonian.o
 hamiltonian_setup.o : ../libs/constants.o
 hamiltonian_setup.o : ../libs/kind.o
@@ -79,7 +79,7 @@ hamiltonian_setup.o : ../libs/log_module.o
 hamiltonian_setup.o : ../libs/timing.o
 hamiltonian_setup.o : ../transport/egrid.o
 hamiltonian_setup.o : ../transport/operator_blc.o
-hamiltonian_setup.o : ../transport/smearing.o
+hamiltonian_setup.o : ../transport/smearing_T.o
 input.o : control.o
 input.o : correlation.o
 input.o : hamiltonian.o
@@ -90,7 +90,7 @@ input.o : ../libs/log_module.o
 input.o : ../libs/parameters.o
 input.o : ../transport/egrid.o
 input.o : ../transport/kpoints.o
-input.o : ../transport/smearing.o
+input.o : ../transport/smearing_T.o
 input.o : ../wannier/io_module.o
 input_parameters.o : ../libs/constants.o
 input_parameters.o : ../libs/kind.o
@@ -102,7 +102,7 @@ input_parameters.o : ../wannier/io_module.o
 memusage.o : hamiltonian.o
 memusage.o : ../libs/kind.o
 memusage.o : ../transport/kpoints.o
-memusage.o : ../transport/smearing.o
+memusage.o : ../transport/smearing_T.o
 memusage.o : ../wannier/io_module.o
 memusage.o : workspace.o
 summary.o : control.o
@@ -114,7 +114,7 @@ summary.o : ../libs/mp_global.o
 summary.o : ../libs/parser.o
 summary.o : ../transport/egrid.o
 summary.o : ../transport/kpoints.o
-summary.o : ../transport/smearing.o
+summary.o : ../transport/smearing_T.o
 summary.o : ../wannier/io_module.o
 workspace.o : hamiltonian.o
 workspace.o : ../libs/constants.o
