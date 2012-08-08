@@ -4,6 +4,8 @@
 =======================================================
 
 
+08 Aug 2012     naming of smearing modules changed. (AF)
+
 01 Aug 2012     Added capability for phonon transport. updated Makefile for q2trans 
 		in utility for QE-5.0.1. (MBN)
 
