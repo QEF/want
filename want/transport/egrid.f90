@@ -86,7 +86,7 @@ CONTAINS
    SUBROUTINE egrid_init_ph()
    !**********************************************************
    IMPLICIT NONE
-       CHARACTER(10) :: subname="egrid_init_ph"
+       CHARACTER(13) :: subname="egrid_init_ph"
        INTEGER       :: ie, ierr
        !
        CALL log_push ( 'egrid_init_ph' )
