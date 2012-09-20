@@ -10,6 +10,7 @@ bulk graphite
       tprnfor = .true.,
       pseudo_dir = '../pseudo/',
       outdir = './SCRATCH'
+      wf_collect = .TRUE.
    /
    &SYSTEM
       ibrav=4,
