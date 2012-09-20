@@ -187,8 +187,8 @@
 
    CHARACTER(nstrx) :: datafile_sgm = ' '
        ! the name of the file containing correlation self-energy
-       ! If a valid file is provided, correlation is taken into account
-       ! this is kept for backcompatibility, nad it refers to
+       ! If a valid file is provided, correlation is taken into account.
+       ! this var is kept for back-compatibility, and it refers to
        ! datafile_C_sgm
 
    CHARACTER(nstrx) :: datafile_C_sgm = ' '
@@ -451,7 +451,8 @@ CONTAINS
       IF ( delta_ratio < ZERO )   CALL errore(subname,'delta_ratio is negative',1)
       IF ( delta_ratio > EPS_m1 ) CALL errore(subname,'delta_ratio too large',1)
 
-      IF ( TRIM(conduct_formula) /= 'landauer' .AND. LEN_TRIM (datafile_sgm) == 0 ) &
+      IF ( TRIM(conduct_formula) /= 'landauer' .AND. &
+                ( LEN_TRIM (datafile_sgm) == 0 .AND. LEN_TRIM (datafile_C_sgm) == 0 ) ) &
            CALL errore(subname,'invalid conduct formula',1)
 
 !      IF ( LEN_TRIM (datafile_sgm) == 0 .AND.  &

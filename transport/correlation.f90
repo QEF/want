@@ -156,39 +156,51 @@ END SUBROUTINE correlation_init
    CALL log_push( subname )
    
 
-   IF ( blc_00L%lhave_corr ) THEN
-       CALL file_close(blc_00L%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00L', ABS(ierr) )
+   IF ( LEN_TRIM( datafile_L_sgm ) /= 0 ) THEN
+       !
+       IF ( blc_00L%lhave_corr ) THEN
+           CALL file_close(blc_00L%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+           IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00L', ABS(ierr) )
+       ENDIF
+       !
+       IF ( blc_01L%lhave_corr ) THEN
+           CALL file_close(blc_01L%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+           IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_01L', ABS(ierr) )
+       ENDIF
+       !
    ENDIF
    !
-   IF ( blc_01L%lhave_corr ) THEN
-       CALL file_close(blc_01L%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_01L', ABS(ierr) )
+   IF ( LEN_TRIM( datafile_R_sgm ) /= 0 ) THEN
+       !
+       IF ( blc_00R%lhave_corr ) THEN
+           CALL file_close(blc_00R%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+           IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00R', ABS(ierr) )
+       ENDIF
+       !
+       IF ( blc_01R%lhave_corr ) THEN
+           CALL file_close(blc_01R%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+           IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_01R', ABS(ierr) )
+       ENDIF
+       !
    ENDIF
    !
-   IF ( blc_00R%lhave_corr ) THEN
-       CALL file_close(blc_00R%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00R', ABS(ierr) )
-   ENDIF
-   !
-   IF ( blc_01R%lhave_corr ) THEN
-       CALL file_close(blc_01R%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_01R', ABS(ierr) )
-   ENDIF
-   !
-   IF ( blc_00C%lhave_corr ) THEN
-       CALL file_close(blc_00C%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00C', ABS(ierr) )
-   ENDIF
-   !
-   IF ( blc_LC%lhave_corr ) THEN
-       CALL file_close(blc_LC%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_LC', ABS(ierr) )
-   ENDIF
-   !
-   IF ( blc_CR%lhave_corr ) THEN
-       CALL file_close(blc_CR%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
-       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_CR', ABS(ierr) )
+   IF ( LEN_TRIM( datafile_C_sgm ) /= 0 ) THEN
+       !
+       IF ( blc_00C%lhave_corr ) THEN
+           CALL file_close(blc_00C%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+           IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00C', ABS(ierr) )
+       ENDIF
+       !
+       IF ( blc_CR%lhave_corr ) THEN
+           CALL file_close(blc_CR%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+           IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_CR', ABS(ierr) )
+       ENDIF
+       !
+       IF ( blc_LC%lhave_corr ) THEN
+           CALL file_close(blc_LC%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+           IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_LC', ABS(ierr) )
+       ENDIF
+       !
    ENDIF
 
    CALL log_pop( subname )
@@ -313,7 +325,7 @@ END SUBROUTINE correlation_finalize
    !
    ! read data
    !
-   IF ( ionode ) THEN
+!   IF ( ionode ) THEN
        !
        IF ( ldynam_corr ) THEN
            !
@@ -327,10 +339,10 @@ END SUBROUTINE correlation_finalize
            !
        ENDIF
        !
-   ENDIF
-   !
-   IF ( ldynam_corr ) CALL mp_bcast( egrid, ionode_id )
-   CALL mp_bcast( ivr_corr, ionode_id )
+!   ENDIF
+!   !
+!   IF ( ldynam_corr ) CALL mp_bcast( egrid, ionode_id )
+!   CALL mp_bcast( ivr_corr, ionode_id )
 
    !
    ! setting egrid if the case
@@ -489,6 +501,7 @@ END SUBROUTINE correlation_open
                !
                CALL correlation_sgmread( blc_00C, IE=ie, IE_BUFF=ie_buff )
                CALL correlation_sgmread( blc_CR,  IE=ie, IE_BUFF=ie_buff )
+               CALL correlation_sgmread( blc_LC,  IE=ie, IE_BUFF=ie_buff )
                !
            ENDDO
            !
@@ -496,6 +509,7 @@ END SUBROUTINE correlation_open
            !
            CALL correlation_sgmread( blc_00C )
            CALL correlation_sgmread( blc_CR  )
+           CALL correlation_sgmread( blc_LC  )
            !
        ENDIF
        !
@@ -505,7 +519,7 @@ END SUBROUTINE correlation_open
        blc_00R = blc_00C
        blc_01L = blc_CR
        blc_01R = blc_CR
-       blc_LC  = blc_CR
+       !blc_LC  = blc_CR
        !
        !
    CASE DEFAULT
