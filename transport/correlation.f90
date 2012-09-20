@@ -86,14 +86,13 @@ CONTAINS
    ! local vars
    !
    CHARACTER(16)         :: subname="correlation_init"
-   INTEGER               :: ierr
 
 !
 !------------------------------
 ! main body
 !------------------------------
 !
-   CALL log_push( 'correlation_init' )
+   CALL log_push( subname )
    
 
    IF ( LEN_TRIM( datafile_C_sgm ) /= 0 ) THEN
@@ -129,7 +128,7 @@ CONTAINS
        !
    ENDIF
 
-   CALL log_pop( 'correlation_init' )
+   CALL log_pop( subname )
    ! 
 END SUBROUTINE correlation_init
 
@@ -535,7 +534,7 @@ END SUBROUTINE correlation_read
    !
    CHARACTER(19)              :: subname="correlation_sgmread"
    COMPLEX(dbl), ALLOCATABLE  :: caux(:,:,:), caux_small(:,:,:)
-   LOGICAL                    :: lfound, lopen
+   LOGICAL                    :: lfound
    INTEGER                    :: iun
    INTEGER                    :: ind, ivr_aux(3)
    INTEGER                    :: i, j, ie_bl, ir, ir_par, ierr

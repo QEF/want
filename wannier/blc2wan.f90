@@ -210,10 +210,10 @@ CONTAINS
           !
           WRITE( stdout,"(  2x,'  Spin component :',3x,a)") TRIM(spin_component)
           !
-          WRITE( stdout,"(  2x,'do extrapolation :',3x,l)") do_extrapolation
-          WRITE( stdout,"(  2x,'  do cmplx-conjg :',3x,l,/)") do_cmplxconjg
+          WRITE( stdout,"(  2x,'do extrapolation :',3x,l1)") do_extrapolation
+          WRITE( stdout,"(  2x,'  do cmplx-conjg :',3x,l1,/)") do_cmplxconjg
           !
-          WRITE( stdout,"(  2x,'have extra U-rot :',3x,l)") lhave_extra_urot
+          WRITE( stdout,"(  2x,'have extra U-rot :',3x,l1)") lhave_extra_urot
           !
           IF ( lhave_extra_urot ) &
              WRITE(stdout,"(2x,'  U-rot datafile :',3x,a)") TRIM(datafile_urot)
