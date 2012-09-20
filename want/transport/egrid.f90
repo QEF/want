@@ -144,11 +144,14 @@ CONTAINS
        INTEGER       :: ie_g, iomg_s, iomg_e, ne_buffer
        LOGICAL       :: egrid_buffer_doread
        !
+       CHARACTER(19) :: subname="egrid_buffer_doread"
        LOGICAL       :: doread
        INTEGER       :: ie
        ! 
        !
        doread = .FALSE.
+       !
+       IF ( iomg_e < 0 ) CALL errore(subname,"invalid iomg_e",10)
        !
        ie = ie_g -iomg_s + 1
        !
@@ -166,9 +169,11 @@ CONTAINS
        INTEGER       :: ie_g, iomg_s, iomg_e, ne_buffer
        INTEGER       :: egrid_buffer_iend
        !
+       CHARACTER(17) :: subname="egrid_buffer_iend"
        INTEGER       :: iend
        ! 
        !
+       IF ( iomg_s < 0 ) CALL errore(subname,"invalid iomg_s",10)
        IF ( ie_g + ne_buffer -1 <= iomg_e ) THEN
            !
            iend =  ie_g + ne_buffer -1

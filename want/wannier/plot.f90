@@ -305,17 +305,17 @@ END PROGRAM plot_main
       INTEGER :: nnrx, nnry, nnrz
       INTEGER :: nx, ny, nz, nzz, nyy, nxx
       !
-      INTEGER :: ia, ib, ig, ir, i_aux
+      INTEGER :: ia, ib, ig, ir !, i_aux
       INTEGER :: ik_aux_g, ik_g
       INTEGER :: natot, nplot 
-      INTEGER :: nkpts_aux_g, nkpts_aux, nk_aux(3), s_aux(3)
+      INTEGER :: nkpts_aux_g, nkpts_aux !, nk_aux(3) !, s_aux(3)
       INTEGER :: m, n, i, j, ierr
       INTEGER :: zatom
       !
       !
       REAL(dbl)    :: tmaxx, tmax, xk(3)
       REAL(dbl)    :: avecl(3,3), raux(3), r0(3), r1(3), rmin(3), rmax(3)
-      REAL(dbl)    :: arg, cost, norm, norm_us, rtmp
+      REAL(dbl)    :: arg, cost, norm, norm_us !, rtmp
       REAL(dbl)    :: vkpt_eigchn(3), vk_aux(3)
       COMPLEX(dbl) :: phase
       COMPLEX(dbl) :: caux, cmod
@@ -335,7 +335,7 @@ END PROGRAM plot_main
       CHARACTER( nstrx )  :: filename, attr
       CHARACTER( 20 )     :: str, aux_fmt
       LOGICAL             :: do_modulus, do_eigchn, do_wfs
-      LOGICAL             :: okp( 3 ), lfound
+      LOGICAL             :: okp( 3 ) !, lfound
       !
       ! end of declariations
       !
