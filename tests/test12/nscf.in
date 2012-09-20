@@ -8,6 +8,7 @@ Si bulk in the (111) cell
     pseudo_dir = '../pseudo/',
     outdir = './SCRATCH/'
     wf_collect = .TRUE.
+    verbosity = "high"
  /
  &SYSTEM    
     ibrav=  8, 

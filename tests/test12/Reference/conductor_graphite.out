@@ -8,19 +8,21 @@
   ======================================================================
 
 
-  Program <conductor>  v. 2.3.0  starts ...
-  Date 10Apr2010 at  8:40:36 
+  Program <conductor>  v. 2.5.0alpha1  starts ...
+  Date 20Sep2012 at 13:33: 4 
 
-     Parallel run, # proc:    6
+     Number of MPI processes:       6
 
-          BUILT :    Fri Apr  9 19:15:00 2010
+
+
+          BUILT :    Thu 20 Sep 2012 01:30:09 PM CEST
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    x86_64
              CC :    icc
             CPP :    cpp
             F90 :    mpif90
             F77 :    ifort
-         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA -D__ETSF_IO -D__NETCDF
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA
       BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
     LAPACK LIBS :    
        FFT LIBS :    
@@ -32,6 +34,7 @@
   =  Conductor Init                                                    =
   ======================================================================
 
+  ./SCRATCH/graphite_WanT.ham file fmt: internal
 
   ======================================================================
   =  INPUT Summary                                                     =
@@ -46,19 +49,24 @@
             conductor dim. :        10
                R-lead dim. :        10
        Conductance Formula :     landauer
+                  Carriers :     electrons
        Transport Direction :         3
           Have Correlation :     FALSE
               Write k-data :     FALSE
-       Max iteration number:       200
-
+            Write sgm lead :     FALSE
+                Write gf C :     FALSE
+           Max iter number :       200
                     nprint :        20
 
         Conductor datafile :     ./SCRATCH/graphite_WanT.ham
+       leads are identical :     TRUE 
+         ovp orthogonaliz. :     FALSE
   </INPUT>
 
 
   <ENERGY_GRID>
                  Dimension :        400
+                 Buffering :          1
                 Min Energy :       -5.00000
                 Max Energy :        5.00000
                Energy Step :        0.02506
@@ -75,7 +83,7 @@
 
   <K-POINTS>
        nkpts_par = 1252
-       nrtot_par =   64
+       nrtot_par =   79
         use_symm = TRUE
 
        Parallel kpoints grid:        nk = ( 50 50  1 )   s = (  0  0  0 )
@@ -1340,7 +1348,7 @@
        R (   5) =    (   1.00000 -3.00000  0.00000 ),   weight =   1.0000
        R (   6) =    (   2.00000 -3.00000  0.00000 ),   weight =   1.0000
        R (   7) =    (   3.00000 -3.00000  0.00000 ),   weight =   1.0000
-       R (   8) =    (   4.00000 -3.00000  0.00000 ),   weight =   1.0000
+       R (   8) =    (   4.00000 -3.00000  0.00000 ),   weight =   0.5000
        R (   9) =    (  -3.00000 -2.00000  0.00000 ),   weight =   1.0000
        R (  10) =    (  -2.00000 -2.00000  0.00000 ),   weight =   1.0000
        R (  11) =    (  -1.00000 -2.00000  0.00000 ),   weight =   1.0000
@@ -1348,7 +1356,7 @@
        R (  13) =    (   1.00000 -2.00000  0.00000 ),   weight =   1.0000
        R (  14) =    (   2.00000 -2.00000  0.00000 ),   weight =   1.0000
        R (  15) =    (   3.00000 -2.00000  0.00000 ),   weight =   1.0000
-       R (  16) =    (   4.00000 -2.00000  0.00000 ),   weight =   1.0000
+       R (  16) =    (   4.00000 -2.00000  0.00000 ),   weight =   0.5000
        R (  17) =    (  -3.00000 -1.00000  0.00000 ),   weight =   1.0000
        R (  18) =    (  -2.00000 -1.00000  0.00000 ),   weight =   1.0000
        R (  19) =    (  -1.00000 -1.00000  0.00000 ),   weight =   1.0000
@@ -1356,7 +1364,7 @@
        R (  21) =    (   1.00000 -1.00000  0.00000 ),   weight =   1.0000
        R (  22) =    (   2.00000 -1.00000  0.00000 ),   weight =   1.0000
        R (  23) =    (   3.00000 -1.00000  0.00000 ),   weight =   1.0000
-       R (  24) =    (   4.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (  24) =    (   4.00000 -1.00000  0.00000 ),   weight =   0.5000
        R (  25) =    (  -3.00000  0.00000  0.00000 ),   weight =   1.0000
        R (  26) =    (  -2.00000  0.00000  0.00000 ),   weight =   1.0000
        R (  27) =    (  -1.00000  0.00000  0.00000 ),   weight =   1.0000
@@ -1364,7 +1372,7 @@
        R (  29) =    (   1.00000  0.00000  0.00000 ),   weight =   1.0000
        R (  30) =    (   2.00000  0.00000  0.00000 ),   weight =   1.0000
        R (  31) =    (   3.00000  0.00000  0.00000 ),   weight =   1.0000
-       R (  32) =    (   4.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  32) =    (   4.00000  0.00000  0.00000 ),   weight =   0.5000
        R (  33) =    (  -3.00000  1.00000  0.00000 ),   weight =   1.0000
        R (  34) =    (  -2.00000  1.00000  0.00000 ),   weight =   1.0000
        R (  35) =    (  -1.00000  1.00000  0.00000 ),   weight =   1.0000
@@ -1372,7 +1380,7 @@
        R (  37) =    (   1.00000  1.00000  0.00000 ),   weight =   1.0000
        R (  38) =    (   2.00000  1.00000  0.00000 ),   weight =   1.0000
        R (  39) =    (   3.00000  1.00000  0.00000 ),   weight =   1.0000
-       R (  40) =    (   4.00000  1.00000  0.00000 ),   weight =   1.0000
+       R (  40) =    (   4.00000  1.00000  0.00000 ),   weight =   0.5000
        R (  41) =    (  -3.00000  2.00000  0.00000 ),   weight =   1.0000
        R (  42) =    (  -2.00000  2.00000  0.00000 ),   weight =   1.0000
        R (  43) =    (  -1.00000  2.00000  0.00000 ),   weight =   1.0000
@@ -1380,7 +1388,7 @@
        R (  45) =    (   1.00000  2.00000  0.00000 ),   weight =   1.0000
        R (  46) =    (   2.00000  2.00000  0.00000 ),   weight =   1.0000
        R (  47) =    (   3.00000  2.00000  0.00000 ),   weight =   1.0000
-       R (  48) =    (   4.00000  2.00000  0.00000 ),   weight =   1.0000
+       R (  48) =    (   4.00000  2.00000  0.00000 ),   weight =   0.5000
        R (  49) =    (  -3.00000  3.00000  0.00000 ),   weight =   1.0000
        R (  50) =    (  -2.00000  3.00000  0.00000 ),   weight =   1.0000
        R (  51) =    (  -1.00000  3.00000  0.00000 ),   weight =   1.0000
@@ -1388,15 +1396,30 @@
        R (  53) =    (   1.00000  3.00000  0.00000 ),   weight =   1.0000
        R (  54) =    (   2.00000  3.00000  0.00000 ),   weight =   1.0000
        R (  55) =    (   3.00000  3.00000  0.00000 ),   weight =   1.0000
-       R (  56) =    (   4.00000  3.00000  0.00000 ),   weight =   1.0000
-       R (  57) =    (  -3.00000  4.00000  0.00000 ),   weight =   1.0000
-       R (  58) =    (  -2.00000  4.00000  0.00000 ),   weight =   1.0000
-       R (  59) =    (  -1.00000  4.00000  0.00000 ),   weight =   1.0000
-       R (  60) =    (   0.00000  4.00000  0.00000 ),   weight =   1.0000
-       R (  61) =    (   1.00000  4.00000  0.00000 ),   weight =   1.0000
-       R (  62) =    (   2.00000  4.00000  0.00000 ),   weight =   1.0000
-       R (  63) =    (   3.00000  4.00000  0.00000 ),   weight =   1.0000
-       R (  64) =    (   4.00000  4.00000  0.00000 ),   weight =   1.0000
+       R (  56) =    (   4.00000  3.00000  0.00000 ),   weight =   0.5000
+       R (  57) =    (  -3.00000  4.00000  0.00000 ),   weight =   0.5000
+       R (  58) =    (  -2.00000  4.00000  0.00000 ),   weight =   0.5000
+       R (  59) =    (  -1.00000  4.00000  0.00000 ),   weight =   0.5000
+       R (  60) =    (   0.00000  4.00000  0.00000 ),   weight =   0.5000
+       R (  61) =    (   1.00000  4.00000  0.00000 ),   weight =   0.5000
+       R (  62) =    (   2.00000  4.00000  0.00000 ),   weight =   0.5000
+       R (  63) =    (   3.00000  4.00000  0.00000 ),   weight =   0.5000
+       R (  64) =    (   4.00000  4.00000  0.00000 ),   weight =   0.5000
+       R (  65) =    (  -4.00000  3.00000  0.00000 ),   weight =   0.5000
+       R (  66) =    (  -4.00000  2.00000  0.00000 ),   weight =   0.5000
+       R (  67) =    (  -4.00000  1.00000  0.00000 ),   weight =   0.5000
+       R (  68) =    (  -4.00000  0.00000  0.00000 ),   weight =   0.5000
+       R (  69) =    (  -4.00000 -1.00000  0.00000 ),   weight =   0.5000
+       R (  70) =    (  -4.00000 -2.00000  0.00000 ),   weight =   0.5000
+       R (  71) =    (  -4.00000 -3.00000  0.00000 ),   weight =   0.5000
+       R (  72) =    (   3.00000 -4.00000  0.00000 ),   weight =   0.5000
+       R (  73) =    (   2.00000 -4.00000  0.00000 ),   weight =   0.5000
+       R (  74) =    (   1.00000 -4.00000  0.00000 ),   weight =   0.5000
+       R (  75) =    (   0.00000 -4.00000  0.00000 ),   weight =   0.5000
+       R (  76) =    (  -1.00000 -4.00000  0.00000 ),   weight =   0.5000
+       R (  77) =    (  -2.00000 -4.00000  0.00000 ),   weight =   0.5000
+       R (  78) =    (  -3.00000 -4.00000  0.00000 ),   weight =   0.5000
+       R (  79) =    (  -4.00000 -4.00000  0.00000 ),   weight =   0.5000
   </K-POINTS>
 
 
@@ -1406,34 +1429,45 @@
   </PARALLELISM>
 
 
+ <MEMORY_USAGE>
+                smearing:          0.480 MB
+                 kpoints:          1.707 MB
+        hamiltonian data:         20.054 MB
+        correlation data:          0.000 MB
+               workspace:          0.000 MB
+
+     Total alloc. Memory:         22.241 MB
+ </MEMORY_USAGE>
+
+
   ======================================================================
   =  Frequency Loop                                                    =
   ======================================================================
 
   Computing E(     1 ) =     -5.00000 eV
-  T matrix converged after avg. # of iterations    2.232
+  T matrix converged after avg. # of iterations      1.116
 
-                              Total time spent up to now :     1.18 secs
+                              Total time spent up to now :     0.81 secs
 
   Computing E(    20 ) =     -4.52381 eV
-  T matrix converged after avg. # of iterations    2.217
+  T matrix converged after avg. # of iterations      1.107
 
-                              Total time spent up to now :    14.24 secs
+                              Total time spent up to now :    11.33 secs
 
   Computing E(    40 ) =     -4.02256 eV
-  T matrix converged after avg. # of iterations    2.204
+  T matrix converged after avg. # of iterations      1.103
 
-                              Total time spent up to now :    24.61 secs
+                              Total time spent up to now :    22.42 secs
 
   Computing E(    60 ) =     -3.52130 eV
-  T matrix converged after avg. # of iterations    2.156
+  T matrix converged after avg. # of iterations      1.076
 
-                              Total time spent up to now :    38.48 secs
+                              Total time spent up to now :    33.50 secs
 
   Computing E(    67 ) =     -3.34586 eV
-  T matrix converged after avg. # of iterations    2.159
+  T matrix converged after avg. # of iterations      1.079
 
-                              Total time spent up to now :    44.06 secs
+                              Total time spent up to now :    37.38 secs
 
 
   ======================================================================
@@ -1450,19 +1484,19 @@
    <global routines>
              clock number :    13
 
-                conductor :    54.00s CPU 
+                conductor :    37.00s CPU 
 
            datafiles_init :     0.00s CPU
-            smearing_init :     0.03s CPU
-                   cft_1z :     0.02s CPU (       2 calls,   0.011 s avg)
+            smearing_init :     0.02s CPU
+                   cft_1z :     0.01s CPU (       2 calls,   0.004 s avg)
          hamiltonian_init :     0.18s CPU
-              read_matrix :     0.15s CPU (       2 calls,   0.077 s avg)
-              fourier_par :     0.14s CPU (       4 calls,   0.035 s avg)
-             do_conductor :    53.90s CPU
+              read_matrix :     0.16s CPU (       2 calls,   0.078 s avg)
+              fourier_par :     0.13s CPU (       4 calls,   0.031 s avg)
+             do_conductor :    37.16s CPU
         hamiltonian_setup :     0.73s CPU (   83884 calls,   0.000 s avg)
-            transfer_mtrx :    24.73s CPU (  167768 calls,   0.000 s avg)
-                    green :     9.80s CPU (  167768 calls,   0.000 s avg)
-              gzero_maker :     9.54s CPU (  251652 calls,   0.000 s avg)
-            transmittance :     1.45s CPU (   83884 calls,   0.000 s avg)
+            transfer_mtrx :    13.01s CPU (   83884 calls,   0.000 s avg)
+                    green :    12.98s CPU (  167768 calls,   0.000 s avg)
+              gzero_maker :    13.16s CPU (  251652 calls,   0.000 s avg)
+            transmittance :     1.52s CPU (   83884 calls,   0.000 s avg)
 
 

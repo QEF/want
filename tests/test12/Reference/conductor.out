@@ -8,19 +8,21 @@
   ======================================================================
 
 
-  Program <conductor>  v. 2.3.0  starts ...
-  Date  9Apr2010 at 19:25:36 
+  Program <conductor>  v. 2.5.0alpha1  starts ...
+  Date 20Sep2012 at 15:38: 0 
 
-     Parallel run, # proc:    6
+     Number of MPI processes:       6
 
-          BUILT :    Fri Apr  9 19:15:00 2010
+
+
+          BUILT :    Thu 20 Sep 2012 01:30:09 PM CEST
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    x86_64
              CC :    icc
             CPP :    cpp
             F90 :    mpif90
             F77 :    ifort
-         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA -D__ETSF_IO -D__NETCDF
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA
       BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
     LAPACK LIBS :    
        FFT LIBS :    
@@ -32,6 +34,7 @@
   =  Conductor Init                                                    =
   ======================================================================
 
+  ./SCRATCH/si111_WanT.ham file fmt: internal
 
   ======================================================================
   =  INPUT Summary                                                     =
@@ -46,19 +49,24 @@
             conductor dim. :        48
                R-lead dim. :        48
        Conductance Formula :     landauer
+                  Carriers :     electrons
        Transport Direction :         3
           Have Correlation :     FALSE
               Write k-data :     FALSE
-       Max iteration number:       200
-
+            Write sgm lead :     FALSE
+                Write gf C :     FALSE
+           Max iter number :       200
                     nprint :        20
 
         Conductor datafile :     ./SCRATCH/si111_WanT.ham
+       leads are identical :     TRUE 
+         ovp orthogonaliz. :     FALSE
   </INPUT>
 
 
   <ENERGY_GRID>
                  Dimension :        300
+                 Buffering :          1
                 Min Energy :       -4.00000
                 Max Energy :        4.00000
                Energy Step :        0.02676
@@ -75,7 +83,7 @@
 
   <K-POINTS>
        nkpts_par =   18
-       nrtot_par =   32
+       nrtot_par =   43
         use_symm = TRUE
 
        Parallel kpoints grid:        nk = (  8  4  1 )   s = (  0  0  0 )
@@ -106,7 +114,7 @@
        R (   5) =    (   1.00000 -1.00000  0.00000 ),   weight =   1.0000
        R (   6) =    (   2.00000 -1.00000  0.00000 ),   weight =   1.0000
        R (   7) =    (   3.00000 -1.00000  0.00000 ),   weight =   1.0000
-       R (   8) =    (   4.00000 -1.00000  0.00000 ),   weight =   1.0000
+       R (   8) =    (   4.00000 -1.00000  0.00000 ),   weight =   0.5000
        R (   9) =    (  -3.00000  0.00000  0.00000 ),   weight =   1.0000
        R (  10) =    (  -2.00000  0.00000  0.00000 ),   weight =   1.0000
        R (  11) =    (  -1.00000  0.00000  0.00000 ),   weight =   1.0000
@@ -114,7 +122,7 @@
        R (  13) =    (   1.00000  0.00000  0.00000 ),   weight =   1.0000
        R (  14) =    (   2.00000  0.00000  0.00000 ),   weight =   1.0000
        R (  15) =    (   3.00000  0.00000  0.00000 ),   weight =   1.0000
-       R (  16) =    (   4.00000  0.00000  0.00000 ),   weight =   1.0000
+       R (  16) =    (   4.00000  0.00000  0.00000 ),   weight =   0.5000
        R (  17) =    (  -3.00000  1.00000  0.00000 ),   weight =   1.0000
        R (  18) =    (  -2.00000  1.00000  0.00000 ),   weight =   1.0000
        R (  19) =    (  -1.00000  1.00000  0.00000 ),   weight =   1.0000
@@ -122,15 +130,26 @@
        R (  21) =    (   1.00000  1.00000  0.00000 ),   weight =   1.0000
        R (  22) =    (   2.00000  1.00000  0.00000 ),   weight =   1.0000
        R (  23) =    (   3.00000  1.00000  0.00000 ),   weight =   1.0000
-       R (  24) =    (   4.00000  1.00000  0.00000 ),   weight =   1.0000
-       R (  25) =    (  -3.00000  2.00000  0.00000 ),   weight =   1.0000
-       R (  26) =    (  -2.00000  2.00000  0.00000 ),   weight =   1.0000
-       R (  27) =    (  -1.00000  2.00000  0.00000 ),   weight =   1.0000
-       R (  28) =    (   0.00000  2.00000  0.00000 ),   weight =   1.0000
-       R (  29) =    (   1.00000  2.00000  0.00000 ),   weight =   1.0000
-       R (  30) =    (   2.00000  2.00000  0.00000 ),   weight =   1.0000
-       R (  31) =    (   3.00000  2.00000  0.00000 ),   weight =   1.0000
-       R (  32) =    (   4.00000  2.00000  0.00000 ),   weight =   1.0000
+       R (  24) =    (   4.00000  1.00000  0.00000 ),   weight =   0.5000
+       R (  25) =    (  -3.00000  2.00000  0.00000 ),   weight =   0.5000
+       R (  26) =    (  -2.00000  2.00000  0.00000 ),   weight =   0.5000
+       R (  27) =    (  -1.00000  2.00000  0.00000 ),   weight =   0.5000
+       R (  28) =    (   0.00000  2.00000  0.00000 ),   weight =   0.5000
+       R (  29) =    (   1.00000  2.00000  0.00000 ),   weight =   0.5000
+       R (  30) =    (   2.00000  2.00000  0.00000 ),   weight =   0.5000
+       R (  31) =    (   3.00000  2.00000  0.00000 ),   weight =   0.5000
+       R (  32) =    (   4.00000  2.00000  0.00000 ),   weight =   0.5000
+       R (  33) =    (  -4.00000  1.00000  0.00000 ),   weight =   0.5000
+       R (  34) =    (  -4.00000  0.00000  0.00000 ),   weight =   0.5000
+       R (  35) =    (  -4.00000 -1.00000  0.00000 ),   weight =   0.5000
+       R (  36) =    (   3.00000 -2.00000  0.00000 ),   weight =   0.5000
+       R (  37) =    (   2.00000 -2.00000  0.00000 ),   weight =   0.5000
+       R (  38) =    (   1.00000 -2.00000  0.00000 ),   weight =   0.5000
+       R (  39) =    (   0.00000 -2.00000  0.00000 ),   weight =   0.5000
+       R (  40) =    (  -1.00000 -2.00000  0.00000 ),   weight =   0.5000
+       R (  41) =    (  -2.00000 -2.00000  0.00000 ),   weight =   0.5000
+       R (  42) =    (  -3.00000 -2.00000  0.00000 ),   weight =   0.5000
+       R (  43) =    (  -4.00000 -2.00000  0.00000 ),   weight =   0.5000
   </K-POINTS>
 
 
@@ -140,29 +159,40 @@
   </PARALLELISM>
 
 
+ <MEMORY_USAGE>
+                smearing:          0.480 MB
+                 kpoints:          0.016 MB
+        hamiltonian data:          6.829 MB
+        correlation data:          0.002 MB
+               workspace:          0.000 MB
+
+     Total alloc. Memory:          7.327 MB
+ </MEMORY_USAGE>
+
+
   ======================================================================
   =  Frequency Loop                                                    =
   ======================================================================
 
   Computing E(     1 ) =     -4.00000 eV
-  T matrix converged after avg. # of iterations    5.000
+  T matrix converged after avg. # of iterations      2.500
 
-                              Total time spent up to now :     0.71 secs
+                              Total time spent up to now :     0.43 secs
 
   Computing E(    20 ) =     -3.49164 eV
-  T matrix converged after avg. # of iterations    5.278
+  T matrix converged after avg. # of iterations      2.639
 
-                              Total time spent up to now :    12.12 secs
+                              Total time spent up to now :     5.84 secs
 
   Computing E(    40 ) =     -2.95652 eV
-  T matrix converged after avg. # of iterations    5.556
+  T matrix converged after avg. # of iterations      2.778
 
-                              Total time spent up to now :    24.44 secs
+                              Total time spent up to now :    11.66 secs
 
   Computing E(    50 ) =     -2.68896 eV
-  T matrix converged after avg. # of iterations    5.500
+  T matrix converged after avg. # of iterations      2.750
 
-                              Total time spent up to now :    30.68 secs
+                              Total time spent up to now :    14.60 secs
 
 
   ======================================================================
@@ -179,19 +209,19 @@
    <global routines>
              clock number :    13
 
-                conductor :    31.00s CPU 
+                conductor :    15.00s CPU 
 
-           datafiles_init :     0.00s CPU
+           datafiles_init :     0.01s CPU
             smearing_init :     0.02s CPU
-                   cft_1z :     0.01s CPU (       2 calls,   0.006 s avg)
-         hamiltonian_init :     0.09s CPU
-              read_matrix :     0.08s CPU (       2 calls,   0.041 s avg)
-              fourier_par :     0.03s CPU (       4 calls,   0.008 s avg)
-             do_conductor :    31.25s CPU
-        hamiltonian_setup :     0.13s CPU (     900 calls,   0.000 s avg)
-            transfer_mtrx :    23.93s CPU (    1800 calls,   0.013 s avg)
-                    green :     3.68s CPU (    1800 calls,   0.002 s avg)
-              gzero_maker :     4.29s CPU (    2700 calls,   0.002 s avg)
-            transmittance :     0.48s CPU (     900 calls,   0.001 s avg)
+                   cft_1z :     0.01s CPU (       2 calls,   0.005 s avg)
+         hamiltonian_init :     0.10s CPU
+              read_matrix :     0.09s CPU (       2 calls,   0.047 s avg)
+              fourier_par :     0.04s CPU (       4 calls,   0.009 s avg)
+             do_conductor :    15.42s CPU
+        hamiltonian_setup :     0.07s CPU (     900 calls,   0.000 s avg)
+            transfer_mtrx :     9.28s CPU (     900 calls,   0.010 s avg)
+                    green :     2.91s CPU (    1800 calls,   0.002 s avg)
+              gzero_maker :     3.38s CPU (    2700 calls,   0.001 s avg)
+            transmittance :     0.36s CPU (     900 calls,   0.000 s avg)
 
 
