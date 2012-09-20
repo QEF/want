@@ -417,15 +417,15 @@ END PROGRAM conductor
           !
           !CALL mat_mul( work,    blc_CR%aux, 'N',         gR, 'N', dimC, dimR, dimR)
           !CALL mat_mul( sgm_R(:,:,ik_eff), work, 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
-          CALL mat_mul( sgm_R(:,:,ik_eff),    blc_CR%aux, 'N',         gR, 'N', dimC, dimR, dimR)
-          CALL mat_mul( sgm_R(:,:,ik_eff), sgm_R(:,:,ik), 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
+          CALL mat_mul( sgm_R(1:dimC,1:dimR,ik_eff),                  blc_CR%aux, 'N',         gR, 'N', dimC, dimR, dimR)
+          CALL mat_mul( sgm_R(1:dimC,1:dimC,ik_eff), sgm_R(1:dimC,1:dimR,ik_eff), 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
           !
           ! sgm_L
           !
           !CALL mat_mul( work,    blc_LC%aux, 'C',         gL, 'N', dimC, dimL, dimL)
           !CALL mat_mul( sgm_L(:,:,ik_eff), work, 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
-          CALL mat_mul( sgm_L(:,:,ik_eff),    blc_LC%aux, 'C',         gL, 'N', dimC, dimL, dimL)
-          CALL mat_mul( sgm_L(:,:,ik_eff), sgm_L(:,:,ik), 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
+          CALL mat_mul( sgm_L(1:dimC,1:dimL,ik_eff),                  blc_LC%aux, 'C',         gL, 'N', dimC, dimL, dimL)
+          CALL mat_mul( sgm_L(1:dimC,1:dimC,ik_eff), sgm_L(1:dimC,1:dimL,ik_eff), 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
  
 
           DEALLOCATE( gR, gL, STAT=ierr)
