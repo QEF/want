@@ -66,7 +66,7 @@ CONTAINS
    !
    CHARACTER(nstrx)            :: attr, r_units, a_units, b_units, k_units, h_units, e_units
    CHARACTER(nstrx)            :: filetype_
-   INTEGER                     :: dimwann, nkpts, nk(3), shift(3), nrtot, nr(3), nspin 
+   INTEGER                     :: dimwann, nkpts, nbnd, nk(3), shift(3), nrtot, nr(3), nspin 
    INTEGER                     :: auxdim1, auxdim2, auxdim3
    INTEGER                     :: ierr, ir, isp
    !
@@ -305,23 +305,16 @@ CONTAINS
    ! read electronic structure info
    !
    CALL crio_read_elec_structure( NUM_OF_ATOMIC_ORBITALS=dimwann, &
-                                  NSPIN=nspin, ENERGY_REF=efermi, &
+                                  NBND=nbnd, NSPIN=nspin, ENERGY_REF=efermi, &
                                   E_UNITS=e_units, IERR=ierr)
    IF ( ierr/=0 ) CALL errore(subname, 'reading electronic structure (I)', ABS(ierr) )
 
-   ALLOCATE( eig(dimwann, nkpts, nspin), STAT=ierr )
+   ALLOCATE( eig(nbnd, nkpts, nspin), STAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname,'allocating eig', ABS(ierr))
    !
-!
-! XXX missing implementation in CRYSTAL
-!
-!   CALL crio_read_elec_structure( EIG=eig, IERR=ierr )
-!   IF ( ierr/=0 ) CALL errore(subname, 'reading electronic structure (II)', ABS(ierr) )
-!
-   eig(:,:,:) = ZERO 
-!
-! end of the quick-and-dirty fix
-!
+   CALL crio_read_elec_structure( EIG=eig, IERR=ierr )
+   IF ( ierr/=0 ) CALL errore(subname, 'reading electronic structure (II)', ABS(ierr) )
+
 
    !
    ! efermi is converted to eV's
@@ -520,7 +513,7 @@ CONTAINS
        CALL iotk_write_begin( ounit, "WINDOWS" )
        !
        !
-       CALL iotk_write_attr( attr,"nbnd",dimwann,FIRST=.TRUE.)
+       CALL iotk_write_attr( attr,"nbnd",nbnd,FIRST=.TRUE.)
        CALL iotk_write_attr( attr,"nkpts",nkpts)
        CALL iotk_write_attr( attr,"nspin",nspin)
        CALL iotk_write_attr( attr,"spin_component","none")
