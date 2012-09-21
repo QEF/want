@@ -20,7 +20,7 @@ MODULE crystal_io_module
   ! definitions for the fmt
   !
   CHARACTER(10), PARAMETER :: crio_fmt_name = "CRYSTAL_IO"
-  CHARACTER(5),  PARAMETER :: crio_fmt_version = "0.2.0"
+  CHARACTER(5),  PARAMETER :: crio_fmt_version = "1.0.0"
   
   !
   ! internal data to be set
@@ -625,33 +625,52 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE crio_write_elec_structure( nelec, nspin, num_of_atomic_orbitals, &
-                                          energy_ref, energy_tag, e_units )
+    SUBROUTINE crio_write_elec_structure( nelec, nbnd, nkpts, nspin, num_of_atomic_orbitals, &
+                                          eig, energy_ref, energy_ref_type, e_units )
       !------------------------------------------------------------------------
       !
-      INTEGER,                 INTENT(IN) :: nelec, nspin, num_of_atomic_orbitals
-      REAL(dbl),     OPTIONAL, INTENT(IN) :: energy_ref
-      CHARACTER(*),  OPTIONAL, INTENT(IN) :: e_units, energy_tag
+      INTEGER,                 INTENT(IN) :: nelec, nbnd, nkpts, nspin, num_of_atomic_orbitals
+      REAL(dbl),     OPTIONAL, INTENT(IN) :: eig(nbnd,nkpts,nspin), energy_ref
+      CHARACTER(*),  OPTIONAL, INTENT(IN) :: e_units, energy_ref_type
       !
-      CHARACTER(256) :: tag
-      !
+      INTEGER :: ik, isp
 
       CALL iotk_write_begin( ounit, "ELECTRONIC_STRUCTURE" )
       !
       CALL iotk_write_dat( ounit, "NUMBER_OF_ELECTRONS", nelec )
+      CALL iotk_write_dat( ounit, "NUMBER_OF_BANDS", nbnd )
+      CALL iotk_write_dat( ounit, "NUMBER_OF_K_VECTORS", nkpts )
       CALL iotk_write_dat( ounit, "NUMBER_OF_SPIN_COMPONENTS", nspin )
       CALL iotk_write_dat( ounit, "TOTAL_NUMBER_OF_ATOMIC_ORBITALS", &
                                   num_of_atomic_orbitals )
       !
-      IF ( PRESENT( energy_ref ) ) THEN
-         !
-         IF ( PRESENT(e_units) ) CALL iotk_write_attr(attr, "unit", TRIM(e_units), FIRST=.TRUE. )
-         !
-         tag = "FERMI_ENERGY"
-         IF ( PRESENT(energy_tag)) tag = TRIM(energy_tag)
-         !
-         CALL iotk_write_dat( ounit, TRIM(tag), energy_ref, ATTR=attr )
-         !
+      IF ( PRESENT(e_units) )  CALL iotk_write_dat( ounit, "ENERGY_UNITS", TRIM(e_units) )
+      !
+      attr=""
+      IF ( PRESENT( energy_ref_type) ) CALL iotk_write_attr( attr, "energy_ref_type", energy_ref_type, FIRST=.TRUE.)
+      !
+      IF ( PRESENT( energy_ref ) )  CALL iotk_write_dat( ounit, "FERMI_ENERGY", energy_ref, ATTR=attr )
+      !
+      IF ( PRESENT( eig ) ) THEN
+          !
+          CALL iotk_write_begin( ounit, "EIGENVALUES" )
+          !
+          DO isp = 1, nspin
+              !
+              CALL iotk_write_begin( ounit, "SPIN"//TRIM(iotk_index(isp)) )
+              !
+              DO ik = 1, nkpts
+                  !
+                  CALL iotk_write_dat( ounit, "EIGENVALUES__K_VECTOR"//TRIM(iotk_index(ik)), eig(:,ik,isp) )
+                  !
+              ENDDO
+              !
+              CALL iotk_write_end( ounit, "SPIN"//TRIM(iotk_index(isp)) )
+              !
+          ENDDO
+          !
+          CALL iotk_write_end( ounit, "EIGENVALUES" )
+          !
       ENDIF
       !
       CALL iotk_write_end( ounit, "ELECTRONIC_STRUCTURE" )
@@ -1398,20 +1417,22 @@ CONTAINS
     !
     !
     !------------------------------------------------------------------------
-    SUBROUTINE crio_read_elec_structure( nelec, nspin, num_of_atomic_orbitals, &
-                                         energy_ref, energy_tag, e_units, ierr )
+    SUBROUTINE crio_read_elec_structure( nelec, nbnd, nkpts, nspin, num_of_atomic_orbitals, &
+                                         eig, energy_ref, energy_ref_type, e_units, ierr )
       !------------------------------------------------------------------------
       !
-      INTEGER,       OPTIONAL, INTENT(OUT) :: nelec, nspin, num_of_atomic_orbitals
+      INTEGER,       OPTIONAL, INTENT(OUT) :: nelec, nbnd, nkpts, nspin, num_of_atomic_orbitals
+      REAL(dbl),     OPTIONAL, INTENT(OUT) :: eig(:,:,:)
       REAL(dbl),     OPTIONAL, INTENT(OUT) :: energy_ref
-      CHARACTER(*),  OPTIONAL, INTENT(OUT) :: e_units, energy_tag
+      CHARACTER(*),  OPTIONAL, INTENT(OUT) :: e_units, energy_ref_type
       INTEGER,                 INTENT(OUT) :: ierr
       !
-      INTEGER         :: i
+      INTEGER         :: i, isp, ik
+      INTEGER         :: nspin_, nbnd_, nkpts_
       REAL(dbl)       :: energy_ref_
-      LOGICAL         :: found
-      CHARACTER(25)   :: energy_ref_allowed(3)
-      DATA energy_ref_allowed / "FERMI_ENERGY", "TOP_OF_VALENCE_BANDS", "HOMO" /
+      LOGICAL         :: lfound
+      !CHARACTER(25)   :: energy_ref_allowed(3)
+      !DATA energy_ref_allowed / "FERMI_ENERGY", "TOP_OF_VALENCE_BANDS", "HOMO" /
       
       ierr = 0 
       !
@@ -1423,8 +1444,18 @@ CONTAINS
          IF (ierr/=0 ) RETURN
       ENDIF
       ! 
-      IF ( PRESENT( nspin ) ) THEN
-         CALL iotk_scan_dat( iunit, "NUMBER_OF_SPIN_COMPONENTS", nspin, IERR=ierr)
+      IF ( PRESENT( nbnd ) ) THEN
+         CALL iotk_scan_dat( iunit, "NUMBER_OF_BANDS", nbnd, IERR=ierr)
+         IF (ierr/=0 ) RETURN
+      ENDIF
+      !
+      IF ( PRESENT( nbnd ) ) THEN
+         CALL iotk_scan_dat( iunit, "NUMBER_OF_K_VECTORS", nkpts_, IERR=ierr)
+         IF (ierr/=0 ) RETURN
+      ENDIF
+      !
+      IF ( PRESENT( nspin ) .OR. PRESENT(EIG) ) THEN
+         CALL iotk_scan_dat( iunit, "NUMBER_OF_SPIN_COMPONENTS", nspin_, IERR=ierr)
          IF (ierr/=0 ) RETURN
       ENDIF
       ! 
@@ -1435,42 +1466,58 @@ CONTAINS
       ENDIF
       ! 
       IF ( PRESENT( energy_ref ) .OR. PRESENT( e_units ) ) THEN
-         !
-         found = .FALSE.
-         !
-         DO i = 1, SIZE( energy_ref_allowed ) 
-            !
-            CALL iotk_scan_dat( iunit, TRIM(energy_ref_allowed(i)), energy_ref_, &
-                                ATTR=attr, FOUND=found, IERR=ierr)
-            IF (ierr/=0 ) RETURN
-            !
-            IF ( PRESENT( energy_tag ) ) energy_tag = TRIM(energy_ref_allowed(i))
-            IF ( found ) EXIT
-            !
-         ENDDO
-         !
-         IF ( .NOT. found ) THEN
-            !
-            IF (PRESENT( energy_tag) ) energy_tag = " "
-            ierr = 71
-            RETURN
-            !
-         ENDIF
-         !
-         IF ( PRESENT(e_units) ) THEN
-             !
-             CALL iotk_scan_attr( attr, "unit", e_units, IERR=ierr)
-             IF (ierr/=0 ) RETURN
-             !
-         ENDIF
-         !
+          !
+          CALL iotk_scan_dat( iunit, "FERMI_ENERGY", energy_ref_, ATTR=attr, IERR=ierr )
+          IF ( ierr/=0 ) RETURN
+          !
+          IF ( PRESENT(e_units) ) THEN
+              CALL iotk_scan_attr( attr, "unit", e_units, IERR=ierr)
+              IF (ierr/=0 ) RETURN
+          ENDIF
+          !
+          IF ( PRESENT(energy_ref_type) ) THEN
+              CALL iotk_scan_attr( attr, "energy_ref_type", energy_ref_type, IERR=ierr)
+              IF (ierr/=0 ) RETURN
+          ENDIF
+          !
       ENDIF
       ! 
+      IF ( PRESENT( eig ) ) THEN
+          !
+          CALL iotk_scan_begin( iunit, "EIGENVALUES", IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+          !
+          DO isp = 1, nspin_
+              !
+              CALL iotk_scan_begin( iunit, "SPIN"//TRIM(iotk_index(isp)), FOUND=lfound, IERR=ierr )
+              IF ( isp == 1 .AND. lfound .AND. ierr /= 0 ) RETURN
+              IF ( isp /= 1 .AND. ierr /= 0 ) RETURN
+              !    
+              DO  ik = 1, nkpts_
+                  !
+                  CALL iotk_scan_dat( iunit, "EIGENVALUES__K_VECTOR"//TRIM(iotk_index(ik)), eig(:,ik,isp), IERR=ierr )
+                  IF ( ierr /= 0 ) RETURN
+                  !
+              ENDDO
+              !
+              CALL iotk_scan_end( iunit, "SPIN"//TRIM(iotk_index(isp)), IERR=ierr )
+              IF ( isp == 1 .AND. lfound .AND. ierr /= 0 ) RETURN
+              IF ( isp /= 1 .AND. ierr /= 0 ) RETURN
+              !
+          ENDDO
+          !
+          CALL iotk_scan_end( iunit, "EIGENVALUES", IERR=ierr )
+          IF ( ierr /= 0 ) RETURN
+          !
+      ENDIF
+      !
       CALL iotk_scan_end( iunit, "ELECTRONIC_STRUCTURE", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
       !
       IF ( PRESENT( energy_ref ) )     energy_ref = energy_ref_
+      IF ( PRESENT( nspin ) )               nspin = nspin_
+      IF ( PRESENT( nkpts ) )               nkpts = nkpts_
       !
     END SUBROUTINE crio_read_elec_structure
     ! 
@@ -1497,6 +1544,8 @@ CONTAINS
       !
 
       ierr=0
+
+!XXXX
       !
       SELECT CASE( TRIM(objname) ) 
       CASE( "overlaps", "OVERLAPS" )

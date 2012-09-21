@@ -50,6 +50,7 @@
                                     blc_00L, blc_01L, blc_00R, blc_01R, &
                                     blc_00C, blc_LC,  blc_CR
    USE T_operator_blc_module
+   USE T_correlation_module, ONLY : datafile_R_sgm, datafile_L_sgm
    USE iotk_module
    !
    IMPLICIT NONE
@@ -191,10 +192,18 @@
    !
    leads_are_identical = .FALSE.
    !
-   IF ( ALL( blc_00L%icols(:) == blc_00R%icols(:) ) .AND. &
-        ALL( blc_00L%irows(:) == blc_00R%irows(:) ) .AND. &  
-        ALL( blc_01L%icols(:) == blc_01R%icols(:) ) .AND. &  
-        ALL( blc_01L%irows(:) == blc_01R%irows(:) ) ) THEN 
+   IF ( TRIM(datafile_L)      == TRIM(datafile_R)     .AND. & 
+        TRIM(datafile_L_sgm)  == TRIM(datafile_R_sgm) .AND. &
+        !
+        ALL( blc_00L%icols(:) == blc_00R%icols(:) )   .AND. &
+        ALL( blc_00L%irows(:) == blc_00R%irows(:) )   .AND. &  
+        ALL( blc_01L%icols(:) == blc_01R%icols(:) )   .AND. &  
+        ALL( blc_01L%irows(:) == blc_01R%irows(:) )   .AND. &
+        !
+        ALL( blc_00L%icols_sgm(:) == blc_00R%icols_sgm(:) ) .AND. &
+        ALL( blc_00L%irows_sgm(:) == blc_00R%irows_sgm(:) ) .AND. &  
+        ALL( blc_01L%icols_sgm(:) == blc_01R%icols_sgm(:) ) .AND. &  
+        ALL( blc_01L%irows_sgm(:) == blc_01R%irows_sgm(:) ) ) THEN 
        !
        leads_are_identical = .TRUE.
        !
