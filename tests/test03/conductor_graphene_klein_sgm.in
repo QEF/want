@@ -11,8 +11,8 @@
    datafile_L = "./SCRATCH/graphene_WanT.ham"
    datafile_C = "./SCRATCH/graphene_WanT.ham"
    datafile_R = "./SCRATCH/graphene_WanT.ham"
-   datafile_L_sgm = "./SCRATCH/sigma_graphene.wan.dat"
    datafile_R_sgm = "./SCRATCH/sigma_graphene.wan.dat"
+   datafile_L_sgm = "./SCRATCH/sigma_graphene.wan.dat"
    transport_dir = 2
    delta = 0.05
 !   smearing_type = "lorentzian"
