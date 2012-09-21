@@ -25,7 +25,8 @@
    USE T_hamiltonian_module,    ONLY : dimL, dimC, dimR, &
                                        blc_00L, blc_01L, blc_00R, blc_01R, &
                                        blc_00C, blc_LC,  blc_CR
-   USE T_control_module,        ONLY : calculation_type, transport_dir
+   USE T_control_module,        ONLY : calculation_type, transport_dir, &
+                                       leads_are_identical
    USE T_operator_blc_module
    !
    IMPLICIT NONE
@@ -94,19 +95,11 @@ CONTAINS
 !
    CALL log_push( subname )
    
-
    IF ( LEN_TRIM( datafile_C_sgm ) /= 0 ) THEN
        !
        CALL correlation_open( blc_00C, datafile_C_sgm )
        CALL correlation_open( blc_LC,  datafile_C_sgm )
        CALL correlation_open( blc_CR,  datafile_C_sgm )
-       !
-   ENDIF
-   ! 
-   IF ( LEN_TRIM( datafile_L_sgm ) /= 0 ) THEN
-       !
-       CALL correlation_open( blc_00L, datafile_L_sgm )
-       CALL correlation_open( blc_01L, datafile_L_sgm )
        !
    ENDIF
    ! 
@@ -116,7 +109,15 @@ CONTAINS
        CALL correlation_open( blc_01R, datafile_L_sgm )
        !
    ENDIF
-   !
+   ! 
+   IF ( LEN_TRIM( datafile_L_sgm ) /= 0 .AND. .NOT. leads_are_identical ) THEN
+       !
+       CALL correlation_open( blc_00L, datafile_L_sgm )
+       CALL correlation_open( blc_01L, datafile_L_sgm )
+       !
+   ENDIF
+
+
    init = .TRUE.
 
    ! 
@@ -156,51 +157,39 @@ END SUBROUTINE correlation_init
    CALL log_push( subname )
    
 
-   IF ( LEN_TRIM( datafile_L_sgm ) /= 0 ) THEN
-       !
-       IF ( blc_00L%lhave_corr ) THEN
-           CALL file_close(blc_00L%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
-           IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00L', ABS(ierr) )
-       ENDIF
-       !
-       IF ( blc_01L%lhave_corr ) THEN
-           CALL file_close(blc_01L%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
-           IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_01L', ABS(ierr) )
-       ENDIF
-       !
+   IF ( blc_00L%iunit_sgm_opened ) THEN
+       CALL file_close(blc_00L%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00L', ABS(ierr) )
    ENDIF
    !
-   IF ( LEN_TRIM( datafile_R_sgm ) /= 0 ) THEN
-       !
-       IF ( blc_00R%lhave_corr ) THEN
-           CALL file_close(blc_00R%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
-           IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00R', ABS(ierr) )
-       ENDIF
-       !
-       IF ( blc_01R%lhave_corr ) THEN
-           CALL file_close(blc_01R%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
-           IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_01R', ABS(ierr) )
-       ENDIF
-       !
+   IF ( blc_01L%iunit_sgm_opened ) THEN
+       CALL file_close(blc_01L%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_01L', ABS(ierr) )
    ENDIF
    !
-   IF ( LEN_TRIM( datafile_C_sgm ) /= 0 ) THEN
-       !
-       IF ( blc_00C%lhave_corr ) THEN
-           CALL file_close(blc_00C%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
-           IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00C', ABS(ierr) )
-       ENDIF
-       !
-       IF ( blc_CR%lhave_corr ) THEN
-           CALL file_close(blc_CR%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
-           IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_CR', ABS(ierr) )
-       ENDIF
-       !
-       IF ( blc_LC%lhave_corr ) THEN
-           CALL file_close(blc_LC%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
-           IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_LC', ABS(ierr) )
-       ENDIF
-       !
+   IF ( blc_00R%iunit_sgm_opened ) THEN
+       CALL file_close(blc_00R%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00R', ABS(ierr) )
+   ENDIF
+   !
+   IF ( blc_01R%iunit_sgm_opened ) THEN
+       CALL file_close(blc_01R%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_01R', ABS(ierr) )
+   ENDIF
+   !
+   IF ( blc_00C%iunit_sgm_opened ) THEN
+       CALL file_close(blc_00C%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00C', ABS(ierr) )
+   ENDIF
+   !
+   IF ( blc_CR%iunit_sgm_opened ) THEN
+       CALL file_close(blc_CR%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_CR', ABS(ierr) )
+   ENDIF
+   !
+   IF ( blc_LC%iunit_sgm_opened ) THEN
+       CALL file_close(blc_LC%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_LC', ABS(ierr) )
    ENDIF
 
    CALL log_pop( subname )
@@ -251,16 +240,21 @@ END SUBROUTINE correlation_finalize
    CALL iotk_free_unit( iunit )
    opr%iunit_sgm = iunit
 
+   IF ( opr%iunit_sgm_opened ) CALL errore(subname,"unit_sgm already connected",10)
+
    !
    ! This file must be opened by all the processors
    !
    CALL file_open( iunit, TRIM(datafile), PATH="/", ACTION="read", IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile), ABS(ierr) )
+   !
+   opr%iunit_sgm_opened = .TRUE.
+
 
    !
    ! get main data and check them
    !
-   IF ( ionode ) THEN
+   !IF ( ionode ) THEN
       !
       CALL operator_read_aux( iunit, DIMWANN=dimx_corr, NR=nrtot_corr, &
                               DYNAMICAL=ldynam, &
@@ -268,13 +262,13 @@ END SUBROUTINE correlation_finalize
       !
       IF ( ierr/=0 ) CALL errore(subname,'reading DIMWANN--ANALYTICITY', ABS(ierr))
       !
-   ENDIF
-   !
-   CALL mp_bcast( dimx_corr,    ionode_id )
-   CALL mp_bcast( nrtot_corr,   ionode_id )
-   CALL mp_bcast( ldynam,       ionode_id )
-   CALL mp_bcast( ne_corr,      ionode_id )
-   CALL mp_bcast( analyticity,  ionode_id )
+   !ENDIF
+   !!
+   !CALL mp_bcast( dimx_corr,    ionode_id )
+   !CALL mp_bcast( nrtot_corr,   ionode_id )
+   !CALL mp_bcast( ldynam,       ionode_id )
+   !CALL mp_bcast( ne_corr,      ionode_id )
+   !CALL mp_bcast( analyticity,  ionode_id )
    !
    !
    !IF ( dimx_corr > dimC)              CALL errore(subname,'invalid dimx_corr',3)
@@ -284,15 +278,15 @@ END SUBROUTINE correlation_finalize
    !
    ! reset buffering
    !
-   IF ( .NOT. ldynam_corr ) THEN
-       !
-       ne_buffer = 1
-       CALL warning( subname, 'buffering reset to 1')
-       !
-   ELSE
+   IF ( ldynam_corr ) THEN
        !
        ne_buffer = MIN( ne_buffer, INT(  ne_corr / nproc ) + 1 )
        CALL warning( subname, 'buffering reset')
+       !
+   ELSE
+       !
+       ne_buffer = 1
+       CALL warning( subname, 'buffering reset to 1 bcasue sgm is static')
        !
    ENDIF
 
@@ -467,10 +461,13 @@ END SUBROUTINE correlation_open
                CALL correlation_sgmread( blc_CR,  IE=ie, IE_BUFF=ie_buff )
                CALL correlation_sgmread( blc_LC,  IE=ie, IE_BUFF=ie_buff )
                !
-               CALL correlation_sgmread( blc_00L, IE=ie, IE_BUFF=ie_buff )
-               CALL correlation_sgmread( blc_01L, IE=ie, IE_BUFF=ie_buff )
                CALL correlation_sgmread( blc_00R, IE=ie, IE_BUFF=ie_buff )
                CALL correlation_sgmread( blc_01R, IE=ie, IE_BUFF=ie_buff )
+               !
+               IF ( .NOT. leads_are_identical ) THEN
+                   CALL correlation_sgmread( blc_00L, IE=ie, IE_BUFF=ie_buff )
+                   CALL correlation_sgmread( blc_01L, IE=ie, IE_BUFF=ie_buff )
+               ENDIF
                !
            ENDDO
            !
@@ -480,10 +477,13 @@ END SUBROUTINE correlation_open
            CALL correlation_sgmread( blc_CR  )
            CALL correlation_sgmread( blc_LC  )
            !
-           CALL correlation_sgmread( blc_00L )
-           CALL correlation_sgmread( blc_01L )
            CALL correlation_sgmread( blc_00R )
            CALL correlation_sgmread( blc_01R )
+           !
+           IF ( .NOT. leads_are_identical ) THEN
+               CALL correlation_sgmread( blc_00L )
+               CALL correlation_sgmread( blc_01L )
+           ENDIF
            !
        ENDIF
        !
@@ -501,7 +501,6 @@ END SUBROUTINE correlation_open
                !
                CALL correlation_sgmread( blc_00C, IE=ie, IE_BUFF=ie_buff )
                CALL correlation_sgmread( blc_CR,  IE=ie, IE_BUFF=ie_buff )
-               CALL correlation_sgmread( blc_LC,  IE=ie, IE_BUFF=ie_buff )
                !
            ENDDO
            !
@@ -509,7 +508,6 @@ END SUBROUTINE correlation_open
            !
            CALL correlation_sgmread( blc_00C )
            CALL correlation_sgmread( blc_CR  )
-           CALL correlation_sgmread( blc_LC  )
            !
        ENDIF
        !
@@ -517,10 +515,12 @@ END SUBROUTINE correlation_open
        !
        blc_00L = blc_00C
        blc_00R = blc_00C
-       blc_01L = blc_CR
-       blc_01R = blc_CR
-       !blc_LC  = blc_CR
+       blc_LC  = blc_CR
        !
+       IF ( leads_are_identical ) THEN   ! this is redundant
+           blc_01L = blc_CR
+           blc_01R = blc_CR
+       ENDIF
        !
    CASE DEFAULT
        !

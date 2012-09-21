@@ -4,6 +4,12 @@
 =======================================================
 
 
+21 Sep 2012     management of correlation in transport improved, bugs fixed in the
+		current examples. (AF)
+
+20 Sep 2012     Bug in the calculation of transport with parallel kpts found and fixed.
+		Fmt version number of crystal_API changed to 1.0.0. CRIO fmt changed and completed.
+		Related changes introduced in the CRYSTAL-dev source by G. Mallia. (AF)
 
 08 Aug 2012     naming of smearing modules changed. (AF)
 

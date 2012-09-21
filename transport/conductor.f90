@@ -63,6 +63,7 @@
    !
    CALL hamiltonian_init( )
 
+
    !
    ! Init correlation data and energy grid
    !
