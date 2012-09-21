@@ -6,8 +6,8 @@
    ne   = 300
    emin =  -4.0
    emax =   4.0
-   datafile_C   = "./SCRATCH/si111_WanT.ham"
-   datafile_sgm = "./SCRATCH/sigma.wan.dat"
+   datafile_C     = "./SCRATCH/si111_WanT.ham"
+   datafile_C_sgm = "./SCRATCH/sigma.wan.dat"
    transport_dir = 3
    delta = 0.01
    smearing_type = "gaussian"
