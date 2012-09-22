@@ -188,7 +188,7 @@
    CHARACTER(nstrx) :: datafile_sgm = ' '
        ! the name of the file containing correlation self-energy
        ! If a valid file is provided, correlation is taken into account.
-       ! this var is kept for back-compatibility, and it refers to
+       ! This var is kept for back-compatibility, and it refers to
        ! datafile_C_sgm
 
    CHARACTER(nstrx) :: datafile_C_sgm = ' '

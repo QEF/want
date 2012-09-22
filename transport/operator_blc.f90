@@ -484,6 +484,8 @@ CONTAINS
           IF ( ierr/=0 ) CALL errore(subname,'deallocating ivr_sgm',ABS(ierr))
       ENDIF
       !
+      obj%iunit_sgm_opened = .FALSE.
+      !
       obj%alloc = .FALSE.
       CALL operator_blc_init( obj )
       !

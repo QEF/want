@@ -91,29 +91,29 @@
    !
    ! correlation
    !
-   IF ( ASSOCIATED( blc_00L%sgm ) ) THEN
+   IF ( blc_00L%alloc .AND. ASSOCIATED( blc_00L%sgm ) ) THEN
        blc_00L%aux(:,:) = blc_00L%aux(:,:) -blc_00L%sgm(:,:,ik, ie_bl)
    ENDIF
-   IF ( ASSOCIATED( blc_01L%sgm ) ) THEN
+   IF ( blc_01L%alloc .AND. ASSOCIATED( blc_01L%sgm ) ) THEN
        blc_01L%aux(:,:) = blc_01L%aux(:,:) -blc_01L%sgm(:,:,ik, ie_bl)
    ENDIF
    !
-   IF ( ASSOCIATED( blc_00R%sgm ) ) THEN
+   IF ( blc_00R%alloc .AND. ASSOCIATED( blc_00R%sgm ) ) THEN
        blc_00R%aux(:,:) = blc_00R%aux(:,:) -blc_00R%sgm(:,:,ik, ie_bl)
    ENDIF
-   IF ( ASSOCIATED( blc_01L%sgm ) ) THEN
+   IF ( blc_01L%alloc .AND. ASSOCIATED( blc_01L%sgm ) ) THEN
        blc_01R%aux(:,:) = blc_01R%aux(:,:) -blc_01R%sgm(:,:,ik, ie_bl)
    ENDIF
    !
-   IF ( ASSOCIATED( blc_00C%sgm ) ) THEN
+   IF ( blc_00C%alloc .AND. ASSOCIATED( blc_00C%sgm ) ) THEN
        blc_00C%aux(:,:) = blc_00C%aux(:,:) -blc_00C%sgm(:,:,ik, ie_bl) &
                                            -shift_C_corr * blc_00C%S(:,:,ik)
    ENDIF
-   IF ( ASSOCIATED( blc_LC%sgm ) ) THEN
+   IF ( blc_LC%alloc .AND. ASSOCIATED( blc_LC%sgm ) ) THEN
        blc_LC%aux(:,:)  = blc_LC%aux(:,:)  -blc_LC%sgm(:,:,ik, ie_bl) &
                                            -shift_C_corr * blc_LC%S(:,:,ik)
    ENDIF
-   IF ( ASSOCIATED( blc_CR%sgm ) ) THEN
+   IF ( blc_CR%alloc .AND. ASSOCIATED( blc_CR%sgm ) ) THEN
        blc_CR%aux(:,:)  = blc_CR%aux(:,:)  -blc_CR%sgm(:,:,ik, ie_bl) &
                                            -shift_C_corr * blc_CR%S(:,:,ik)
    ENDIF
