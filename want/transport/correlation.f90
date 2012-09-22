@@ -513,13 +513,21 @@ END SUBROUTINE correlation_open
        !
        ! rearrange the data already read
        !
-       blc_00L = blc_00C
        blc_00R = blc_00C
+       blc_01R = blc_CR
        blc_LC  = blc_CR
        !
-       IF ( leads_are_identical ) THEN   ! this is redundant
+       blc_00R%iunit_sgm = -2
+       blc_01R%iunit_sgm = -2
+       blc_LC%iunit_sgm = -2
+       !
+       blc_00R%iunit_sgm_opened = .FALSE.
+       blc_01R%iunit_sgm_opened = .FALSE.
+       blc_LC%iunit_sgm_opened = .FALSE.
+       !
+       IF ( .NOT. leads_are_identical ) THEN ! this is never the case
+           blc_00L = blc_00C
            blc_01L = blc_CR
-           blc_01R = blc_CR
        ENDIF
        !
    CASE DEFAULT
