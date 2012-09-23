@@ -11,6 +11,7 @@
    datafile_C = "./SCRATCH/nichain_WanT_DW.ham"
    transport_dir = 3
    write_lead_sgm = .TRUE.
+   use_symm = .FALSE.
 /
 
 <HAMILTONIAN_DATA>
