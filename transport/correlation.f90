@@ -157,37 +157,37 @@ END SUBROUTINE correlation_init
    CALL log_push( subname )
    
 
-   IF ( blc_00L%lhave_corr ) THEN
+   IF ( blc_00L%iunit_sgm_opened ) THEN
        CALL file_close(blc_00L%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
        IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00L', ABS(ierr) )
    ENDIF
    !
-   IF ( blc_01L%lhave_corr ) THEN
+   IF ( blc_01L%iunit_sgm_opened ) THEN
        CALL file_close(blc_01L%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
        IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_01L', ABS(ierr) )
    ENDIF
    !
-   IF ( blc_00R%lhave_corr ) THEN
+   IF ( blc_00R%iunit_sgm_opened ) THEN
        CALL file_close(blc_00R%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
        IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00R', ABS(ierr) )
    ENDIF
    !
-   IF ( blc_01R%lhave_corr ) THEN
+   IF ( blc_01R%iunit_sgm_opened ) THEN
        CALL file_close(blc_01R%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
        IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_01R', ABS(ierr) )
    ENDIF
    !
-   IF ( blc_00C%lhave_corr ) THEN
+   IF ( blc_00C%iunit_sgm_opened ) THEN
        CALL file_close(blc_00C%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
        IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_00C', ABS(ierr) )
    ENDIF
    !
-   IF ( blc_LC%lhave_corr ) THEN
+   IF ( blc_LC%iunit_sgm_opened ) THEN
        CALL file_close(blc_LC%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
        IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_LC', ABS(ierr) )
    ENDIF
    !
-   IF ( blc_CR%lhave_corr ) THEN
+   IF ( blc_CR%iunit_sgm_opened ) THEN
        CALL file_close(blc_CR%iunit_sgm, PATH="/", ACTION="read", IERR=ierr)
        IF ( ierr/=0 ) CALL errore(subname,'closing sgm blc_CR', ABS(ierr) )
    ENDIF

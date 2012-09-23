@@ -15,7 +15,7 @@
 &LOCALIZATION
 !   a_condmin = 10.0
    maxiter0_wan = 500
-   maxiter1_wan = 6500
+   maxiter1_wan = 1500
    nprint_wan   = 50
    nsave_wan    = 50
    ncg = 5

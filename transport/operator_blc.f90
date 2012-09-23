@@ -41,6 +41,7 @@
         INTEGER                 :: nrtot_sgm    ! number of 3D R-vects for SGM
         INTEGER                 :: ne_sgm       ! number of frequencies for buffering
         INTEGER                 :: iunit_sgm    ! fortran unit for sgm
+        LOGICAL                 :: iunit_sgm_opened   ! whether unit is opened or not
         LOGICAL                 :: lhave_aux    ! have aux workspace
         LOGICAL                 :: lhave_sgm_aux! have sgm_aux workspace
         LOGICAL                 :: lhave_ham    ! have hamiltonian
@@ -102,6 +103,7 @@ CONTAINS
       obj%nkpts=0
       obj%nrtot=0
       obj%iunit_sgm=-1
+      obj%iunit_sgm_opened=.FALSE.
       obj%ne_sgm=0
       obj%nrtot_sgm=0
       obj%lhave_aux=.FALSE.
@@ -115,15 +117,15 @@ CONTAINS
       obj%tag=" " 
       NULLIFY( obj%icols )
       NULLIFY( obj%irows )
+      NULLIFY( obj%ivr )
       NULLIFY( obj%icols_sgm )
       NULLIFY( obj%irows_sgm )
+      NULLIFY( obj%ivr_sgm )
       NULLIFY( obj%H )
       NULLIFY( obj%S )
       NULLIFY( obj%sgm )
       NULLIFY( obj%aux )
       NULLIFY( obj%sgm_aux )
-      NULLIFY( obj%ivr )
-      NULLIFY( obj%ivr_sgm )
       obj%alloc=.FALSE.
       !
    END SUBROUTINE operator_blc_init
@@ -157,6 +159,7 @@ CONTAINS
       !
       obj2%ldynam_corr = obj1%ldynam_corr
       obj2%iunit_sgm   = obj1%iunit_sgm
+      obj2%iunit_sgm_opened   = obj1%iunit_sgm_opened
       obj2%dimx_sgm    = obj1%dimx_sgm
       obj2%ie          = obj1%ie
       obj2%ie_buff     = obj1%ie_buff
@@ -238,6 +241,7 @@ CONTAINS
       WRITE( ounit, "(  2x,'    have_corr : ',a)") TRIM( log2char(obj%lhave_corr) )
       WRITE( ounit, "(  2x,'     dyn_corr : ',a)") TRIM( log2char(obj%ldynam_corr) )
       WRITE( ounit, "(  2x,'     unit_sgm : ',a)") obj%iunit_sgm
+      WRITE( ounit, "(  2x,'unit_sgm_opnd : ',l1)") obj%iunit_sgm_opened
       WRITE( ounit, "(  2x,'           ie : ',i5)") obj%ie
       WRITE( ounit, "(  2x,'    ie buffer : ',i5)") obj%ie_buff
       WRITE( ounit, "(  2x,'           ik : ',i5)") obj%ik
@@ -322,21 +326,33 @@ CONTAINS
       IF ( .NOT. ASSOCIATED( obj%irows) ) THEN
           ALLOCATE( obj%irows(dim1), STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname,'allocating irows',ABS(ierr))
+          !
+          obj%irows(:) = 0 
+          !
       ENDIF
       !
       IF ( .NOT. ASSOCIATED( obj%icols) ) THEN
           ALLOCATE( obj%icols(dim2), STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname,'allocating icols',ABS(ierr))
+          !
+          obj%icols(:) = 0 
+          !
       ENDIF
       !
       IF ( .NOT. ASSOCIATED( obj%irows_sgm) ) THEN
           ALLOCATE( obj%irows_sgm(dim1), STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname,'allocating irows_sgm',ABS(ierr))
+          !
+          obj%irows_sgm(:) = 0 
+          !
       ENDIF
       !
       IF ( .NOT. ASSOCIATED( obj%icols_sgm) ) THEN
           ALLOCATE( obj%icols_sgm(dim2), STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname,'allocating icols_sgm',ABS(ierr))
+          !
+          obj%icols_sgm(:) = 0 
+          !
       ENDIF
       !
       IF ( lhave_aux_ .AND. .NOT. ASSOCIATED( obj%aux ) ) THEN
@@ -487,11 +503,14 @@ CONTAINS
        CHARACTER(*)        :: memtype
        !
        !
-       LOGICAL   :: do_ham = .FALSE.
-       LOGICAL   :: do_corr = .FALSE.
+       LOGICAL   :: do_ham 
+       LOGICAL   :: do_corr
        !
        REAL(dbl) :: cost
        !
+       !
+       do_ham  = .FALSE.
+       do_corr = .FALSE.
        !
        SELECT CASE ( TRIM(memtype) )
        CASE ( "ham", "hamiltonian" )
