@@ -12,7 +12,7 @@
    delta = 0.050
    transport_dir = 3
    smearing_type = "lorentzian"
-   use_symm = .TRUE.
+   use_symm = .FALSE.
    nk(1) = 30
    nk(2) = 30
 /
