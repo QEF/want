@@ -12,6 +12,7 @@
    delta = 0.150
    transport_dir = 3
    smearing_type = "gaussian"
+   write_embed_sgm = .FALSE.
    use_symm = .TRUE.
    nk(1) = 30
    nk(2) = 30
