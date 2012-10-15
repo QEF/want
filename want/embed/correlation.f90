@@ -287,10 +287,6 @@ CONTAINS
       IF ( opr%dim2 >  dimT_corr )  CALL errore(subname,'invalid dim2',2)
       IF ( opr%nkpts /= nkpts_par ) CALL errore(subname,'invalid nkpts',3)
       !
-!! XXX
-!WRITE(0,*) "irows_sgm", opr%irows_sgm(:)
-!WRITE(0,*) "icols_sgm", opr%icols_sgm(:)
-! XXX
       IF ( ANY( opr%irows_sgm(:) > dimT_corr ) ) &
                                     CALL errore(subname,'invalid irows_sgm',3)
       IF ( ANY( opr%icols_sgm(:) > dimT_corr ) ) &

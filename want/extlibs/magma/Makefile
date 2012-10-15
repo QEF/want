@@ -52,6 +52,7 @@ package-ready-stamp: uncompress-stamp configure-stamp
 	#if test -d ./bin      ; then rm -rf ./bin      ; fi    ; mkdir ./bin ;
 	#mv $(PACKAGE)/src/*.x ./bin ;
 	#
+	#rm configure-stamp
 	touch package-ready-stamp
 
 #
