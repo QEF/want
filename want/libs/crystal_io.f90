@@ -489,13 +489,13 @@ CONTAINS
       CALL iotk_write_attr( attr, "number_of_atoms", num_of_atoms, FIRST=.TRUE. )
       CALL iotk_write_empty( ounit, "ATOMIC_ORBITALS_INFO", ATTR=attr )
       !
-      CALL iotk_write_dat( ounit, "TOTAL_NUMBER_OF_ATOMIC_ORBITALS", num_of_atomic_orbitals )
+      CALL iotk_write_dat( ounit, "NUMBER_OF_ATOMIC_ORBITALS", num_of_atomic_orbitals )
       !
       IF ( PRESENT ( atm_orbital ) ) THEN
           !
           DO i = 1, num_of_atoms
               !
-              CALL iotk_write_attr( attr, "number_of_atomic_orbitals", &
+              CALL iotk_write_attr( attr, "number_of_atomic_orbitals_per_atom", &
                                     atm_orbital(i)%norb, NEWLINE=.TRUE., FIRST=.TRUE. )
               CALL iotk_write_attr( attr, "unit", TRIM(atm_orbital(i)%units) )
               CALL iotk_write_attr( attr, "centre", atm_orbital(i)%coord, NEWLINE=.TRUE. )
@@ -641,9 +641,12 @@ CONTAINS
       CALL iotk_write_dat( ounit, "NUMBER_OF_BANDS", nbnd )
       CALL iotk_write_dat( ounit, "NUMBER_OF_K_VECTORS", nkpts )
       CALL iotk_write_dat( ounit, "NUMBER_OF_SPIN_COMPONENTS", nspin )
-      CALL iotk_write_dat( ounit, "TOTAL_NUMBER_OF_ATOMIC_ORBITALS", &
-                                  num_of_atomic_orbitals )
+      CALL iotk_write_dat( ounit, "NUMBER_OF_ATOMIC_ORBITALS", &
+                                   num_of_atomic_orbitals )
       !
+! XXXX
+! XXXX unit for each ENERGY_UNITS, EIGENVALUES
+! XXXX
       IF ( PRESENT(e_units) )  CALL iotk_write_dat( ounit, "ENERGY_UNITS", TRIM(e_units) )
       !
       attr=""
@@ -1189,7 +1192,7 @@ CONTAINS
       CALL iotk_scan_begin( iunit, "ATOMIC_ORBITALS", IERR=ierr)
       IF ( ierr/=0 ) RETURN
       !
-      CALL iotk_scan_dat( iunit, "TOTAL_NUMBER_OF_ATOMIC_ORBITALS", num_of_atomic_orbitals_, IERR=ierr)
+      CALL iotk_scan_dat( iunit, "NUMBER_OF_ATOMIC_ORBITALS", num_of_atomic_orbitals_, IERR=ierr)
       IF ( ierr/=0 ) RETURN
       !
       CALL iotk_scan_empty( iunit, "ATOMIC_ORBITALS_INFO", ATTR=attr, IERR=ierr)
@@ -1207,7 +1210,7 @@ CONTAINS
               CALL iotk_scan_begin( iunit, TRIM(str), ATTR=attr, IERR=ierr ) 
               IF ( ierr/=0 ) RETURN
               !
-              CALL iotk_scan_attr( attr, "number_of_atomic_orbitals", norb_, IERR=ierr ) 
+              CALL iotk_scan_attr( attr, "number_of_atomic_orbitals_per_atom", norb_, IERR=ierr ) 
               IF ( ierr/=0 ) RETURN
               CALL iotk_scan_attr( attr, "unit", atm_orbital(i)%units, IERR=ierr ) 
               IF ( ierr/=0 ) RETURN
@@ -1443,6 +1446,17 @@ CONTAINS
          CALL iotk_scan_dat( iunit, "NUMBER_OF_ELECTRONS", nelec, IERR=ierr)
          IF (ierr/=0 ) RETURN
       ENDIF
+      !
+      IF ( PRESENT( nspin ) .OR. PRESENT(EIG) ) THEN
+         CALL iotk_scan_dat( iunit, "NUMBER_OF_SPIN_COMPONENTS", nspin_, IERR=ierr)
+         IF (ierr/=0 ) RETURN
+      ENDIF
+      ! 
+      IF ( PRESENT( num_of_atomic_orbitals ) ) THEN
+         CALL iotk_scan_dat( iunit, "NUMBER_OF_ATOMIC_ORBITALS", &
+                                    num_of_atomic_orbitals, IERR=ierr)
+         IF (ierr/=0 ) RETURN
+      ENDIF
       ! 
       IF ( PRESENT( nbnd ) ) THEN
          CALL iotk_scan_dat( iunit, "NUMBER_OF_BANDS", nbnd, IERR=ierr)
@@ -1451,17 +1465,6 @@ CONTAINS
       !
       IF ( PRESENT( nbnd ) ) THEN
          CALL iotk_scan_dat( iunit, "NUMBER_OF_K_VECTORS", nkpts_, IERR=ierr)
-         IF (ierr/=0 ) RETURN
-      ENDIF
-      !
-      IF ( PRESENT( nspin ) .OR. PRESENT(EIG) ) THEN
-         CALL iotk_scan_dat( iunit, "NUMBER_OF_SPIN_COMPONENTS", nspin_, IERR=ierr)
-         IF (ierr/=0 ) RETURN
-      ENDIF
-      ! 
-      IF ( PRESENT( num_of_atomic_orbitals ) ) THEN
-         CALL iotk_scan_dat( iunit, "TOTAL_NUMBER_OF_ATOMIC_ORBITALS", &
-                                    num_of_atomic_orbitals, IERR=ierr)
          IF (ierr/=0 ) RETURN
       ENDIF
       ! 

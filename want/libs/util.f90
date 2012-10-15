@@ -647,6 +647,7 @@ END SUBROUTINE dmat_svd
    REAL(dbl),    ALLOCATABLE :: rwork(:)
    COMPLEX(dbl), ALLOCATABLE :: atmp(:,:), work(:)
 
+
    IF ( m <= 0 .OR. n<=0 ) CALL errore('zmat_svd','Invalid DIMs',1)
    IF ( m > SIZE(a,1) .OR. m > SIZE(u,1) .OR. m > SIZE(u,2) ) &
            CALL errore('zmat_svd','m too large',m)
@@ -665,7 +666,7 @@ END SUBROUTINE dmat_svd
    !
    ! save A (which is intent IN)
    atmp(:,:) = a(1:m, 1:n)
-   
+
    !
    ! determine lwork
    !
@@ -2383,11 +2384,13 @@ END FUNCTION dmat_is_herm
         TRIM(side_) == 'left' .OR. TRIM(side_) == 'LEFT'  ) THEN 
 
        ALLOCATE( result(dim2,dim2), STAT=ierr )
-          IF ( ierr /= 0 ) CALL errore(subname,'allocating result',ABS(ierr))
+       IF ( ierr /= 0 ) CALL errore(subname,'allocating result',ABS(ierr))
+
+
        ! 
        ! matrix mult
        CALL zmat_mul( result, z, 'C', z, 'N', dim2,dim2,dim1)
-
+       !
        DO j=1,dim2
        DO i=1,dim2
            IF ( i==j ) THEN
