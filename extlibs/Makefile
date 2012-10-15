@@ -80,4 +80,12 @@ clean wash:
 	 if test -d iotk ;    then ( cd iotk;    $(MAKE) $@ ) ; fi
 	 if test -d phiGEMM ; then ( cd phiGEMM; $(MAKE) $@ ) ; fi
 	 if test -d magma ;   then ( cd magma;   $(MAKE) $@ ) ; fi
+	- rm ./install/make_blas.inc
+	- rm ./install/make_lapack.inc
+	- rm ./install/make_iotk.inc
+	- rm ./install/make_magma.inc
+	- touch ./install/make_blas.inc
+	- touch ./install/make_lapack.inc
+	- touch ./install/make_iotk.inc
+	- touch ./install/make_magma.inc
 

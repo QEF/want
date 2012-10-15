@@ -180,7 +180,9 @@
         !
         ALLOCATE( s(dimwann), STAT = ierr )
         IF( ierr /= 0 ) CALL errore(subname, 'allocating s ', dimwann )
+
   
+
         DO ik=1,nkpts
             !
             ik_g = ik + iks -1

@@ -53,6 +53,7 @@ package-ready-stamp: uncompress-stamp configure-stamp
 	mkdir ./lib ;
 	mv $(PACKAGE)/*.a ./lib ;
 	#
+	#rm configure-stamp
 	touch package-ready-stamp
 
 #
@@ -65,7 +66,6 @@ clean:
 wash: clean
 	if test -d $(PACKAGE) ; then ( rm -rf $(PACKAGE) ) ; fi 
 	- rm uncompress-stamp package-ready-stamp
-	- rm ../install/make_lapack.inc
 	- rm -rf $(INSTALL_DIR)
 	
 

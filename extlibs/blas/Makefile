@@ -42,7 +42,7 @@ configure-stamp: uncompress-stamp
 #	        INSTALL_DIR="$(INSTALL_DIR)" ); \
 #	fi
 	
-package-ready-stamp: uncompress-stamp configure-stamp
+package-ready-stamp: uncompress-stamp configure-stamp 
 	if test -d $(PACKAGE) ; then \
 	( cd $(PACKAGE);  $(MAKE) ) ; fi
 	#
@@ -50,6 +50,7 @@ package-ready-stamp: uncompress-stamp configure-stamp
 	mkdir ./lib ;
 	mv $(PACKAGE)/*.a ./lib ;
 	#
+	#rm configure-stamp
 	touch package-ready-stamp
 
 #
@@ -62,7 +63,6 @@ clean:
 wash: clean
 	if test -d $(PACKAGE) ; then ( rm -rf $(PACKAGE) ) ; fi 
 	- rm uncompress-stamp package-ready-stamp
-	- rm ../install/make_blas.inc
 	- rm -rf $(INSTALL_DIR)
 	
 
