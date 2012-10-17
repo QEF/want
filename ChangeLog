@@ -4,6 +4,9 @@
 =======================================================
 
 
+17 Oct 2012     Gfortran does not allow (according to F90/95 std) to open the same
+		file on different units. A workaround has been tried. (AF)
+
 21 Sep 2012     management of correlation in transport improved, bugs fixed in the
 		current examples. (AF)
 

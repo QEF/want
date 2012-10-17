@@ -105,7 +105,7 @@ wash_plugins:
 	if test -d plugins ;   then ( cd plugins;   $(MAKE) wash ) ; fi
 
 
-wash : wash_extlibs wash_plugins clean clean_test
+wash : wash_extlibs wash_plugins clean
 	- /bin/rm -rf make.sys ./config/configure.msg \
 		./config/config.log ./config/config.status \
 		./config/*.lineno \
