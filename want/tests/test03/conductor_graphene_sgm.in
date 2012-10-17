@@ -1,5 +1,6 @@
 
 &INPUT_CONDUCTOR
+!   debug_level = 10
    calculation_type = "bulk"
    postfix = "_graphene_sgm"
    dimC =   5
