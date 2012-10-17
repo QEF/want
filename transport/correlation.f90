@@ -286,7 +286,7 @@ END SUBROUTINE correlation_finalize
    ELSE
        !
        ne_buffer = 1
-       CALL warning( subname, 'buffering reset to 1 bcasue sgm is static')
+       CALL warning( subname, 'buffering reset to 1 because of static sgm')
        !
    ENDIF
 
