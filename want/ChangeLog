@@ -4,6 +4,8 @@
 =======================================================
 
 
+18 Oct 2012     vdW-WF_v1.0 added to plugin repository. (AF)
+
 17 Oct 2012     Gfortran does not allow (according to F90/95 std) to open the same
 		file on different units. A workaround has been tried. (AF)
 
