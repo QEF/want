@@ -220,8 +220,8 @@ END SUBROUTINE correlation_finalize
    !
    CHARACTER(16)     :: subname="correlation_open"
    CHARACTER(nstrx)  :: analyticity
-   INTEGER           :: iunit
-   LOGICAL           :: ldynam
+   INTEGER           :: iunit, iunit0
+   LOGICAL           :: ldynam, do_open
    INTEGER           :: dimx_corr, nrtot_corr, ne_corr, ierr
    !
    INTEGER,     ALLOCATABLE :: ivr_corr(:,:)
@@ -237,14 +237,46 @@ END SUBROUTINE correlation_finalize
    !
    ! get IO data
    !
+   IF ( opr%iunit_sgm_opened ) CALL errore(subname,"unit_sgm already connected",10)
+   !
    CALL iotk_free_unit( iunit )
-   opr%iunit_sgm = iunit
+
 
    !
    ! This file must be opened by all the processors
    !
-   CALL file_open( iunit, TRIM(datafile), PATH="/", ACTION="read", IERR=ierr )
-   IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile), ABS(ierr) )
+   INQUIRE( FILE=TRIM(datafile), NUMBER=iunit0 )
+   !
+   do_open = .TRUE.
+   !
+#ifdef __GFORTRAN   
+   !
+   ! the file is already connected
+   IF ( iunit0 > 0 )  THEN
+       !
+       iunit=iunit0
+       do_open = .FALSE.
+       !
+   ENDIF
+   !
+#endif
+   !
+   IF ( do_open ) THEN
+       !
+       CALL file_open( iunit, TRIM(datafile), PATH="/", ACTION="read", IERR=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(datafile), ABS(ierr) )
+       !
+       opr%iunit_sgm_opened = .TRUE.
+       !
+   ELSE
+       !
+       !REWIND( iunit )
+       opr%iunit_sgm_opened = .FALSE.
+       !
+   ENDIF
+   !
+   opr%iunit_sgm = iunit
+
 
    !
    ! get main data and check them
@@ -507,6 +539,18 @@ END SUBROUTINE correlation_open
        blc_01L = blc_CR
        blc_01R = blc_CR
        blc_LC  = blc_CR
+       !
+       blc_00L%iunit_sgm = -2
+       blc_01L%iunit_sgm = -2
+       blc_00R%iunit_sgm = -2
+       blc_01R%iunit_sgm = -2
+       blc_LC%iunit_sgm = -2
+       !   
+       blc_00L%iunit_sgm_opened = .FALSE.
+       blc_01L%iunit_sgm_opened = .FALSE.
+       blc_00R%iunit_sgm_opened = .FALSE.
+       blc_01R%iunit_sgm_opened = .FALSE.
+       blc_LC%iunit_sgm_opened = .FALSE.
        !
        !
    CASE DEFAULT
