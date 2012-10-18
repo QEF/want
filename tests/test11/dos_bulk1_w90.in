@@ -1,10 +1,10 @@
 
  &INPUT
-   prefix        = 'pt1_w90'
-   postfix       = '_WanT'
-   work_dir      = './SCRATCH'
-   datafile_dft  = './SCRATCH/wannier90_Pt1.chk'
-   fileout       = 'dos_bulk1_w90_NN.dat'
+   prefix        = 'pt1_w90',
+   postfix       = '_WanT',
+   work_dir      = './SCRATCH',
+   fileout       = 'dos_bulk1_w90_NN.dat ',
+   datafile_dft  = './SCRATCH/wannier90_Pt1.chk ',
    ircut(3)      = 1
    nk(1)         = 1
    nk(2)         = 1
