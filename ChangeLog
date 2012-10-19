@@ -4,7 +4,8 @@
 =======================================================
 
 
-19 Oct 2012     tree structure changed, src/ dir added. (AF)
+19 Oct 2012     tree structure changed, src/ dir added. ctools, libs renamed to
+		clibs and wlibs. Makedeps and other scripts changed accordingly. (AF)
 
 18 Oct 2012     vdW-WF_v1.0 added to plugin repository (Courtesy of P Silvestrelli). (AF)
 
