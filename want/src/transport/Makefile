@@ -3,7 +3,7 @@
 # WanT package
 #===============================
 #
-include ../make.sys
+include ../../make.sys
 
 
 OBJS= \
@@ -69,12 +69,12 @@ all: $(BIN)
 conductor.x: conductor.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ conductor.o \
 	     $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../transport/$@ . )
+	- ( cd ../../bin ; ln -sf ../../transport/$@ . )
 
 current.x: current.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ current.o \
 	     $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../transport/$@ . )
+	- ( cd ../../bin ; ln -sf ../../transport/$@ . )
 
 clean:
 	rm -rf *.o *.a *core *.F90 work.pc work.pcl *.mod *.x

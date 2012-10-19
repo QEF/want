@@ -3,7 +3,7 @@
 # WanT package
 #===============================
 #
-include ../make.sys
+include ../../make.sys
 
 
 OBJS= \
@@ -139,31 +139,31 @@ all : $(BIN)
 
 disentangle.x: disentangle.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ disentangle.o $(OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../wannier/$@ . )
+	- ( cd ../../bin ; ln -sf ../../wannier/$@ . )
 
 wannier.x:     wannier.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ wannier.o $(OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../wannier/$@ . )
+	- ( cd ../../bin ; ln -sf ../../wannier/$@ . )
 
 blc2wan.x:     blc2wan.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ blc2wan.o $(OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../wannier/$@ . )
+	- ( cd ../../bin ; ln -sf ../../wannier/$@ . )
 
 bands.x:       bands.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ bands.o $(OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../wannier/$@ . )
+	- ( cd ../../bin ; ln -sf ../../wannier/$@ . )
 
 cmplx_bands.x:       cmplx_bands.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ cmplx_bands.o $(OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../wannier/$@ . )
+	- ( cd ../../bin ; ln -sf ../../wannier/$@ . )
 
 dos.x:         dos.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ dos.o $(OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../wannier/$@ . )
+	- ( cd ../../bin ; ln -sf ../../wannier/$@ . )
 
 plot.x:        plot.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ plot.o $(OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../wannier/$@ . )
+	- ( cd ../../bin ; ln -sf ../../wannier/$@ . )
 
 
 #

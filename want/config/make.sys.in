@@ -89,7 +89,7 @@ NVCCFLAGS           = @nvccflags@
 # (possible arguments to -D or -U) and their meaning
 DFLAGS         = @dflags@
 FDFLAGS        = @fdflags@
-IFLAGS         = -I../include @iflags@
+IFLAGS         = -I../include -I../../include @iflags@
 MODFLAGS       = @imod@. @iotk_include@ @netcdf_include@ @etsf_io_include@ \
                  @imod@../libs @imod@../wannier @imod@../transport 
 

@@ -4,6 +4,8 @@
 =======================================================
 
 
+19 Oct 2012     tree structure changed, src/ dir added. (AF)
+
 18 Oct 2012     vdW-WF_v1.0 added to plugin repository (Courtesy of P Silvestrelli). (AF)
 
 17 Oct 2012     Gfortran does not allow (according to F90/95 std) to open the same

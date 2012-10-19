@@ -54,4 +54,4 @@ sum_sgm.o : ../wannier/operator.o
 wfk2etsf.o : ../wannier/atomic.o
 write_ham.o : ../libs/io_global.o
 write_ham.o : ../libs/kind.o
-gcube2plt.o : ../include/c_defs.h
+gcube2plt.o : ../../include/c_defs.h

@@ -120,4 +120,4 @@ workspace.o : hamiltonian.o
 workspace.o : ../libs/constants.o
 workspace.o : ../libs/kind.o
 workspace.o : ../transport/kpoints.o
-memusage.o : ../include/f_defs.h
+memusage.o : ../../include/f_defs.h
