@@ -11,6 +11,8 @@ crystal_io.o \
 crystal_io_base.o \
 cuda_env_module.o \
 date_and_tim.o \
+descriptors.o \
+dspev_drv.o \
 divide_et_impera.o \
 erf.o \
 error.o \
@@ -30,6 +32,7 @@ parallel_include.o \
 parameters.o \
 parser_base.o \
 parser.o \
+ptoolkit.o \
 qexml.o \
 qexpt.o \
 random_numbers.o \
@@ -42,7 +45,8 @@ timing.o \
 util.o \
 warning.o \
 write_header.o \
-ylmr2.o
+ylmr2.o \
+zhpev_drv.o
 
 
 
