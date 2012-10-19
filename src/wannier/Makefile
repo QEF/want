@@ -139,31 +139,31 @@ all : $(BIN)
 
 disentangle.x: disentangle.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ disentangle.o $(OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../../bin ; ln -sf ../../wannier/$@ . )
+	- ( cd ../../bin ; ln -sf ../src/wannier/$@ . )
 
 wannier.x:     wannier.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ wannier.o $(OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../../bin ; ln -sf ../../wannier/$@ . )
+	- ( cd ../../bin ; ln -sf ../src/wannier/$@ . )
 
 blc2wan.x:     blc2wan.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ blc2wan.o $(OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../../bin ; ln -sf ../../wannier/$@ . )
+	- ( cd ../../bin ; ln -sf ../src/wannier/$@ . )
 
 bands.x:       bands.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ bands.o $(OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../../bin ; ln -sf ../../wannier/$@ . )
+	- ( cd ../../bin ; ln -sf ../src/wannier/$@ . )
 
 cmplx_bands.x:       cmplx_bands.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ cmplx_bands.o $(OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../../bin ; ln -sf ../../wannier/$@ . )
+	- ( cd ../../bin ; ln -sf ../src/wannier/$@ . )
 
 dos.x:         dos.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ dos.o $(OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../../bin ; ln -sf ../../wannier/$@ . )
+	- ( cd ../../bin ; ln -sf ../src/wannier/$@ . )
 
 plot.x:        plot.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ plot.o $(OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../../bin ; ln -sf ../../wannier/$@ . )
+	- ( cd ../../bin ; ln -sf ../src/wannier/$@ . )
 
 
 #

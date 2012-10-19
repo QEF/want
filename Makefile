@@ -35,7 +35,7 @@ default:
 #
 # MAIN target
 #
-all: build_date  wannier transport embed utility
+all: build_date  wannier transport embed tools
 
 deps:
 	if test -x ./config/makedeps.sh ; then ./config/makedeps.sh ; fi
@@ -74,9 +74,9 @@ embed: libextlibs libclibs libwant libplugins transport wannier
 	if test -d src/embed ; then \
 	( cd src/embed ; $(MAKE) ) ; fi
 
-utility: libextlibs libclibs libwant libplugins wannier
-	if test -d src/utility ; then \
-	( cd src/utility ; $(MAKE) ) ; fi
+tools: libextlibs libclibs libwant libplugins wannier
+	if test -d src/tools ; then \
+	( cd src/tools ; $(MAKE) ) ; fi
 
 #
 # CLEAN UP
@@ -89,7 +89,7 @@ clean:
 	if test -d src/wannier ;   then ( cd src/wannier;   $(MAKE) clean ) ; fi
 	if test -d src/transport ; then ( cd src/transport; $(MAKE) clean ) ; fi
 	if test -d src/embed ;     then ( cd src/embed;     $(MAKE) clean ) ; fi
-	if test -d src/utility ;   then ( cd src/utility;   $(MAKE) clean ) ; fi
+	if test -d src/tools ;     then ( cd src/tools;     $(MAKE) clean ) ; fi
 	- /bin/rm  ./include/build_date.h
 	- /bin/rm -rf ./bin/*.x ./bin/sumpdos ./bin/iotk ./bin/sax2qexml
 
