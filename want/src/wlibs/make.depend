@@ -1,5 +1,6 @@
 constants.o : kind.o
 crystal_io.o : crystal_io_base.o
+dspev_drv.o : kind.o
 erf.o : kind.o
 error.o : io_global.o
 error.o : parallel_include.o
@@ -21,6 +22,12 @@ parser.o : kind.o
 parser.o : mp_global.o
 parser.o : mp.o
 parser.o : parser_base.o
+ptoolkit.o : descriptors.o
+ptoolkit.o : dspev_drv.o
+ptoolkit.o : io_global.o
+ptoolkit.o : kind.o
+ptoolkit.o : parallel_include.o
+ptoolkit.o : zhpev_drv.o
 qexpt.o : constants.o
 qexpt.o : kind.o
 random_numbers.o : kind.o
@@ -41,5 +48,7 @@ warning.o : io_global.o
 write_header.o : io_global.o
 ylmr2.o : constants.o
 ylmr2.o : kind.o
+zhpev_drv.o : io_global.o
+zhpev_drv.o : kind.o
 fft_scalar.o : ../../include/fft_defs.h
 log_module.o : ../../include/f_defs.h
