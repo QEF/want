@@ -15,7 +15,7 @@ Installation is a two-step procedure:
 
 where <target> is one (or more) of the following (typicalli "all" ): 
 
-wannier, transport, utility,
+wannier, transport, tools,
 all, clean, wash. 
 
 Running make without arguments prints a short manual. Cross-compilation
@@ -105,11 +105,11 @@ Here is a list of available compilation targets:
                                          plot.x (post proc)
                                          blc2wan.x (post proc)
     make transport              compile  conductor.x (step 3)
-    make utility                compile  executable in $TOPDIR/utility (kgrid.x, midpoint.x, etc)
+    make tools                  compile  executable in $TOPDIR/src/tools (kgrid.x, midpoint.x, etc)
     make all                             make wannier + transport + utility
 
     make libwant                compile  WanT basic libs
-    make libctools              compile  the internal WanT c-library
+    make libclibs               compile  the internal WanT c-library
     make libextlibs             compile  the internal version of some std external libraries
                                          (blas, lapack, etc). It is automatically issues when those
                                          libs are not found
