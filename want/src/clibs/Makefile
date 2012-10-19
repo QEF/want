@@ -17,10 +17,10 @@ gcube2plt.o
 #
 # main targets
 #
-all : libctools.a
+all : libclibs.a
 
 
-libctools.a : $(OBJS) 
+libclibs.a : $(OBJS) 
 	$(AR) $(ARFLAGS) $@ $?
 	$(RANLIB) $@
 

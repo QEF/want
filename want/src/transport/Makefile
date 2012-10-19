@@ -57,7 +57,7 @@ BIN= \
 conductor.x \
 current.x 
 
-EXTERNAL_LIBS= ../ctools/libctools.a ../libs/libwant.a
+EXTERNAL_LIBS= ../clibs/libclibs.a ../wlibs/libwant.a
 BIN_DEPS=      $(OBJS) $(WANNIER_OBJS) $(EXTERNAL_LIBS)
 
 #
