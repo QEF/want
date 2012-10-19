@@ -1,0 +1,17 @@
+
+ &INPUT
+   prefix = 'gold8'
+   postfix = '_WanT'
+   work_dir = './SCRATCH'
+   fileout = 'doswant_Au8.dat'
+   datafile_dft = "./SCRATCH/gold8.save/atomic_proj.xml"
+   nk(1) = 1
+   nk(2) = 1
+   nk(3) = 4
+   delta = 0.100
+   emin  = -15.0 
+   emax  =   5.0
+     ne  =  1000
+   smearing_type = 'lorentzian'
+ /
+
