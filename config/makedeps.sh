@@ -18,17 +18,17 @@ for DIR in $DIR_LIST
 do
     # set inter-directory dependencies
     case $DIR in
-        libs )      DEPENDS="../include"         ;;
-        wannier )   DEPENDS="../include ../libs" ;;
-        transport ) DEPENDS="../include ../libs ../wannier " ;;
-        utility )   DEPENDS="../include ../libs ../wannier " ;;
-        embed )     DEPENDS="../include ../libs ../wannier ../transport" ;;
+        libs )      DEPENDS="../../include"         ;;
+        wannier )   DEPENDS="../../include ../libs" ;;
+        transport ) DEPENDS="../../include ../libs ../wannier " ;;
+        utility )   DEPENDS="../../include ../libs ../wannier " ;;
+        embed )     DEPENDS="../../include ../libs ../wannier ../transport" ;;
     esac
 
     # generate dependencies file
-    if test -d $TOPDIR/$DIR
+    if test -d $TOPDIR/src/$DIR
     then
-        cd $TOPDIR/$DIR
+        cd $TOPDIR/src/$DIR
         $BINDIR/moduledep.sh $DEPENDS > make.depend
         $BINDIR/includedep.sh $DEPENDS >> make.depend
     fi

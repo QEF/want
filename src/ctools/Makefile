@@ -3,7 +3,7 @@
 # WanT package
 #===============================
 #
-include ../make.sys
+include ../../make.sys
 
 OBJS= \
 c_mkdir.o \

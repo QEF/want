@@ -55,42 +55,41 @@ libplugins:
 	( cd plugins ; $(MAKE) ) ; fi
 
 libctools:
-	if test -d ctools ; then \
-	( cd ctools ; $(MAKE) ) ; fi
+	if test -d src/ctools ; then \
+	( cd src/ctools ; $(MAKE) ) ; fi
 
 libwant: libextlibs libplugins
-	if test -d libs ; then \
-	( cd libs ; $(MAKE) ) ; fi
+	if test -d src/libs ; then \
+	( cd src/libs ; $(MAKE) ) ; fi
 
 wannier: libextlibs libctools libwant libplugins
-	if test -d wannier ; then \
-	( cd wannier ; $(MAKE) ) ; fi
+	if test -d src/wannier ; then \
+	( cd src/wannier ; $(MAKE) ) ; fi
 
 transport: libextlibs libctools libwant libplugins wannier
-	if test -d transport ; then \
-	( cd transport ; $(MAKE) ) ; fi
+	if test -d src/transport ; then \
+	( cd src/transport ; $(MAKE) ) ; fi
 
 embed: libextlibs libctools libwant libplugins transport wannier
-	if test -d embed ; then \
-	( cd embed ; $(MAKE) ) ; fi
+	if test -d src/embed ; then \
+	( cd src/embed ; $(MAKE) ) ; fi
 
 utility: libextlibs libctools libwant libplugins wannier
-	if test -d utility ; then \
-	( cd utility ; $(MAKE) ) ; fi
+	if test -d src/utility ; then \
+	( cd src/utility ; $(MAKE) ) ; fi
 
 #
 # CLEAN UP
 #
 clean:
-	if test -d extlibs ;   then ( cd extlibs;   $(MAKE) clean ) ; fi
-	if test -d plugins ;   then ( cd plugins;   $(MAKE) clean ) ; fi
-	if test -d iotk ;      then ( cd iotk;      $(MAKE) clean ) ; fi
-	if test -d ctools ;    then ( cd ctools;    $(MAKE) clean ) ; fi
-	if test -d libs ;      then ( cd libs;      $(MAKE) clean ) ; fi
-	if test -d wannier ;   then ( cd wannier;   $(MAKE) clean ) ; fi
-	if test -d transport ; then ( cd transport; $(MAKE) clean ) ; fi
-	if test -d embed ;     then ( cd embed;     $(MAKE) clean ) ; fi
-	if test -d utility ;   then ( cd utility;   $(MAKE) clean ) ; fi
+	if test -d extlibs ;       then ( cd extlibs;       $(MAKE) clean ) ; fi
+	if test -d plugins ;       then ( cd plugins;       $(MAKE) clean ) ; fi
+	if test -d src/ctools ;    then ( cd src/ctools;    $(MAKE) clean ) ; fi
+	if test -d src/libs ;      then ( cd src/libs;      $(MAKE) clean ) ; fi
+	if test -d src/wannier ;   then ( cd src/wannier;   $(MAKE) clean ) ; fi
+	if test -d src/transport ; then ( cd src/transport; $(MAKE) clean ) ; fi
+	if test -d src/embed ;     then ( cd src/embed;     $(MAKE) clean ) ; fi
+	if test -d src/utility ;   then ( cd src/utility;   $(MAKE) clean ) ; fi
 	- /bin/rm  ./include/build_date.h
 	- /bin/rm -rf ./bin/*.x ./bin/sumpdos ./bin/iotk ./bin/sax2qexml
 

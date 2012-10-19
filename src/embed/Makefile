@@ -3,7 +3,7 @@
 # WanT package
 #===============================
 #
-include ../make.sys
+include ../../make.sys
 
 
 OBJS= \
@@ -68,7 +68,7 @@ all: $(BIN)
 embed.x: $(BIN_DEPS) embed.o $(OBJS_ALL)
 	$(LD) $(LDFLAGS) -o $@ embed.o \
 	     $(OBJS_ALL) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../embed/$@ . )
+	- ( cd ../../bin ; ln -sf ../../embed/$@ . )
 
 clean:
 	rm -rf *.o *.a *core *.F90 work.pc work.pcl *.mod *.x

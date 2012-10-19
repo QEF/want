@@ -3,7 +3,7 @@
 # WanT package
 #===============================
 #
-include ../make.sys
+include ../../make.sys
 
 OBJS=decay_module.o \
 midpoint_module.o
@@ -94,45 +94,45 @@ all: midpoint.x wfk2etsf.x kgrid.x sumpdos sum_sgm.x \
 midpoint.x: midpoint.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ midpoint.o \
 	       $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../utility/$@ . )
+	- ( cd ../../bin ; ln -sf ../../utility/$@ . )
 
 wfk2etsf.x: wfk2etsf.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ wfk2etsf.o \
 	       $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../utility/$@ . )
+	- ( cd ../../bin ; ln -sf ../../utility/$@ . )
 
 kgrid.x: kgrid.o 
 	$(LD) $(LDFLAGS) -o $@ kgrid.o 
-	- ( cd ../bin ; ln -sf ../utility/$@ . )
+	- ( cd ../../bin ; ln -sf ../../utility/$@ . )
 
 gcube2plt.x: gcube2plt.o
 	$(CC) $(CFLAGS) -o $@ gcube2plt.c
-	- ( cd ../bin ; ln -sf ../utility/$@ . )
+	- ( cd ../../bin ; ln -sf ../../utility/$@ . )
 
 sumpdos: sumpdos.o
 	$(LD) $(LDFLAGS) -o $@ sumpdos.o
-	- ( cd ../bin ; ln -sf ../utility/$@ . )
+	- ( cd ../../bin ; ln -sf ../../utility/$@ . )
 
 decay.x: decay.o $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ decay.o \
 	       $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../utility/$@ . )
+	- ( cd ../../bin ; ln -sf ../../utility/$@ . )
 
 sum_sgm.x: sum_sgm.o $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ sum_sgm.o \
 	       $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../utility/$@ . )
+	- ( cd ../../bin ; ln -sf ../../utility/$@ . )
 
 sax2qexml.x: sax2qexml.o $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ sax2qexml.o \
 	       $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../utility/$@ . )
-	- ( cd ../bin ; ln -sf ../utility/sax2qexml . )
+	- ( cd ../../bin ; ln -sf ../../utility/$@ . )
+	- ( cd ../../bin ; ln -sf ../../utility/sax2qexml . )
 
 write_ham.x: write_ham.o $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ write_ham.o \
 	       $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
-	- ( cd ../bin ; ln -sf ../utility/$@ . )
+	- ( cd ../../bin ; ln -sf ../../utility/$@ . )
 
 clean:
 	rm -rf *.o *.a *core *.F90 work.pc work.pcl *.mod *.x sumpdos

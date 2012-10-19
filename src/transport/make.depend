@@ -88,6 +88,7 @@ gzero_maker.o : ../libs/util.o
 gzero_maker.o : operator_blc.o
 gzero_maker.o : smearing_T.o
 hamiltonian_init.o : control.o
+hamiltonian_init.o : correlation.o
 hamiltonian_init.o : hamiltonian.o
 hamiltonian_init.o : ../libs/kind.o
 hamiltonian_init.o : ../libs/log_module.o
@@ -202,4 +203,4 @@ write_data.o : ../libs/parameters.o
 write_data.o : ../libs/parser.o
 write_data.o : ../libs/timing.o
 write_data.o : ../wannier/io_module.o
-memusage.o : ../include/f_defs.h
+memusage.o : ../../include/f_defs.h
