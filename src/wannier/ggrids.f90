@@ -427,6 +427,7 @@ CONTAINS
    IF ( PRESENT(gk2fft) ) gk2fft = 0
    IF ( PRESENT(fft2gk) ) fft2gk = 0
 
+!$omp parallel do private(igk,nx,ny,nz,npoint)
    DO np = 1, npwk
       igk = igsort( np )
 
@@ -447,6 +448,7 @@ CONTAINS
       IF( PRESENT( fft2gk ) ) fft2gk(npoint) = np  ! index
 
    ENDDO
+!$omp end parallel do
    !
    CALL log_pop( 'ggrids_gk_indexes' )
    !
@@ -472,6 +474,7 @@ END SUBROUTINE ggrids_gk_indexes
    IF ( PRESENT(gv2fft) ) gv2fft = 0
    IF ( PRESENT(fft2gv) ) fft2gv = 0
 
+!$omp parallel do private(nx,ny,nz,npoint)
    DO ig = 1, ngm
 
       nx = -100000
@@ -491,6 +494,7 @@ END SUBROUTINE ggrids_gk_indexes
       IF( PRESENT( fft2gv ) ) fft2gv(npoint) = ig  ! index
 
    ENDDO
+!$omp end parallel do
    !
    CALL log_pop( 'ggrids_gv_indexes' )
    !

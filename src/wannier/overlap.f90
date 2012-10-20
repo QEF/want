@@ -40,6 +40,7 @@
       INTEGER :: npwkx, npwx_g, itmp(3)
       INTEGER :: j1, npwk1, ind1
       INTEGER :: j2, npwk2, ind2
+      COMPLEX(dbl) :: ctmp
       !
       INTEGER,      ALLOCATABLE :: map(:),  map_aux(:)
       COMPLEX(dbl), ALLOCATABLE :: aux1(:), aux2(:)
@@ -145,15 +146,21 @@
       !
       IF ( gamma_only ) THEN
           !
+!$omp parallel do
           DO ig = 1, npwk2
              IF ( map(ig) < 0 ) map(ig)     = -npwx_g
              IF ( map(ig) < 0 .AND. map_aux(ig) <= 0 ) CALL errore(subname,'mismatch in maps',10)
              IF ( map(ig) == 0 )                       CALL errore(subname,'map == 0',10)
           ENDDO
+!$omp end parallel do
           !
       ELSE
           !
-          IF ( ANY( map(1:npwk2) <= 0 ) ) CALL errore(subname,'invalid index in map', 10)
+!$omp parallel do
+          DO ig = 1, npwk2
+              IF ( map(ig) <= 0 ) CALL errore(subname,'invalid index in map', ig)
+          ENDDO
+!$omp end parallel do
           !
       ENDIF
 
@@ -168,6 +175,7 @@
           !
           IF ( gamma_only ) THEN
               !
+!$omp parallel do
               DO ig = 1, npwk2
                   !
                   IF ( map(ig) < 0 )  THEN 
@@ -177,14 +185,17 @@
                   ENDIF
                   !
               ENDDO
+!$omp end parallel do
               !
           ELSE
               !
               ! normal wfc representation
               !
+!$omp parallel do
               DO ig=1, npwk2
                   aux2( map( ig ) ) = evc( ig, ind2) 
               ENDDO
+!$omp end parallel do
               !
           ENDIF
 
@@ -194,15 +205,25 @@
               aux1(:) = CZERO
               ind1 = wfc_info_getindex(imin1 +j1 -1, ik1, "IK", evc_info)
               !
+!$omp parallel do
               DO ig=1, npwk1
                  aux1( igsort( ig, ik1 ) ) = evc( ig, ind1) 
               ENDDO
+!$omp end parallel do
 
               !
               ! last position for ig is dummy
               !
 #ifdef __WORKAROUND_ZDOTC
-              Mkb( j1, j2) = DOT_PRODUCT( aux1(1:npwx_g-1), aux2(1:npwx_g-1) ) 
+              ctmp = 0.0d0
+              !
+!$omp parallel do reduction(+:ctmp)
+              DO ig = 1, npwx_g-1
+                  ctmp = ctmp + CONJG(aux1(ig)) * aux2(ig) 
+              ENDDO
+!$omp end parallel do
+              !
+              Mkb( j1, j2) = ctmp
 #else
               Mkb( j1, j2) = ZDOTC( npwx_g -1, aux1, 1, aux2, 1) 
 #endif
@@ -226,11 +247,13 @@
                                itmp, -1, map_aux)
           map_aux( npwk2+1: npwkx ) = 0
           !
+!$omp parallel do
           DO ig = 1, npwk2
              IF ( map(ig) < 0 ) map(ig)     = -npwx_g
              IF ( map(ig) < 0 .AND. map_aux(ig) <= 0) CALL errore(subname,'mismatch in maps II',10)
              IF ( map(ig) == 0 )                      CALL errore(subname,'map == 0 II',10)
           ENDDO
+!$omp end parallel do
       
 
           DO j2 = 1, dimw2
@@ -239,6 +262,7 @@
               ind2 = wfc_info_getindex(imin2 +j2 -1, ik2, "IKB", evc_info)
               !
               !
+!$omp parallel do
               DO ig = 1, npwk2
                   !
                   IF ( map(ig) < 0 )  THEN 
@@ -248,6 +272,7 @@
                   ENDIF
                   !
               ENDDO
+!$omp end parallel do
 
 
               DO j1 = 1, dimw1
@@ -255,9 +280,11 @@
                   aux1(:) = CZERO
                   ind1 = wfc_info_getindex(imin1 +j1 -1, ik1, "IK", evc_info)
                   !
+!$omp parallel do
                   DO ig = 1, npwk1
                      aux1( igsort( ig, ik1 ) ) = evc( ig, ind1)
                   ENDDO
+!$omp end parallel do
     
                   !
                   ! first and last positions for ig are dummy

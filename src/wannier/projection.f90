@@ -105,12 +105,14 @@
       ! compute the needed spherical harmonics
       ! vkg in bohr^-1
       !
+!$omp parallel do
       DO ig = 1, npwk
           !
           vkg(:,ig) = - ( vkpt_g(:,ik_g) + g(:, igsort(ig,ik_g))*tpiba )  
           vkgg(ig)  = DOT_PRODUCT( vkg(:,ig) , vkg(:,ig) ) 
           !
       ENDDO
+!$omp end parallel do
       !
       CALL ylmr2( (lmax+1)**2, npwk, vkg, vkgg, ylm ) 
       CALL sph_har_index(lmax, ylm_info)
@@ -130,6 +132,8 @@
 
           !
           ! ... bands 
+          !
+!$omp parallel do private(ind)
           DO ib = 1, dimw
              !
              ind = wfc_info_getindex(imin +ib -1, ik_g, "SPSI_IK", evc_info)
@@ -142,6 +146,7 @@
              ENDDO
              !
           ENDDO 
+!$omp end parallel do
           !
 #else
 
@@ -169,6 +174,7 @@
           !
           IF ( gamma_only ) THEN
               !
+!$omp parallel do private(ind)
               DO ib = 1, dimw
                   !
                   ind = wfc_info_getindex(imin +ib -1, ik_g, "SPSI_IK", evc_info)
@@ -176,6 +182,7 @@
                   ca(ib,iwann) = ca(ib,iwann) + CONJG( ca(ib,iwann) ) &
                                - CONJG(evc(1, ind )) * trial_vect(1)
               ENDDO
+!$omp end parallel do
               !
           ENDIF
           !

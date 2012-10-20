@@ -77,15 +77,15 @@ SUBROUTINE overlap_setmap( npwk, npwx_g, ngx, ngy, ngz, &
    !
    nnrx = ngx*ngy*ngz+1
    !
+!$omp parallel do private(ipoint,ix,ix2,iy,iy2,iz,iz2,ipoint_new,itmp)
+   !
    DO ig=1, npwk
       
       ipoint = gk2fft(ig)
       !
       ! ipoint index in the FFT grid is built as
-      ! 
       ! ipoint = ix + (iy-1)*ngx + (iz-1)*ngx*ngy
       !
-     
       ix = MOD( ipoint, ngx )
       IF( ix < 1   ) ix = ix + ngx
       IF( ix > ngx ) ix = ix - ngx
@@ -135,6 +135,7 @@ SUBROUTINE overlap_setmap( npwk, npwx_g, ngx, ngy, ngz, &
       map(ig) = MIN( itmp, npwx_g)
       !
    ENDDO
+!$omp end parallel do
 
    DEALLOCATE( gk2fft, STAT=ierr )
    IF (ierr/=0) CALL errore(subname,'deallocating gk2fft', ABS(ierr) )

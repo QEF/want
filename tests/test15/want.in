@@ -10,6 +10,7 @@
    dimwann = 77
    froz_max = -2.2     ! Ef = -3.2
    maxiter_dis = 2000
+!   maxiter_dis = 20
 /
 
 &LOCALIZATION
