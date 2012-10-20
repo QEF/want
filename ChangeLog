@@ -4,7 +4,10 @@
 =======================================================
 
 
-19 Oct 2012     tree structure changed, src/ dir added. ctools, libs renamed to
+20 Oct 2012     Some basic OMP support introduced in projections, overlaps, 
+		spherical harmonics, and overlaps related maps. (AF)
+
+19 Oct 2012     Tree structure changed, src/ dir added. ctools, libs renamed to
 		clibs and wlibs. Makedeps and other scripts changed accordingly. 
 		Version changed to 2.5.0_alpha2 . (AF)
 
