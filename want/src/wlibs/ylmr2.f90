@@ -49,7 +49,10 @@ subroutine ylmr2 (lmax2, ng, g, gg, ylm)
   !  theta and phi are polar angles, cost = cos(theta)
   !
   allocate(cost(ng), phi(ng), P(ng,0:lmax,0:lmax) )
+  !
+!$omp parallel do private(gmod)
   DO ig = 1, ng
+     !
      gmod = SQRT (gg (ig) )
      IF (gmod < eps) THEN
         cost(ig) = ZERO
@@ -67,6 +70,7 @@ subroutine ylmr2 (lmax2, ng, g, gg, ylm)
         phi (ig) = SIGN( PI/2.0_dbl,g(2,ig) )
      ENDIF
   ENDDO
+!$omp end parallel do
   !
   !  P(:,l,m), are the Legendre Polynomials (0 <= m <= l)
   !
