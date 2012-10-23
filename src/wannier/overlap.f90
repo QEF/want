@@ -85,9 +85,6 @@
           IF (ierr/=0) CALL errore(subname,'allocating map_aux',npwkx)
       ENDIF
       !
-      ALLOCATE( aux1(npwx_g), STAT=ierr )
-      IF (ierr/=0) CALL errore(subname,'allocating aux1',npwx_g)
-      !
       ALLOCATE( aux2(npwx_g), STAT=ierr )
       IF (ierr/=0) CALL errore(subname,'allocating aux2',npwx_g)
 
@@ -200,16 +197,22 @@
           ENDIF
 
 
+!$omp parallel private(aux1)
+          !
+!$omp critical
+          ALLOCATE( aux1(npwx_g), STAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'allocating aux1',npwx_g)
+!$omp end critical
+          !
+!$omp do private(ind1,ig)
           DO j1 = 1, dimw1
               !
               aux1(:) = CZERO
               ind1 = wfc_info_getindex(imin1 +j1 -1, ik1, "IK", evc_info)
               !
-!$omp parallel do
               DO ig=1, npwk1
                  aux1( igsort( ig, ik1 ) ) = evc( ig, ind1) 
               ENDDO
-!$omp end parallel do
 
               !
               ! last position for ig is dummy
@@ -217,11 +220,9 @@
 #ifdef __WORKAROUND_ZDOTC
               ctmp = 0.0d0
               !
-!$omp parallel do reduction(+:ctmp)
               DO ig = 1, npwx_g-1
                   ctmp = ctmp + CONJG(aux1(ig)) * aux2(ig) 
               ENDDO
-!$omp end parallel do
               !
               Mkb( j1, j2) = ctmp
 #else
@@ -229,8 +230,17 @@
 #endif
               !
           ENDDO
+!$omp end do
+          !
+!$omp critical
+          DEALLOCATE( aux1, STAT=ierr)
+          IF (ierr/=0) CALL errore(subname,'deallocating aux1',ABS(ierr))
+!$omp end critical
+!
+!$omp end parallel
           !
       ENDDO
+
 
       !
       ! add the missing term (G<0) in the gamma only case
@@ -275,16 +285,22 @@
 !$omp end parallel do
 
 
+!$omp parallel private(aux1)
+              !
+!$omp critical
+              ALLOCATE( aux1(npwx_g), STAT=ierr )
+              IF (ierr/=0) CALL errore(subname,'allocating aux1',npwx_g)
+!$omp end critical
+              !
+!$omp do private(ind1,ig)
               DO j1 = 1, dimw1
                   !
                   aux1(:) = CZERO
                   ind1 = wfc_info_getindex(imin1 +j1 -1, ik1, "IK", evc_info)
                   !
-!$omp parallel do
                   DO ig = 1, npwk1
                      aux1( igsort( ig, ik1 ) ) = evc( ig, ind1)
                   ENDDO
-!$omp end parallel do
     
                   !
                   ! first and last positions for ig are dummy
@@ -297,6 +313,14 @@
 #endif
                   !
               ENDDO
+!$omp end do
+              !
+!$omp critical
+              DEALLOCATE( aux1, STAT=ierr)
+              IF (ierr/=0) CALL errore(subname,'deallocating aux1',ABS(ierr))
+!$omp end critical
+              !
+!$omp end parallel
               !
           ENDDO
           !  
@@ -305,9 +329,6 @@
 
       !
       ! local cleanup
-      !
-      DEALLOCATE( aux1, STAT=ierr)
-      IF (ierr/=0) CALL errore(subname,'deallocating aux1',ABS(ierr))
       !
       DEALLOCATE( aux2, STAT=ierr)
       IF (ierr/=0) CALL errore(subname,'deallocating aux2',ABS(ierr))
