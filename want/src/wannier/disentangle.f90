@@ -136,8 +136,9 @@
            ncount = iter
            !
            CALL log_push( "iteration" )
-
-
+           
+           CALL timing('iterations1',OPR='START')
+           !
            DO ik = 1, nkpts
                !
                ! ... update Mkb_aux, according to lamp
@@ -182,7 +183,11 @@
                ENDDO
                !
            ENDDO
+           !
+           CALL timing('iterations1',OPR='STOP')
  
+
+           CALL timing('iterations2',OPR='START')
 
            !
            ! Compute Omega_I using the updated subspaces at all k
@@ -262,12 +267,15 @@
            ENDDO
            !
            CALL log_pop ( 'zmatrix' )
+           CALL timing('iterations2',OPR='STOP')
 
 
            !
            ! Compute the current z-matrix at each relevant k-point 
            ! using the mixing scheme
            ! 
+           CALL timing('iterations3',OPR='START')
+           !
            IF ( iter == 0 ) THEN
                !
                mtrx_in(:,:,:) = mtrx_out(:,:,:)
@@ -297,6 +305,8 @@
                ENDDO
                ! 
            ENDIF
+           !
+           CALL timing('iterations3',OPR='STOP')
 
 
            !
@@ -304,7 +314,7 @@
            !
            CALL log_push( 'lamp' )
            !
-           !
+           CALL timing('iterations4',OPR='START')
            !
            DO ik_g = 1, nkpts_g
 
@@ -375,6 +385,7 @@
            !CALL para_poolrecover( lamp )
 
            !
+           CALL timing('iterations4',OPR='STOP')
            !
            CALL log_pop ( 'lamp' )
 

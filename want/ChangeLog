@@ -4,6 +4,8 @@
 =======================================================
 
 
+23 Oct 2012     more OMP support in disentanglement. (AF)
+
 20 Oct 2012     Some basic OMP support introduced in projections, overlaps, 
 		spherical harmonics, and overlaps related maps. (AF)
 

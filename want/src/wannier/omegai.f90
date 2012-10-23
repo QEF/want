@@ -60,6 +60,7 @@
        !
        ib = nnpos( inn )
        !
+!$omp parallel do reduction (+:Omega_I)
        DO n = 1, dimwann     
        DO m = 1, dimwann
             !
@@ -68,6 +69,7 @@
             !
        ENDDO 
        ENDDO 
+!$omp end parallel do
        !
    ENDDO 
    ENDDO 
