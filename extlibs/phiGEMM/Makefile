@@ -7,7 +7,7 @@ include ../../make.sys
 
 LIBNAME=libphiGEMM.a
 PACKAGE=phiGEMM
-TARBALL=../archive/$(PACKAGE)-v1.6.tar.gz
+TARBALL=../archive/$(PACKAGE)-v1.9.9.tar.gz
 
 #
 # redefinitions
