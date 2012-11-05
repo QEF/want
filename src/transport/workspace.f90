@@ -94,10 +94,6 @@ CONTAINS
     !  ALLOCATE ( tsumt(dimx_lead,dimx_lead), STAT=ierr )
     !  IF( ierr /=0 ) CALL errore(subname,'allocating tsumt', ABS(ierr) )
       !
-    !  ALLOCATE ( work(dimx,dimx), STAT=ierr )
-    !  IF( ierr /=0 ) CALL errore(subname,'allocating work', ABS(ierr) )
-      ! 
-      !
       IF ( write_lead_sgm ) THEN
           !
           ALLOCATE ( sgm_L(dimC,dimC,nkpts_par), STAT=ierr )

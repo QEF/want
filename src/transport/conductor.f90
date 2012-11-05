@@ -412,23 +412,24 @@ END PROGRAM conductor
           ELSE
               ik_eff = ik
           ENDIF
+          !
+          ALLOCATE( work(dimC, MAX(dimL,dimR) ), STAT=ierr ) 
+          IF ( ierr/=0 ) CALL errore(subname,"allocating work I", ABS(ierr) )
 
           !
           ! sgm_R
           !
-          !CALL mat_mul( work,    blc_CR%aux, 'N',         gR, 'N', dimC, dimR, dimR)
-          !CALL mat_mul( sgm_R(:,:,ik_eff), work, 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
-          CALL mat_mul( sgm_R(1:dimC,1:dimR,ik_eff),                  blc_CR%aux, 'N',         gR, 'N', dimC, dimR, dimR)
-          CALL mat_mul( sgm_R(1:dimC,1:dimC,ik_eff), sgm_R(1:dimC,1:dimR,ik_eff), 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
+          CALL mat_mul( work, blc_CR%aux, 'N',          gR, 'N', dimC, dimR, dimR)
+          CALL mat_mul( sgm_R(1:dimC,1:dimC,ik_eff),  work, 'N', blc_CR%aux, 'C', dimC, dimC, dimR)
           !
           ! sgm_L
           !
-          !CALL mat_mul( work,    blc_LC%aux, 'C',         gL, 'N', dimC, dimL, dimL)
-          !CALL mat_mul( sgm_L(:,:,ik_eff), work, 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
-          CALL mat_mul( sgm_L(1:dimC,1:dimL,ik_eff),                  blc_LC%aux, 'C',         gL, 'N', dimC, dimL, dimL)
-          CALL mat_mul( sgm_L(1:dimC,1:dimC,ik_eff), sgm_L(1:dimC,1:dimL,ik_eff), 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
+          CALL mat_mul( work, blc_LC%aux, 'C',         gL, 'N', dimC, dimL, dimL)
+          CALL mat_mul( sgm_L(1:dimC,1:dimC,ik_eff), work, 'N', blc_LC%aux, 'N', dimC, dimC, dimL) 
  
 
+          DEALLOCATE( work, STAT=ierr)
+          IF ( ierr/=0 ) CALL errore(subname,"deallocating work I", ABS(ierr))
           DEALLOCATE( gR, gL, STAT=ierr)
           IF ( ierr/=0 ) CALL errore(subname,"deallocating gR, gL", ABS(ierr))
 
@@ -440,18 +441,18 @@ END PROGRAM conductor
           !=================================== 
           !
           ALLOCATE( work(dimC, dimC), STAT=ierr ) 
-          IF ( ierr/=0 ) CALL errore(subname,"allocating work", ABS(ierr) )
+          IF ( ierr/=0 ) CALL errore(subname,"allocating work II", ABS(ierr) )
           ALLOCATE( gC(dimC, dimC), STAT=ierr ) 
           IF ( ierr/=0 ) CALL errore(subname,"allocating gC", ABS(ierr) )
           !
-          CALL gzero_maker ( dimC, blc_00C, dimx, work, 'inverse', ' ')
+          CALL gzero_maker ( dimC, blc_00C, dimC, work, 'inverse', ' ')
           !
           work(:,:) = work(:,:) -sgm_L(:,:,ik_eff) -sgm_R(:,:,ik_eff)
           !
           CALL mat_inv( dimC, work, gC)
           !
           DEALLOCATE( work, STAT=ierr ) 
-          IF ( ierr/=0 ) CALL errore(subname,"deallocating work", ABS(ierr) )
+          IF ( ierr/=0 ) CALL errore(subname,"deallocating work II", ABS(ierr) )
           !
           !
           IF ( write_gf ) THEN
