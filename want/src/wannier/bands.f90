@@ -112,8 +112,8 @@ CONTAINS
       !   
       ! init input namelist   
       !   
-      prefix                      = 'WanT' 
-      postfix                     = ' ' 
+      prefix                      = ' ' 
+      postfix                     = 'WanT' 
       work_dir                    = './' 
       datafile_sgm                = ' '
       datafile_dft                = ' '

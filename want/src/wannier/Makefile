@@ -126,7 +126,8 @@ blc2wan.x \
 bands.x \
 cmplx_bands.x \
 dos.x \
-plot.x
+plot.x \
+unfold.x
 
 EXTERNAL_LIBS= ../clibs/libclibs.a ../wlibs/libwant.a 
 BIN_DEPS=      $(OBJS) $(EXTERNAL_LIBS)
@@ -163,6 +164,10 @@ dos.x:         dos.o $(BIN_DEPS)
 
 plot.x:        plot.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ plot.o $(OBJS) $(LIBOBJS) $(LIBS)
+	- ( cd ../../bin ; ln -sf ../src/wannier/$@ . )
+
+unfold.x:      unfold.o $(BIN_DEPS)
+	$(LD) $(LDFLAGS) -o $@ unfold.o $(OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../../bin ; ln -sf ../src/wannier/$@ . )
 
 

@@ -656,7 +656,7 @@ CONTAINS
        CHARACTER(*),      INTENT(in) :: filefmt
        CHARACTER(16)      :: subname="windows_read_ext"
        CHARACTER(nstrx)   :: str
-       INTEGER            :: lnkpts, ierr, ik, ierr_loc
+       INTEGER            :: lnkpts, ierr, ik
        REAL(dbl)          :: lefermi(2)
        REAL(dbl), ALLOCATABLE :: leig(:,:,:)
        !
