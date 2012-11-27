@@ -483,12 +483,14 @@
 
 
 !**********************************************************
-   SUBROUTINE io_name( data_type, filename, lpostfix, lbody, body, lpath, lproc)
+   SUBROUTINE io_name( data_type, filename, lpostfix, postfix_loc, lbody, body, lpath, lproc)
    !**********************************************************
-      IMPLICIT NONE
+   !
+   IMPLICIT NONE
+      !
       CHARACTER(*),            INTENT(IN)  :: data_type
       CHARACTER(*),            INTENT(OUT) :: filename
-      CHARACTER(*),  OPTIONAL, INTENT(IN)  :: body
+      CHARACTER(*),  OPTIONAL, INTENT(IN)  :: body, postfix_loc
       LOGICAL,       OPTIONAL, INTENT(IN)  :: lpostfix, lbody, lpath, lproc   
       !
       CHARACTER(7)        :: subname="io_name"
@@ -518,6 +520,8 @@
       postfix_ = " " 
       IF ( lpath_ )           path_ = TRIM(work_dir)
       IF ( lpostfix_ )     postfix_ = TRIM(postfix)
+      IF ( lpostfix_ .AND. PRESENT( postfix_loc) ) &    
+                           postfix_ = TRIM(postfix_loc)
 
 
       !
@@ -578,7 +582,7 @@
            !
            suffix_ = TRIM(suffix_wannier)
            !
-      CASE ( "hamiltonian" )
+      CASE ( "hamiltonian", "ham" )
            !
            suffix_ = TRIM(suffix_hamiltonian) 
            !

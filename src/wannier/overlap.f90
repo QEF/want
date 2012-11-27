@@ -40,7 +40,9 @@
       INTEGER :: npwkx, npwx_g, itmp(3)
       INTEGER :: j1, npwk1, ind1
       INTEGER :: j2, npwk2, ind2
+#ifdef __WORKAROUND_ZDOTC
       COMPLEX(dbl) :: ctmp
+#endif
       !
       INTEGER,      ALLOCATABLE :: map(:),  map_aux(:)
       COMPLEX(dbl), ALLOCATABLE :: aux1(:), aux2(:)

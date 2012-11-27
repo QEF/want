@@ -135,7 +135,7 @@ END SUBROUTINE cp2k_tools_get_dims
    CHARACTER(24) :: subname='cp2k_tools_get_data'
    LOGICAL       :: lfound
    INTEGER       :: iunit
-   INTEGER       :: i, ik, isp, ierr
+   INTEGER       :: ik, isp, ierr
    
 
    CALL log_push( subname )
@@ -254,7 +254,7 @@ END SUBROUTINE cp2k_tools_get_data
    CHARACTER(nstrx)            :: attr, filetype_
    INTEGER                     :: dimbset, nkpts, nk(3), shift(3), nrtot, nr(3)
    INTEGER                     :: nspin, nbnd
-   INTEGER                     :: ierr, i, j, m, ir, ik, isp
+   INTEGER                     :: ierr, i, j, ir, isp
    !
    LOGICAL                     :: write_ham, write_space
    !

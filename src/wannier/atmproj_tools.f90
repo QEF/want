@@ -670,10 +670,9 @@ END SUBROUTINE atmproj_to_internal
      !
      CHARACTER(*)     :: filename
      !
-     INTEGER          :: iunit
      INTEGER          :: nbnd, nkpts, nspin, natomwfc
      INTEGER          :: ierr
-     LOGICAL          :: lerror, lopnd
+     LOGICAL          :: lerror
     
 
      file_is_atmproj = .FALSE.
