@@ -53,8 +53,8 @@ package-ready-stamp: uncompress-stamp configure-stamp
 	if test -d ./bin      ; then rm -rf ./bin      ; fi    ; mkdir ./bin ;
 	if test -d ./include  ; then rm -rf ./include  ; fi    ; mkdir ./include ;
 	cp $(PACKAGE)/src/*.a ./lib ;
-	ln -s $(PACKAGE)/src/*.x ./bin ;
-	ln -s $(PACKAGE)/tools/iotk ./bin ;
+	cp $(PACKAGE)/src/*.x ./bin ;
+	cp $(PACKAGE)/tools/iotk ./bin ;
 	cp $(PACKAGE)/src/*.mod ./include ;
 	#
 	- ( cd ../../bin ; ln -sf ../extlibs/iotk/bin/* . )
