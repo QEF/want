@@ -327,8 +327,8 @@ END PROGRAM unfold
       CALL monkpack( nk_unfld, s_unfld, vkpt_unfld )
       wk_unfld(:) = 1.0_dbl/REAL( nkpts_unfld )
       !
-      ! convert to cartesian units
-      CALL cry2cart( vkpt_unfld, bvec_unfld )
+      !! convert to cartesian units
+      !!CALL cry2cart( vkpt_unfld, bvec_unfld )
       !
       ! real space grid
       nr_unfld(1:3) = ndiv(1:3)
@@ -677,6 +677,7 @@ END SUBROUTINE translation_read
       INTEGER        :: ounit
       !
       INTEGER, ALLOCATABLE :: itmp(:)
+      REAL,    ALLOCATABLE :: eig_(:,:)
      
 
 !
@@ -712,7 +713,7 @@ END SUBROUTINE translation_read
        CALL iotk_write_attr( attr,"units","bohr^-1",FIRST=.TRUE.)
        CALL iotk_write_dat( ounit,"RECIPROCAL_LATTICE", bvec, ATTR=attr, COLUMNS=3)
        !
-       CALL iotk_write_attr( attr,"units","bohr^-1",FIRST=.TRUE.)
+       CALL iotk_write_attr( attr,"units","crystal",FIRST=.TRUE.)
        CALL iotk_write_dat( ounit,"VKPT", vkpt, ATTR=attr, COLUMNS=3)
        CALL iotk_write_dat( ounit,"WK", wk)
        !
@@ -773,6 +774,10 @@ END SUBROUTINE translation_read
        !
        ALLOCATE( itmp(nkpts), STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname, 'allocating itmp', ABS(ierr))
+       ALLOCATE( eig_(dimwann,nkpts), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname, 'allocating eig_', ABS(ierr))
+       !
+       eig_(:,:) = 0.0d0
        !
        itmp(:) = dimwann
        CALL iotk_write_dat( ounit, "DIMWIN", itmp, COLUMNS=8 )
@@ -787,7 +792,7 @@ END SUBROUTINE translation_read
                CALL iotk_write_begin( ounit, "SPIN"//TRIM(iotk_index(isp)) )
            ENDIF
            !
-           !CALL iotk_write_dat( ounit, "EIG", eig(:,:), COLUMNS=4)
+           CALL iotk_write_dat( ounit, "EIG", eig_(:,:), COLUMNS=4)
            !
            IF ( nspin == 2 ) THEN
                CALL iotk_write_end( ounit, "SPIN"//TRIM(iotk_index(isp)) )
@@ -815,6 +820,8 @@ END SUBROUTINE translation_read
        !
        DEALLOCATE( itmp, STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname, 'deallocating itmp', ABS(ierr))
+       DEALLOCATE( eig_, STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname, 'deallocating eig_', ABS(ierr))
        !
    ENDIF
 
