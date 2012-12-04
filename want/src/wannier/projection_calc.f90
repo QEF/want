@@ -7,15 +7,15 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !*******************************************************************
-   SUBROUTINE projection( ik_g, dimw, imin, dimwinx, evc, evc_info, dimwann, trial, ca)
+   SUBROUTINE projection_calc( ik_g, dimw, imin, dimwinx, evc, evc_info, dimwann, trial, proj)
    !*******************************************************************
    !
    ! ...  Calculate the projection of the gaussians on the bloch eigenstates inside 
    !      energy window: store it in dimwin(ik_g) X dimwann overlap matrix CA
    !
-   !      CA(iwann,ib,ik) = < ib, ik | iwann >
+   !      proj(iwann,ib,ik) = < ib, ik | iwann >
    !
-   !      The scalr product is directly done in reciprocal space, providing an
+   !      The scalar product is directly done in reciprocal space, providing an
    !      analytical form for the FT of the gaussian orbitals.
    !
    USE kinds,                ONLY : dbl
@@ -41,10 +41,11 @@
    INTEGER,            INTENT(in) :: dimwinx
    INTEGER,            INTENT(in) :: dimwann
    TYPE(trial_center), INTENT(in) :: trial(dimwann)
-   COMPLEX(dbl),    INTENT(inout) :: ca(dimwinx,dimwann)
+   COMPLEX(dbl),    INTENT(inout) :: proj(dimwinx,dimwann)
    !
    ! local variables
    !
+   CHARACTER(15)   :: subname="projection_calc"
 #ifdef __INTEL
    INTEGER :: npwx
 #endif
@@ -64,8 +65,8 @@
 ! main body
 !------------------------------
 !
-      CALL timing('projection',OPR='start')
-      CALL log_push('projection')
+      CALL timing(subname,OPR='start')
+      CALL log_push(subname)
 
       ind = wfc_info_getindex(imin, ik_g, "SPSI_IK", evc_info)
       !
@@ -76,7 +77,7 @@
 #endif
 
       ALLOCATE( trial_vect(npwk), STAT = ierr )
-      IF( ierr /= 0 ) CALL errore( 'projection', 'allocating trial_vect', npwk )
+      IF( ierr /= 0 ) CALL errore(subname, 'allocating trial_vect', npwk )
 
       !
       ! set the maximum l for the spherical harmonics
@@ -90,16 +91,16 @@
       ENDDO
 
       ALLOCATE( ylm_info(-lmax:lmax, 0:lmax ), STAT=ierr )
-      IF( ierr /= 0 ) CALL errore( 'projection', 'allocating ylm_info', ABS(ierr) )
+      IF( ierr /= 0 ) CALL errore(subname, 'allocating ylm_info', ABS(ierr) )
       !
       ALLOCATE( vkg(3,npwk), STAT=ierr )
-      IF( ierr /= 0 ) CALL errore( 'projection', 'allocating vkg', ABS(ierr) )
+      IF( ierr /= 0 ) CALL errore(subname, 'allocating vkg', ABS(ierr) )
       !
       ALLOCATE( vkgg(npwk), STAT=ierr )
-      IF( ierr /= 0 ) CALL errore( 'projection', 'allocating vkgg', ABS(ierr) )
+      IF( ierr /= 0 ) CALL errore(subname, 'allocating vkgg', ABS(ierr) )
       !
       ALLOCATE( ylm(npwk,(lmax+1)**2), STAT=ierr )
-      IF( ierr /= 0 ) CALL errore( 'projection', 'allocating ylm', ABS(ierr) )
+      IF( ierr /= 0 ) CALL errore(subname, 'allocating ylm', ABS(ierr) )
 
       !
       ! compute the needed spherical harmonics
@@ -138,10 +139,10 @@
              !
              ind = wfc_info_getindex(imin +ib -1, ik_g, "SPSI_IK", evc_info)
              !
-             ca(ib,iwann) = CZERO    
+             proj(ib,iwann) = CZERO    
              !
              DO ig = 1, npwk
-                 ca(ib,iwann) = ca(ib,iwann) +  &
+                 proj(ib,iwann) = proj(ib,iwann) +  &
                         CONJG( evc(ig,ind) ) * trial_vect(ig)
              ENDDO
              !
@@ -155,7 +156,7 @@
           !
           ind = wfc_info_getindex( imin, ik_g, "SPSI_IK", evc_info )
           !
-          ! perform the scalr produce < nk | trial_vect > 
+          ! perform the scalar produce < nk | trial_vect > 
           ! for all the bands in the selected energy window
           !
 #ifdef __INTEL
@@ -163,10 +164,10 @@
           ! workaround for a strange behavior (bug?) of the intel compiler
           !
           CALL ZGEMV ( 'C', npwk, dimw, CONE, evc(1:npwx, ind:ind+dimw-1 ), npwx, &
-                       trial_vect, 1, CZERO, ca(:, iwann), 1 )
+                       trial_vect, 1, CZERO, proj(:, iwann), 1 )
 #else
           CALL ZGEMV ( 'C', npwk, dimw, CONE, evc(:, ind:ind+dimw-1 ), npwx, &
-                       trial_vect, 1, CZERO, ca(:, iwann), 1 )
+                       trial_vect, 1, CZERO, proj(:, iwann), 1 )
 #endif
 
 #endif
@@ -179,7 +180,7 @@
                   !
                   ind = wfc_info_getindex(imin +ib -1, ik_g, "SPSI_IK", evc_info)
                   !
-                  ca(ib,iwann) = ca(ib,iwann) + CONJG( ca(ib,iwann) ) &
+                  proj(ib,iwann) = proj(ib,iwann) + CONJG( proj(ib,iwann) ) &
                                - CONJG(evc(1, ind )) * trial_vect(1)
               ENDDO
 !$omp end parallel do
@@ -192,22 +193,22 @@
       ! local cleaning
       ! 
       DEALLOCATE( trial_vect, STAT=ierr )
-      IF (ierr/=0) CALL errore('projection','deallocating trial_vect',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'deallocating trial_vect',ABS(ierr))
       !
       DEALLOCATE( ylm_info, STAT=ierr )
-      IF (ierr/=0) CALL errore('projection','deallocating ylm_info',ABS(ierr))
+      IF (ierr/=0) CALL errore(subname,'deallocating ylm_info',ABS(ierr))
       !
       DEALLOCATE( vkg, STAT=ierr )
-      IF (ierr/=0) CALL errore('projection','deallocating vkg', ABS(ierr) )
+      IF (ierr/=0) CALL errore(subname,'deallocating vkg', ABS(ierr) )
       !
       DEALLOCATE( vkgg, STAT=ierr )
-      IF (ierr/=0) CALL errore('projection','deallocating vkgg', ABS(ierr) )
+      IF (ierr/=0) CALL errore(subname,'deallocating vkgg', ABS(ierr) )
       !
       DEALLOCATE( ylm, STAT=ierr )
-      IF (ierr/=0) CALL errore('projection','deallocating ylm', ABS(ierr) )
+      IF (ierr/=0) CALL errore(subname,'deallocating ylm', ABS(ierr) )
 
-      CALL timing('projection',OPR='stop')
-      CALL log_pop('projection')
+      CALL timing(subname,OPR='stop')
+      CALL log_pop(subname)
    
-   END SUBROUTINE projection
+   END SUBROUTINE projection_calc
 

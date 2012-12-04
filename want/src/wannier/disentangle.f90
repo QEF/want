@@ -23,7 +23,8 @@
        USE timing_module,         ONLY : timing, timing_upto_now
        USE control_module,        ONLY : subspace_init_mode => subspace_init, verbosity, &
                                          unitary_thr, nprint_dis, nsave_dis, read_pseudo, &
-                                         read_symmetry
+                                         do_projections,   do_overlaps, &
+                                         read_projections, read_overlaps, read_symmetry
        USE util_module,           ONLY : zmat_is_unitary, mat_hdiag, mat_mul
        USE kpoints_module,        ONLY : nkpts, nkpts_g, iks, ike, vkpt_g, &
                                          nb, nnlist, nnpos, nnrev
@@ -108,7 +109,8 @@
        CALL write_header( stdout, "Overlaps and Projections" )
        CALL flush_unit( stdout )
        !
-       CALL wfc_manager()
+       CALL wfc_drv( DO_PROJ=do_projections, DO_OVP=do_overlaps, &
+                     READ_PROJ=read_projections, READ_OVP=read_overlaps )
        !
        CALL memusage( stdout )
 

@@ -34,7 +34,7 @@ SUBROUTINE overlap_extract(dimwann)
    USE subspace_module,   ONLY : eamp, subspace_read, subspace_deallocate
    USE windows_module,    ONLY : dimwinx, dimwin, windows_read
    USE kpoints_module,    ONLY : nkpts, iks, nb, nnlist, nnpos
-   USE overlap_module,    ONLY : Mkb, ca, overlap_allocate, overlap_deallocate, overlap_read 
+   USE overlap_module,    ONLY : Mkb, proj, overlap_allocate, overlap_deallocate, overlap_read 
    
    !
    IMPLICIT NONE
@@ -49,7 +49,7 @@ SUBROUTINE overlap_extract(dimwann)
    CHARACTER(15)             :: subname="overlap_extract"
    !
    COMPLEX(dbl), ALLOCATABLE :: Mkb_tmp(:,:,:,:)
-   COMPLEX(dbl), ALLOCATABLE :: ca_tmp(:,:,:)
+   COMPLEX(dbl), ALLOCATABLE :: proj_tmp(:,:,:)
    COMPLEX(dbl), ALLOCATABLE :: caux1(:,:)
    !
    LOGICAL                   :: lfound
@@ -110,8 +110,8 @@ SUBROUTINE overlap_extract(dimwann)
    ALLOCATE( Mkb_tmp(dimwann,dimwann,nb/2,nkpts), STAT=ierr ) 
    IF (ierr/=0) CALL errore(subname,"allocating Mkb_tmp",ABS(ierr))
    !
-   ALLOCATE( ca_tmp(dimwann,dimwann,nkpts), STAT=ierr ) 
-   IF (ierr/=0) CALL errore(subname,"allocating ca_tmp",ABS(ierr))
+   ALLOCATE( proj_tmp(dimwann,dimwann,nkpts), STAT=ierr ) 
+   IF (ierr/=0) CALL errore(subname,"allocating proj_tmp",ABS(ierr))
    !
    ALLOCATE( caux1(dimwinx,dimwinx), STAT=ierr ) 
    IF (ierr/=0) CALL errore(subname,"allocating caux1",ABS(ierr))
@@ -120,7 +120,7 @@ SUBROUTINE overlap_extract(dimwann)
    !
    ! Transform the original overlaps |u0 nk> according to the wfc transformation rule:
    ! 
-   !   | u mk > = \sum_n |u0 nk > * EAMP_nm k)
+   !   | u mk > = \sum_n |u0 nk > * EAMP_nm(k)
    !
    ! where | u mk > are the eigenvector of the hamiltonian on the Wannier subspace
    ! The new overlaps become:
@@ -128,9 +128,9 @@ SUBROUTINE overlap_extract(dimwann)
    !   < u mk | u nk+b > = \sum_{ij} EAMP^{daga}_mi (k) * < u0 ik | u0 jk+b > * EAMP_jn (k+b)
    !
    ! As well, the projection on the input localized orbitals are given:
-   ! ca(m,i,k) = < u mk | phi_i > and thus
+   ! proj(m,i,k) = < u mk | phi_i > and thus
    !     
-   ! ca(m,i,k) = \sum_l EAMP^{daga}_ml * ca0(l,i,k)
+   ! proj(m,i,k) = \sum_l EAMP^{daga}_ml * proj0(l,i,k)
    !
 
    !
@@ -164,7 +164,7 @@ SUBROUTINE overlap_extract(dimwann)
        !
        ik_g = ik + iks -1
        !
-       CALL mat_mul( ca_tmp(:,:,ik), eamp(:,:,ik_g), 'C', ca(:,:,ik), 'N',  &
+       CALL mat_mul( proj_tmp(:,:,ik), eamp(:,:,ik_g), 'C', proj(:,:,ik), 'N',  &
                      dimwann, dimwann, dimwin(ik_g) )
        !
    ENDDO
@@ -187,13 +187,13 @@ SUBROUTINE overlap_extract(dimwann)
    !
    Mkb(:,:,:,:) = Mkb_tmp(:,:,:,:)
    !
-   ca(:,:,:)    = ca_tmp(:,:,:)
+   proj(:,:,:)  = proj_tmp(:,:,:)
 
    !
    ! cleaning
    !
-   DEALLOCATE( Mkb_tmp, ca_tmp, STAT=ierr) 
-   IF (ierr/=0) CALL errore(subname,"deallocating Mkb_tmp, ca_tmp",ABS(ierr))
+   DEALLOCATE( Mkb_tmp, proj_tmp, STAT=ierr) 
+   IF (ierr/=0) CALL errore(subname,"deallocating Mkb_tmp, proj_tmp",ABS(ierr))
    !
    DEALLOCATE( caux1, STAT=ierr ) 
    IF (ierr/=0) CALL errore(subname,"deallocating caux1",ABS(ierr))

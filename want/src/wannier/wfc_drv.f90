@@ -7,19 +7,20 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
 !*********************************************************
-   SUBROUTINE wfc_manager()
+   SUBROUTINE wfc_drv_x( do_proj, do_ovp, do_transl, read_proj, read_ovp )
    !*********************************************************
    !
    ! This subroutine permforms all the
    ! operations needed to obtain the internal data from DFT wfcs
-   ! (OVERLAP and PROJECTIONS matrix elements).
+   ! (OVERLAP, PROJECTIONS, or TRANSLATIONS matrix elements).
    !
    ! Tasks performed:
    ! * read and init G grids
-   ! * compute the overlaps (reading the needed wfcs)
-   ! * compute the projections (reading the needed wfcs)
-   ! * write overlap and projections to file
-   ! * waste ggrids and wfcs data
+   ! * compute overlaps (reading the needed wfcs)
+   ! * compute projections (reading the needed wfcs)
+   ! * compute translations (reading the needed wfcs)
+   ! * write data to file
+   ! * clear ggrids and wfcs data
    !
    USE kinds
    USE parameters,                 ONLY : nstrx
@@ -31,9 +32,7 @@
    USE timing_module,              ONLY : timing, timing_upto_now
    USE files_module,               ONLY : file_open, file_close
    
-   USE control_module,             ONLY : do_overlaps, do_projections, &
-                                          use_atomwfc, use_pseudo, use_uspp, use_blimit, &
-                                          read_overlaps, read_projections, &
+   USE control_module,             ONLY : use_atomwfc, use_pseudo, use_uspp, use_blimit, &
                                           nwfc_buffer, nkb_buffer
    USE lattice_module,             ONLY : tpiba
    USE subspace_module,            ONLY : dimwann
@@ -41,7 +40,8 @@
    USE windows_module,             ONLY : windows_alloc => alloc, dimwin, dimwinx, imin
    USE kpoints_module,             ONLY : kpoints_alloc, bshells_alloc, nkpts, nkpts_g, iks, vkpt_g, &
                                           nb, nnlist, nncell, nnpos
-   USE overlap_module,             ONLY : Mkb, ca, overlap_alloc => alloc, overlap_write, overlap_read
+   USE overlap_module,             ONLY : Mkb, proj, overlap_alloc => alloc, overlap_write, overlap_read
+   USE translations_module,        ONLY : nvect, rvect, ndim, ndimx, transl, transl_alloc => alloc   
    USE ggrids_module,              ONLY : ggrids_summary, ggrids_read_ext, ggrids_deallocate
    USE wfc_data_module,            ONLY : npwkx, npwk, igsort, evc, evc_info, &
                                           wfc_data_grids_read, wfc_data_grids_summary, &
@@ -54,15 +54,26 @@
    !
    IMPLICIT NONE
       !
+      ! input vars
+      !
+      LOGICAL, OPTIONAL, INTENT(IN)   :: do_proj
+      LOGICAL, OPTIONAL, INTENT(IN)   :: do_ovp
+      LOGICAL, OPTIONAL, INTENT(IN)   :: do_transl
+      LOGICAL, OPTIONAL, INTENT(IN)   :: read_proj
+      LOGICAL, OPTIONAL, INTENT(IN)   :: read_ovp
+      !
       ! local variables
       !
-      CHARACTER(11)             :: subname="wfc_manager"
+      LOGICAL                   :: do_proj_, do_ovp_, do_transl_
+      LOGICAL                   :: read_proj_, read_ovp_
+      !
+      CHARACTER(7)              :: subname="wfc_drv"
       CHARACTER(nstrx)          :: filename
       REAL(dbl)                 :: xk(3)
       INTEGER                   :: nstepx, nstep_kb, nwfcx, nkbx
       INTEGER,      ALLOCATABLE :: nstep(:), ibnds(:,:), ibnde(:,:)
       INTEGER,      ALLOCATABLE :: ibetas(:), ibetae(:)
-      COMPLEX(dbl), ALLOCATABLE :: aux(:,:), aux1(:,:), aux2(:,:)
+      COMPLEX(dbl), ALLOCATABLE :: aux(:,:), aux1(:,:), aux2(:,:), aux_transl(:,:,:)
       LOGICAL                   :: lfound
       INTEGER                   :: ib, ikb_g, ik, ik_g, inn
       INTEGER                   :: is, js, ks, ibs, ibe, jbs, jbe, kbs, kbe
@@ -77,23 +88,40 @@
 ! main body
 !------------------------------
 !
-      CALL timing('wfc_manager',OPR='start')
-      CALL log_push('wfc_manager')
+      CALL timing(subname,OPR='start')
+      CALL log_push(subname)
+
+      do_proj_    = .FALSE.
+      do_ovp_     = .FALSE.
+      do_transl_  = .FALSE.
+      IF ( PRESENT( do_proj ) )    do_proj_   = do_proj
+      IF ( PRESENT( do_ovp ) )     do_ovp_    = do_ovp
+      IF ( PRESENT( do_transl ) )  do_transl_ = do_transl
+      !
+      read_proj_  = .FALSE.
+      read_ovp_   = .FALSE.
+      IF ( PRESENT( read_proj ) )    read_proj_   = read_proj
+      IF ( PRESENT( read_ovp ) )     read_ovp_    = read_ovp
 
 !
 ! Some checks
 !
 
       IF ( .NOT. kpoints_alloc) CALL errore(subname,'kpoints NOT alloc',2) 
-      IF ( .NOT. bshells_alloc) CALL errore(subname,'bshells NOT alloc',3) 
       IF ( .NOT. windows_alloc) CALL errore(subname,'windows NOT alloc',4) 
-      IF ( .NOT. overlap_alloc) CALL errore(subname,'overlap NOT alloc',5) 
+      !
+      IF ( do_ovp_ .AND. .NOT. bshells_alloc) &
+           CALL errore(subname,'bshells NOT alloc',3) 
+      IF ( do_ovp_ .AND. .NOT. overlap_alloc) &
+           CALL errore(subname,'overlap_mod NOT alloc',5) 
+      IF ( do_transl_ .AND. .NOT. transl_alloc) &
+           CALL errore(subname,'transl_mod NOT alloc',5) 
 
 !
-! Here compute the neede quantites 
-! (either overlaps or projections or both)
+! Here compute the needed quantites 
+! (overlaps, projections, and/or trans)
 !
-      IF ( do_overlaps .OR. do_projections ) THEN
+      IF ( do_ovp_ .OR. do_proj_ .OR. do_transl_ ) THEN
 
 
           !
@@ -317,8 +345,9 @@
 
           !
           ! initializing Ca and Mkb
-          ca(:,:,:) = CZERO
-          Mkb(:,:,:,:) = CZERO
+          IF ( do_proj_ )     proj(:,:,:)   = CZERO
+          IF ( do_ovp_ )      Mkb(:,:,:,:)  = CZERO
+          IF ( do_transl_ )   transl(:,:,:) = CZERO
       
 
           !
@@ -330,7 +359,7 @@
              ik_g = ik + iks-1
              !
              IF ( ionode ) THEN
-                 WRITE(stdout,"( 4x,'Overlaps or Projections calculation for k-point: ',i4)") ik_g
+                 WRITE(stdout,"( 4x,'Matrix elements calculation for k-point: ',i4)") ik_g
                  WRITE(stdout,"( 4x,'npw = ',i6,',', 4x,'dimwin = ',i4)") npwk(ik_g), dimwin(ik_g)
              ENDIF
              !
@@ -375,7 +404,7 @@
                  ENDIF
 
 
-                 IF ( do_overlaps ) THEN
+                 IF ( do_ovp_ ) THEN
                      !
                      ! overlap
                      !
@@ -427,11 +456,11 @@
 
                              !
                              !
-                             CALL overlap( ik_g, ikb_g, ibe-ibs+1, jbe-jbs+1, &
-                                           imin(ik_g)+ibs-1, imin(ikb_g)+jbs-1, &
-                                           nwfcx, evc, evc_info,  &
-                                           igsort, nncell(1,ib,ik_g), aux )
-                                           !
+                             CALL overlap_calc( ik_g, ikb_g, ibe-ibs+1, jbe-jbs+1, &
+                                                imin(ik_g)+ibs-1, imin(ikb_g)+jbs-1, &
+                                                nwfcx, evc, evc_info,  &
+                                                igsort, nncell(1,ib,ik_g), aux )
+                                                !
                              Mkb(ibs:ibe,jbs:jbe,inn,ik) = aux( 1:ibe-ibs+1, 1:jbe-jbs+1)
 
                              !
@@ -461,11 +490,11 @@
                  ENDIF
 
 
-                 IF ( do_projections ) THEN
+                 IF ( do_proj_ ) THEN
                      !
                      ! projections
                      !
-                     ! construct S \psi and use them istead of the base \psi 
+                     ! construct S \psi and use them instead of the base \psi 
                      ! (they are equal if NCPP case)
                      ! after the call to s_psi evc will contain the S \psi wfc
                      ! with the label SPSI_IK
@@ -484,15 +513,92 @@
                      CALL s_psi(npwkx, npwk(ik_g), ibe-ibs+1, ik_g, evc(:,indin:), evc(:,indout:), &
                                 MAX(nkb,1), becp(:,:,1), nstep_kb, ibetas, ibetae)
                      !
-                     CALL projection( ik_g, ibe-ibs+1, imin(ik_g)+ibs-1, nwfcx, evc, evc_info, &
-                                      dimwann, trial, aux1 )
+                     CALL projection_calc( ik_g, ibe-ibs+1, imin(ik_g)+ibs-1, nwfcx, evc, evc_info, &
+                                           dimwann, trial, aux1 )
                      !
-                     ca(ibs:ibe, :, ik) = aux1( 1:ibe-ibs+1, 1: dimwann )
+                     proj(ibs:ibe, :, ik ) = aux1( 1:ibe-ibs+1, 1: dimwann )
                      !
                      ! clean the ik wfc data
                      CALL wfc_info_delete(evc_info, LABEL="SPSI_IK")
                      !
                  ENDIF
+                 !
+                 !
+                 IF ( do_transl_ ) THEN
+                     !
+                     ! translations
+                     !
+                     ! compute the translation operator matrix elements on the
+                     ! basis of the WFs
+                     !
+                     ! TR_ij = < i | S TR | j >
+                     ! TR = e^{ip.R}
+                     !
+                     ! < G | TR | i >  =  c_G * e^-iGR  where
+                     ! < G | i >  = c_G
+                     !
+                     ALLOCATE( aux_transl(nwfcx, nwfcx, nvect), STAT=ierr )
+                     IF ( ierr/=0 ) CALL errore(subname,"allocating aux_transl",ABS(ierr))
+                     ! 
+                     ! 
+                     indin = wfc_info_getindex( imin(ik_g)+ibs-1, ik_g, "IK", evc_info)
+                     !
+                     DO ib = imin(ik_g)+ibs-1, imin(ik_g)+ibe-1
+                          CALL wfc_info_add(npwk(ik_g), ib, ik_g, 'SPSI_IK', evc_info)
+                     ENDDO
+                     !
+                     indout = wfc_info_getindex(imin(ik_g)+ibs-1, ik_g, "SPSI_IK", evc_info)
+ 
+                     !
+                     ! buffering of vkb is dealt with inside the routine
+                     !
+                     CALL s_psi(npwkx, npwk(ik_g), ibe-ibs+1, ik_g, evc(:,indin:), evc(:,indout:), &
+                                MAX(nkb,1), becp(:,:,1), nstep_kb, ibetas, ibetae)
+                     !
+                     ! clear the memory at IK
+                     !
+                     CALL wfc_info_delete(evc_info, LABEL="IK")
+                     !
+                     !
+                     buffering_ik2_loop: &
+                     DO js = 1, nstep( ik_g )
+                         !
+                         jbs = ibnds(js,ik_g)
+                         jbe = ibnde(js,ik_g)
+                         ! 
+                         ! 
+                         CALL wfc_data_kread( dftdata_fmt, ik_g, "IK_RIGHT", evc, evc_info, &
+                                              imin(ik_g)+jbs-1, imin(ik_g)+jbe-1 )
+  
+                         !
+                         ! compute translations
+                         ! ibs, ibe:   S | psi >
+                         ! jbs, jbe:     | psi >
+                         !
+                         CALL translations_calc( ik_g, ibe-ibs+1, jbe-jbs+1,         &
+                                                 imin(ik_g)+ibs-1, imin(ik_g)+jbs-1, &
+                                                 nwfcx, evc, evc_info, igsort(:,ik_g),&
+                                                 nvect, rvect, aux_transl ) 
+                                                 !
+                         transl(ibs:ibe,jbs:jbe,1:nvect) = aux_transl( 1:ibe-ibs+1, 1:jbe-jbs+1, 1:nvect)
+  
+                         !
+                         ! clean wfc data (but not free memory!)
+                         !
+                         CALL wfc_info_delete(evc_info, LABEL="IK_RIGHT" )
+  
+                     ENDDO buffering_ik2_loop
+                     
+                     !
+                     ! clean the ik wfc data
+                     !
+                     CALL wfc_info_delete(evc_info, LABEL="SPSI_IK")
+                     !
+                     DEALLOCATE( aux_transl, STAT=ierr )
+                     IF ( ierr/=0 ) CALL errore(subname,"deallocating aux_transl",ABS(ierr))
+                     !
+                 ENDIF
+                 !
                  !
                  CALL wfc_info_delete(evc_info, LABEL="IK")
                  CALL timing_upto_now(stdout)
@@ -541,14 +647,14 @@
 !     Note that only half of the overlaps are read, and then symmetrized
 !     according to the +/- b symm
 !
-      IF ( read_overlaps .OR. read_projections ) THEN
+      IF ( read_ovp_ .OR. read_proj_ ) THEN
           !
           CALL io_name('overlap_projection',filename)
           CALL file_open(ovp_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
           IF ( ierr/=0 ) CALL errore(subname, 'opening '//TRIM(filename), ABS(ierr)) 
           !
           CALL overlap_read(ovp_unit,"OVERLAP_PROJECTION", lfound, &  
-               LOVERLAP=read_overlaps, LPROJECTION=read_projections)
+               LOVERLAP=read_ovp_, LPROJECTION=read_proj_ )
                !
           IF ( .NOT. lfound ) CALL errore(subname,'reading ovp and proj',1)
           !
@@ -558,10 +664,10 @@
           CALL io_name('overlap_projection',filename,LPATH=.FALSE., LPROC=.FALSE.)
           IF (ionode) WRITE(stdout, "(/)")
           !
-          IF ( read_overlaps .AND. ionode ) &
+          IF ( read_ovp_ .AND. ionode ) &
                WRITE( stdout,"(2x,'Overlaps read from file: ',a)") TRIM(filename)
           !
-          IF ( read_projections .AND. ionode ) &
+          IF ( read_proj_ .AND. ionode ) &
                WRITE( stdout,"(2x,'Projections read from file: ',a)") TRIM(filename)
           !
           IF (ionode) WRITE(stdout,"()")
@@ -576,7 +682,7 @@
       !
       ! write projections and overlaps on file (if the case)
       !
-      IF ( .NOT. (read_overlaps .AND. read_projections)  ) THEN
+      IF ( do_ovp .OR. do_proj_ .AND. .NOT. (read_ovp_ .AND. read_proj_ )  ) THEN
 
           IF ( ionode ) THEN
               !
@@ -605,16 +711,20 @@
       ! In principle this is not needed, but it is useful in terms of 
       ! parallelization
       !
-      CALL overlap_bsymm( dimwinx, nkpts, Mkb )
+      IF ( do_ovp_ .OR. read_ovp_ ) THEN
+          !
+          CALL overlap_bsymm( dimwinx, nkpts, Mkb )
+          !
+      ENDIF
 
 
       CALL timing_upto_now( stdout )
       CALL flush_unit( stdout )
       !
-      CALL timing('wfc_manager',OPR='stop')
+      CALL timing(subname,OPR='stop')
       !
-      CALL log_pop ( 'wfc_manager' ) 
+      CALL log_pop (subname)
 
-   END SUBROUTINE wfc_manager
+   END SUBROUTINE wfc_drv_x
 
 

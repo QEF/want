@@ -64,7 +64,7 @@
 !
 
    PUBLIC :: nkpts_g, dimwinx
-   PUBLIC :: dimwann
+   PUBLIC :: dimwann, dimwin
    PUBLIC :: maxiter_dis, alpha_dis, disentangle_thr
    PUBLIC :: wan_eig
    PUBLIC :: lamp, eamp

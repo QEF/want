@@ -7,8 +7,8 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 !************************************************************
-   SUBROUTINE overlap( ik1, ik2, dimw1, dimw2, imin1, imin2, dimwinx, &
-                       evc, evc_info, igsort, lnncell, Mkb )
+   SUBROUTINE overlap_calc( ik1, ik2, dimw1, dimw2, imin1, imin2, dimwinx, &
+                            evc, evc_info, igsort, lnncell, Mkb )
    !************************************************************
    !
    USE kinds
@@ -49,7 +49,7 @@
       !
       COMPLEX(dbl),    EXTERNAL :: ZDOTC
       !
-      CHARACTER(7)              :: subname='overlap'
+      CHARACTER(12)             :: subname='overlap_calc'
       !
       ! ... end declarations
       !
@@ -346,5 +346,5 @@
       CALL timing(subname,OPR='stop')
       CALL log_pop(subname)
       !
-   END SUBROUTINE overlap
+   END SUBROUTINE overlap_calc
 

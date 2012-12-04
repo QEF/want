@@ -4,7 +4,10 @@
 =======================================================
 
 
-27 Nov 2012     unfold.f90 postproc added. (AF)
+04 Dec 2012     unfolf.f90 pp is able to compute translations matrix elements.
+		Unfolding seems to work (testing not completed). (AF)
+
+27 Nov 2012     unfold.f90 postproc added after discussing with Giovanni Borghi. (AF)
 
 30 Oct 2012     phiGEMM_v1.9.9 added to trunk. (AF)
 

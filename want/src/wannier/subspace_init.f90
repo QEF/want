@@ -31,7 +31,7 @@
    USE kpoints_module,    ONLY : vkpt_g, nkpts, nkpts_g, iks
    USE control_module,    ONLY : unitary_thr, verbosity
    USE subspace_module,   ONLY : subspace_read, lamp, dimwann
-   USE overlap_module,    ONLY : ca 
+   USE overlap_module,    ONLY : proj
    USE paratools_module,  ONLY : para_poolrecover
    !
    IMPLICIT NONE
@@ -155,7 +155,7 @@
         !
         ! If CENTER_PROJECTIONS are selected for the starting subspace
         ! compute the dimwann bloch like states that have maximal projection
-        ! on the input trial centers. 
+        ! on the input trial centers.  ca=proj
         !
         ! cu = ca * cs^{-1/2},      where cs = ca^{\dag} * ca
         !
@@ -189,7 +189,7 @@
             !
             IF ( dimwann > dimfroz(ik_g) ) THEN
                 !
-                CALL mat_svd( dimwin(ik_g), dimwann, ca(:,:,ik), s, u, vt )
+                CALL mat_svd( dimwin(ik_g), dimwann, proj(:,:,ik), s, u, vt )
                 !
                 CALL mat_mul( cu, u, 'N', vt, 'N', dimwin(ik_g), dimwann, dimwann )
                 lamp(  1:dimwin(ik_g), 1:dimwann , ik_g) = cu( 1:dimwin(ik_g), 1:dimwann )
