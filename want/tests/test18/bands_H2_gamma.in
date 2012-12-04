@@ -1,0 +1,13 @@
+
+ &INPUT
+   prefix    = 'H2_gamma'
+   postfix   = '_WanT_UNFLD'
+   datafile_dft = './SCRATCH/H2_gamma_WanT_UNFLD.ham'
+   work_dir  = './SCRATCH'
+   fileout   = 'bands_H2_gamma_unfld.dat'
+   nkpts_in  = 2
+   nkpts_max = 100
+ /
+G   0.0 0.0 0.0
+Z   0.0 0.0 0.5
+

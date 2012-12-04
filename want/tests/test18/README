@@ -1,0 +1,16 @@
+
+==============================================================================
+@title@   Unfolding of band structure
+==============================================================================
+
+  DESCRIPTION:
+
+  Given a calculation at gamma of a system with a higher translations
+  symmetry, use the unfold.x utility to determine and interpolate
+  the band structure (and eventually DOS, etc).
+
+  JOB SEQUENCE:
+  pw.x + disentangle.x + wannier.x
+  unfold.x
+  bands.x, dos.x, etc
+  
