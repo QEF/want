@@ -1,0 +1,405 @@
+
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <wannier>  v. 2.5.0alpha2  starts ...
+  Date  4Dec2012 at 17:39:48 
+
+     Number of MPI processes:       6
+
+
+
+          BUILT :    Fri 30 Nov 2012 07:22:02 PM CET
+           HOST :    x86_64-unknown-linux-gnu
+           ARCH :    x86_64
+             CC :    icc
+            CPP :    cpp
+            F90 :    mpif90
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA
+      BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
+    LAPACK LIBS :    
+       FFT LIBS :    
+      MASS LIBS :    
+
+
+  checking for fmt internal... no
+  checking for fmt wannier90... no
+  checking for fmt crystal... no
+  checking for fmt qexml... ok
+
+  DFT-data fmt automaticaly detected: qexml
+  WARNING from routine kpoints_allocate:
+  too many CPU used
+
+  WARNING from routine kpoints_allocate:
+  too many CPU used
+
+  DFT-data read from file: H2_gamma.save/data-file.xml
+
+
+  ======================================================================
+  =  INPUT Summary                                                     =
+  ======================================================================
+
+ <CONTROL>
+            Calculation title :     Wannier Transport Calculation
+                       prefix :     H2_gamma
+                      postfix :     _WanT
+                     work_dir :     ./SCRATCH/
+                  dftdata_fmt :     qexml  v1.4.0
+
+                 wantdata_fmt :     binary
+                    verbosity :     medium
+                 restart_mode :     from_scratch
+                  unitary_thr :       0.1000E-05
+               Calc. overlaps :     TRUE 
+            Calc. projections :     TRUE 
+
+           Read init subspace :     FALSE
+         Read init unit. mat. :     FALSE
+              Read pseudopot. :     TRUE 
+           Use penalty funct. :     FALSE
+
+               Use debug mode :     FALSE
+ <CONTROL>
+
+ <SUBSPACE>
+                      dimwann :           10
+                subspace_init :     center_projections
+               spin_component :     none
+              disentangle_thr :       0.1000E-07
+                      win_max :      -4.0000
+                    alpha_dis :       0.5000
+                  maxiter_dis :         1000
+                   nprint_dis :           50
+                    nsave_dis :          200
+ </SUBSPACE>
+
+ <LOCALIZATION>
+            localization_init :     center_projections
+                ordering_mode :     none
+                   collect_wf :     TRUE 
+                     xcell(1) :      -0.5000
+                     xcell(2) :      -0.5000
+                     xcell(3) :       0.0000
+                  wannier_thr :       0.1000E-05
+                   alpha0_wan :       0.5000
+                   alpha1_wan :       0.5000
+                 maxiter0_wan :          100
+                 maxiter1_wan :         1500
+                          ncg :            5
+                   nprint_wan :           50
+                    nsave_wan :          200
+ </LOCALIZATION>
+
+ <TRIAL_CENTERS>
+  Trial centers: (cart. coord. in Bohr)
+
+      #     Type          l   m       Position                              Decay
+    ----  ------------  --------   ------------------------------------   ---------
+      1    1gauss         0   0    (   0.000000   0.000000   1.000000 )    1.00000
+      2    1gauss         0   0    (   0.000000   0.000000   6.000000 )    1.00000
+      3    1gauss         0   0    (   0.000000   0.000000  11.000000 )    1.00000
+      4    1gauss         0   0    (   0.000000   0.000000  16.000000 )    1.00000
+      5    1gauss         0   0    (   0.000000   0.000000  21.000000 )    1.00000
+      6    1gauss         0   0    (   0.000000   0.000000  26.000000 )    1.00000
+      7    1gauss         0   0    (   0.000000   0.000000  31.000000 )    1.00000
+      8    1gauss         0   0    (   0.000000   0.000000  36.000000 )    1.00000
+      9    1gauss         0   0    (   0.000000   0.000000  41.000000 )    1.00000
+     10    1gauss         0   0    (   0.000000   0.000000  46.000000 )    1.00000
+
+ </TRIAL_CENTERS>
+
+
+  ======================================================================
+  =  DFT data                                                          =
+  ======================================================================
+
+ <LATTICE>
+  Alat  =      20.0000000 (Bohr)
+  Alat  =      10.5835400 (Ang )
+  Omega =   20000.0000000 (Bohr^3)
+  Omega =    2963.6906859 (Ang^3 )
+
+  Crystal axes:
+                in Bohr units                           in Alat units
+    a(1) = (   20.00000    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    a(2) = (    0.00000   20.00000    0.00000 )    (    0.00000    1.00000    0.00000 )
+    a(3) = (    0.00000    0.00000   50.00000 )    (    0.00000    0.00000    2.50000 )
+                in Ang units
+    a(1) = (   10.58354    0.00000    0.00000 )
+    a(2) = (    0.00000   10.58354    0.00000 )
+    a(3) = (    0.00000    0.00000   26.45885 )
+
+   Reciprocal lattice vectors:
+                in Bohr^-1 units                        in 2Pi/Alat units
+    b(1) = (    0.31416    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    b(2) = (    0.00000    0.31416    0.00000 )    (    0.00000    1.00000    0.00000 )
+    b(3) = (    0.00000    0.00000    0.12566 )    (    0.00000    0.00000    0.40000 )
+ </LATTICE>
+
+ <IONS>
+  Number of chemical species =  1
+     Pseudo( 1) = H.pz-vbc.UPF
+
+     PseudoPot. # 1 for H  read from file H.pz-vbc.UPF
+     Pseudo is Norm-conserving, Zval =  1.0
+     Generated by new atomic code, or converted to UPF format
+     Using radial grid of  131 points,  0 beta functions with: 
+
+  Atomic positions: (cart. coord. in Bohr)
+     H    tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
+     H    tau(   2 ) = (   0.0000000   0.0000000   2.0000000 )
+     H    tau(   3 ) = (   0.0000000   0.0000000   5.0000000 )
+     H    tau(   4 ) = (   0.0000000   0.0000000   7.0000000 )
+     H    tau(   5 ) = (   0.0000000   0.0000000  10.0000000 )
+     H    tau(   6 ) = (   0.0000000   0.0000000  12.0000000 )
+     H    tau(   7 ) = (   0.0000000   0.0000000  15.0000000 )
+     H    tau(   8 ) = (   0.0000000   0.0000000  17.0000000 )
+     H    tau(   9 ) = (   0.0000000   0.0000000  20.0000000 )
+     H    tau(  10 ) = (   0.0000000   0.0000000  22.0000000 )
+     H    tau(  11 ) = (   0.0000000   0.0000000  25.0000000 )
+     H    tau(  12 ) = (   0.0000000   0.0000000  27.0000000 )
+     H    tau(  13 ) = (   0.0000000   0.0000000  30.0000000 )
+     H    tau(  14 ) = (   0.0000000   0.0000000  32.0000000 )
+     H    tau(  15 ) = (   0.0000000   0.0000000  35.0000000 )
+     H    tau(  16 ) = (   0.0000000   0.0000000  37.0000000 )
+     H    tau(  17 ) = (   0.0000000   0.0000000  40.0000000 )
+     H    tau(  18 ) = (   0.0000000   0.0000000  42.0000000 )
+     H    tau(  19 ) = (   0.0000000   0.0000000  45.0000000 )
+     H    tau(  20 ) = (   0.0000000   0.0000000  47.0000000 )
+ </IONS>
+
+ <K-POINTS>
+         nproc =     6   (Parallelism over kpts)
+  global nkpts =     1
+   local nkpts =     1
+  Monkhorst-Pack grid:      nk = (   1   1   1 ),      shift = (   0   0   0 )
+
+  K-point grid: (cart. coord. in Bohr^-1)
+    k (    1) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      1.0000000
+ </K-POINTS>
+
+ <R-GRID>
+         nrtot =     1
+  R-grid generators:      nr = (   1   1   1 )
+
+  R-grid vectors:         (crystal units)
+    R (    1) =    (       0      0      0 ),   wr =      1.0000000
+ </R-GRID>
+
+ <B-SHELL>
+  List of the  6 b-vectors : (Bohr^-1) 
+    b (    1) =    (    0.3141593   0.0000000   0.0000000 ),   weight =      5.0660592
+    b (    2) =    (    0.0000000   0.3141593   0.0000000 ),   weight =      5.0660592
+    b (    3) =    (    0.0000000   0.0000000   0.1256637 ),   weight =     31.6628699
+    b (    4) =    (   -0.3141593   0.0000000   0.0000000 ),   weight =      5.0660592
+    b (    5) =    (    0.0000000  -0.3141593   0.0000000 ),   weight =      5.0660592
+    b (    6) =    (    0.0000000   0.0000000  -0.1256637 ),   weight =     31.6628699
+
+  Total weight =      83.5899765
+ </B-SHELL>
+
+
+  Subspace data read from file: H2_gamma_WanT.space
+  Overlap and projections read from file: H2_gamma_WanT.ovp
+
+  Overlaps and projections setup completed
+                              Total time spent up to now :     0.16 secs
+
+
+  ======================================================================
+  =  Init localization procedure                                       =
+  ======================================================================
+
+
+ <MEMORY_USAGE>
+                 kpoints:          0.000 MB
+                   rgrid:          0.000 MB
+                 bshells:          0.000 MB
+                    ions:          0.004 MB
+                 windows:          0.000 MB
+                subspace:          0.000 MB
+                 overlap:          0.006 MB
+            localization:          0.002 MB
+            trial_center:          0.001 MB
+           workspace_wan:          0.015 MB
+                      us:          0.000 MB
+                    uspp:          0.000 MB
+
+     Total alloc. Memory:          0.029 MB
+ </MEMORY_USAGE>
+
+
+  Initial unitary rotations : projected localized orbitals
+
+  Wannier centers (Bohr) and Spreads Omega (Bohr^2):
+    Center   1 = (      0.000000     0.000000     1.000001 )  Omega =      4.317146
+    Center   2 = (      0.000001     0.000000     5.999999 )  Omega =      4.317151
+    Center   3 = (      0.000000     0.000000    11.000001 )  Omega =      4.317149
+    Center   4 = (     -0.000001    -0.000001    16.000002 )  Omega =      4.317149
+    Center   5 = (     -0.000001    -0.000001    21.000000 )  Omega =      4.317147
+    Center   6 = (     -0.000001     0.000000   -24.000001 )  Omega =      4.317147
+    Center   7 = (      0.000000     0.000000   -19.000000 )  Omega =      4.317151
+    Center   8 = (      0.000001     0.000001   -13.999999 )  Omega =      4.317147
+    Center   9 = (      0.000000     0.000000    -9.000001 )  Omega =      4.317147
+    Center  10 = (      0.000000     0.000000    -4.000001 )  Omega =      4.317150
+  ! Center Sum = (      0.000000     0.000000   -15.000001 )  Omega =     43.171484
+
+  Spread Operator decomposition (Bohr^2): 
+    Omega I       =       42.477775
+    Omega D       =        0.000000
+    Omega OD      =        0.693709
+    Omega Tot     =       43.171484
+    Omega Avrg    =        4.317148
+
+
+  Charge centers: (crystal coord.)
+    Ionic charge  =     (     0.000000    0.000000    0.020000 )
+     Elec charge  =     (     0.000000    0.000000   -0.015000 )
+
+  Dipole contributions: (cart. coord. in e*Bohr = 2.541766 Debye)
+    Ionic dipole  =     (     0.000000    0.000000   20.000000 )
+    Elec  dipole  =     (     0.000001    0.000000   30.000001 )
+
+    Total dipole  =     (     0.000001    0.000000    0.000001 )
+                  =     |     0.000001 |
+
+
+  ======================================================================
+  =  Starting iteration loop                                           =
+  ======================================================================
+
+
+  Iteration =       1
+  Wannier centers (Bohr) and Spreads Omega (Bohr^2):
+    Center   1 = (      0.000000     0.000000     1.000001 )  Omega =      4.317146
+    Center   2 = (      0.000001     0.000000     5.999999 )  Omega =      4.317151
+    Center   3 = (      0.000000     0.000000    11.000001 )  Omega =      4.317149
+    Center   4 = (     -0.000001    -0.000001    16.000002 )  Omega =      4.317149
+    Center   5 = (     -0.000001    -0.000001    21.000000 )  Omega =      4.317147
+    Center   6 = (     -0.000001     0.000000   -24.000001 )  Omega =      4.317147
+    Center   7 = (      0.000000     0.000000   -19.000000 )  Omega =      4.317151
+    Center   8 = (      0.000001     0.000001   -13.999999 )  Omega =      4.317147
+    Center   9 = (      0.000000     0.000000    -9.000001 )  Omega =      4.317147
+    Center  10 = (      0.000000     0.000000    -4.000001 )  Omega =      4.317150
+  ! Center Sum = (      0.000000     0.000000   -15.000001 )  Omega =     43.171484
+
+  Omega variation (Bohr^2):       0.000000
+                              Total time spent up to now :     0.21 secs
+
+
+
+  ======================================================================
+  =  Convergence Achieved                                              =
+  ======================================================================
+
+
+  Iteration # :       1
+
+  Collecting WFs
+  Selected cell extrema [cryst. coord]:
+       r1 :   -0.5000 -->   0.5000
+       r2 :   -0.5000 -->   0.5000
+       r3 :    0.0000 -->   1.0000
+
+
+  Wannier centers (Bohr) and Spreads Omega (Bohr^2):
+    Center   1 = (      0.000000     0.000000     1.000001 )  Omega =      4.317146
+    Center   2 = (      0.000001     0.000000     5.999999 )  Omega =      4.317151
+    Center   3 = (      0.000000     0.000000    11.000001 )  Omega =      4.317149
+    Center   4 = (     -0.000001    -0.000001    16.000002 )  Omega =      4.317149
+    Center   5 = (     -0.000001    -0.000001    21.000000 )  Omega =      4.317147
+    Center   6 = (     -0.000001     0.000000    25.999999 )  Omega =      4.317147
+    Center   7 = (      0.000000     0.000000    31.000000 )  Omega =      4.317151
+    Center   8 = (      0.000001     0.000001    36.000001 )  Omega =      4.317147
+    Center   9 = (      0.000000     0.000000    40.999999 )  Omega =      4.317147
+    Center  10 = (      0.000000     0.000000    45.999999 )  Omega =      4.317150
+  ! Center Sum = (      0.000000     0.000000   234.999999 )  Omega =     43.171484
+
+  Spread Operator decomposition (Bohr^2): 
+    Omega I       =       42.477775
+    Omega D       =        0.000000
+    Omega OD      =        0.693709
+    Omega Tot     =       43.171484
+    Omega Avrg    =        4.317148
+
+  Omega variation (Bohr^2):       0.000000
+
+
+  Charge centers: (crystal coord.)
+    Ionic charge  =     (     0.000000    0.000000    0.020000 )
+     Elec charge  =     (     0.000000    0.000000   -0.015000 )
+
+  Dipole contributions: (cart. coord. in e*Bohr = 2.541766 Debye)
+    Ionic dipole  =     (     0.000000    0.000000   20.000000 )
+    Elec  dipole  =     (     0.000001    0.000000   30.000001 )
+
+    Total dipole  =     (     0.000001    0.000000    0.000001 )
+                  =     |     0.000001 |
+
+                              Total time spent up to now :     0.21 secs
+
+
+  Unitary transf. matrixes written on file: H2_gamma_WanT.wan
+  ======================================================================
+ !
+ !    R = (   0   0   0 )
+ !  -2.107319   0.000000,    -2.107311   0.000000,    -2.107314   0.000000,
+ !  -2.107317   0.000000,    -2.107322   0.000000,    -2.107322   0.000000,
+ !  -2.107314   0.000000,    -2.107322   0.000000,    -2.107322   0.000000,
+ !  -2.107314   0.000000,
+
+
+  Decay of the real space Hamiltonian:
+    (number of R vectors (nrtot) :    1
+
+    #       R [cry]     |R| [Bohr]      Norm of H(R) [eV]
+    1      0   0   0     0.000000         2.431980
+
+  Hamiltonian on WF basis written on file : H2_gamma_WanT.ham
+
+  ======================================================================
+
+   <global routines>
+             clock number :    29
+
+                  wannier :     0.00s CPU 
+
+             want_dftread :     0.05s CPU
+         windows_read_ext :     0.01s CPU
+                want_init :     0.00s CPU
+       para_get_poolindex :     0.00s CPU
+             bshells_init :     0.00s CPU
+             windows_init :     0.00s CPU
+          overlap_extract :     0.00s CPU
+             windows_read :     0.00s CPU
+            subspace_read :     0.00s CPU
+             overlap_read :     0.00s CPU
+        localization_init :     0.04s CPU
+         para_poolrecover :     0.04s CPU (       2 calls,   0.019 s avg)
+                   mp_sum :     0.02s CPU (       2 calls,   0.010 s avg)
+           overlap_update :     0.00s CPU (       3 calls,   0.000 s avg)
+                   omegai :     0.01s CPU
+             mp_sum_omega :     0.01s CPU (      10 calls,   0.001 s avg)
+                    omega :     0.00s CPU (       3 calls,   0.000 s avg)
+             polarization :     0.00s CPU (       2 calls,   0.000 s avg)
+               iterations :     0.00s CPU
+                   domega :     0.00s CPU
+            mp_sum_domega :     0.00s CPU
+               mp_sum_wan :     0.00s CPU (       2 calls,   0.000 s avg)
+           unitary_update :     0.00s CPU
+           mp_sum_unitary :     0.00s CPU
+               collect_wf :     0.00s CPU
+         hamiltonian_calc :     0.00s CPU
+             compute_rham :     0.00s CPU
+              mp_sum_rham :     0.00s CPU
+
+

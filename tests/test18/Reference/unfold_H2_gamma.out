@@ -1,0 +1,218 @@
+
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <unfold>  v. 2.5.0alpha2  starts ...
+  Date  4Dec2012 at 17:39:49 
+
+     Number of MPI processes:       6
+
+
+
+          BUILT :    Fri 30 Nov 2012 07:22:02 PM CET
+           HOST :    x86_64-unknown-linux-gnu
+           ARCH :    x86_64
+             CC :    icc
+            CPP :    cpp
+            F90 :    mpif90
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA
+      BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
+    LAPACK LIBS :    
+       FFT LIBS :    
+      MASS LIBS :    
+
+
+  checking for fmt internal... no
+  checking for fmt wannier90... no
+  checking for fmt crystal... no
+  checking for fmt qexml... ok
+
+  DFT-data fmt automaticaly detected: qexml
+
+  ======================================================================
+  =  INPUT Summary                                                     =
+  ======================================================================
+
+                     work dir :     ./SCRATCH
+                       prefix :     H2_gamma
+                      postfix :     _WanT
+                postfix_unfld :     _WanT_UNFLD
+                 translations :     from_scratch
+                         ndiv :      1   1  10
+                   nkb_buffer :     -1
+                  nwfc_buffer :     -1
+                  assume_ncpp :   FALSE
+
+
+  ======================================================================
+  =  Post Processing Init                                              =
+  ======================================================================
+
+  WARNING from routine kpoints_allocate:
+  too many CPU used
+
+  WARNING from routine kpoints_allocate:
+  too many CPU used
+
+  DFT-data read from file: H2_gamma.save/data-file.xml
+
+      Windows data read from file: H2_gamma_WanT.space
+     Subspace data read from file: H2_gamma_WanT.space
+  Hamiltonian data read from file: H2_gamma_WanT.ham
+      Wannier data read from file: H2_gamma_WanT.wan
+
+
+
+  ======================================================================
+  =  DFT data                                                          =
+  ======================================================================
+
+ <LATTICE>
+  Alat  =      20.0000000 (Bohr)
+  Alat  =      10.5835400 (Ang )
+  Omega =   20000.0000000 (Bohr^3)
+  Omega =    2963.6906859 (Ang^3 )
+
+  Crystal axes:
+                in Bohr units                           in Alat units
+    a(1) = (   20.00000    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    a(2) = (    0.00000   20.00000    0.00000 )    (    0.00000    1.00000    0.00000 )
+    a(3) = (    0.00000    0.00000   50.00000 )    (    0.00000    0.00000    2.50000 )
+                in Ang units
+    a(1) = (   10.58354    0.00000    0.00000 )
+    a(2) = (    0.00000   10.58354    0.00000 )
+    a(3) = (    0.00000    0.00000   26.45885 )
+
+   Reciprocal lattice vectors:
+                in Bohr^-1 units                        in 2Pi/Alat units
+    b(1) = (    0.31416    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    b(2) = (    0.00000    0.31416    0.00000 )    (    0.00000    1.00000    0.00000 )
+    b(3) = (    0.00000    0.00000    0.12566 )    (    0.00000    0.00000    0.40000 )
+ </LATTICE>
+
+ <K-POINTS>
+         nproc =     6   (Parallelism over kpts)
+  global nkpts =     1
+   local nkpts =     1
+  Monkhorst-Pack grid:      nk = (   1   1   1 ),      shift = (   0   0   0 )
+
+  K-point grid: (cart. coord. in Bohr^-1)
+    k (    1) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      1.0000000
+ </K-POINTS>
+
+ <R-GRID>
+         nrtot =     1
+  R-grid generators:      nr = (   1   1   1 )
+
+  R-grid vectors:         (crystal units)
+    R (    1) =    (       0      0      0 ),   wr =      1.0000000
+ </R-GRID>
+
+ <B-SHELL>
+  List of the  6 b-vectors : (Bohr^-1) 
+    b (    1) =    (    0.3141593   0.0000000   0.0000000 ),   weight =      5.0660592
+    b (    2) =    (    0.0000000   0.3141593   0.0000000 ),   weight =      5.0660592
+    b (    3) =    (    0.0000000   0.0000000   0.1256637 ),   weight =     31.6628699
+    b (    4) =    (   -0.3141593   0.0000000   0.0000000 ),   weight =      5.0660592
+    b (    5) =    (    0.0000000  -0.3141593   0.0000000 ),   weight =      5.0660592
+    b (    6) =    (    0.0000000   0.0000000  -0.1256637 ),   weight =     31.6628699
+
+  Total weight =      83.5899765
+ </B-SHELL>
+
+
+  ======================================================================
+  =  Initialization                                                    =
+  ======================================================================
+
+
+  ======================================================================
+  =  Translation operators                                             =
+  ======================================================================
+
+  Translation operators are computed
+
+  Reading density G-grid from file: H2_gamma.save/data-file.xml
+  Reading Wfc grids from file: H2_gamma.save/data-file.xml
+
+
+          Energy cut-off for rho  =        160.00 (Ry)
+      Total number of PW for rho  =     341657
+        FFT grid components (rho) =  (    81   81  216 )
+             Use gamma-only trick =       .TRUE.
+
+          Energy cut-off for wfcs =         40.00 (Ry)
+        Max number of PW for wfc  =      42743
+
+
+  Initializing global dft data
+
+ <MEMORY_USAGE>
+                 kpoints:          0.000 MB
+                   rgrid:          0.000 MB
+                 bshells:          0.000 MB
+                    ions:          0.004 MB
+                 windows:          0.000 MB
+                subspace:          0.002 MB
+                  ggrids:         15.033 MB
+                wfc_data:         13.849 MB
+            localization:          0.002 MB
+             hamiltonian:          0.002 MB
+             struct_fact:          5.709 MB
+                      us:          0.102 MB
+                    uspp:          0.000 MB
+
+     Total alloc. Memory:         34.703 MB
+ </MEMORY_USAGE>
+
+
+    Matrix elements calculation for k-point:    1
+    npw =  42743,    dimwin =   10
+                              Total time spent up to now :     0.70 secs
+
+                              Total time spent up to now :     0.71 secs
+
+
+  ======================================================================
+  =  Hamiltonian redefinition                                          =
+  ======================================================================
+
+
+  Unfold data dumped to files:
+          ./SCRATCH/H2_gamma_WanT_UNFLD.ham
+          ./SCRATCH/H2_gamma_WanT_UNFLD.space
+
+  ======================================================================
+
+   <global routines>
+             clock number :    19
+
+                   unfold :     0.00s CPU 
+
+             unfold_input :     0.08s CPU
+            postproc_init :     0.05s CPU
+             want_dftread :     0.05s CPU
+                want_init :     0.00s CPU
+       para_get_poolindex :     0.00s CPU
+             bshells_init :     0.00s CPU
+             windows_read :     0.00s CPU
+            subspace_read :     0.00s CPU
+                do_unfold :     0.58s CPU
+         translations_drv :     0.58s CPU
+                  wfc_drv :     0.57s CPU
+          ggrids_read_ext :     0.15s CPU
+      wfc_data_grids_read :     0.00s CPU
+              struct_fact :     0.30s CPU
+           wfc_data_kread :     0.07s CPU (       2 calls,   0.033 s avg)
+                    s_psi :     0.00s CPU
+        translations_calc :     0.04s CPU
+       translations_write :     0.00s CPU
+
+
