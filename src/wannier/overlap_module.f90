@@ -45,7 +45,7 @@
 
    COMPLEX(dbl), ALLOCATABLE   :: Mkb(:,:,:,:)   ! <u_nk|u_mk+b> overlap
                                                  ! DIM: dimwinx,dimwinx,nb,nkpts
-   COMPLEX(dbl), ALLOCATABLE   :: ca(:,:,:)      ! <u_nk|phi_lk> projection
+   COMPLEX(dbl), ALLOCATABLE   :: proj(:,:,:)    ! <u_nk|phi_lk> projection
                                                  ! DIM: dimwinx,dimwann,nkpts
    LOGICAL :: alloc = .FALSE.
    
@@ -54,7 +54,7 @@
 ! end of declarations
 !
 
-   PUBLIC :: Mkb, ca 
+   PUBLIC :: Mkb, proj
    PUBLIC :: dimwinx, dimwin, nkpts, nb, dimwann
    !
    PUBLIC :: overlap_allocate
@@ -112,8 +112,8 @@ CONTAINS
        IF ( ierr/=0 ) CALL errore(subname,'allocating Mkb', ABS(ierr) )
        !
        !
-       ALLOCATE( ca(dimwinx,dimwann,nkpts), STAT=ierr )       
-       IF ( ierr/=0 ) CALL errore(subname,'allocating ca', ABS(ierr) )
+       ALLOCATE( proj(dimwinx,dimwann,nkpts), STAT=ierr )       
+       IF ( ierr/=0 ) CALL errore(subname,'allocating proj', ABS(ierr) )
 
        alloc = .TRUE. 
        !
@@ -133,11 +133,11 @@ CONTAINS
        !
        IF ( ALLOCATED(Mkb) ) THEN
             DEALLOCATE(Mkb, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating Mkb ',ABS(ierr))
+            IF (ierr/=0)  CALL errore(subname,' deallocating Mkb',ABS(ierr))
        ENDIF
-       IF ( ALLOCATED(ca) ) THEN
-            DEALLOCATE(ca, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating ca ',ABS(ierr))
+       IF ( ALLOCATED(proj) ) THEN
+            DEALLOCATE(proj, STAT=ierr)
+            IF (ierr/=0)  CALL errore(subname,' deallocating proj',ABS(ierr))
        ENDIF
        !
        alloc = .FALSE.
@@ -156,7 +156,7 @@ CONTAINS
        !
        cost = ZERO
        IF ( ALLOCATED(Mkb) )    cost = cost + REAL(SIZE(Mkb))    * 16.0_dbl
-       IF ( ALLOCATED(ca) )     cost = cost + REAL(SIZE(ca))     * 16.0_dbl
+       IF ( ALLOCATED(proj) )   cost = cost + REAL(SIZE(proj))   * 16.0_dbl
        !
        overlap_memusage = cost / 1000000.0_dbl
        !
@@ -172,7 +172,7 @@ CONTAINS
        !
        CHARACTER(13)               :: subname="overlap_write"
        CHARACTER(nstrx)            :: attr
-       COMPLEX(dbl),   ALLOCATABLE :: Mkb_aux(:,:,:), ca_aux(:,:)
+       COMPLEX(dbl),   ALLOCATABLE :: Mkb_aux(:,:,:), proj_aux(:,:)
        INTEGER                     :: iwann, ib, ik, ik_g, ikb_g, inn
        INTEGER                     :: ierr
 
@@ -261,8 +261,8 @@ CONTAINS
        !  
        ! writing projections  
        !  
-       ALLOCATE( ca_aux(dimwinx, dimwann), STAT=ierr )
-       IF ( ierr/=0 ) CALL errore(subname,"allocating ca_aux", ABS(ierr))
+       ALLOCATE( proj_aux(dimwinx, dimwann), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,"allocating proj_aux", ABS(ierr))
        !
        IF (ionode) CALL iotk_write_begin(iun,'PROJECTIONS')
        !
@@ -274,11 +274,11 @@ CONTAINS
            ! get data
            !
            IF ( mpime == iproc_g( ik_g ) ) THEN
-               ca_aux(:,:) = ca(1:dimwinx,1:dimwann,ik)
+               proj_aux(:,:) = proj(1:dimwinx,1:dimwann,ik)
            ENDIF
            ! 
            CALL timing ( 'mp_get_ovp', OPR='start' )
-           CALL mp_get( ca_aux, ca_aux, mpime, ionode_id, iproc_g(ik_g), 1 )
+           CALL mp_get( proj_aux, proj_aux, mpime, ionode_id, iproc_g(ik_g), 1 )
            CALL timing ( 'mp_get_ovp', OPR='stop' )
            !
            IF ( ionode ) THEN
@@ -290,9 +290,9 @@ CONTAINS
                DO iwann=1,dimwann
                    !
                    CALL iotk_write_dat(iun,'wannier'//TRIM(iotk_index(iwann)), &
-                                            ca_aux(1:dimwin(ik_g),iwann) )
+                                            proj_aux(1:dimwin(ik_g),iwann) )
                    CALL iotk_write_dat(iun,'wannier_abs'//TRIM(iotk_index(iwann)), &
-                                           ABS(ca_aux(1:dimwin(ik_g),iwann)) )
+                                           ABS(proj_aux(1:dimwin(ik_g),iwann)) )
                ENDDO
                !
                CALL iotk_write_end(iun,'kpoint'//TRIM(iotk_index(ik_g)))
@@ -310,8 +310,8 @@ CONTAINS
            !
        ENDIF
        !
-       DEALLOCATE( ca_aux, STAT=ierr )
-       IF ( ierr/=0 ) CALL errore(subname,"deallocating ca_aux", ABS(ierr))
+       DEALLOCATE( proj_aux, STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname,"deallocating proj_aux", ABS(ierr))
        !
        CALL timing  ( subname, OPR='stop' )
        CALL log_pop ( subname )
@@ -515,7 +515,7 @@ CONTAINS
            IF ( ierr/=0 ) CALL errore(subname,'allocating caux II', ABS(ierr))
            !
            caux(:,:) = CZERO
-           ca(:,:,:) = CZERO
+           proj(:,:,:) = CZERO
            !
            CALL iotk_scan_begin(iun,'PROJECTIONS',IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'scanning for PROJECTIONS',ABS(ierr))
@@ -553,7 +553,7 @@ CONTAINS
                    !
                ENDDO
                !
-               ca(1:dimwin_k, 1:dimwann, ik) = &
+               proj(1:dimwin_k, 1:dimwann, ik) = &
                     caux( imin_k-imin_k_+1: imin_k-imin_k_+dimwin_k, 1:dimwann)
                !
                CALL iotk_scan_end(iun,'kpoint'//TRIM(iotk_index(ik_g)), IERR=ierr)

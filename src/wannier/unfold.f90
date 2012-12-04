@@ -19,10 +19,12 @@
    USE io_module,            ONLY : stdout, stdin
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE io_module,            ONLY : datafile_dft => dftdata_file, datafile_sgm
-   USE control_module,       ONLY : debug_level, use_debug_mode, verbosity
+   USE control_module,       ONLY : debug_level, use_debug_mode, verbosity, read_pseudo
+   USE control_module,       ONLY : nwfc_buffer, nkb_buffer
    USE datafiles_module,     ONLY : datafiles_init
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
+   USE input_parameters_module,    ONLY : string_check, assume_ncpp
    USE want_interfaces_module
    USE parser_module
 
@@ -32,20 +34,25 @@
    !
    ! input variables
    !
-   INTEGER            :: ndiv(3)        ! number of subdivision of the input unic cell
-                                        ! into smaller unit cells (with higer symmetry)
-                                        ! for directions i=1,2,3 
-   CHARACTER(nstrx)   :: datafile_trasl ! optional datafile with the translation operators
-                                        ! written on the Bloch or Wannier basis
-   CHARACTER(nstrx)   :: fileout        ! output filename 
+   INTEGER            :: ndiv(3)         ! number of subdivision of the input unic cell
+                                         ! into smaller unit cells (with higer symmetry)
+                                         ! for directions i=1,2,3 
+   CHARACTER(nstrx)   :: translations    ! = ( "from_file", "from_scratch")
+                                         ! written on the Bloch or Wannier basis
+   CHARACTER(nstrx)   :: postfix_unfld   ! postfix to describe the unfolded data
+   CHARACTER(nstrx)   :: datafile_transl ! specifies the name of the file with the translations
+                                         ! usually not needed.
 
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_trasl, &
-                    fileout, ndiv, debug_level, verbosity
+   NAMELIST /INPUT/ prefix, postfix, postfix_unfld, work_dir, datafile_dft, datafile_transl, &
+                    translations, ndiv, debug_level, verbosity, nkb_buffer, nwfc_buffer, assume_ncpp
 
-   LOGICAL   :: lhave_trasl
+   LOGICAL            :: lhave_transl
+   !
+   CHARACTER(nstrx)   :: translations_allowed(2)
+   DATA  translations_allowed / 'from_file', 'from_scratch' /
 
    !
    ! end of declariations
@@ -70,7 +77,8 @@
       !
       CALL datafiles_init()
       !
-      CALL postproc_init ( WANNIER=.TRUE., SUBSPACE=.TRUE. )
+      CALL postproc_init ( BSHELLS=.TRUE., IONS=.TRUE., PSEUDO=read_pseudo, &
+                           WANNIER=.TRUE., SUBSPACE=.TRUE. )
 
       !
       ! print data to output
@@ -80,7 +88,7 @@
       !
       ! do the main task
       !
-      CALL do_unfold( fileout, ndiv, lhave_trasl, datafile_trasl )
+      CALL do_unfold( postfix_unfld, ndiv, lhave_transl, datafile_transl )
 
       !
       ! Clean global memory
@@ -102,6 +110,7 @@ CONTAINS
    !
    USE mp,                   ONLY : mp_bcast
    USE io_module,            ONLY : io_init, ionode, ionode_id
+   USE control_module,       ONLY : read_pseudo, use_pseudo
    !
    IMPLICIT NONE
 
@@ -118,13 +127,17 @@ CONTAINS
       !   
       prefix                      = 'WanT' 
       postfix                     = ' ' 
+      postfix_unfld               = ' '
+      translations                = ' '
       work_dir                    = './' 
       datafile_dft                = ' '
-      datafile_trasl              = ' '
-      fileout                     = ' '
+      datafile_transl             = ' '
       ndiv(1:3)                   = 1
       debug_level                 = 0
       verbosity                   = 'medium'
+      nwfc_buffer                 = -1
+      nkb_buffer                  = -1
+      assume_ncpp                 = .FALSE.
       
       CALL input_from_file ( stdin )
       !
@@ -138,30 +151,43 @@ CONTAINS
       !
       CALL mp_bcast( prefix,          ionode_id )
       CALL mp_bcast( postfix,         ionode_id )
+      CALL mp_bcast( postfix_unfld,   ionode_id )
       CALL mp_bcast( work_dir,        ionode_id )
+      CALL mp_bcast( translations,    ionode_id )
       CALL mp_bcast( datafile_dft,    ionode_id )
-      CALL mp_bcast( datafile_trasl,  ionode_id )
-      CALL mp_bcast( fileout,         ionode_id )
+      CALL mp_bcast( datafile_transl, ionode_id )
       CALL mp_bcast( ndiv,            ionode_id )
       CALL mp_bcast( debug_level,     ionode_id )
       CALL mp_bcast( verbosity,       ionode_id )
+      CALL mp_bcast( nwfc_buffer,     ionode_id )
+      CALL mp_bcast( nkb_buffer,      ionode_id )
+      CALL mp_bcast( assume_ncpp,     ionode_id )
 
       !
       ! init
       !
-      IF ( LEN_TRIM(fileout) == 0 ) &
-           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_bands.dat'
-      !   
       use_debug_mode = .FALSE.
       IF ( debug_level > 0  )     use_debug_mode = .TRUE.
       !   
-      lhave_trasl = .FALSE.
-      IF ( LEN_TRIM(datafile_trasl) > 0 ) lhave_trasl = .TRUE.
+      !   
+      lhave_transl = .FALSE.
+      CALL change_case( translations, 'lower' )
+      !
+      CALL string_check( translations, translations_allowed, ierr)
+      IF ( ierr/=0 ) CALL errore(subname,"invalid translations: "//TRIM(translations),10)
+      !
+      IF ( TRIM(translations) == "from_scratch" ) lhave_transl = .FALSE.
+      IF ( TRIM(translations) == "from_file" )    lhave_transl = .TRUE.
+      !
+      !
+      use_pseudo   = .NOT. assume_ncpp
+      read_pseudo  = .NOT. assume_ncpp
+
 
       !
       ! we don't need wfc if translations have been already calculated
       !
-      IF ( lhave_trasl ) THEN
+      IF ( lhave_transl ) THEN
           !
           CALL io_init( NEED_WFC=.FALSE. )
           !
@@ -188,16 +214,17 @@ CONTAINS
           WRITE( stdout, "(   7x,'              work dir :',5x,   a)") TRIM(work_dir)
           WRITE( stdout, "(   7x,'                prefix :',5x,   a)") TRIM(prefix)
           WRITE( stdout, "(   7x,'               postfix :',5x,   a)") TRIM(postfix)
+          WRITE( stdout, "(   7x,'         postfix_unfld :',5x,   a)") TRIM(postfix_unfld)
           IF ( LEN_TRIM( datafile_dft ) /= 0 ) &
              WRITE( stdout, "(7x,'          datafile_dft :',5x,   a)") TRIM(datafile_dft)
+          IF ( LEN_TRIM( datafile_transl ) /= 0 ) &
+             WRITE( stdout, "(7x,'       datafile_transl :',5x,   a)") TRIM(datafile_transl)
           !
-          WRITE( stdout, "(   7x,'           lhave_trasl :',5x,   a)") TRIM( log2char(lhave_trasl) )
-          IF ( LEN_TRIM( datafile_trasl ) /= 0 ) &
-             WRITE( stdout, "(7x,'        datafile_trasl :',5x,   a)") TRIM(datafile_trasl)
-          !
-          WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
-          !
-          WRITE( stdout, "(   7x,'                  ndiv :',3x,3i4)") ndiv(:)
+          WRITE( stdout, "(   7x,'          translations :',5x,   a)") TRIM(translations)
+          WRITE( stdout, "(   7x,'                  ndiv :',3x, 3i4)") ndiv(:)
+          WRITE( stdout, "(   7x,'            nkb_buffer :',3x,  i4)") nkb_buffer
+          WRITE( stdout, "(   7x,'           nwfc_buffer :',3x,  i4)") nwfc_buffer
+          WRITE( stdout, "(   7x,'           assume_ncpp :',3x,   a)") TRIM( log2char( assume_ncpp ) )
           !
           WRITE( stdout, "()" )
           !
@@ -211,7 +238,7 @@ END PROGRAM unfold
 
 
 !********************************************************
-   SUBROUTINE do_unfold( fileout, ndiv, lhave_trasl, datafile_trasl )
+   SUBROUTINE do_unfold( postfix_unfld, ndiv, lhave_transl, datafile_transl )
    !********************************************************
    !
    ! perform the main task of the calculation
@@ -233,6 +260,7 @@ END PROGRAM unfold
    USE subspace_module,      ONLY : eamp
    USE localization_module,  ONLY : cu, rave
    USE hamiltonian_module,   ONLY : dimwann, rham, rovp, lhave_overlap
+   USE translations_module,  ONLY : transl
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
    USE operator_module
@@ -242,10 +270,10 @@ END PROGRAM unfold
       !
       ! input vars
       !
-      CHARACTER(*),  INTENT(IN) :: fileout
+      CHARACTER(*),  INTENT(IN) :: postfix_unfld
       INTEGER,       INTENT(IN) :: ndiv(3)
-      LOGICAL,       INTENT(IN) :: lhave_trasl
-      CHARACTER(*),  INTENT(IN) :: datafile_trasl
+      LOGICAL,       INTENT(IN) :: lhave_transl
+      CHARACTER(*),  INTENT(IN) :: datafile_transl
    
       !
       ! local vars
@@ -253,18 +281,19 @@ END PROGRAM unfold
       CHARACTER(9)      :: subname = 'do_unfold'
 
       INTEGER           :: dimwann_unfld
+      INTEGER           :: ndir, dir_map(3)
       !
       INTEGER           :: nrtot_unfld, nr_unfld(3)
       INTEGER           :: nkpts_unfld, nk_unfld(3), s_unfld(3)
       REAL(dbl)         :: avec_unfld(3,3), bvec_unfld(3,3)
+      REAL(dbl)         :: rvect_unfld(3,3)
       !
       REAL(dbl),    ALLOCATABLE :: vkpt_unfld(:,:), vr_unfld(:,:)
       REAL(dbl),    ALLOCATABLE :: wk_unfld(:), wr_unfld(:)
       INTEGER,      ALLOCATABLE :: ivr_unfld(:,:)
-      COMPLEX(dbl), ALLOCATABLE :: rtrasl0(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: rham_unfld(:,:,:), rovp_unfld(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: work(:,:), work_ovp(:,:), trmat(:,:,:)
-      INTEGER,      ALLOCATABLE :: imap(:)
+      INTEGER,      ALLOCATABLE :: orb_map(:)
       !
       CHARACTER(nstrx)  :: fileham, filespace
       CHARACTER(1)      :: op
@@ -345,45 +374,44 @@ END PROGRAM unfold
       vr_unfld(:,:) = REAL( ivr_unfld, dbl)
       CALL cry2cart( vr_unfld, avec_unfld)
       
+      !
+      ! select the directions to unfold
+      !
+      ndir = 0
+      DO i = 1, 3
+          !
+          IF ( ndiv(i) > 1 ) THEN
+              !
+              ndir = ndir+1
+              rvect_unfld(:,ndir) = avec_unfld(:,i)
+              dir_map(ndir)=i
+              !
+          ENDIF
+          !
+      ENDDO
 
       !
       ! translation operators
       !
-      CALL write_header( stdout, 'Trasnlation operators' )
+      CALL write_header( stdout, 'Translation operators' )
       CALL flush_unit( stdout )
       !
-      ALLOCATE( rtrasl0(dimwann,dimwann,3), STAT=ierr )
-      IF ( ierr/=0 ) CALL errore(subname,"iallocating rtrasl0",ABS(ierr))
+      ! translations are read or computed and moved to the current
+      ! WF basis
       !
-      IF ( lhave_trasl ) THEN
-          !
-          ! operators are read from file 
-          ! and converted to the local WF basis if needed
-          !
-          IF ( ionode ) WRITE( stdout, "(2x,'Translation operators are read from file',/)")
-          !
-          CALL translation_read( datafile_trasl, dimwann, rtrasl0, avec_unfld )
-          !
-      ELSE
-          !
-          ! translation operators are computed (output on the WF basis)
-          !
-          IF ( ionode ) WRITE( stdout, "(2x,'Translation operators are computed',/)")
-          !
-          ! XXX
-          !CALL translation_calc( dimwann, rtrasl0, avec_unfld )
-          !
-      ENDIF
+      CALL translations_drv( dimwann, dimwinx, ndir, rvect_unfld, lhave_transl, datafile_transl )
+
+
 
       !
       ! basis selection
       !
-      ALLOCATE( imap(dimwann_unfld), STAT=ierr )
-      IF ( ierr/=0 ) CALL errore(subname,"allocating imap",ABS(ierr))
+      ALLOCATE( orb_map(dimwann_unfld), STAT=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,"allocating orb_map",ABS(ierr))
 
       ! XXX to be properly implemented
       DO i = 1, dimwann_unfld
-          imap(i)=i
+          orb_map(i)=i
       ENDDO
 
 
@@ -401,7 +429,7 @@ END PROGRAM unfold
       IF ( ierr/=0 ) CALL errore(subname,"allocating work",ABS(ierr))
       ALLOCATE( work_ovp(dimwann,dimwann), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating work_ovp",ABS(ierr))
-      ALLOCATE( trmat(dimwann,dimwann,3), STAT=ierr )
+      ALLOCATE( trmat(dimwann,dimwann,ndir), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating trmat",ABS(ierr))
       ! 
       DO ir = 1, nrtot_unfld
@@ -414,18 +442,18 @@ END PROGRAM unfold
           !
           ! build T1^a T2^b T3^c
           !
-          DO j = 1, 3
+          DO j = 1, ndir
               !
               op="N"
-              IF ( ivr_unfld(j,ir) < 0 ) op="C"
+              IF ( ivr_unfld( dir_map(j) ,ir) < 0 ) op="C"
               !
               trmat(:,:,j) =0.0d0 
               DO i = 1, dimwann
                   trmat(i,i,j) =1.0d0
               ENDDO
               !
-              DO k = 1, ABS( ivr_unfld(j,ir) )
-                  CALL mat_mul( trmat(:,:,j), trmat(:,:,j), 'N', rtrasl0(:,:,j), op, dimwann, dimwann, dimwann )
+              DO k = 1, ABS( ivr_unfld( dir_map(j), ir) )
+                  CALL mat_mul( trmat(:,:,j), trmat(:,:,j), 'N', transl(:,:,j), op, dimwann, dimwann, dimwann )
               ENDDO
               !
               CALL mat_mul( work, work, 'N', trmat(:,:,j), 'N', dimwann, dimwann, dimwann )
@@ -436,7 +464,7 @@ END PROGRAM unfold
           !
           DO j = 1, dimwann_unfld
           DO i = 1, dimwann_unfld
-              rham_unfld(i,j,ir) = work(imap(i),imap(j))
+              rham_unfld(i,j,ir) = work(orb_map(i),orb_map(j))
           ENDDO
           ENDDO
           !
@@ -444,13 +472,13 @@ END PROGRAM unfold
           !
           IF ( lhave_overlap ) THEN
               !
-              DO j = 1, 3
+              DO j = 1, ndir
                   CALL mat_mul( work_ovp, work_ovp, 'N', trmat(:,:,j), 'N', dimwann, dimwann, dimwann )
               ENDDO
               !
               DO j = 1, dimwann_unfld
               DO i = 1, dimwann_unfld
-                  rovp_unfld(i,j,ir) = work_ovp(imap(i),imap(j))
+                  rovp_unfld(i,j,ir) = work_ovp(orb_map(i),orb_map(j))
               ENDDO
               ENDDO
               !
@@ -462,8 +490,8 @@ END PROGRAM unfold
       !
       ! dump new datafiles
       !
-      CALL io_name('space', filespace, LPOSTFIX=.TRUE., POSTFIX_LOC="_WanT_UNFLD" )
-      CALL io_name('ham',   fileham,   LPOSTFIX=.TRUE., POSTFIX_LOC="_WanT_UNFLD" )
+      CALL io_name('space', filespace, LPOSTFIX=.TRUE., POSTFIX_LOC=TRIM(postfix_unfld) )
+      CALL io_name('ham',   fileham,   LPOSTFIX=.TRUE., POSTFIX_LOC=TRIM(postfix_unfld) )
       !
       IF ( ionode ) THEN
          WRITE(stdout,"(/,2x,'Unfold data dumped to files:')")
@@ -476,21 +504,14 @@ END PROGRAM unfold
                              nrtot_unfld, nr_unfld, ivr_unfld, wr_unfld, &
                              avec_unfld, bvec_unfld, lhave_overlap, 0.0_dbl, &
                              rham_unfld, rovp_unfld )
-      !
-      !DO ir = 1, nrtot_unfld
-      !    !
-      !    WRITE(stdout, "(3i5,20f15.9)") ivr_unfld(:,ir), rham_unfld(:,:,ir)
-      !    !
-      !ENDDO
-
 
       !
       ! Clean local memory
       !
       DEALLOCATE( work, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating work', ABS(ierr) )
-      DEALLOCATE( rtrasl0, trmat, STAT=ierr)
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating rtrasl0, trmat', ABS(ierr) )
+      DEALLOCATE( trmat, STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating trmat', ABS(ierr) )
 
       !
       !
@@ -502,142 +523,171 @@ END SUBROUTINE do_unfold
 
 
 !********************************************************
-   SUBROUTINE translation_read( datafile_trasl, dimwann, rtrasl, avec_unfld )
+   SUBROUTINE translations_drv( ndim, ndimx, nvect, rvect, lhave_transl, datafile_transl )
    !********************************************************
    !
-   ! read translation operators from file
-   !
+   ! allocate, compute or read the translation matrix elements
+   ! 
    USE kinds
-   USE constants,            ONLY : ZERO, CZERO, TWO, EPS_m8
-   USE io_module,            ONLY : stdout, stdin, io_name, ionode, ionode_id, ham_unit, sgm_unit
-   USE mp,                   ONLY : mp_bcast
-   USE files_module,         ONLY : file_open, file_close, file_exist
-   USE timing_module,        ONLY : timing
-   USE log_module,           ONLY : log_push, log_pop
-   USE iotk_module
+   USE constants,                 ONLY : ZERO, CZERO, EPS_m6
+   USE io_module,                 ONLY : stdout, ionode, io_name
+   USE files_module,              ONLY : file_open, file_close, file_exist
+   USE timing_module,             ONLY : timing
+   USE log_module,                ONLY : log_pop, log_push
+   USE translations_module,       ONLY : translations_allocate, translations_write, translations_read, &
+                                         transl, transl_alloc => alloc, basis, nvect_mod => nvect, &
+                                         rvect_mod => rvect, ndimx_mod => ndimx, ndim_mod => ndim
+   USE iotk_module,               ONLY : iotk_free_unit
+   USE subspace_module,           ONLY : eamp, dimwann, dimwin, dimwinx, nkpts_g, subspace_alloc => alloc
+   USE localization_module,       ONLY : cu
+   USE util_module,               ONLY : mat_mul
+   USE want_interfaces_module
    !
    IMPLICIT NONE
+   
       !
-      CHARACTER(*),       INTENT(IN)  :: datafile_trasl
-      INTEGER,            INTENT(IN)  :: dimwann
-      REAL(dbl),          INTENT(IN)  :: avec_unfld(3,3)
-      COMPLEX(dbl),       INTENT(OUT) :: rtrasl(dimwann,dimwann,3) 
+      ! I/O vars
       !
-      CHARACTER(17) :: subname="translation_read"
-      CHARACTER(20) :: basis
-      CHARACTER(256):: attr
+      INTEGER,      INTENT(IN)  :: ndim, ndimx, nvect
+      REAL(dbl),    INTENT(IN)  :: rvect(3,nvect)
+      LOGICAL,      INTENT(IN)  :: lhave_transl
+      CHARACTER(*), INTENT(IN)  :: datafile_transl
+     
       !
-      INTEGER   :: ndim, nvect
-      INTEGER   :: i, j
-      INTEGER   :: ierr, iunit
-      LOGICAL   :: lfound
-      REAL(dbl) :: rtmp
+      ! local vars
       !
-      INTEGER,   ALLOCATABLE :: imap(:)
-      REAL(dbl), ALLOCATABLE :: rvec(:,:)
+      CHARACTER(16)  :: subname="translations_drv"
+      CHARACTER(256) :: filename
+      INTEGER        :: i, ik, iunit, ierr
+      !
+      COMPLEX(dbl), ALLOCATABLE :: work(:,:)
+      
 
 !
-!------------------------------
-! main body 
-!------------------------------
+!---------------------------------
+! main body
+!---------------------------------
 !
       CALL log_push(subname)
       CALL timing(subname,OPR='start')
-      
       !
-      ! check if file exist and open it
+      CALL iotk_free_unit( iunit ) 
       !
-      CALL iotk_free_unit( iunit )
+      ! check whether translations are read or computed
       !
-      IF ( .NOT. file_exist(datafile_trasl) ) &
-          CALL errore(subname,"file not found: "//TRIM(datafile_trasl), 10 )
-      !
-      CALL file_open(iunit,TRIM(datafile_trasl),PATH="/",ACTION="read", IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname,"opening "//TRIM(datafile_trasl),ABS(ierr))
-      !
-      CALL iotk_scan_begin(iunit, "TRANSLATION_OPERATORS", IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname,"searching TRANSLATION_OPERATORS",ABS(ierr))
-      !
-      CALL iotk_scan_empty(iunit, "DATA", ATTR=attr, IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname,"searching DATA",ABS(ierr))
-      !
-      CALL iotk_scan_attr(attr, "ndim", ndim, IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname,"searching ndim",ABS(ierr))
-      CALL iotk_scan_attr(attr, "nvect", nvect, IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname,"searching nvect",ABS(ierr))
-      CALL iotk_scan_attr(attr, "basis", basis, IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname,"searching basis",ABS(ierr))
-      !
-      IF ( ndim /= dimwann ) CALL errore(subname,"invalid ndim",10)
-      !
-      ALLOCATE( rvec(3,nvect), imap(nvect), STAT=ierr )
-      IF ( ierr/=0 ) CALL errore(subname,"allocating rvec, imap",ABS(ierr))
-      !
-      CALL iotk_scan_dat(iunit, "TRASL_VECTORS", rvec, IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname,"searching TRASL_VECTORS",ABS(ierr))
-
-      !
-      ! map the trasl vectors
-      !
-      imap(:) = 0 
-      DO i = 1, 3
+      IF ( lhave_transl ) THEN
           !
-          lfound = .FALSE.
-          DO j = 1, nvect
+          ! operators are read from file 
+          ! and converted to the local WF basis if needed
+          !
+          IF ( LEN_TRIM( datafile_transl ) /= 0 ) THEN
+              filename=TRIM( datafile_transl )
+          ELSE
+              CALL io_name( "translations", filename)
+          ENDIF
+          !
+          IF ( ionode ) WRITE( stdout, "(2x,'Translation operators read from file:   ',a,/)") TRIM(filename)
+          !
+          IF ( .NOT. file_exist( filename ) ) &
+              CALL errore(subname,"file does not exist: "//TRIM(filename),10 )
+          !
+          CALL file_open(iunit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,"opening "//TRIM(filename),10 )
+          !
+          CALL translations_read( iunit, nvect, rvect )
+          !
+          CALL file_close(iunit,PATH="/",ACTION="read", IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,"closing "//TRIM(filename),10 )
+          !
+          !
+          IF ( TRIM(basis) /= "wannier" ) CALL errore(subname,"invalid basis: "//TRIM(basis),10)
+          IF ( ndim_mod  /= ndim )        CALL errore(subname,"invalid ndim",10)
+          IF ( ndimx_mod /= ndimx )       CALL errore(subname,"invalid ndimx",10)
+          IF ( nvect_mod /= nvect )       CALL errore(subname,"invalid nvect",10)
+          !
+          DO i = 1, nvect
+              IF ( ABS( DOT_PRODUCT( rvect(:,i)-rvect_mod(:,i), rvect(:,i)-rvect_mod(:,i)) ) > EPS_m6 ) &
+                 CALL errore(subname,"invalid rvect",i)
+          ENDDO
+          !
+          !
+      ELSE
+          !
+          ! translation operators are computed (output on the WF basis)
+          !
+          IF ( ionode ) WRITE( stdout, "(2x,'Translation operators are computed',/)")
+          !
+          IF ( transl_alloc ) CALL errore(subname,"unexpected transl alloc",10)
+          !
+          CALL translations_allocate( ndimx, nvect )
+          !
+          rvect_mod(:,:) = rvect(:,:)
+          ndim_mod       = ndim
+          !
+          CALL wfc_drv( DO_PROJ=.FALSE., DO_OVP=.FALSE., DO_TRANSL=.TRUE. )
+          !
+          basis = "dft_wfc"
+
+          !
+          ! convert to the wannier basis
+          !
+          IF ( .NOT. subspace_alloc ) CALL errore(subname,"subspace not alloc",10)
+          !
+          ALLOCATE( work(dimwinx, dimwinx), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,"allocatign work",ABS(ierr))
+          !
+          IF ( nkpts_g /= 1) CALL errore(subname,"invalid nkpts /= 1: not yet implemented",10)
+          !
+          ik = 1
+          ! 
+          DO i = 1, nvect
               !
-              rtmp = DOT_PRODUCT( avec_unfld(:,i)-rvec(:,j),avec_unfld(:,i)-rvec(:,j))
-              IF ( ABS(rtmp) < EPS_m8 ) THEN
-                  imap(j)=i
-                  lfound = .TRUE.
-              ENDIF
+              work(:,:) = ZERO
+              !
+              CALL mat_mul( work, eamp(:,:,ik), 'C', transl(:,:,i), 'N', dimwann, dimwin(ik), dimwin(ik) )
+              CALL mat_mul( work, work, 'N', eamp(:,:,ik), 'N', dimwann, dimwann, dimwin(ik) )
+              !
+              CALL mat_mul( work, cu(:,:,ik), 'C', work, 'N', dimwann, dimwann, dimwann )
+              CALL mat_mul( work, work, 'N', cu(:,:,ik), 'N', dimwann, dimwann, dimwann )
+              !
+              transl(:,:,i) = ZERO
+              transl(1:dimwann,1:dimwann,i) = work(1:dimwann,1:dimwann)
               !
           ENDDO
           !
-          IF ( .NOT. lfound ) CALL errore(subname,"vector not found",i)
+          DEALLOCATE( work, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,"deallocating work",ABS(ierr))
           !
-      ENDDO
-      
-      !
-      ! read the translation operators
-      !
-      DO j = 1, nvect 
-          !
-          IF ( imap(j) == 0 ) CYCLE
-          !
-          CALL iotk_scan_dat( iunit, "TRANSLATION"//TRIM(iotk_index(j)), rtrasl(:,:,imap(j)), IERR=ierr )    
-          IF ( ierr/=0 ) CALL errore(subname,"scanning TRANSLATION",j)
-          !
-      ENDDO
-      !
-      !
-      CALL iotk_scan_end(iunit, "TRANSLATION_OPERATORS", IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname,"searching end TRANSLATION_OPERATORS",ABS(ierr))
+          basis = "wannier"
 
-      !
-      ! close file
-      !
-      CALL file_close(iunit,PATH="/",ACTION="read", IERR=ierr)
-      IF ( ierr/=0 ) CALL errore(subname,"closing "//TRIM(datafile_trasl),ABS(ierr))
-      
-      DEALLOCATE( rvec, imap, STAT=ierr)
-      IF ( ierr/=0 ) CALL errore(subname,"deallocating rvec, imap",ABS(ierr))
-
-
-      !
-      ! if read in the eigenvector basis, convert to WFs
-      !
-      IF ( TRIM(basis) == "bloch" ) THEN
           !
-          CALL errore(subname,"conversion not yet implemented")
+          ! dump translation vectors to file
+          !
+          IF ( ionode ) THEN
+              !
+              CALL io_name( "translations", filename)
+              !
+              CALL file_open(iunit,TRIM(filename),PATH="/",ACTION="write", IERR=ierr )
+              IF ( ierr/=0 ) CALL errore(subname,"opening "//TRIM(filename),11)
+              !
+              CALL translations_write( iunit )
+              !
+              CALL file_close(iunit,PATH="/",ACTION="write", IERR=ierr )
+              IF ( ierr/=0 ) CALL errore(subname,"closing "//TRIM(filename),11)
+              !
+          ENDIF
+          !
           !
       ENDIF
-
-
+      !
+      !
       CALL timing(subname,OPR='stop')
       CALL log_pop(subname)
       !
-END SUBROUTINE translation_read
-   
+      RETURN
+      !
+END SUBROUTINE translations_drv
+
 
 !********************************************************
    SUBROUTINE write_unfld_data( lwrite_ham, fileham, lwrite_space, filespace, &
@@ -682,7 +732,7 @@ END SUBROUTINE translation_read
 
 !
 !---------------------------------
-! write to fileout (internal fmt)
+! dump to file
 !---------------------------------
 !
 
@@ -825,6 +875,6 @@ END SUBROUTINE translation_read
        !
    ENDIF
 
-
 END SUBROUTINE write_unfld_data
+
 

@@ -34,10 +34,23 @@
    PUBLIC :: want_dftread
    PUBLIC :: want_init
    PUBLIC :: postproc_init
+   PUBLIC :: wfc_drv
              
 !
 ! locally-defined interfaces
 !
+   INTERFACE wfc_drv
+      !
+      SUBROUTINE wfc_drv_x ( do_proj, do_ovp, do_transl, read_proj, read_ovp )
+         LOGICAL, OPTIONAL, INTENT(in) :: do_proj
+         LOGICAL, OPTIONAL, INTENT(in) :: do_ovp
+         LOGICAL, OPTIONAL, INTENT(in) :: do_transl
+         LOGICAL, OPTIONAL, INTENT(in) :: read_proj
+         LOGICAL, OPTIONAL, INTENT(in) :: read_ovp
+      END SUBROUTINE wfc_drv_x
+      !
+   END INTERFACE
+
 
 !
 ! left here as a template

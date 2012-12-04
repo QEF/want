@@ -73,8 +73,9 @@
       save_unit = 60                ! restart file unit
 
 
-   CHARACTER( 7), PARAMETER   ::  suffix_space=".space"
+   CHARACTER( 6), PARAMETER   ::  suffix_space=".space"
    CHARACTER( 4), PARAMETER   ::  suffix_ovp=".ovp"
+   CHARACTER( 7), PARAMETER   ::  suffix_transl=".transl"
    CHARACTER( 4), PARAMETER   ::  suffix_wannier=".wan"
    CHARACTER( 4), PARAMETER   ::  suffix_hamiltonian=".ham"
    CHARACTER( 5), PARAMETER   ::  suffix_save=".save"
@@ -577,6 +578,10 @@
       CASE ( "overlap_projection" ) 
            !
            suffix_ = TRIM(suffix_ovp)
+           !
+      CASE ( "translations" ) 
+           !
+           suffix_ = TRIM(suffix_transl)
            !
       CASE ( "wannier" ) 
            !

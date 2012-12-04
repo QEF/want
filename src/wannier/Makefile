@@ -63,14 +63,14 @@ ordering.o \
 overlap_augment.o \
 overlap_bsymm.o \
 overlap_extract.o \
-overlap.o \
+overlap_calc.o \
 overlap_module.o \
 overlap_setmap.o \
 overlap_update.o \
 paratools.o \
 polarization.o \
 postproc_init.o \
-projection.o \
+projection_calc.o \
 projection_frozen.o \
 pseudo_types.o \
 pwcom.o \
@@ -96,6 +96,8 @@ subspace_init.o \
 summary.o \
 symmetrize_kgrid.o \
 symmetry.o \
+translations.o \
+translations_calc.o \
 trial_center_data.o \
 trial_center.o \
 unitary_update.o \
@@ -110,7 +112,7 @@ want_interfaces.o \
 wf2_augment.o \
 wfc_data.o \
 wfc_info.o \
-wfc_manager.o \
+wfc_drv.o \
 windows.o \
 workspace_wan.o \
 workspace_dis.o \

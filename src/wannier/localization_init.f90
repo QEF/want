@@ -28,7 +28,7 @@
    USE util_module,         ONLY : zmat_is_unitary, mat_mul, mat_svd
    USE kpoints_module,      ONLY : nkpts, nkpts_g, iks
    USE localization_module, ONLY : localization_read, cU
-   USE overlap_module,      ONLY : ca, dimwann
+   USE overlap_module,      ONLY : proj, dimwann
    USE control_module,      ONLY : unitary_thr
    USE paratools_module,    ONLY : para_poolrecover
    !
@@ -96,7 +96,7 @@
         !
         IF (ionode) WRITE( stdout,"(/,'  Initial unitary rotations : projected localized orbitals',/)")
         !
-        ! Here we calculate the transformation matrix
+        ! Here we calculate the transformation matrix  (ca=proj)
         !
         !    cu = cs^{-1/2} * ca,       where  cs = ca*ca^{\dag}.
         !
@@ -121,7 +121,7 @@
             !
             ik_g = ik + iks -1
             !
-            CALL mat_svd( dimwann, dimwann, ca(:,:,ik), singvd, cv1, cv2 )
+            CALL mat_svd( dimwann, dimwann, proj(:,:,ik), singvd, cv1, cv2 )
             CALL mat_mul( cU(:,:,ik_g), cv1, 'N', cv2, 'N', dimwann, dimwann, dimwann )
             !
         ENDDO
