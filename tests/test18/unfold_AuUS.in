@@ -1,0 +1,11 @@
+
+&INPUT
+    prefix = "gold_US"
+    postfix = "_WanT"
+    postfix_unfld = "_WanT_UNFLD"
+    translations = "from_scratch"
+    work_dir = "./SCRATCH"
+    ndiv(1) = 1
+    ndiv(2) = 1
+    ndiv(3) = 5
+/

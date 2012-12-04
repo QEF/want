@@ -1,0 +1,225 @@
+
+  ======================================================================
+              =                                            =
+              =     *** WanT *** Wannier Transport Code    =
+              =        (www.wannier-transport.org)         =
+              =      Ultra Soft Pseudopotential Implem.    =
+              =                                            =
+  ======================================================================
+
+
+  Program <unfold>  v. 2.5.0alpha2  starts ...
+  Date  4Dec2012 at 23:36:18 
+
+     Number of MPI processes:       6
+
+
+
+          BUILT :    Fri 30 Nov 2012 07:22:02 PM CET
+           HOST :    x86_64-unknown-linux-gnu
+           ARCH :    x86_64
+             CC :    icc
+            CPP :    cpp
+            F90 :    mpif90
+            F77 :    ifort
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA
+      BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
+    LAPACK LIBS :    
+       FFT LIBS :    
+      MASS LIBS :    
+
+
+  checking for fmt internal... no
+  checking for fmt wannier90... no
+  checking for fmt crystal... no
+  checking for fmt qexml... ok
+
+  DFT-data fmt automaticaly detected: qexml
+
+  ======================================================================
+  =  INPUT Summary                                                     =
+  ======================================================================
+
+                     work dir :     ./SCRATCH
+                       prefix :     gold_US
+                      postfix :     _WanT
+                postfix_unfld :     _WanT_UNFLD
+                 translations :     from_scratch
+                         ndiv :      1   1   5
+                   nkb_buffer :     -1
+                  nwfc_buffer :     -1
+                  assume_ncpp :   FALSE
+
+
+  ======================================================================
+  =  Post Processing Init                                              =
+  ======================================================================
+
+  WARNING from routine kpoints_allocate:
+  too many CPU used
+
+  WARNING from routine kpoints_allocate:
+  too many CPU used
+
+  DFT-data read from file: gold_US.save/data-file.xml
+
+      Windows data read from file: gold_US_WanT.space
+     Subspace data read from file: gold_US_WanT.space
+  Hamiltonian data read from file: gold_US_WanT.ham
+      Wannier data read from file: gold_US_WanT.wan
+
+
+
+  ======================================================================
+  =  DFT data                                                          =
+  ======================================================================
+
+ <LATTICE>
+  Alat  =      20.0000000 (Bohr)
+  Alat  =      10.5835400 (Ang )
+  Omega =    9448.6400000 (Bohr^3)
+  Omega =    1400.1423181 (Ang^3 )
+
+  Crystal axes:
+                in Bohr units                           in Alat units
+    a(1) = (   20.00000    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    a(2) = (    0.00000   20.00000    0.00000 )    (    0.00000    1.00000    0.00000 )
+    a(3) = (    0.00000    0.00000   23.62160 )    (    0.00000    0.00000    1.18108 )
+                in Ang units
+    a(1) = (   10.58354    0.00000    0.00000 )
+    a(2) = (    0.00000   10.58354    0.00000 )
+    a(3) = (    0.00000    0.00000   12.50001 )
+
+   Reciprocal lattice vectors:
+                in Bohr^-1 units                        in 2Pi/Alat units
+    b(1) = (    0.31416    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
+    b(2) = (    0.00000    0.31416    0.00000 )    (    0.00000    1.00000    0.00000 )
+    b(3) = (    0.00000    0.00000    0.26599 )    (    0.00000    0.00000    0.84668 )
+ </LATTICE>
+
+ <K-POINTS>
+         nproc =     6   (Parallelism over kpts)
+  global nkpts =     1
+   local nkpts =     1
+  Monkhorst-Pack grid:      nk = (   1   1   1 ),      shift = (   0   0   0 )
+
+  K-point grid: (cart. coord. in Bohr^-1)
+    k (    1) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      1.0000000
+ </K-POINTS>
+
+ <R-GRID>
+         nrtot =     1
+  R-grid generators:      nr = (   1   1   1 )
+
+  R-grid vectors:         (crystal units)
+    R (    1) =    (       0      0      0 ),   wr =      1.0000000
+ </R-GRID>
+
+ <B-SHELL>
+  List of the  6 b-vectors : (Bohr^-1) 
+    b (    1) =    (   -0.3141593   0.0000000   0.0000000 ),   weight =      5.0660592
+    b (    2) =    (    0.0000000   0.3141593   0.0000000 ),   weight =      5.0660592
+    b (    3) =    (    0.0000000   0.0000000  -0.2659932 ),   weight =      7.0668991
+    b (    4) =    (    0.3141593   0.0000000   0.0000000 ),   weight =      5.0660592
+    b (    5) =    (    0.0000000  -0.3141593   0.0000000 ),   weight =      5.0660592
+    b (    6) =    (    0.0000000   0.0000000   0.2659932 ),   weight =      7.0668991
+
+  Total weight =      34.3980349
+ </B-SHELL>
+
+
+  ======================================================================
+  =  Initialization                                                    =
+  ======================================================================
+
+
+  ======================================================================
+  =  Translation operators                                             =
+  ======================================================================
+
+  Translation operators are computed
+
+  Reading density G-grid from file: gold_US.save/data-file.xml
+  Reading Wfc grids from file: gold_US.save/data-file.xml
+
+
+          Energy cut-off for rho  =        200.00 (Ry)
+      Total number of PW for rho  =     225590
+                    (smooth grid) =      79844
+        FFT grid components (rho) =  (    96   96  108 )
+                    (smooth grid) =  (    64   64   75 )
+             Use gamma-only trick =       .TRUE.
+
+          Energy cut-off for wfcs =         25.00 (Ry)
+        Max number of PW for wfc  =      10003
+
+
+  Initializing global dft data
+  Initializing US pseudopot. data
+  Total number Nkb of beta functions:    90
+
+ <MEMORY_USAGE>
+                 kpoints:          0.000 MB
+                   rgrid:          0.000 MB
+                 bshells:          0.000 MB
+                    ions:          0.003 MB
+                 windows:          0.001 MB
+                subspace:          0.018 MB
+                  ggrids:          9.926 MB
+                wfc_data:         11.885 MB
+            localization:          0.016 MB
+             hamiltonian:          0.014 MB
+             struct_fact:          3.658 MB
+                      us:         21.186 MB
+                    uspp:         14.462 MB
+
+     Total alloc. Memory:         61.168 MB
+ </MEMORY_USAGE>
+
+
+    Matrix elements calculation for k-point:    1
+    npw =  10003,    dimwin =   37
+                              Total time spent up to now :     3.05 secs
+
+                              Total time spent up to now :     3.06 secs
+
+
+  ======================================================================
+  =  Hamiltonian redefinition                                          =
+  ======================================================================
+
+
+  Unfold data dumped to files:
+          ./SCRATCH/gold_US_WanT_UNFLD.ham
+          ./SCRATCH/gold_US_WanT_UNFLD.space
+
+  ======================================================================
+
+   <global routines>
+             clock number :    22
+
+                   unfold :     3.00s CPU 
+
+             unfold_input :     0.09s CPU
+            postproc_init :     0.15s CPU
+             want_dftread :     0.08s CPU
+                want_init :     0.00s CPU
+       para_get_poolindex :     0.00s CPU
+             bshells_init :     0.00s CPU
+             windows_read :     0.00s CPU
+            subspace_read :     0.06s CPU
+                do_unfold :     2.84s CPU
+         translations_drv :     2.84s CPU
+                  wfc_drv :     2.83s CPU
+          ggrids_read_ext :     0.10s CPU
+      wfc_data_grids_read :     0.00s CPU
+              struct_fact :     0.05s CPU
+                init_us_1 :     2.44s CPU
+           wfc_data_kread :     0.06s CPU (       2 calls,   0.028 s avg)
+                init_us_2 :     0.06s CPU (       2 calls,   0.030 s avg)
+                  ccalbec :     0.02s CPU
+                    s_psi :     0.07s CPU
+        translations_calc :     0.04s CPU
+       translations_write :     0.01s CPU
+
+
