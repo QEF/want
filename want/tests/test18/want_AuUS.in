@@ -1,0 +1,50 @@
+
+&CONTROL
+   prefix = 'gold_US'
+   postfix = '_WanT'
+   work_dir = './SCRATCH'
+/
+
+&SUBSPACE
+   dimwann = 30   
+   win_max = 1.800
+   froz_max = -2.0
+/
+
+&LOCALIZATION
+   maxiter0_wan = 100
+   maxiter1_wan = 1500
+   ncg = 5    
+/
+
+WANNIER_CENTERS 
+atomic   1  0  0
+atomic   1  2 -2
+atomic   1  2 -1
+atomic   1  2  0
+atomic   1  2  1
+atomic   1  2  2
+atomic   2  0  0
+atomic   2  2 -2
+atomic   2  2 -1
+atomic   2  2  0
+atomic   2  2  1
+atomic   2  2  2
+atomic   3  0  0
+atomic   3  2 -2
+atomic   3  2 -1
+atomic   3  2  0
+atomic   3  2  1
+atomic   3  2  2
+atomic   4  0  0
+atomic   4  2 -2
+atomic   4  2 -1
+atomic   4  2  0
+atomic   4  2  1
+atomic   4  2  2
+atomic   5  0  0
+atomic   5  2 -2
+atomic   5  2 -1
+atomic   5  2  0
+atomic   5  2  1
+atomic   5  2  2
