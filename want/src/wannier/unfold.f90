@@ -244,7 +244,7 @@ END PROGRAM unfold
    ! perform the main task of the calculation
    !
    USE kinds
-   USE constants,            ONLY : ZERO, CZERO, TWO, EPS_m6
+   USE constants,            ONLY : ZERO, CZERO, TWO, EPS_m6, EPS_m2
    USE parameters,           ONLY : nstrx, nkpts_inx
    USE io_module,            ONLY : stdout, stdin, io_name, ionode, ionode_id, ham_unit, sgm_unit
    USE io_module,            ONLY : work_dir, prefix, postfix
@@ -287,14 +287,17 @@ END PROGRAM unfold
       INTEGER           :: nkpts_unfld, nk_unfld(3), s_unfld(3)
       REAL(dbl)         :: avec_unfld(3,3), bvec_unfld(3,3)
       REAL(dbl)         :: rvect_unfld(3,3)
-      REAL(dbl)         :: ref_rave(3)
       !
       REAL(dbl),    ALLOCATABLE :: vkpt_unfld(:,:), vr_unfld(:,:)
       REAL(dbl),    ALLOCATABLE :: wk_unfld(:), wr_unfld(:)
       INTEGER,      ALLOCATABLE :: ivr_unfld(:,:)
       COMPLEX(dbl), ALLOCATABLE :: rham_unfld(:,:,:), rovp_unfld(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: work(:,:), work_ovp(:,:), trmat(:,:,:)
-      INTEGER,      ALLOCATABLE :: orb_map(:), rtmp(:)
+      !
+      INTEGER, ALLOCATABLE :: orb_map(:), rtmp(:), orb_map_tmp(:)
+      INTEGER, ALLOCATABLE :: index(:)
+      REAL(dbl)            :: ref_rave(3)
+      REAL(dbl), PARAMETER :: toll_dist = 5.0 * EPS_m2
       !
       CHARACTER(nstrx)  :: fileham, filespace
       CHARACTER(1)      :: op
@@ -304,17 +307,13 @@ END PROGRAM unfold
       !
       ! end of declarations
       !
-
 !
 !------------------------------
 ! main body 
 !------------------------------
 !
-
       CALL timing(subname,OPR='start')
       CALL log_push(subname)
-
-
       !
       ! init
       !
@@ -327,8 +326,7 @@ END PROGRAM unfold
       IF ( nkpts_g /= 1 ) CALL errore(subname,"unfolding implemented only for gamma",10)
       !
       IF ( MOD( dimwann, PRODUCT(ndiv) ) /= 0 ) CALL errore(subname,"dimwann & ndiv not consistent",10)
-      dimwann_unfld = dimwann / PRODUCT( ndiv )
-      
+      dimwann_unfld = dimwann / PRODUCT( ndiv )     
       !
       ! lattice redefinition
       !
@@ -338,7 +336,6 @@ END PROGRAM unfold
           bvec_unfld(:,i) = bvec(:,i) * REAL( ndiv(i), dbl )
           !
       ENDDO
-
       !
       ! direct and reciprocal lattice
       !
@@ -374,7 +371,6 @@ END PROGRAM unfold
       !   
       vr_unfld(:,:) = REAL( ivr_unfld, dbl)
       CALL cry2cart( vr_unfld, avec_unfld)
-      
       !
       ! select the directions to unfold
       !
@@ -407,23 +403,100 @@ END PROGRAM unfold
       ALLOCATE( orb_map(dimwann_unfld), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating orb_map",ABS(ierr))
       !
-      ALLOCATE( rtmp(dimwann_unfld), STAT=ierr )
+      ALLOCATE( orb_map_tmp(dimwann), STAT=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,"allocating orb_map_tmp",ABS(ierr))
+      !
+      ALLOCATE( rtmp(dimwann), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating rtmp",ABS(ierr))
       !
-
+      ALLOCATE( index(dimwann), STAT=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,"allocating index",ABS(ierr))
+      !
       ! XXX to be properly implemented
 
 #ifdef __WF_SELECT_AUTOMATIC
-      i=1
-      do while(i.le.dimwann_unfld)
-      !1 take wannier function 1
+      ! take first wannier function ( wf )
+      orb_map(1)=1
+      !
+      ref_rave=rave(:,1)
+      !
+      ! compute distance of other wfs from it
+      !
+      do i=1,dimwann
          !
-         ref_rave=rave(:,i) 
-         rtmp(i) = SQRT (DOT_PRODUCT( rave(:,i)-ref_rave(:), rave(:,i)-ref_rave ) )
-       rtmp2(i) = r2ave(i) - rave2(i) 
-       index(i) = i
+         rtmp(i) = SQRT ( DOT_PRODUCT( rave(:,i)-ref_rave(:), rave(:,i)-ref_rave ) )
+         index(i) = i
+         !
+      enddo
+      !
+      ! this is to make sure the first wavefuntion will be the 
+      ! "closest to itself" (other wfs might have the same center)
+      !
+      rtmp(1)=-1.d0
+      !
+      ! sort wf by center distance from first wf center
+      !
+      CALL hpsort_eps(dimwann, rtmp(:), index(:), toll_dist )
+      !
+      ! we now start from the identity matrix and write it 
+      ! and its translated along all sublattice directions
+      ! (treating it as a "hamiltonian" to unfold). IF we selected
+      ! a good dimwann_unfld subset, we should have that we get no
+      ! off-diagonal elements. As soon as we get an off-diagonal
+      ! element, this tells us that one of the functions in the  !  subset is the translated of another, so we kill it
+      orb_map_tmp(:) = index(:)
+      !
+      DO ir = 1, nrtot_unfld
+          !
+          work(:,:) = 0.d0
+          !
+          ! Initialize work to identity matrix... its translated 
+          ! is the translation matrix itself
+          !
+          do j=1, dimwann
+             !
+             work(j,j) = 1.d0
+             !
+          enddo
+          !
+          IF ( lhave_overlap ) THEN
+              work_ovp(:,:) = rovp(:,:,1)
+          ENDIF
+          !
+          ! build T1^a T2^b T3^c
+          !
+          DO j = 1, ndir
+              !
+              op="N"
+              IF ( ivr_unfld( dir_map(j) ,ir) < 0 ) op="C"
+              !
+              trmat(:,:,j) =0.0d0 
+              DO i = 1, dimwann
+                  trmat(i,i,j) =1.0d0
+              ENDDO
+              ! nb 
+              DO k = 1, ABS( ivr_unfld( dir_map(j), ir) )
+                  CALL mat_mul( trmat(:,:,j), trmat(:,:,j), 'N', transl(:,:,j), op, dimwann, dimwann, dimwann )
+              ENDDO
+              !
+              CALL mat_mul( work, work, 'N', trmat(:,:,j), 'N', dimwann, dimwann, dimwann )
+              !
+          ENDDO
+          !
+          ! now we eliminate 
+          !
+          DO j = 1, dimwann-1
+          ! check only wf farther from wf 1 than j
+          DO i = j+1, dimwann
+              ! is wf i translated of wf j?
+              IF(abs(work(index(j),index(i)).gt.EPS_m2) THEN
+                 orb_map_tmp(i)=-1 !discard the wf
+              ENDIF
+              !
+          ENDDO
+          ENDDO
+      ENDDO
        !
-   ENDDO
       !2 find the distance between wannier function one and all other wannier functions: store distance in array of size (dimwann_unfld)
       !3 compute the nearest and next nearest neighbors of wf N=1 by translation
       !4 take the first wf closest to N=1 wf, check it is not a n or nn neighbor of wf N=1
@@ -439,7 +512,6 @@ END PROGRAM unfold
           orb_map(i)=i
       ENDDO
 #endif
-
       !
       ! redefine the hamiltonian
       !
@@ -456,7 +528,7 @@ END PROGRAM unfold
       IF ( ierr/=0 ) CALL errore(subname,"allocating work_ovp",ABS(ierr))
       ALLOCATE( trmat(dimwann,dimwann,ndir), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating trmat",ABS(ierr))
-      ! 
+      !
       DO ir = 1, nrtot_unfld
           !
           work(:,:) = rham(:,:,1)
@@ -476,7 +548,7 @@ END PROGRAM unfold
               DO i = 1, dimwann
                   trmat(i,i,j) =1.0d0
               ENDDO
-              !
+              ! nb 
               DO k = 1, ABS( ivr_unfld( dir_map(j), ir) )
                   CALL mat_mul( trmat(:,:,j), trmat(:,:,j), 'N', transl(:,:,j), op, dimwann, dimwann, dimwann )
               ENDDO
@@ -540,8 +612,12 @@ END PROGRAM unfold
       !
       DEALLOCATE( orb_map, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating orb_map', ABS(ierr) )
+      DEALLOCATE( orb_map_tmp, STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating orb_map_tmp', ABS(ierr) )
       DEALLOCATE( rtmp, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating rtmp', ABS(ierr) )
+      DEALLOCATE( index, STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating index', ABS(ierr) )
       !
       CALL timing(subname,OPR='stop')
       CALL log_pop(subname)
