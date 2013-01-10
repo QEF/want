@@ -287,13 +287,14 @@ END PROGRAM unfold
       INTEGER           :: nkpts_unfld, nk_unfld(3), s_unfld(3)
       REAL(dbl)         :: avec_unfld(3,3), bvec_unfld(3,3)
       REAL(dbl)         :: rvect_unfld(3,3)
+      REAL(dbl)         :: ref_rave(3)
       !
       REAL(dbl),    ALLOCATABLE :: vkpt_unfld(:,:), vr_unfld(:,:)
       REAL(dbl),    ALLOCATABLE :: wk_unfld(:), wr_unfld(:)
       INTEGER,      ALLOCATABLE :: ivr_unfld(:,:)
       COMPLEX(dbl), ALLOCATABLE :: rham_unfld(:,:,:), rovp_unfld(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: work(:,:), work_ovp(:,:), trmat(:,:,:)
-      INTEGER,      ALLOCATABLE :: orb_map(:)
+      INTEGER,      ALLOCATABLE :: orb_map(:), rtmp(:)
       !
       CHARACTER(nstrx)  :: fileham, filespace
       CHARACTER(1)      :: op
@@ -400,20 +401,44 @@ END PROGRAM unfold
       ! WF basis
       !
       CALL translations_drv( dimwann, dimwinx, ndir, rvect_unfld, lhave_transl, datafile_transl )
-
-
-
       !
       ! basis selection
       !
       ALLOCATE( orb_map(dimwann_unfld), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating orb_map",ABS(ierr))
+      !
+      ALLOCATE( rtmp(dimwann_unfld), STAT=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,"allocating rtmp",ABS(ierr))
+      !
 
       ! XXX to be properly implemented
+
+#ifdef __WF_SELECT_AUTOMATIC
+      i=1
+      do while(i.le.dimwann_unfld)
+      !1 take wannier function 1
+         !
+         ref_rave=rave(:,i) 
+         rtmp(i) = SQRT (DOT_PRODUCT( rave(:,i)-ref_rave(:), rave(:,i)-ref_rave ) )
+       rtmp2(i) = r2ave(i) - rave2(i) 
+       index(i) = i
+       !
+   ENDDO
+      !2 find the distance between wannier function one and all other wannier functions: store distance in array of size (dimwann_unfld)
+      !3 compute the nearest and next nearest neighbors of wf N=1 by translation
+      !4 take the first wf closest to N=1 wf, check it is not a n or nn neighbor of wf N=1
+      !5 if not, call this wf N+1, set N=N+1 and goto 3
+      !6 if it is, skip this, go to next wf, goto 4
+
+      !! as an alternative, one can check the neighbors and next-nearest neighbors by having operators T and T^2 in each direction at hand (for 3d we have 36+6 operators... is it feasible?)
+
+
+      enddo
+#else
       DO i = 1, dimwann_unfld
           orb_map(i)=i
       ENDDO
-
+#endif
 
       !
       ! redefine the hamiltonian
@@ -512,9 +537,11 @@ END PROGRAM unfold
       IF( ierr /=0 ) CALL errore(subname, 'deallocating work', ABS(ierr) )
       DEALLOCATE( trmat, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating trmat', ABS(ierr) )
-
       !
-      !
+      DEALLOCATE( orb_map, STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating orb_map', ABS(ierr) )
+      DEALLOCATE( rtmp, STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating rtmp', ABS(ierr) )
       !
       CALL timing(subname,OPR='stop')
       CALL log_pop(subname)
