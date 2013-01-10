@@ -402,7 +402,13 @@ END PROGRAM unfold
       !
       ALLOCATE( orb_map(dimwann_unfld), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating orb_map",ABS(ierr))
-      !
+      ALLOCATE( work(dimwann,dimwann), STAT=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,"allocating work",ABS(ierr))
+      ALLOCATE( trmat(dimwann,dimwann,ndir), STAT=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,"allocating trmat",ABS(ierr))
+      ! XXX to be properly implemented
+
+#ifdef __WF_SELECT_AUTOMATIC
       ALLOCATE( orb_map_tmp(dimwann), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating orb_map_tmp",ABS(ierr))
       !
@@ -412,9 +418,6 @@ END PROGRAM unfold
       ALLOCATE( index(dimwann), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating index",ABS(ierr))
       !
-      ! XXX to be properly implemented
-
-#ifdef __WF_SELECT_AUTOMATIC
       ! take first wannier function ( wf )
       orb_map(1)=1
       !
@@ -453,15 +456,11 @@ END PROGRAM unfold
           ! Initialize work to identity matrix... its translated 
           ! is the translation matrix itself
           !
-          do j=1, dimwann
-             !
-             work(j,j) = 1.d0
-             !
+          do j=1,dimwann
+              !
+              work(j,j)=1.d0
+              !
           enddo
-          !
-          IF ( lhave_overlap ) THEN
-              work_ovp(:,:) = rovp(:,:,1)
-          ENDIF
           !
           ! build T1^a T2^b T3^c
           !
@@ -483,20 +482,48 @@ END PROGRAM unfold
               !
           ENDDO
           !
-          ! now we eliminate 
+          ! now we eliminate those wfs which are ir-translate of a
+          ! previous one 
           !
           DO j = 1, dimwann-1
-          ! check only wf farther from wf 1 than j
-          DO i = j+1, dimwann
-              ! is wf i translated of wf j?
-              IF(abs(work(index(j),index(i)).gt.EPS_m2) THEN
-                 orb_map_tmp(i)=-1 !discard the wf
-              ENDIF
               !
-          ENDDO
+              IF(orb_map_tmp(i).lt.0) THEN
+                  ! check only wf farther from wf 1 than j                 
+                  DO i = j+1, dimwann
+                  ! is wf i translated of wf j? (are they connected by
+                  ! translation)
+                      IF(abs(work(index(j),index(i))).gt.EPS_m2) THEN
+                          !
+                          orb_map_tmp(i) = -1 !discard the wf
+                          !
+                      ENDIF
+                      !
+                  ENDDO
+              ENDIF
           ENDDO
       ENDDO
-       !
+      !
+      ! Now we should have selected the correct subset of wfs
+      !
+      k=2
+      !
+      DO j=1,dimwann
+         !
+         IF(orb_map_tmp(j).gt.0) THEN
+            !
+            orb_map(k)=orb_map_tmp(j)
+            !
+            k=k+1
+            ! 
+            IF(k.gt.dimwann_unfld) THEN
+                !
+                exit
+                !
+            ENDIF
+            !
+         ENDIF
+         !
+      ENDDO
       !2 find the distance between wannier function one and all other wannier functions: store distance in array of size (dimwann_unfld)
       !3 compute the nearest and next nearest neighbors of wf N=1 by translation
       !4 take the first wf closest to N=1 wf, check it is not a n or nn neighbor of wf N=1
@@ -504,10 +531,7 @@ END PROGRAM unfold
       !6 if it is, skip this, go to next wf, goto 4
 
       !! as an alternative, one can check the neighbors and next-nearest neighbors by having operators T and T^2 in each direction at hand (for 3d we have 36+6 operators... is it feasible?)
-
-
-      enddo
-#else
+#else 
       DO i = 1, dimwann_unfld
           orb_map(i)=i
       ENDDO
@@ -522,12 +546,8 @@ END PROGRAM unfold
       IF ( ierr/=0 ) CALL errore(subname,"allocating rham_unfld",ABS(ierr))
       ALLOCATE( rovp_unfld(dimwann_unfld,dimwann_unfld,nrtot_unfld), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating rovp_unfld",ABS(ierr))
-      ALLOCATE( work(dimwann,dimwann), STAT=ierr )
-      IF ( ierr/=0 ) CALL errore(subname,"allocating work",ABS(ierr))
       ALLOCATE( work_ovp(dimwann,dimwann), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating work_ovp",ABS(ierr))
-      ALLOCATE( trmat(dimwann,dimwann,ndir), STAT=ierr )
-      IF ( ierr/=0 ) CALL errore(subname,"allocating trmat",ABS(ierr))
       !
       DO ir = 1, nrtot_unfld
           !
@@ -612,10 +632,14 @@ END PROGRAM unfold
       !
       DEALLOCATE( orb_map, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating orb_map', ABS(ierr) )
+      !
+      IF(allocated(orb_map_tmp)) &
       DEALLOCATE( orb_map_tmp, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating orb_map_tmp', ABS(ierr) )
+      IF(allocated(rtmp)) &
       DEALLOCATE( rtmp, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating rtmp', ABS(ierr) )
+      IF(allocated(index)) &
       DEALLOCATE( index, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating index', ABS(ierr) )
       !
