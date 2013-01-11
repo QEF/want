@@ -114,7 +114,7 @@ run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER
 #
 # running UNFOLD
 #
-run_unfold  SUFFIX=$SUFFIX  RUN=$BANDS
+run_unfold  SUFFIX=$SUFFIX  RUN=$UNFOLD
 
 #
 # running BANDS
