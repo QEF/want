@@ -294,7 +294,8 @@ END PROGRAM unfold
       COMPLEX(dbl), ALLOCATABLE :: rham_unfld(:,:,:), rovp_unfld(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: work(:,:), work_ovp(:,:), trmat(:,:,:)
       !
-      INTEGER, ALLOCATABLE :: orb_map(:), rtmp(:), orb_map_tmp(:)
+      INTEGER, ALLOCATABLE :: orb_map(:), orb_map_tmp(:)
+      REAL(dbl), ALLOCATABLE :: rtmp(:)
       INTEGER, ALLOCATABLE :: index(:)
       REAL(dbl)            :: ref_rave(3)
       REAL(dbl), PARAMETER :: toll_dist = 5.0 * EPS_m2
@@ -421,13 +422,13 @@ END PROGRAM unfold
       ! take first wannier function ( wf )
       orb_map(1)=1
       !
-      ref_rave=rave(:,1)
+      ref_rave(1:3)=rave(1:3,1)
       !
       ! compute distance of other wfs from it
       !
       do i=1,dimwann
          !
-         rtmp(i) = SQRT ( DOT_PRODUCT( rave(:,i)-ref_rave(:), rave(:,i)-ref_rave ) )
+         rtmp(i) = SQRT ( DOT_PRODUCT( rave(:,i)-ref_rave(:), rave(:,i)-ref_rave(:) ) )
          index(i) = i
          !
       enddo
@@ -439,7 +440,10 @@ END PROGRAM unfold
       !
       ! sort wf by center distance from first wf center
       !
+      write(6,*) "rtmp", rtmp(:), "f_index"
+      write(6,*) "index", index(:), "f_index"
       CALL hpsort_eps(dimwann, rtmp(:), index(:), toll_dist )
+      write(6,*) "index", index(:), "f_index"
       !
       ! we now start from the identity matrix and write it 
       ! and its translated along all sublattice directions
@@ -487,7 +491,7 @@ END PROGRAM unfold
           !
           DO j = 1, dimwann-1
               !
-              IF(orb_map_tmp(i).lt.0) THEN
+              IF(orb_map_tmp(j).gt.0) THEN
                   ! check only wf farther from wf 1 than j                 
                   DO i = j+1, dimwann
                   ! is wf i translated of wf j? (are they connected by
@@ -507,7 +511,7 @@ END PROGRAM unfold
       !
       k=2
       !
-      DO j=1,dimwann
+      DO j=2,dimwann
          !
          IF(orb_map_tmp(j).gt.0) THEN
             !
@@ -524,6 +528,8 @@ END PROGRAM unfold
          ENDIF
          !
       ENDDO
+      write(6,*) "this is orb_map", orb_map(:)
+      write(6,*) "this is orb_map_tmp", orb_map_tmp(:)
       !2 find the distance between wannier function one and all other wannier functions: store distance in array of size (dimwann_unfld)
       !3 compute the nearest and next nearest neighbors of wf N=1 by translation
       !4 take the first wf closest to N=1 wf, check it is not a n or nn neighbor of wf N=1
