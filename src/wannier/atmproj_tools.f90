@@ -36,6 +36,12 @@
    CHARACTER(nstrx)   :: file_data
    !
    LOGICAL            :: init = .FALSE.
+   !
+   ! parameters for the reconstruction 
+   ! of the Hamiltonian
+   !
+   REAL(dbl)          :: eshift = 100.0d0
+
 
    ! contains:
    ! SUBROUTINE  atmproj_to_internal( filein, fileout, filetype, do_orthoovp )
@@ -195,9 +201,9 @@ END SUBROUTINE atmproj_tools_init
 
    !
    ! orthogonalization controlled by input
-   ! NOTE: states are orthogonal by default
+   ! NOTE: states are non-orthogonal by default
    !
-   do_orthoovp_ = .TRUE.
+   do_orthoovp_ = .FALSE.
    IF ( PRESENT( do_orthoovp ) ) do_orthoovp_ = do_orthoovp
 
 !
@@ -342,6 +348,13 @@ END SUBROUTINE atmproj_tools_init
       CALL errore( subname, 'unknown units for efermi: '//TRIM(energy_units), 72)
    END SELECT
 
+   !
+   ! apply the energy shift eshift,
+   ! meant to set the zero of the energy scale (where we may have
+   ! spurious 0 eigenvalues) far from any physical energy region of interest
+   !
+   eig    = eig    -eshift
+   efermi = efermi -eshift
 
 
 

@@ -49,6 +49,7 @@
    INTEGER          :: ircut(3)      ! real space curoff in terms of unit cells
                                      ! for directions i=1,2,3  (0 means no cutoff)
    INTEGER          :: nprint        ! print every "nprint" iterations
+   LOGICAL          :: do_orthoovp
 
 
    !
@@ -57,7 +58,7 @@
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
                     nk, s, delta, smearing_type, fileout, debug_level,     &
                     emin, emax, ne, ircut, projdos, nprint, verbosity,     &
-                    shift, scale
+                    shift, scale, do_orthoovp
    !
    ! end of declariations
    !   
@@ -79,7 +80,7 @@
       !
       CALL write_header( stdout, "Post Processing Init" )
       !
-      CALL datafiles_init( )
+      CALL datafiles_init( do_orthoovp )
       !
       CALL postproc_init ( )
 
@@ -148,6 +149,7 @@ CONTAINS
       nprint                      = 50
       debug_level                 = 0
       verbosity                   = 'medium'
+      do_orthoovp                 = .FALSE.
       
       CALL input_from_file ( stdin )
       !
@@ -179,6 +181,7 @@ CONTAINS
       CALL mp_bcast( nprint,          ionode_id )      
       CALL mp_bcast( debug_level,     ionode_id )      
       CALL mp_bcast( verbosity,       ionode_id )      
+      CALL mp_bcast( do_orthoovp,     ionode_id )
 
       !
       ! Init
@@ -244,6 +247,7 @@ CONTAINS
           !
           IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
               WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
+              WRITE( stdout,"(7x,'       use ortho basis :',5x,   a)") TRIM( log2char(do_orthoovp) )
           ENDIF
           !
           WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )

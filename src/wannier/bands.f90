@@ -37,12 +37,14 @@
    INTEGER            :: ircut(3)       ! real space curoff in terms of unit cells
                                         ! for directions i=1,2,3  (0 means no cutoff)
    CHARACTER(nstrx)   :: fileout        ! output filename
+   LOGICAL            :: do_orthoovp
 
    !
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
-                    fileout, nkpts_in, nkpts_max, ircut, debug_level, verbosity
+                    fileout, nkpts_in, nkpts_max, ircut, debug_level, verbosity, &
+                    do_orthoovp
    !
    ! end of declariations
    !   
@@ -64,7 +66,7 @@
       !
       CALL write_header( stdout, "Post Processing Init" )
       !
-      CALL datafiles_init()
+      CALL datafiles_init( do_orthoovp )
       !
       CALL postproc_init ()
 
@@ -123,6 +125,8 @@ CONTAINS
       ircut(1:3)                  = 0
       debug_level                 = 0
       verbosity                   = 'medium'
+      do_orthoovp                 = .FALSE.
+      
       
       CALL input_from_file ( stdin )
       !
@@ -145,6 +149,7 @@ CONTAINS
       CALL mp_bcast( ircut,           ionode_id )
       CALL mp_bcast( debug_level,     ionode_id )
       CALL mp_bcast( verbosity,       ionode_id )
+      CALL mp_bcast( do_orthoovp,     ionode_id )
 
       !
       ! init
@@ -181,7 +186,7 @@ CONTAINS
           WRITE( stdout, "(   7x,'                prefix :',5x,   a)") TRIM(prefix)
           WRITE( stdout, "(   7x,'               postfix :',5x,   a)") TRIM(postfix)
           IF ( LEN_TRIM( datafile_dft ) /= 0 ) &
-              WRITE( stdout, "(7x,'          datafile_dft :',5x,   a)") TRIM(datafile_dft)
+              WRITE( stdout,"(7x,'          datafile_dft :',5x,   a)") TRIM(datafile_dft)
           WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
           WRITE( stdout, "(   7x,'             nkpts_in  :',3x,3i4 )") nkpts_in
           WRITE( stdout, "(   7x,'             nkpts_max :',3x,3i4 )") nkpts_max
@@ -192,6 +197,7 @@ CONTAINS
           !
           IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
               WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
+              WRITE( stdout,"(7x,'       use ortho basis :',5x,   a)") TRIM( log2char(do_orthoovp) )
           ENDIF
           !
           WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )
