@@ -35,8 +35,13 @@ work_dir      STRING
 
 datafile_dft  STRING
               the name of the datafile for DFT when importing data from 
-              CRYSTAL06.
+              CRYSTAL, CP2K, etc.
               DEFAULT: " "
+
+do_orthoovp   LOGICAL
+              when reading datafile_dft, if .TRUE. orthogonalizes the overlap matrix 
+              when present and makes the basis orthonormal
+              DEFAULT: .FALSE.
 
 datafile_sgm  STRING
               If specified, the code reads the file to search for a static or dynamical
