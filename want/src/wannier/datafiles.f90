@@ -42,7 +42,7 @@ CONTAINS
 !
 
 !**********************************************************
-   SUBROUTINE datafiles_init()
+   SUBROUTINE datafiles_init( do_orthoovp )
    !**********************************************************
    !
    ! First, check whether files exist, 
@@ -52,12 +52,15 @@ CONTAINS
    IMPLICIT NONE
 
    !
+   LOGICAL, OPTIONAL :: do_orthoovp
+
+   !
    ! local variables
    !
    CHARACTER(14)    :: subname="datafiles_init"
    CHARACTER(nstrx) :: fmtstr
    CHARACTER(nstrx) :: filein, fileout
-   LOGICAL          :: exists
+   LOGICAL          :: exists, do_orthoovp_
 
 !
 !-------------------
@@ -69,6 +72,9 @@ CONTAINS
    ! if the name of the file is empty, exit the routine
    !
    IF ( LEN_TRIM(datafile) == 0 ) RETURN
+
+   do_orthoovp_ = .FALSE.
+   IF ( PRESENT( do_orthoovp ) ) do_orthoovp_ = do_orthoovp
 
    !
    CALL timing( subname, OPR='start')
@@ -105,10 +111,10 @@ CONTAINS
        CASE ( 'crystal' )
            !
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
-           CALL crystal_to_internal( filein, fileout, 'hamiltonian' )
+           CALL crystal_to_internal( filein, fileout, 'hamiltonian', do_orthoovp_ )
            !
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
-           CALL crystal_to_internal( filein, fileout, 'subspace' )
+           CALL crystal_to_internal( filein, fileout, 'subspace', do_orthoovp_ )
            !
            WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
            !
@@ -125,7 +131,7 @@ CONTAINS
        CASE ( 'cp2k' )
            !
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
-           CALL cp2k_to_internal( TRIM(filein), TRIM(fileout), 'hamiltonian' )
+           CALL cp2k_to_internal( TRIM(filein), TRIM(fileout), 'hamiltonian', do_orthoovp_ )
            !
            !fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
            !CALL wannier90_to_internal( filein, fileout, 'subspace' )
@@ -135,10 +141,10 @@ CONTAINS
        CASE ( 'atmproj' )
            !
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
-           CALL atmproj_to_internal( filein, fileout, 'hamiltonian' )
+           CALL atmproj_to_internal( filein, fileout, 'hamiltonian', do_orthoovp_ )
            !
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
-           CALL atmproj_to_internal( filein, fileout, 'subspace' )
+           CALL atmproj_to_internal( filein, fileout, 'subspace', do_orthoovp_ )
            !
            WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
            !

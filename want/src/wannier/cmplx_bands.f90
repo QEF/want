@@ -77,7 +77,7 @@
       !
       CALL write_header( stdout, "Post Processing Init" )
       !
-      CALL datafiles_init()
+      CALL datafiles_init( )
       !
       CALL postproc_init ()
 
