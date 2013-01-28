@@ -96,7 +96,7 @@
               !
               ! apply translation
               !
-!$omp parallel do privae( arg, phase)
+!$omp parallel do private( arg, phase)
               DO ig = 1, npwk
                   !
                   arg   = DOT_PRODUCT( rvect(:,i), g( :, igsort(ig) ) ) * tpiba
