@@ -6,7 +6,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !  
 #if defined(__XLF) || defined(__ABSOFT)
-   #define flush flush_
+#define flush flush_
 #endif
 !
 !----------------------------------------------------------------------------

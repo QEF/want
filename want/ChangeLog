@@ -4,6 +4,9 @@
 =======================================================
 
 
+31 Jan 2013     bug fixed in qexml.f90 (Hubbard_l was allocated with a bad dimension).
+		Courtesy of Conor Hogan. (AF)
+
 04 Dec 2012     unfolf.f90 pp is able to compute translations matrix elements.
 		Unfolding seems to work (testing not completed). Test18 added. (AF)
 

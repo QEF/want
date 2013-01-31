@@ -1083,7 +1083,7 @@ CONTAINS
          CALL iotk_write_dat( ounit, "HUBBARD_LMAX", Hubbard_lmax )
          !
          CALL iotk_write_dat( ounit, "HUBBARD_L", &
-                              Hubbard_l(1:Hubbard_lmax) )
+                              Hubbard_l(1:nsp) )
          !
          CALL iotk_write_dat( ounit, "HUBBARD_U", Hubbard_U(1:nsp) )
          !
@@ -2332,7 +2332,7 @@ CONTAINS
          CALL iotk_scan_dat( iunit, "HUBBARD_LMAX", Hubbard_lmax_, IERR=ierr )
          IF ( ierr/=0 ) RETURN
          !
-         ALLOCATE( Hubbard_l_(1:Hubbard_lmax_) )
+         ALLOCATE( Hubbard_l_(nsp_) )
          ALLOCATE( Hubbard_U_(nsp_) )
          ALLOCATE( Hubbard_alpha_(nsp_) )
          !
@@ -2358,7 +2358,7 @@ CONTAINS
          !
          IF ( PRESENT( nsp ) )             nsp                   = nsp_
          IF ( PRESENT( Hubbard_lmax ) )    Hubbard_lmax          = Hubbard_lmax_
-         IF ( PRESENT( Hubbard_l ) )       Hubbard_l(1:Hubbard_lmax_)   = Hubbard_l_(:)
+         IF ( PRESENT( Hubbard_l ) )       Hubbard_l(1:nsp_)     = Hubbard_l_(1:nsp_)
          IF ( PRESENT( Hubbard_U ) )       Hubbard_U(1:nsp_)     = Hubbard_U_(1:nsp_)
          IF ( PRESENT( Hubbard_alpha ) )   Hubbard_alpha(1:nsp_) = Hubbard_alpha_(1:nsp_)
          !
