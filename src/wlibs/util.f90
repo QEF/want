@@ -145,6 +145,7 @@ INTERFACE mat_inv
    MODULE PROCEDURE zmat_inv
    MODULE PROCEDURE zmat_bnd_inv
    MODULE PROCEDURE dmat_inv
+   MODULE PROCEDURE dmat_bnd_inv
 END INTERFACE
 !
 ! matrix sqrt
@@ -647,7 +648,6 @@ END SUBROUTINE dmat_svd
    REAL(dbl),    ALLOCATABLE :: rwork(:)
    COMPLEX(dbl), ALLOCATABLE :: atmp(:,:), work(:)
 
-
    IF ( m <= 0 .OR. n<=0 ) CALL errore('zmat_svd','Invalid DIMs',1)
    IF ( m > SIZE(a,1) .OR. m > SIZE(u,1) .OR. m > SIZE(u,2) ) &
            CALL errore('zmat_svd','m too large',m)
@@ -666,7 +666,7 @@ END SUBROUTINE dmat_svd
    !
    ! save A (which is intent IN)
    atmp(:,:) = a(1:m, 1:n)
-
+   
    !
    ! determine lwork
    !
@@ -1678,7 +1678,7 @@ END SUBROUTINE dmat_hdiag
 
 
    ! use magma if possible
-   CALL DSBEVX( 'v', 'a', 'u', n, kd, ab, ldab, qmat, SIZE(qmat,1), 0, 0, 0, 0, ZERO, &
+   CALL DSBEVX( 'v', 'a', 'u', n, kd, ab, ldab, qmat, SIZE(qmat,1), ZERO, ZERO, 0, 0, ZERO, &
                  m, w, z, SIZE(z,1), work, iwork, ifail, info )
 
    IF ( info < 0 ) CALL errore(subname, 'DSBEVX: info illegal value', -info )
@@ -1731,7 +1731,7 @@ END SUBROUTINE dmat_bnd_hdiag
 
 
    ! use magma if possible
-   CALL DSBEVX( 'v', 'i', 'u', n, kd, ab, ldab, qmat, SIZE(qmat,1), 0, 0, il, iu, ZERO, &
+   CALL DSBEVX( 'v', 'i', 'u', n, kd, ab, ldab, qmat, SIZE(qmat,1), ZERO, ZERO, il, iu, ZERO, &
                  m, w, z, SIZE(z,1), work, iwork, ifail, info )
 
    IF ( info < 0 ) CALL errore(subname, 'DSBEVX: info illegal value', -info )
@@ -1931,20 +1931,6 @@ END SUBROUTINE zmat_inv
    !
    ! perform matrix inversion according to LAPACK
    !
-   ! First get the optimum LWORK
-   !
-!   nb = ILAENV( 1, 'ZGETRI', ' ', n, -1, -1, -1 )
-!   !
-!   z(1:ldab,1:n) = ab(1:ldab,1:n)
-!   !
-!   lwork = n * nb
-!   !
-!   ALLOCATE( work( lwork ), STAT=ierr_ )
-!   IF ( ierr_/=0 ) CALL errore ('zmat_bnd_inv', 'allocating work', ABS (ierr_) )
-!   ! 
-!   !
-!   CALL ZGETRF (n, n, kl, ku, zb, ldz, ipiv, info)
-   !
    IF ( ldab < 2 * kl + ku + 1) CALL errore ('zmat_bnd_inv', 'invalid ldab', 10 )
    !
    z = CZERO
@@ -1966,33 +1952,6 @@ END SUBROUTINE zmat_inv
    ELSE
        IF ( info/=0 ) CALL errore ('zmat_bnd_inv', 'error in ZGBTRF', ABS (info) )
    ENDIF
-
-   
-!   !
-!   ! compute the determinan if required
-!   !
-!   IF ( PRESENT( det_a ) ) THEN
-!      !
-!      det_a = ONE
-!      DO i = 1, n
-!         det_a = det_a * z(i,i)
-!      ENDDO
-!      !
-!   ENDIF
-!   !
-!   CALL ZGETRI (n, z, ldz, ipiv, work, lwork, info)
-!   !
-!   IF ( PRESENT(ierr) ) THEN
-!       IF ( info/=0 ) ierr = info
-!   ELSE
-!       IF ( info/=0 ) CALL errore ('zmat_inv', 'error in ZGETRI', ABS (info) )
-!   ENDIF
-!   !
-!   ! 
-!   DEALLOCATE( work, STAT=ierr_ )
-!   IF ( ierr_/=0 ) CALL errore ('zmat_inv', 'deallocating work', ABS (ierr_) )
-   !
-
    !
 END SUBROUTINE zmat_bnd_inv 
 
@@ -2079,6 +2038,59 @@ END SUBROUTINE zmat_bnd_inv
    IF ( ierr_/=0 ) CALL errore ('dmat_inv', 'deallocating work', ABS (ierr_) )
    !
 END SUBROUTINE dmat_inv 
+
+
+!**********************************************************
+   SUBROUTINE dmat_bnd_inv( n, kl, ku, ab, ldab, z, ierr )
+   !**********************************************************
+   !
+   ! compute Z = inv( AB ) for a banded matrix AB 
+   ! AB should be entry in a band matrix format
+   !
+   IMPLICIT NONE
+   INTEGER,                INTENT(IN)  :: n
+   INTEGER,                INTENT(IN)  :: kl, ku, ldab
+   REAL(dbl),              INTENT(IN)  :: ab(ldab,n)
+   REAL(dbl),              INTENT(OUT) :: z(n,n)
+   INTEGER,      OPTIONAL, INTENT(OUT) :: ierr
+   !
+   INTEGER           :: i, info, ldz, ipiv (n)
+   !INTEGER           :: ierr_, lwork
+   INTEGER, EXTERNAL :: ILAENV
+   ! info=0: inversion was successful
+   ! ldz   : leading dimension (the same as n)
+   ! ipiv  : work space for pivoting 
+   !
+   !
+   IF ( PRESENT( ierr ) ) ierr=0
+   !
+   ldz = n
+   !
+   ! perform matrix inversion according to LAPACK
+   !
+   IF ( ldab < 2 * kl + ku + 1) CALL errore ('dmat_bnd_inv', 'invalid ldab', 10 )
+   !
+   z = ZERO
+   DO i = 1, n
+       z(i,i) = ONE
+   ENDDO
+   !
+   ! use magma if possible
+   CALL DGBSV (n, kl, ku, n, ab, ldab, ipiv, z, ldz, info)
+
+
+   IF ( PRESENT(ierr) ) THEN
+       ! 
+       IF ( info/=0 ) THEN
+           ierr = info
+           RETURN
+       ENDIF
+       ! 
+   ELSE
+       IF ( info/=0 ) CALL errore ('dmat_bnd_inv', 'error in DGBTRF', ABS (info) )
+   ENDIF
+   !
+END SUBROUTINE dmat_bnd_inv 
 
 
 !**********************************************************
@@ -2384,13 +2396,11 @@ END FUNCTION dmat_is_herm
         TRIM(side_) == 'left' .OR. TRIM(side_) == 'LEFT'  ) THEN 
 
        ALLOCATE( result(dim2,dim2), STAT=ierr )
-       IF ( ierr /= 0 ) CALL errore(subname,'allocating result',ABS(ierr))
-
-
+          IF ( ierr /= 0 ) CALL errore(subname,'allocating result',ABS(ierr))
        ! 
        ! matrix mult
        CALL zmat_mul( result, z, 'C', z, 'N', dim2,dim2,dim1)
-       !
+
        DO j=1,dim2
        DO i=1,dim2
            IF ( i==j ) THEN
