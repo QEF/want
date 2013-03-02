@@ -1,0 +1,16 @@
+
+ &INPUT
+   prefix         = 'gold1'
+   postfix        = '_WanT'
+   work_dir       = './SCRATCH'
+   datafile_dft   = './SCRATCH/gold1.save/atomic_proj.xml'
+   fileout        = './bands_Au1_PROJ.dat'
+   nkpts_in       = 2
+   nkpts_max      = 500
+   do_orthoovp    = .FALSE.
+   eshift         = 20.0
+ /
+G   0.000  0.000  0.000
+Z   0.000  0.000  0.500
+
+

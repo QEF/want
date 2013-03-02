@@ -15,10 +15,11 @@ MANUAL=" Usage
  scf             DFT self-consistent calculation
  nscf            DFT non-self-consistent calculation
  proj            atomic projections
- dft             perform SCF, NSCF, PWEXPORT all together
+ bands_dft       DFT bands
+ dft             perform SCF, NSCF, PROJ, BANDS_DFT all together
 
- bands           interpolate the band structure using WFs
- dos             compute DOS using WFs
+ bands           interpolate the band structure using atmproj wfcs
+ dos             compute DOS using atmproj wfcs
  conductor       evaluate the transmittance, for the bulk case
  want            all WANT calculations
  all             perform all the above described steps
@@ -47,6 +48,7 @@ SUFFIX="_PA"
 SCF=
 NSCF=
 PROJ=
+BANDS_DFT=
 BANDS=
 DOS=
 CONDUCTOR=
@@ -60,7 +62,8 @@ case $INPUT in
    (scf)            SCF=yes ;;
    (nscf)           NSCF=yes ;;
    (proj)           PROJ=yes ;;
-   (dft)            SCF=yes ; NSCF=yes ; PROJ=no ;;
+   (bands_dft)      BANDS_DFT=yes ;;
+   (dft)            SCF=yes ; NSCF=yes ; PROJ=yes ;;
    (bands)          BANDS=yes ;;
    (dos)            DOS=yes ;;
    (conductor)      CONDUCTOR=yes ;;
@@ -108,6 +111,11 @@ if [ "$PROJ" = "yes" ] ; then
         OUTPUT=proj$SUFFIX.out PARALLEL=yes
 fi
 
+#
+# running DFT BANDS_DFT
+#
+run_dft  NAME=BANDS_DFT  SUFFIX=$SUFFIX  RUN=$BANDS_DFT
+   
 
 #
 # running BANDS
@@ -132,7 +140,7 @@ if [ "$CHECK" = yes ] ; then
    echo "running CHECK... "
    #
    cd $TEST_HOME
-   list="disentangle$SUFFIX.out wannier$SUFFIX.out"
+   list=""
    #
    for file in $list
    do

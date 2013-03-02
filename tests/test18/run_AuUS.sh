@@ -14,13 +14,16 @@ MANUAL=" Usage
  
  scf             DFT self-consistent calculation
  nscf            DFT inon-self-consistent calculation
- dft             perform SCF + NSCF 
+ proj            atomically proj wfcs
+ dft             perform SCF, NSCF, PROJ 
  disentangle     matrix elements and disentanglement
  wannier         wannierization
 
  unfold          compute translations and unfold the real space Hamiltonian
+ unfold_proj     as above, but using atmproj hamiltonian
  bands           interpolate the band structure
- want            perform DISENTANGLE, WANNIER, UNFOLD, BANDS
+ bands_proj      as above, but using atmproj hamiltonian
+ want            perform DISENTANGLE, WANNIER, UNFOLD, UNFOLD_PROJ, BANDS, BANDS_PROJ
  all             perform all the above described steps
 
  check           check results with the reference outputs
@@ -46,6 +49,7 @@ SUFFIX="_AuUS"
 
 SCF=
 NSCF=
+PROJ=
 DISENTANGLE=
 WANNIER=
 UNFOLD=
@@ -59,16 +63,21 @@ INPUT=`echo $1 | tr [:upper:] [:lower:]`
 case $INPUT in 
    (scf)            SCF=yes ;;
    (nscf)           NSCF=yes ;;
-   (dft)            SCF=yes ;;
+   (proj)           PROJ=yes ;;
+   (dft)            SCF=yes ; NSCF=yes ; PROJ=yes ;;
    (disentangle)    DISENTANGLE=yes ;;
    (wannier)        WANNIER=yes ;;
    (unfold)         UNFOLD=yes ;;
+   (unfold_proj)    UNFOLD_PROJ=yes ;;
    (bands)          BANDS=yes ;;
+   (bands_proj)     BANDS_PROJ=yes ;;
    (want)           DISENTANGLE=yes ; WANNIER=yes ;
-                    UNFOLD=yes ; BANDS=yes ;;
-   (all)            SCF=yes ; NSCF=yes ;
+                    UNFOLD=yes ; BANDS=yes ;
+                    UNFOLD_PROJ=yes ; BANDS_PROJ=yes ;;
+   (all)            SCF=yes ; NSCF=yes ; PROJ=yes ;
                     DISENTANGLE=yes ; WANNIER=yes ;
-                    UNFOLD=yes ; BANDS=yes ;; 
+                    UNFOLD=yes ; BANDS=yes ;
+                    UNFOLD_PROJ=yes ; BANDS_PROJ=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -102,6 +111,15 @@ run_dft  NAME=SCF   SUFFIX=$SUFFIX  RUN=$SCF
 run_dft  NAME=NSCF   SUFFIX=$SUFFIX  RUN=$NSCF
 
 #
+# running DFT PROJ
+#
+if [ "$PROJ" = "yes" ] ; then
+   #
+   run  NAME="PROJ"  EXEC=$QE_BIN/projwfc.x  INPUT=proj$SUFFIX.in \
+        OUTPUT=proj$SUFFIX.out PARALLEL=yes
+fi
+
+#
 # running DISENTANGLE
 #
 run_disentangle  SUFFIX=$SUFFIX  RUN=$DISENTANGLE
@@ -115,11 +133,15 @@ run_wannier  SUFFIX=$SUFFIX  RUN=$WANNIER
 # running UNFOLD
 #
 run_unfold  SUFFIX=$SUFFIX  RUN=$UNFOLD
+#
+run_unfold  NAME=UNFOLD_PROJ  SUFFIX=${SUFFIX}_proj  RUN=$UNFOLD_PROJ
 
 #
 # running BANDS
 #
 run_bands  SUFFIX=$SUFFIX  RUN=$BANDS
+#
+run_bands  NAME=BANDS_PROJ  SUFFIX=${SUFFIX}_proj  RUN=$BANDS_PROJ
 
 
 #

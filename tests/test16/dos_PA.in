@@ -1,0 +1,21 @@
+
+ &INPUT
+   prefix         = 'poly_pa'
+   postfix        = '_WanT'
+   work_dir       = './SCRATCH'
+   datafile_dft   = './SCRATCH/poly_pa.save/atomic_proj.dat'
+   fileout        = './dos_PA.dat'
+   do_orthoovp    = .FALSE.
+   eshift         = 10.0
+   nk(1) = 1
+   nk(2) = 1
+   nk(3) = 200
+   delta = 0.05
+   emin  = -20.0
+   emax  =  5.0
+   ne    = 1200
+   smearing_type = 'gaussian'
+   projdos = .FALSE.
+ /
+
+

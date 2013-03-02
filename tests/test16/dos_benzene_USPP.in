@@ -1,0 +1,17 @@
+
+ &INPUT
+   prefix = 'benzene_US'
+   postfix = '_WanT'
+   work_dir = './SCRATCH'
+   fileout = 'doswant_benzene_USPP.dat'
+   datafile_dft = "./SCRATCH/benzene_US.save/atomic_proj.xml"
+   nk(1) = 1
+   nk(2) = 1
+   nk(3) = 1
+   delta = 0.100
+   emin  = -20.0 
+   emax  =   5.0
+     ne  =  1000
+   smearing_type = 'lorentzian'
+ /
+

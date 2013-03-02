@@ -1,0 +1,19 @@
+
+ &INPUT
+   prefix = 'benzene'
+   postfix = '_WanT'
+   work_dir = './SCRATCH'
+   fileout = 'dos_benzene.dat'
+   datafile_dft = "./SCRATCH/benzene.save/atomic_proj.xml"
+   eshift = 5.0
+   do_orthoovp = .TRUE.
+   nk(1) = 1
+   nk(2) = 1
+   nk(3) = 1
+   delta = 0.05
+   emin  = -20.0 
+   emax  =   5.0
+     ne  =  1000
+   smearing_type = 'lorentzian'
+ /
+
