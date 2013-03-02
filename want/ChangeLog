@@ -4,6 +4,9 @@
 =======================================================
 
 
+02 Mar 2013     atmproj module updated, input variable eshift added. unfold.f90 updated.
+		test16 and test18 further developed. (AF)
+
 31 Jan 2013     bug fixed in qexml.f90 (Hubbard_l was allocated with a bad dimension).
 		Courtesy of Conor Hogan. (AF)
 

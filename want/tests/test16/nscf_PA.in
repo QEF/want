@@ -13,7 +13,7 @@
           nat = 4,
          ntyp = 2,
       ecutwfc = 40.0 ,
-         nbnd = 40
+         nbnd = 15
         nosym = .TRUE.
         noinv = .TRUE.
 /

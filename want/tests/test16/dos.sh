@@ -7,15 +7,14 @@
 file=$1
 
 emin=-20.0
-emax=10.0
-ne=2000
-delta=0.100
+emax=5.0
+ne=1000
+delta=0.05
 #conv=27.2116
 conv=1.0
-#fermi=-1.8920
-fermi=-5.1874
+fermi=-2.9324
 #fermi=0.0
-nkpts=8
+nkpts=1
 
 if [ ! -e "$file" ] ; then echo "ERROR: file does not exist" ; exit 1 ; fi
 

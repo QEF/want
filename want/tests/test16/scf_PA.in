@@ -2,7 +2,7 @@
     prefix='poly_pa'
     calculation='scf',
     restart_mode='from_scratch',
-    pseudo_dir='../',
+    pseudo_dir='../pseudo',
     outdir='./SCRATCH',
 /
 &SYSTEM
