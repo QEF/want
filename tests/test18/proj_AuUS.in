@@ -1,0 +1,9 @@
+5 atoms
+
+   &PROJWFC
+      prefix='gold_US',
+      outdir = './SCRATCH',
+      filpdos='./SCRATCH/gold_US'
+      lwrite_overlaps = .TRUE.
+      lbinary_data = .TRUE.
+   /

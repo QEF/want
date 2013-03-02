@@ -1,0 +1,14 @@
+
+&INPUT
+    prefix = "gold_US"
+    postfix = "_WanT"
+    postfix_unfld = "_WanT_UNFLD_PROJ"
+    datafile_dft = "./SCRATCH/gold_US.save/atomic_proj.dat"
+    translations = "from_scratch"
+    work_dir = "./SCRATCH"
+    ndiv(1) = 1
+    ndiv(2) = 1
+    ndiv(3) = 5
+    do_orthoovp = .FALSE.
+    eshift = 20.0
+/
