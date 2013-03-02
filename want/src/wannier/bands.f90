@@ -13,6 +13,7 @@
    ! Interpolates the band structure from the knowledge of
    ! the direct lattice hamiltonian on Wannier function basis
    !
+   USE kinds,                ONLY : dbl
    USE version_module,       ONLY : version_number
    USE parameters,           ONLY : nstrx, nkpts_inx
    USE io_module,            ONLY : stdout, stdin
@@ -37,6 +38,7 @@
    INTEGER            :: ircut(3)       ! real space curoff in terms of unit cells
                                         ! for directions i=1,2,3  (0 means no cutoff)
    CHARACTER(nstrx)   :: fileout        ! output filename
+   REAL(dbl)          :: eshift         ! energy shift when computing the proj Hamiltonian
    LOGICAL            :: do_orthoovp
 
    !
@@ -44,7 +46,7 @@
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
                     fileout, nkpts_in, nkpts_max, ircut, debug_level, verbosity, &
-                    do_orthoovp
+                    do_orthoovp, eshift
    !
    ! end of declariations
    !   
@@ -100,6 +102,7 @@ CONTAINS
    !
    USE mp,                   ONLY : mp_bcast
    USE io_module,            ONLY : io_init, ionode, ionode_id
+   USE atmproj_tools_module, ONLY : eshift_ => eshift
    !
    IMPLICIT NONE
 
@@ -126,6 +129,7 @@ CONTAINS
       debug_level                 = 0
       verbosity                   = 'medium'
       do_orthoovp                 = .FALSE.
+      eshift                      = 10.0
       
       
       CALL input_from_file ( stdin )
@@ -150,6 +154,7 @@ CONTAINS
       CALL mp_bcast( debug_level,     ionode_id )
       CALL mp_bcast( verbosity,       ionode_id )
       CALL mp_bcast( do_orthoovp,     ionode_id )
+      CALL mp_bcast( eshift,          ionode_id )
 
       !
       ! init
@@ -165,6 +170,12 @@ CONTAINS
       !
       CALL io_init( NEED_WFC=.FALSE. )
 
+      !
+      ! in case we need this
+      ! pass eshift to atmproj_tools_module
+      !
+      eshift_ = eshift
+
 
       !
       ! Some checks 
@@ -172,7 +183,7 @@ CONTAINS
       IF ( nkpts_in > nkpts_inx ) CALL errore(subname, 'nkpts_in too large',  nkpts_in)
       IF ( nkpts_in <= 0 )        CALL errore(subname, 'Invalid nkpts_in', ABS(nkpts_in)+1)
       IF ( nkpts_max <= 0 )       CALL errore(subname, 'Invalid nkpts_max', ABS(nkpts_max)+1)
-      IF ( ANY( ircut(:) < 0 ) )  CALL errore(subname,'Invalid ircut', 10)
+      IF ( ANY( ircut(:) < 0 ) )  CALL errore(subname, 'Invalid ircut', 10)
 
 
       !
@@ -198,6 +209,7 @@ CONTAINS
           IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
               WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
               WRITE( stdout,"(7x,'       use ortho basis :',5x,   a)") TRIM( log2char(do_orthoovp) )
+              WRITE( stdout,"(7x,'          energy shift :',5x,  f12.6)") eshift
           ENDIF
           !
           WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )

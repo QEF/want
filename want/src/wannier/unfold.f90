@@ -14,6 +14,7 @@
    ! the wannier basis and unfold it according to an extra
    ! spatial periodicity specified by input
    !
+   USE kinds,                ONLY : dbl
    USE version_module,       ONLY : version_number
    USE parameters,           ONLY : nstrx
    USE io_module,            ONLY : stdout, stdin
@@ -42,12 +43,15 @@
    CHARACTER(nstrx)   :: postfix_unfld   ! postfix to describe the unfolded data
    CHARACTER(nstrx)   :: datafile_transl ! specifies the name of the file with the translations
                                          ! usually not needed.
+   REAL(dbl)          :: eshift          ! energy shift when computing the proj Hamiltonian
+   LOGICAL            :: do_orthoovp
 
    !
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, postfix_unfld, work_dir, datafile_dft, datafile_transl, &
-                    translations, ndiv, debug_level, verbosity, nkb_buffer, nwfc_buffer, assume_ncpp
+                    translations, ndiv, debug_level, verbosity, nkb_buffer, nwfc_buffer, assume_ncpp, &
+                    eshift, do_orthoovp
 
    LOGICAL            :: lhave_transl
    !
@@ -75,7 +79,7 @@
       !
       CALL write_header( stdout, "Post Processing Init" )
       !
-      CALL datafiles_init()
+      CALL datafiles_init( do_orthoovp )
       !
       CALL postproc_init ( BSHELLS=.TRUE., IONS=.TRUE., PSEUDO=read_pseudo, &
                            WANNIER=.TRUE., SUBSPACE=.TRUE. )
@@ -111,6 +115,7 @@ CONTAINS
    USE mp,                   ONLY : mp_bcast
    USE io_module,            ONLY : io_init, ionode, ionode_id
    USE control_module,       ONLY : read_pseudo, use_pseudo
+   USE atmproj_tools_module, ONLY : eshift_ => eshift
    !
    IMPLICIT NONE
 
@@ -138,6 +143,9 @@ CONTAINS
       nwfc_buffer                 = -1
       nkb_buffer                  = -1
       assume_ncpp                 = .FALSE.
+      do_orthoovp                 = .FALSE.
+      eshift                      = 10.0     
+ 
       
       CALL input_from_file ( stdin )
       !
@@ -162,6 +170,8 @@ CONTAINS
       CALL mp_bcast( nwfc_buffer,     ionode_id )
       CALL mp_bcast( nkb_buffer,      ionode_id )
       CALL mp_bcast( assume_ncpp,     ionode_id )
+      CALL mp_bcast( eshift,          ionode_id )
+      CALL mp_bcast( do_orthoovp,     ionode_id )
 
       !
       ! init
@@ -182,6 +192,13 @@ CONTAINS
       !
       use_pseudo   = .NOT. assume_ncpp
       read_pseudo  = .NOT. assume_ncpp
+
+      !
+      ! in case we need this
+      ! pass eshift to atmproj_tools_module
+      !
+      eshift_ = eshift
+
 
 
       !
@@ -215,8 +232,13 @@ CONTAINS
           WRITE( stdout, "(   7x,'                prefix :',5x,   a)") TRIM(prefix)
           WRITE( stdout, "(   7x,'               postfix :',5x,   a)") TRIM(postfix)
           WRITE( stdout, "(   7x,'         postfix_unfld :',5x,   a)") TRIM(postfix_unfld)
-          IF ( LEN_TRIM( datafile_dft ) /= 0 ) &
-             WRITE( stdout, "(7x,'          datafile_dft :',5x,   a)") TRIM(datafile_dft)
+          !
+          IF ( LEN_TRIM( datafile_dft ) /= 0 ) THEN
+              WRITE( stdout,"(7x,'          datafile_dft :',5x,   a)") TRIM(datafile_dft)
+              WRITE( stdout,"(7x,'       use ortho basis :',5x,   a)") TRIM( log2char(do_orthoovp) )
+              WRITE( stdout,"(7x,'          energy shift :',5x,  f12.6)") eshift
+          ENDIF
+          !
           IF ( LEN_TRIM( datafile_transl ) /= 0 ) &
              WRITE( stdout, "(7x,'       datafile_transl :',5x,   a)") TRIM(datafile_transl)
           !

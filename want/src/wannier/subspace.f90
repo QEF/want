@@ -236,7 +236,7 @@ CONTAINS
    END SUBROUTINE subspace_write
 
 !**********************************************************
-   SUBROUTINE subspace_read(iun,tag,found, leig,llamp,leamp)
+   SUBROUTINE subspace_read(iun,tag,found, leig, llamp,leamp)
    !**********************************************************
    IMPLICIT NONE
        INTEGER,           INTENT(in) :: iun

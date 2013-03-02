@@ -232,10 +232,10 @@ CONTAINS
  
 
 !**********************************************************
-   SUBROUTINE localization_write(unit,name)
+   SUBROUTINE localization_write(ounit,name)
    !**********************************************************
    IMPLICIT NONE
-       INTEGER,         INTENT(in) :: unit
+       INTEGER,         INTENT(in) :: ounit
        CHARACTER(*),    INTENT(in) :: name
        CHARACTER(nstrx)   :: attr
 
@@ -243,33 +243,33 @@ CONTAINS
 
        IF ( ionode ) THEN
            !
-           CALL iotk_write_begin(unit,TRIM(name))
+           CALL iotk_write_begin(ounit,TRIM(name))
            CALL iotk_write_attr(attr,"dimwann",dimwann,FIRST=.TRUE.) 
            CALL iotk_write_attr(attr,"nkpts",nkpts_g) 
-           CALL iotk_write_empty(unit,"DATA",ATTR=attr)
+           CALL iotk_write_empty(ounit,"DATA",ATTR=attr)
 
            CALL iotk_write_attr(attr,"Omega_I",Omega_I,FIRST=.TRUE.) 
            CALL iotk_write_attr(attr,"Omega_D",Omega_D) 
            CALL iotk_write_attr(attr,"Omega_OD",Omega_OD) 
            CALL iotk_write_attr(attr,"Omega_tot",Omega_tot) 
-           CALL iotk_write_empty(unit,"SPREADS",ATTR=attr)
+           CALL iotk_write_empty(ounit,"SPREADS",ATTR=attr)
 
-           CALL iotk_write_dat(unit,"CU",cu) 
-           CALL iotk_write_dat(unit,"RAVE",rave,COLUMNS=3)
-           CALL iotk_write_dat(unit,"RAVE2",rave2)
-           CALL iotk_write_dat(unit,"R2AVE",r2ave)
+           CALL iotk_write_dat(ounit,"CU",cu) 
+           CALL iotk_write_dat(ounit,"RAVE",rave,COLUMNS=3)
+           CALL iotk_write_dat(ounit,"RAVE2",rave2)
+           CALL iotk_write_dat(ounit,"R2AVE",r2ave)
 
-           CALL iotk_write_end(unit,TRIM(name))
+           CALL iotk_write_end(ounit,TRIM(name))
            !
        ENDIF
        !
    END SUBROUTINE localization_write
 
 !**********************************************************
-   SUBROUTINE localization_read(unit,name,found)
+   SUBROUTINE localization_read(iunit,name,found)
    !**********************************************************
    IMPLICIT NONE
-       INTEGER,           INTENT(in) :: unit
+       INTEGER,           INTENT(in) :: iunit
        CHARACTER(*),      INTENT(in) :: name
        LOGICAL,           INTENT(out):: found
        CHARACTER(nstrx)   :: attr
@@ -281,7 +281,7 @@ CONTAINS
 
        IF ( ionode ) THEN
            !
-           CALL iotk_scan_begin(unit,TRIM(name),FOUND=found,IERR=ierr)
+           CALL iotk_scan_begin(iunit,TRIM(name),FOUND=found,IERR=ierr)
            !
        ENDIF
        !
@@ -297,7 +297,7 @@ CONTAINS
        !
        IF ( ionode ) THEN
            !
-           CALL iotk_scan_empty(unit,'DATA',ATTR=attr,IERR=ierr)
+           CALL iotk_scan_empty(iunit,'DATA',ATTR=attr,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find tag DATA',ABS(ierr))
 
            CALL iotk_scan_attr(attr,'dimwann',dimwann_,IERR=ierr)
@@ -333,7 +333,7 @@ CONTAINS
        !
        IF ( ionode ) THEN
            !
-           CALL iotk_scan_empty(unit,'SPREADS',ATTR=attr,IERR=ierr)
+           CALL iotk_scan_empty(iunit,'SPREADS',ATTR=attr,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find tag SPREADS',ABS(ierr))
 
            CALL iotk_scan_attr(attr,'Omega_I',Omega_I,IERR=ierr)
@@ -347,16 +347,16 @@ CONTAINS
 
            !
            ! ... major data
-           CALL iotk_scan_dat(unit,'CU',cu,IERR=ierr)
+           CALL iotk_scan_dat(iunit,'CU',cu,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find CU',ABS(ierr))
-           CALL iotk_scan_dat(unit,'RAVE',rave,IERR=ierr)
+           CALL iotk_scan_dat(iunit,'RAVE',rave,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find RAVE',ABS(ierr))
-           CALL iotk_scan_dat(unit,'RAVE2',rave2,IERR=ierr)
+           CALL iotk_scan_dat(iunit,'RAVE2',rave2,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find RAVE2',ABS(ierr))
-           CALL iotk_scan_dat(unit,'R2AVE',r2ave,IERR=ierr)
+           CALL iotk_scan_dat(iunit,'R2AVE',r2ave,IERR=ierr)
            IF (ierr/=0) CALL errore(subname,'Unable to find R2AVE',ABS(ierr))
 
-           CALL iotk_scan_end(unit,TRIM(name),IERR=ierr)
+           CALL iotk_scan_end(iunit,TRIM(name),IERR=ierr)
            IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(name),ABS(ierr))
            !
        ENDIF
