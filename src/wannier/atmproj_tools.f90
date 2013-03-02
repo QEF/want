@@ -49,6 +49,7 @@
    !
    PUBLIC :: atmproj_to_internal
    PUBLIC :: file_is_atmproj
+   PUBLIC :: eshift
 
 CONTAINS
 
@@ -140,7 +141,7 @@ END SUBROUTINE atmproj_tools_init
    !
    CHARACTER(nstrx)  :: attr, energy_units
    CHARACTER(nstrx)  :: filetype_
-   LOGICAL           :: write_ham, write_space
+   LOGICAL           :: write_ham, write_space, write_loc
    REAL(dbl)         :: avec(3,3), bvec(3,3), norm, alat, efermi, nelec
    INTEGER           :: dimwann, natomwfc, nkpts, nspin, nbnd
    INTEGER           :: nk(3), shift(3), nrtot, nr(3)
@@ -150,9 +151,11 @@ END SUBROUTINE atmproj_tools_init
    INTEGER,        ALLOCATABLE :: ivr(:,:), itmp(:)
    REAL(dbl),      ALLOCATABLE :: vkpt_cry(:,:), vkpt(:,:), wk(:), wr(:), vr(:,:)
    REAL(dbl),      ALLOCATABLE :: eig(:,:,:)
+   REAL(dbl),      ALLOCATABLE :: rtmp(:,:)
    COMPLEX(dbl),   ALLOCATABLE :: rham(:,:,:,:), kham(:,:,:)
    COMPLEX(dbl),   ALLOCATABLE :: proj(:,:,:,:)
    COMPLEX(dbl),   ALLOCATABLE :: kovp(:,:,:,:), rovp(:,:,:,:)
+   COMPLEX(dbl),   ALLOCATABLE :: cu_tmp(:,:,:)
    !
    COMPLEX(dbl),   ALLOCATABLE :: zaux(:,:), ztmp(:,:)
    COMPLEX(dbl),   ALLOCATABLE :: kovp_sq(:,:)
@@ -185,6 +188,7 @@ END SUBROUTINE atmproj_tools_init
    !
    write_ham     = .FALSE.
    write_space   = .FALSE.
+   write_loc     = .FALSE.
    !
    filetype_ = TRIM( filetype )
    CALL change_case( filetype_, 'lower' )
@@ -195,6 +199,8 @@ END SUBROUTINE atmproj_tools_init
       write_ham   = .TRUE.
    CASE( 'space', 'subspace' )
       write_space = .TRUE.
+   CASE( 'loc', 'localization' )
+      write_loc = .TRUE.
    CASE DEFAULT
       CALL errore(subname, 'invalid filetype: '//TRIM(filetype_), 71 )
    END SELECT
@@ -491,9 +497,6 @@ END SUBROUTINE atmproj_tools_init
        !
    ENDIF
    !
-   DEALLOCATE( proj, STAT=ierr )
-   IF ( ierr/=0 ) CALL errore(subname, 'deallocating proj', ABS(ierr) )
-   !
    IF ( ALLOCATED( kovp ) ) THEN
        DEALLOCATE( kovp, STAT=ierr)
        IF ( ierr/=0 ) CALL errore(subname, 'deallocating kovp', ABS(ierr) )
@@ -588,17 +591,17 @@ END SUBROUTINE atmproj_tools_init
        CALL iotk_write_attr( attr,"nspin",nspin)
        CALL iotk_write_attr( attr,"spin_component","none")
        CALL iotk_write_attr( attr,"efermi", 0.0_dbl )
-       CALL iotk_write_attr( attr,"dimwinx", dimwann )
+       CALL iotk_write_attr( attr,"dimwinx", nbnd )
        CALL iotk_write_empty( ounit,"DATA",ATTR=attr)
        !
        ALLOCATE( itmp(nkpts), STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname, 'allocating itmp', ABS(ierr))
        !
-       itmp(:) = dimwann 
+       itmp(:) = nbnd
        CALL iotk_write_dat( ounit, "DIMWIN", itmp, COLUMNS=8 )
        itmp(:) = 1
        CALL iotk_write_dat( ounit, "IMIN", itmp, COLUMNS=8 )
-       itmp(:) = dimwann
+       itmp(:) = nbnd
        CALL iotk_write_dat( ounit, "IMAX", itmp, COLUMNS=8 )
        !
        DO isp = 1, nspin
@@ -620,13 +623,32 @@ END SUBROUTINE atmproj_tools_init
        !
        CALL iotk_write_begin( ounit, "SUBSPACE" )
        !
-       CALL iotk_write_attr( attr,"dimwinx",dimwann,FIRST=.TRUE.)
+       CALL iotk_write_attr( attr,"dimwinx",nbnd,FIRST=.TRUE.)
        CALL iotk_write_attr( attr,"nkpts",nkpts)
        CALL iotk_write_attr( attr,"dimwann", dimwann)
        CALL iotk_write_empty( ounit,"DATA",ATTR=attr)
        !
-       itmp(:) = dimwann 
+       itmp(:) = nbnd 
        CALL iotk_write_dat( ounit, "DIMWIN", itmp, COLUMNS=8 )
+       !
+       DO isp = 1, nspin
+           !
+           IF ( nspin == 2 ) THEN
+               CALL iotk_write_begin( ounit, "SPIN"//TRIM(iotk_index(isp)) )
+           ENDIF
+           !
+           DO ik = 1, nkpts
+               !
+               CALL iotk_write_dat( ounit, "EAMP"//TRIM(iotk_index(ik)), &
+                                    proj(1:nbnd,1:dimwann,ik,isp) ) 
+               !
+           ENDDO
+           !
+           IF ( nspin == 2 ) THEN
+               CALL iotk_write_end( ounit, "SPIN"//TRIM(iotk_index(isp)) )
+           ENDIF
+           !
+       ENDDO
        !
        CALL iotk_write_end( ounit, "SUBSPACE" )
        !
@@ -638,10 +660,62 @@ END SUBROUTINE atmproj_tools_init
        !
    ENDIF
 
+
+   IF ( write_loc ) THEN
+       !
+       CALL iotk_open_write( ounit, FILE=TRIM(fileout), BINARY=binary )
+       !
+       CALL iotk_write_begin( ounit, "WANNIER_LOCALIZATION" )
+       !
+       CALL iotk_write_attr( attr,"dimwann",dimwann,FIRST=.TRUE.)
+       CALL iotk_write_attr( attr,"nkpts",nkpts)
+       CALL iotk_write_empty( ounit,"DATA",ATTR=attr)
+       !
+       CALL iotk_write_attr( attr,"Omega_I",0.0d0,FIRST=.TRUE.)
+       CALL iotk_write_attr( attr,"Omega_D",0.0d0)
+       CALL iotk_write_attr( attr,"Omega_OD",0.0d0)
+       CALL iotk_write_attr( attr,"Omega_tot",0.0d0)
+       CALL iotk_write_empty( ounit,"SPREADS",ATTR=attr)
+       !
+       ALLOCATE( rtmp(3,dimwann), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname, 'allocating rtmp', ABS(ierr))
+       ALLOCATE( cu_tmp(dimwann,dimwann,nkpts), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname, 'allocating cu_tmp', ABS(ierr))
+       !
+       cu_tmp(:,:,:) = 0.0d0
+       !
+       DO ik = 1, nkpts
+       DO i  = 1, dimwann
+           cu_tmp(i,i,ik) = 1.0d0
+       ENDDO
+       ENDDO
+       !
+       rtmp(:,:)=0.0d0
+       !
+       CALL iotk_write_dat(ounit,"CU",cu_tmp)
+       CALL iotk_write_dat(ounit,"RAVE",rtmp,COLUMNS=3)
+       CALL iotk_write_dat(ounit,"RAVE2",rtmp(1,:))
+       CALL iotk_write_dat(ounit,"R2AVE",rtmp(1,:))
+       !
+       DEALLOCATE( rtmp, cu_tmp, STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname, 'deallocating rtmp, cu_tmp', ABS(ierr))
+       !
+       CALL iotk_write_end( ounit, "WANNIER_LOCALIZATION" )
+       !
+       CALL iotk_close_write( ounit )
+       !
+   ENDIF
+
+
+
+
 !
 ! local cleaning
 !
 
+   DEALLOCATE( proj, STAT=ierr )
+   IF ( ierr/=0 ) CALL errore(subname, 'deallocating proj', ABS(ierr) )
+   !
    DEALLOCATE( vkpt, wk, STAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'deallocating vkpt, wk', ABS(ierr) )
    DEALLOCATE( vkpt_cry, STAT=ierr )

@@ -49,6 +49,7 @@
    INTEGER          :: ircut(3)      ! real space curoff in terms of unit cells
                                      ! for directions i=1,2,3  (0 means no cutoff)
    INTEGER          :: nprint        ! print every "nprint" iterations
+   REAL(dbl)        :: eshift        ! energy shift when computing the proj Hamiltonian
    LOGICAL          :: do_orthoovp
 
 
@@ -58,7 +59,7 @@
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
                     nk, s, delta, smearing_type, fileout, debug_level,     &
                     emin, emax, ne, ircut, projdos, nprint, verbosity,     &
-                    shift, scale, do_orthoovp
+                    shift, scale, do_orthoovp, eshift
    !
    ! end of declariations
    !   
@@ -114,6 +115,7 @@ CONTAINS
    !
    USE mp,                   ONLY : mp_bcast
    USE io_module,            ONLY : io_init, ionode, ionode_id
+   USE atmproj_tools_module, ONLY : eshift_ => eshift
    !
    IMPLICIT NONE
 
@@ -150,6 +152,8 @@ CONTAINS
       debug_level                 = 0
       verbosity                   = 'medium'
       do_orthoovp                 = .FALSE.
+      eshift                      = 10.0
+       
       
       CALL input_from_file ( stdin )
       !
@@ -182,6 +186,7 @@ CONTAINS
       CALL mp_bcast( debug_level,     ionode_id )      
       CALL mp_bcast( verbosity,       ionode_id )      
       CALL mp_bcast( do_orthoovp,     ionode_id )
+      CALL mp_bcast( eshift,          ionode_id )
 
       !
       ! Init
@@ -220,6 +225,13 @@ CONTAINS
       CALL change_case(smearing_type,'lower')
 
       !
+      ! in case we need this
+      ! pass eshift to atmproj_tools_module
+      !
+      eshift_ = eshift
+
+
+      !
       ! input summary
       !
       CALL write_header( stdout, "INPUT Summary" )
@@ -248,6 +260,7 @@ CONTAINS
           IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
               WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
               WRITE( stdout,"(7x,'       use ortho basis :',5x,   a)") TRIM( log2char(do_orthoovp) )
+              WRITE( stdout,"(7x,'          energy shift :',5x,  f12.6)") eshift
           ENDIF
           !
           WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )

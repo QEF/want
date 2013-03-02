@@ -52,7 +52,7 @@ CONTAINS
    IMPLICIT NONE
 
    !
-   LOGICAL, OPTIONAL :: do_orthoovp
+   LOGICAL, OPTIONAL   :: do_orthoovp
 
    !
    ! local variables
@@ -145,6 +145,8 @@ CONTAINS
            !
            fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
            CALL atmproj_to_internal( filein, fileout, 'subspace', do_orthoovp_ )
+           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.wan'
+           CALL atmproj_to_internal( filein, fileout, 'localization', do_orthoovp_ )
            !
            WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
            !
