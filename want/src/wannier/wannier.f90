@@ -541,7 +541,7 @@
                                   FORM=TRIM(wantdata_form), IERR=ierr)
           IF ( ierr/=0 ) CALL errore('wannier','opening '//TRIM(filename), ABS(ierr)) 
               !
-              CALL hamiltonian_write(ham_unit, "HAMILTONIAN")
+              CALL hamiltonian_write(ham_unit)
               !
           CALL file_close(ham_unit,PATH="/",ACTION="write", IERR=ierr)
           IF ( ierr/=0 ) CALL errore('wannier','closing '//TRIM(filename), ABS(ierr)) 

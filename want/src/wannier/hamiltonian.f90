@@ -34,8 +34,8 @@
 ! routines in this module:
 ! SUBROUTINE hamiltonian_allocate()
 ! SUBROUTINE hamiltonian_deallocate()
-! SUBROUTINE hamiltonian_write(iun,tag)
-! SUBROUTINE hamiltonian_read(iun,tag,found)
+! SUBROUTINE hamiltonian_write(iun)
+! SUBROUTINE hamiltonian_read(iun,found)
 !
 
 !
@@ -151,11 +151,10 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE hamiltonian_write(iun,tag)
+   SUBROUTINE hamiltonian_write(iun)
    !**********************************************************
    IMPLICIT NONE
        INTEGER,         INTENT(in) :: iun
-       CHARACTER(*),    INTENT(in) :: tag
        CHARACTER(nstrx)   :: attr
        CHARACTER(17)      :: subname="hamiltonian_write"
        REAL(dbl), ALLOCATABLE :: vkpt_cry(:,:)
@@ -168,7 +167,7 @@ CONTAINS
        IF ( .NOT. kpoints_alloc ) CALL errore(subname,'kpoints NOT alloc',1)
        IF ( .NOT. subspace_alloc ) CALL errore(subname,'subspace NOT alloc',1)
 
-       CALL iotk_write_begin(iun,TRIM(tag))
+       CALL iotk_write_begin(iun,"HAMILTONIAN")
        CALL iotk_write_attr(attr,"dimwann",dimwann,FIRST=.TRUE.) 
        CALL iotk_write_attr(attr,"nkpts",nkpts_g) 
        CALL iotk_write_attr(attr,"nk",nk) 
@@ -221,7 +220,7 @@ CONTAINS
        ENDDO
        CALL iotk_write_end(iun,"RHAM")
 
-       CALL iotk_write_end(iun,TRIM(tag))
+       CALL iotk_write_end(iun,"HAMILTONIAN")
        !
        CALL log_pop ( subname )
        !
@@ -229,12 +228,11 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE hamiltonian_read(iun,tag,found)
+   SUBROUTINE hamiltonian_read(iun,found)
    !**********************************************************
    !
    IMPLICIT NONE
        INTEGER,           INTENT(in) :: iun
-       CHARACTER(*),      INTENT(in) :: tag
        LOGICAL,           INTENT(out):: found
        LOGICAL            :: lfound
        CHARACTER(nstrx)   :: attr
@@ -249,7 +247,7 @@ CONTAINS
 
        IF ( ionode ) THEN
            !
-           CALL iotk_scan_begin(iun,TRIM(tag),FOUND=found,IERR=ierr)
+           CALL iotk_scan_begin(iun,"HAMILTONIAN",FOUND=found,IERR=ierr)
            !
        ENDIF
        !
@@ -257,7 +255,7 @@ CONTAINS
        CALL mp_bcast( ierr,     ionode_id )
        !
        IF (.NOT. found) RETURN
-       IF (ierr>0)  CALL errore(subname,'Wrong format in tag '//TRIM(tag),ierr)
+       IF (ierr>0)  CALL errore(subname,'Wrong format in tag HAMILTONIAN',ierr)
        found = .TRUE.
        !
        IF ( ionode ) THEN
@@ -317,8 +315,8 @@ CONTAINS
            CALL iotk_scan_end(iun,"RHAM", IERR=ierr)
            IF (ierr/=0)  CALL errore(subname,'Unable to end tag RHAM',ABS(ierr))
 
-           CALL iotk_scan_end(iun,TRIM(tag),IERR=ierr)
-           IF (ierr/=0)  CALL errore(subname,'Unable to end tag '//TRIM(tag),ABS(ierr))
+           CALL iotk_scan_end(iun,"HAMILTONIAN",IERR=ierr)
+           IF (ierr/=0)  CALL errore(subname,'Unable to end tag HAMILTONIAN',ABS(ierr))
            !
        ENDIF
        !

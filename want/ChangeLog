@@ -4,6 +4,8 @@
 =======================================================
 
 
+11 Mar 2013     atmproj module updated to work with bands.x and dos.x . (AF)
+
 02 Mar 2013     atmproj module updated, input variable eshift added. unfold.f90 updated.
 		test16 and test18 further developed. (AF)
 
