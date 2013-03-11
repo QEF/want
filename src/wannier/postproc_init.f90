@@ -165,7 +165,7 @@ CONTAINS
           CALL file_open(ham_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr)
           IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(filename), ABS(ierr))
               !
-              CALL hamiltonian_read(ham_unit,"HAMILTONIAN",lfound)
+              CALL hamiltonian_read(ham_unit,lfound)
               IF ( .NOT. lfound ) CALL errore(subname,"unable to find HAMILTONIAN",1)
               !
           CALL file_close(ham_unit,PATH="/",ACTION="read", IERR=ierr)

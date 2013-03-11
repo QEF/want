@@ -40,7 +40,8 @@
    ! parameters for the reconstruction 
    ! of the Hamiltonian
    !
-   REAL(dbl)          :: eshift = 100.0d0
+   REAL(dbl)          :: eshift = 20.0d0
+   CHARACTER(256)     :: spin_component = "all"
 
 
    ! contains:
@@ -50,6 +51,7 @@
    PUBLIC :: atmproj_to_internal
    PUBLIC :: file_is_atmproj
    PUBLIC :: eshift
+   PUBLIC :: spin_component
 
 CONTAINS
 
@@ -382,6 +384,10 @@ END SUBROUTINE atmproj_tools_init
 
        DO isp = 1, nspin
 
+           IF ( TRIM(spin_component) == "up"   .AND. isp == 2 ) CYCLE
+           IF ( TRIM(spin_component) == "down" .AND. isp == 1 ) CYCLE
+           IF ( TRIM(spin_component) == "dw"   .AND. isp == 1 ) CYCLE
+
            !
            ! build kham
            !
@@ -517,6 +523,7 @@ END SUBROUTINE atmproj_tools_init
        CALL iotk_write_attr( attr,"dimwann",dimwann,FIRST=.TRUE.)
        CALL iotk_write_attr( attr,"nkpts",nkpts)
        CALL iotk_write_attr( attr,"nspin",nspin)
+       CALL iotk_write_attr( attr,"spin_component",TRIM(spin_component))
        CALL iotk_write_attr( attr,"nk",nk)
        CALL iotk_write_attr( attr,"shift",shift)
        CALL iotk_write_attr( attr,"nrtot",nrtot)
@@ -542,7 +549,7 @@ END SUBROUTINE atmproj_tools_init
        spin_loop: & 
        DO isp = 1, nspin
           !
-          IF ( nspin == 2 ) THEN
+          IF ( nspin == 2 .AND. TRIM(spin_component) == "all" ) THEN
               !
               CALL iotk_write_begin( ounit, "SPIN"//TRIM(iotk_index(isp)) )
               !
@@ -565,7 +572,7 @@ END SUBROUTINE atmproj_tools_init
           !
           CALL iotk_write_end( ounit,"RHAM")
           !
-          IF ( nspin == 2 ) THEN
+          IF ( nspin == 2 .AND. TRIM(spin_component) == "all" ) THEN
               !
               CALL iotk_write_end( ounit, "SPIN"//TRIM(iotk_index(isp)) )
               !
@@ -589,7 +596,7 @@ END SUBROUTINE atmproj_tools_init
        CALL iotk_write_attr( attr,"nbnd",nbnd,FIRST=.TRUE.)
        CALL iotk_write_attr( attr,"nkpts",nkpts)
        CALL iotk_write_attr( attr,"nspin",nspin)
-       CALL iotk_write_attr( attr,"spin_component","none")
+       CALL iotk_write_attr( attr,"spin_component",TRIM(spin_component))
        CALL iotk_write_attr( attr,"efermi", 0.0_dbl )
        CALL iotk_write_attr( attr,"dimwinx", nbnd )
        CALL iotk_write_empty( ounit,"DATA",ATTR=attr)

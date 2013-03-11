@@ -51,6 +51,7 @@
    INTEGER          :: nprint        ! print every "nprint" iterations
    REAL(dbl)        :: eshift        ! energy shift when computing the proj Hamiltonian
    LOGICAL          :: do_orthoovp
+   CHARACTER(nstrx) :: spin_component
 
 
    !
@@ -59,7 +60,7 @@
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
                     nk, s, delta, smearing_type, fileout, debug_level,     &
                     emin, emax, ne, ircut, projdos, nprint, verbosity,     &
-                    shift, scale, do_orthoovp, eshift
+                    shift, scale, do_orthoovp, eshift, spin_component
    !
    ! end of declariations
    !   
@@ -115,7 +116,7 @@ CONTAINS
    !
    USE mp,                   ONLY : mp_bcast
    USE io_module,            ONLY : io_init, ionode, ionode_id
-   USE atmproj_tools_module, ONLY : eshift_ => eshift
+   USE atmproj_tools_module, ONLY : eshift_ => eshift, spin_component_atmproj => spin_component
    !
    IMPLICIT NONE
 
@@ -153,6 +154,7 @@ CONTAINS
       verbosity                   = 'medium'
       do_orthoovp                 = .FALSE.
       eshift                      = 10.0
+      spin_component              = 'all'
        
       
       CALL input_from_file ( stdin )
@@ -187,6 +189,7 @@ CONTAINS
       CALL mp_bcast( verbosity,       ionode_id )      
       CALL mp_bcast( do_orthoovp,     ionode_id )
       CALL mp_bcast( eshift,          ionode_id )
+      CALL mp_bcast( spin_component,  ionode_id )
 
       !
       ! Init
@@ -223,6 +226,9 @@ CONTAINS
       ! just move to lower_case
       !
       CALL change_case(smearing_type,'lower')
+      !
+      CALL change_case(spin_component,'lower')
+      spin_component_atmproj = spin_component
 
       !
       ! in case we need this
@@ -240,6 +246,7 @@ CONTAINS
           !
           WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
           WRITE( stdout, "(   7x,'                  type :',5x,   a)") TRIM(smearing_type)
+          WRITE( stdout, "(   7x,'        spin component :',5x,   a)") TRIM(spin_component)
           WRITE( stdout, "(   7x,'                 delta :',3x, f9.5, ' eV')" ) delta
           WRITE( stdout, "(   7x,'                    nk :',3x,3i4 )") nk(:)
           WRITE( stdout, "(   7x,'                     s :',3x,3i4 )") s(:)

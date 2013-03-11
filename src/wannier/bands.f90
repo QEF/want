@@ -40,13 +40,14 @@
    CHARACTER(nstrx)   :: fileout        ! output filename
    REAL(dbl)          :: eshift         ! energy shift when computing the proj Hamiltonian
    LOGICAL            :: do_orthoovp
+   CHARACTER(nstrx)   :: spin_component
 
    !
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
                     fileout, nkpts_in, nkpts_max, ircut, debug_level, verbosity, &
-                    do_orthoovp, eshift
+                    do_orthoovp, eshift, spin_component
    !
    ! end of declariations
    !   
@@ -102,7 +103,7 @@ CONTAINS
    !
    USE mp,                   ONLY : mp_bcast
    USE io_module,            ONLY : io_init, ionode, ionode_id
-   USE atmproj_tools_module, ONLY : eshift_ => eshift
+   USE atmproj_tools_module, ONLY : eshift_ => eshift, spin_component_atmproj => spin_component
    !
    IMPLICIT NONE
 
@@ -130,6 +131,7 @@ CONTAINS
       verbosity                   = 'medium'
       do_orthoovp                 = .FALSE.
       eshift                      = 10.0
+      spin_component              = 'all'
       
       
       CALL input_from_file ( stdin )
@@ -155,6 +157,7 @@ CONTAINS
       CALL mp_bcast( verbosity,       ionode_id )
       CALL mp_bcast( do_orthoovp,     ionode_id )
       CALL mp_bcast( eshift,          ionode_id )
+      CALL mp_bcast( spin_component,  ionode_id )
 
       !
       ! init
@@ -184,6 +187,9 @@ CONTAINS
       IF ( nkpts_in <= 0 )        CALL errore(subname, 'Invalid nkpts_in', ABS(nkpts_in)+1)
       IF ( nkpts_max <= 0 )       CALL errore(subname, 'Invalid nkpts_max', ABS(nkpts_max)+1)
       IF ( ANY( ircut(:) < 0 ) )  CALL errore(subname, 'Invalid ircut', 10)
+      !
+      CALL change_case(spin_component,'lower')
+      spin_component_atmproj = spin_component
 
 
       !
@@ -196,6 +202,8 @@ CONTAINS
           WRITE( stdout, "(   7x,'              work dir :',5x,   a)") TRIM(work_dir)
           WRITE( stdout, "(   7x,'                prefix :',5x,   a)") TRIM(prefix)
           WRITE( stdout, "(   7x,'               postfix :',5x,   a)") TRIM(postfix)
+          WRITE( stdout, "(   7x,'        spin component :',5x,   a)") TRIM(spin_component)
+          !
           IF ( LEN_TRIM( datafile_dft ) /= 0 ) &
               WRITE( stdout,"(7x,'          datafile_dft :',5x,   a)") TRIM(datafile_dft)
           WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
