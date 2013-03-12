@@ -13,9 +13,10 @@
           nat = 4,
          ntyp = 2,
       ecutwfc = 40.0 ,
-         nbnd = 15
+         nbnd = 30
         nosym = .TRUE.
         noinv = .TRUE.
+    input_dft = 'PZ'
 /
 &ELECTRONS
     electron_maxstep = 50,
@@ -24,7 +25,7 @@
     conv_thr =  1.0d-8,
 /
 ATOMIC_SPECIES                                       
-    C    1.00000  C.pz-vbc.UPF                       
+    C    1.00000  C.pw-mt_fhi.UPF
     H    1.00000  H.pz-vbc.UPF
 ATOMIC_POSITIONS bohr
 C      0.000000000     0.000000000    -1.106970000
