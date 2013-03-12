@@ -915,7 +915,8 @@ CONTAINS
             !
             ispin = 1
             !
-            IF ( TRIM(spin_component) /= 'none' ) &
+            IF ( TRIM(spin_component) /= 'none' .AND. &
+                 TRIM(spin_component) /= 'all'   ) &
                  CALL errore(subname,'Invalid spin component = '//TRIM(spin_component),1 )
             !
        CASE( 2 )
