@@ -1,0 +1,20 @@
+
+ &INPUT
+   prefix         = 'silicon'
+   postfix        = '_WanT'
+   work_dir       = './SCRATCH'
+   datafile_dft   = './SCRATCH/silicon.save/atomic_proj.dat'
+   fileout        = './dos_Si.dat'
+   do_orthoovp    = .TRUE.
+   nk(1) = 8
+   nk(2) = 8
+   nk(3) = 8
+   delta = 0.137
+   emin  = -20.0
+   emax  =  10.0
+   ne    = 1200
+   smearing_type = 'gaussian'
+   projdos = .FALSE.
+ /
+
+

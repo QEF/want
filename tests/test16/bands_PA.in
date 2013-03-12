@@ -1,0 +1,16 @@
+
+ &INPUT
+   prefix         = 'poly_pa'
+   postfix        = '_WanT'
+   work_dir       = './SCRATCH'
+   datafile_dft   = './SCRATCH/poly_pa.save/atomic_proj.dat'
+   fileout        = './bands_PA.dat'
+   nkpts_in       = 2
+   nkpts_max      = 500
+   do_orthoovp    = .FALSE.
+   eshift         = 4.0
+ /
+G   0.000  0.000  0.000
+Z   0.000  0.000  0.500
+
+
