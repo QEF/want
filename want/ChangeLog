@@ -4,6 +4,8 @@
 =======================================================
 
 
+12 Mar 2013     Bug fixed in atmproj module (spin polarized case). test16 further updated. (AF)
+
 11 Mar 2013     atmproj module updated to work with bands.x and dos.x . (AF)
 
 02 Mar 2013     atmproj module updated, input variable eshift added. unfold.f90 updated.
