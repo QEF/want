@@ -7,7 +7,7 @@
     ne = 1000  
     emin = -20.0
     emax =   0.0 
-    datafile_tot = "./matrices_Au16.dat"
+    datafile_tot = "./data/matrices_Au16.dat"
     datafile_emb = "./ham_tmp.dat"
     datafile_sgm_emb = "./sgm_tmp.dat"
     transport_dir = 3

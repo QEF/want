@@ -49,7 +49,7 @@ SUFFIX=""
 #
 # evaluate the starting choice about what is to run 
 
-CONDUCTOR_Au01=
+#CONDUCTOR_Au01=
 CONDUCTOR_Au08_cell1=
 CONDUCTOR_Au08_cell4=
 CONDUCTOR_Au16_cell1=
@@ -64,7 +64,7 @@ if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
 INPUT=`echo $1 | tr [:upper:] [:lower:]`
 
 case $INPUT in 
-   (conductor_au01)           CONDUCTOR_Au01=yes ;;
+#   (conductor_au01)           CONDUCTOR_Au01=yes ;;
    (conductor_au08_cell1)     CONDUCTOR_Au08_cell1=yes ;;
    (conductor_au08_cell4)     CONDUCTOR_Au08_cell4=yes ;;
    (conductor_au16_cell1)     CONDUCTOR_Au16_cell1=yes ;;
@@ -73,7 +73,7 @@ case $INPUT in
    (embed_au08_cell1)         EMBED_Au08_cell1=yes ;;
    (embed_au16_cell1)         EMBED_Au16_cell1=yes ;;
 
-   (want,all)       CONDUCTOR_Au01=yes ; 
+   (want,all)       #CONDUCTOR_Au01=yes ; 
                     CONDUCTOR_Au08_cell1=yes ; CONDUCTOR_Au08_cell4=yes ;
                     CONDUCTOR_Au16_cell1=yes ; CONDUCTOR_Au16_cell4=yes ; CONDUCTOR_Au16_cell8=yes ;
                     EMBED_Au08_cell1=yes ; EMBED_Au16_cell1=yes ;;
@@ -102,12 +102,12 @@ fi
 #
 # running CONDUCTOR
 #
-run_conductor  SUFFIX="_Au01"        RUN=$CONDUCTOR_Au01
-run_conductor  SUFFIX="_Au08_cell1"  RUN=$CONDUCTOR_Au08_cell1
-run_conductor  SUFFIX="_Au08_cell4"  RUN=$CONDUCTOR_Au08_cell4
-run_conductor  SUFFIX="_Au16_cell1"  RUN=$CONDUCTOR_Au16_cell1
-run_conductor  SUFFIX="_Au16_cell4"  RUN=$CONDUCTOR_Au16_cell4
-run_conductor  SUFFIX="_Au16_cell8"  RUN=$CONDUCTOR_Au16_cell8
+#run_conductor  NAME=CONDUCTOR_Au01        SUFFIX="_Au01"        RUN=$CONDUCTOR_Au01
+run_conductor  NAME=CONDUCTOR_Au08_CELL1  SUFFIX="_Au08_cell1"  RUN=$CONDUCTOR_Au08_cell1
+run_conductor  NAME=CONDUCTOR_Au08_CELL4  SUFFIX="_Au08_cell4"  RUN=$CONDUCTOR_Au08_cell4
+run_conductor  NAME=CONDUCTOR_Au16_CELL1  SUFFIX="_Au16_cell1"  RUN=$CONDUCTOR_Au16_cell1
+run_conductor  NAME=CONDUCTOR_Au16_CELL4  SUFFIX="_Au16_cell4"  RUN=$CONDUCTOR_Au16_cell4
+run_conductor  NAME=CONDUCTOR_Au16_CELL8  SUFFIX="_Au16_cell8"  RUN=$CONDUCTOR_Au16_cell8
 
 
 #

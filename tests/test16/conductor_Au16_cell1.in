@@ -7,7 +7,7 @@
     ne = 1000  
     emin = -20.0
     emax =   5.0 
-    datafile_C = "./matrices_Au16.dat"
+    datafile_C = "./data/matrices_Au16.dat"
     transport_dir = 3
     delta = 0.001
     do_orthoovp = .TRUE.
