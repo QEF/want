@@ -411,7 +411,7 @@ END SUBROUTINE atmproj_tools_init
                !
                !
                IF ( .NOT. mat_is_herm( dimwann, kham(:,:,ik), TOLL=EPS_m8 ) ) &
-                   CALL errore(subname,'kham not hermitean',10)
+                   CALL errore(subname,'kham not hermitian',10)
 
 
                !
@@ -549,7 +549,11 @@ END SUBROUTINE atmproj_tools_init
        spin_loop: & 
        DO isp = 1, nspin
           !
-          IF ( nspin == 2 .AND. TRIM(spin_component) == "all" ) THEN
+          IF ( TRIM(spin_component) == "up"   .AND. isp == 2 ) CYCLE
+          IF ( TRIM(spin_component) == "down" .AND. isp == 1 ) CYCLE
+          IF ( TRIM(spin_component) == "dw"   .AND. isp == 1 ) CYCLE
+          !
+          IF ( TRIM(spin_component) == "all" .AND. nspin == 2 ) THEN
               !
               CALL iotk_write_begin( ounit, "SPIN"//TRIM(iotk_index(isp)) )
               !
