@@ -17,11 +17,11 @@
    ! Parallel MPI initializations should also
    ! be handled by this routines
    !
-   USE io_module,     ONLY : stdout, ionode, ionode_id, &
-                             io_global_start, io_global_getionode
-   USE timing_module, ONLY : nclockx, timing, timing_allocate
-   USE mp,            ONLY : mp_start, mp_env
-   USE mp_global,     ONLY : mpime, nproc, root, group, mp_global_start
+   USE io_global_module,     ONLY : stdout, ionode, ionode_id, &
+                                    io_global_start, io_global_getionode
+   USE timing_module,        ONLY : nclockx, timing, timing_allocate
+   USE mp,                   ONLY : mp_start, mp_env
+   USE mp_global,            ONLY : mpime, nproc, root, group, mp_global_start
    !
 #if defined __CUDA
    USE cuda_env
