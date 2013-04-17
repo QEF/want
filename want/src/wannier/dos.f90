@@ -300,7 +300,7 @@ END PROGRAM dos_main
    USE mp,                   ONLY : mp_bcast, mp_sum
    USE mp_global,            ONLY : mpime, nproc
    USE files_module,         ONLY : file_open, file_close
-   USE util_module,          ONLY : mat_hdiag, mat_herm, mat_is_herm
+   USE util_module,          ONLY : mat_hdiag, mat_herm, mat_is_herm, mat_mul
    USE converters_module,    ONLY : cry2cart, cart2cry
    USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nrtot, vr, wr 
@@ -347,7 +347,7 @@ END PROGRAM dos_main
       COMPLEX(dbl), ALLOCATABLE :: kham(:,:), rham_nn(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: ksgm(:,:), rsgm_nn(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: kovp(:,:), rovp_nn(:,:,:)
-      COMPLEX(dbl), ALLOCATABLE :: z(:,:,:)        
+      COMPLEX(dbl), ALLOCATABLE :: z(:,:,:), zc(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: GF(:,:), GF0(:,:)
       REAL(dbl),    ALLOCATABLE :: egrid(:)
       REAL(dbl),    ALLOCATABLE :: dos(:), dos0(:), pdos(:,:)
@@ -544,8 +544,7 @@ END PROGRAM dos_main
           DO ik=1,nkpts_int
               !
               WRITE( stdout, " (4x, 'k (', i5, ') =    ( ',3f9.5,' ),   &
-                               & weight = ', f11.7 )") &
-                               ik, ( vkpt_int(i,ik), i=1,3 ), wk(ik)
+                               & weight = ', f11.7 )") ik, ( vkpt_int(i,ik), i=1,3 ), wk(ik)
           ENDDO
           !
           WRITE( stdout, "()" )
@@ -561,8 +560,7 @@ END PROGRAM dos_main
               DO ik=1,nkpts_int
                   !
                   WRITE( stdout, " (4x, 'k (', i5, ') =    ( ',3f9.5,' ),   &
-                               & weight = ', f11.7 )") &
-                               ik, ( vkpt_int_cry(i,ik), i=1,3 ), wk(ik)
+                               & weight = ', f11.7 )") ik, ( vkpt_int_cry(i,ik), i=1,3 ), wk(ik)
               ENDDO
               !
               WRITE( stdout, "()" )
@@ -594,6 +592,7 @@ END PROGRAM dos_main
       !
       ALLOCATE( eig_int( dimwann, ike-iks+1 ), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname,'allocating eig_int', ABS(ierr) )
+      !
 
       !
       ! if chosen from input, select only R corresponding to nearest-neighb
@@ -711,7 +710,7 @@ END PROGRAM dos_main
               IF ( lhave_overlap ) THEN
                   !
                   CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn,  &
-                                     vkpt_int(:,ik_g), kovp)
+                                     vkpt_int(:,ik_g), kovp(:,:))
                   !
               ENDIF
 
@@ -828,7 +827,7 @@ END PROGRAM dos_main
                  IF ( lhave_overlap ) THEN
                      !
                      CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn,  &
-                                        vkpt_int(:,ik_g), kovp )
+                                        vkpt_int(:,ik_g), kovp(:,:) )
                      !
                  ENDIF
                  !
@@ -911,6 +910,64 @@ END PROGRAM dos_main
       IF ( projdos ) THEN  
           !
           IF (ionode) WRITE( stdout, "(/,2x, 'Computing projected-DOS...',/)")
+
+          !
+          ! ensure the normalization of eigenvectors in z
+          ! and compute the covariant components of the wfc if the
+          ! basis is not orthogonal
+          !
+          IF ( lhave_overlap ) THEN
+              !
+              ALLOCATE( zc( dimwann, dimwann, ike-iks+1), STAT=ierr )
+              IF ( ierr/=0 ) CALL errore(subname, 'allocating zc', ABS(ierr) )
+              !
+          ENDIF
+          !
+          !
+          DO ik_g = iks, ike
+              !
+              ik = ik_g -iks +1
+              !
+              IF ( .NOT. lhave_overlap ) THEN
+                  !
+                  DO i  = 1, dimwann 
+                      !
+                      caux = CZERO
+                      DO j = 1, dimwann
+                           caux = caux + z(j, i, ik) * CONJG( z( j, i, ik) )
+                      ENDDO
+                      z( :, i, ik) = z( :, i, ik) / SQRT(REAL( caux, dbl))
+                      !
+                  ENDDO
+                  ! 
+              ELSE
+                  ! 
+                  ! diagonalizing H phi = eps S phi, where H_ij and S_ij are
+                  ! definied on the covariant orbitals, then the z coefficients
+                  ! are indeed contravariant.
+                  !
+                  CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn,  &
+                                     vkpt_int(:,ik_g), kovp(:,:) )
+                  ! zc = z * S
+                  !
+                  CALL mat_mul( zc(:,:,ik),  z(:,:,ik), 'N', kovp(:,:), 'C', dimwann, dimwann, dimwann )
+                  !
+                  DO i  = 1, dimwann 
+                      !
+                      caux = CZERO
+                      DO j = 1, dimwann
+                           caux = caux + z(j, i, ik) * CONJG( zc( j, i, ik) )
+                      ENDDO
+                      z( :, i, ik) = z( :, i, ik) / SQRT(REAL( caux, dbl))
+                      !
+                  ENDDO
+                  !
+              ENDIF
+              !
+          ENDDO
+
+          !
+          ! main task
           !
           pdos ( 1: ne, 1: dimwann ) = ZERO
           ! 
@@ -928,19 +985,29 @@ END PROGRAM dos_main
                   raux = smearing_func( arg, smearing_type )
 
                   !
-                  ! ensure the normalization of eigenvectors in z
-                  !
-                  caux = CZERO
-                  DO j = 1, dimwann
-                       caux = caux + z(j, i, ik) * CONJG( z( j, i, ik) )
-                  ENDDO
-                  z( :, i, ik) = z( :, i, ik) / REAL( caux, dbl)
-                  !
-                  DO j = 1, dimwann
+                  IF ( .NOT. lhave_overlap ) THEN
                       !
-                      pdos( ie, j ) = pdos( ie, j ) + cost * wk(ik_g) * raux * &
-                                      REAL( z( j, i, ik) * CONJG( z( j, i, ik)) , dbl )
-                  ENDDO
+                      DO j = 1, dimwann
+                          !
+                          pdos( ie, j ) = pdos( ie, j ) + cost * wk(ik_g) * raux * &
+                                          REAL( z( j, i, ik) * CONJG( z( j, i, ik)) , dbl )
+                      ENDDO
+                      !
+                  ELSE
+                      !
+                      ! non-orthogonal basis: 
+                      ! the projector on the orbital phi_j needs to be written
+                      ! in terms of both the covariant and contravariant components
+                      !
+                      ! < psi | P_j | psi > = < psi | phi_j > < phi^j | psi >
+                      !
+                      DO j = 1, dimwann
+                          !
+                          pdos( ie, j ) = pdos( ie, j ) + cost * wk(ik_g) * raux * &
+                                          REAL( z( j, i, ik) * CONJG( zc( j, i, ik)) , dbl )
+                      ENDDO
+                      !
+                  ENDIF
                   !
               ENDDO
               ENDDO
@@ -949,6 +1016,12 @@ END PROGRAM dos_main
           !
           CALL mp_sum( pdos )
           !
+      ENDIF
+      !
+      !
+      IF ( lhave_overlap ) THEN
+          DEALLOCATE( zc, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname, 'deallocating zc', ABS(ierr) )
       ENDIF
 
 

@@ -55,7 +55,7 @@ TRANSPORT_OBJS= \
 BIN= \
 embed.x 
 
-EXTERNAL_LIBS=  ../clibs/libclibs.a ../wlibs/libwant.a
+EXTERNAL_LIBS=  ../clib/libclib.a ../baselib/libwant.a
 BIN_DEPS=  $(OBJS) $(WANNIER_OBJS) $(TRANSPORT_OBJS) $(EXTERNAL_LIBS)
 OBJS_ALL=  $(OBJS) $(WANNIER_OBJS) $(TRANSPORT_OBJS)
 

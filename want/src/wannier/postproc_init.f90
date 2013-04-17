@@ -81,7 +81,7 @@ CONTAINS
       !
       ! define defaults
       ! wannier is set to false mainly because of the
-      ! interface to CRYSTAL06
+      ! interface to CRYSTAL
       !
       lwindows        = .TRUE.
       lions           = .FALSE.

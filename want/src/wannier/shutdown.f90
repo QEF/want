@@ -13,10 +13,10 @@
    ! This routine stops the code in a proper way,
    ! according to the MPI environment if the case.
    !
-   USE io_module,     ONLY : stdout, ionode
-   USE timing_module, ONLY : global_list, timing, timing_deallocate, timing_overview
-   USE log_module,    ONLY : log_deallocate, log_alloc => alloc, log_pop
-   USE mp,            ONLY : mp_end
+   USE io_global_module,    ONLY : stdout, ionode
+   USE timing_module,       ONLY : global_list, timing, timing_deallocate, timing_overview
+   USE log_module,          ONLY : log_deallocate, log_alloc => alloc, log_pop
+   USE mp,                  ONLY : mp_end
    !
    IMPLICIT NONE
 
