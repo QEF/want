@@ -81,7 +81,7 @@ WANNIER_OBJS= \
 
 
 
-EXTERNAL_LIBS=  ../clibs/libclibs.a ../wlibs/libwant.a
+EXTERNAL_LIBS=  ../clib/libclib.a ../baselib/libwant.a
 BIN_DEPS=      $(OBJS) $(WANNIER_OBJS) $(EXTERNAL_LIBS)
 
 #

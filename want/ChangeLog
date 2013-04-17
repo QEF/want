@@ -4,6 +4,8 @@
 =======================================================
 
 
+17 Apr 2013     clibs and wlibs renamed to clib and baselib. (AF)
+
 13 Mar 2013     Tag WanT-2_5_0_alpha2  added to repository. (AF)
 
 12 Mar 2013     Bug fixed in atmproj module (spin polarized case). test16 further updated. (AF)

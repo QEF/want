@@ -21,7 +21,7 @@ default:
 	@echo  "     embed              compile embedding executables"
 	@echo  "     tools              compile utilities"
 	@echo  "     libwant            compile the want internal library"
-	@echo  "     libclibs           compile the intenral c-library"
+	@echo  "     libclib            compile the intenral c-library"
 	@echo  "     libextlibs         compile internal versions of std libraries (blas, lapack, ...)"
 	@echo  "     libplugins         compile plugins"
 	@echo 
@@ -54,27 +54,27 @@ libplugins:
 	if test -d plugins ; then \
 	( cd plugins ; $(MAKE) ) ; fi
 
-libclibs:
-	if test -d src/clibs ; then \
-	( cd src/clibs ; $(MAKE) ) ; fi
+libclib:
+	if test -d src/clib ; then \
+	( cd src/clib ; $(MAKE) ) ; fi
 
 libwant: libextlibs libplugins
-	if test -d src/wlibs ; then \
-	( cd src/wlibs ; $(MAKE) ) ; fi
+	if test -d src/baselib ; then \
+	( cd src/baselib ; $(MAKE) ) ; fi
 
-wannier: libextlibs libclibs libwant libplugins
+wannier: libextlibs libclib libwant libplugins
 	if test -d src/wannier ; then \
 	( cd src/wannier ; $(MAKE) ) ; fi
 
-transport: libextlibs libclibs libwant libplugins wannier
+transport: libextlibs libclib libwant libplugins wannier
 	if test -d src/transport ; then \
 	( cd src/transport ; $(MAKE) ) ; fi
 
-embed: libextlibs libclibs libwant libplugins transport wannier
+embed: libextlibs libclib libwant libplugins transport wannier
 	if test -d src/embed ; then \
 	( cd src/embed ; $(MAKE) ) ; fi
 
-tools: libextlibs libclibs libwant libplugins wannier
+tools: libextlibs libclib libwant libplugins wannier
 	if test -d src/tools ; then \
 	( cd src/tools ; $(MAKE) ) ; fi
 
@@ -84,8 +84,8 @@ tools: libextlibs libclibs libwant libplugins wannier
 clean:
 	if test -d extlibs ;       then ( cd extlibs;       $(MAKE) clean ) ; fi
 	if test -d plugins ;       then ( cd plugins;       $(MAKE) clean ) ; fi
-	if test -d src/clibs ;     then ( cd src/clibs;     $(MAKE) clean ) ; fi
-	if test -d src/wlibs ;     then ( cd src/wlibs;     $(MAKE) clean ) ; fi
+	if test -d src/clib ;      then ( cd src/clib;      $(MAKE) clean ) ; fi
+	if test -d src/baselib ;   then ( cd src/baselib;   $(MAKE) clean ) ; fi
 	if test -d src/wannier ;   then ( cd src/wannier;   $(MAKE) clean ) ; fi
 	if test -d src/transport ; then ( cd src/transport; $(MAKE) clean ) ; fi
 	if test -d src/embed ;     then ( cd src/embed;     $(MAKE) clean ) ; fi
