@@ -4,6 +4,9 @@
 =======================================================
 
 
+07 May 2013     parser_replica routine updated allowing for skip symbol x.
+		Transport read_matrix routine updated accordingly. (AF)
+
 17 Apr 2013     clibs and wlibs renamed to clib and baselib. (AF)
 
 13 Mar 2013     Tag WanT-2_5_0_alpha2  added to repository. (AF)
