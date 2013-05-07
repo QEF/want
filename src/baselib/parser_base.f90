@@ -42,7 +42,7 @@
 ! FUNCTION upper_case(char)
 ! FUNCTION lower_case(char)
 ! SUBROUTINE change_case(str,case)
-! SUBROUTINE parser_replica(str,nitem[,index][,ierr])
+! SUBROUTINE parser_replica(str,nitem[,ilist][,ierr])
 ! SUBROUTINE parser_path(str,ndir,directories[,ierr])
 ! SUBROUTINE parser_version(str,name,major,minor,patch[,ierr])
 !
@@ -198,26 +198,29 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE parser_replica(str,nitem,index,ierr)
+   SUBROUTINE parser_replica(str,nitem,ilist,xval,ierr)
    !**********************************************************
    IMPLICIT NONE
    CHARACTER(*),     INTENT(in)    :: str        
    INTEGER,          INTENT(out)   :: nitem
-   INTEGER, OPTIONAL,INTENT(out)   :: index(*)
+   INTEGER, OPTIONAL,INTENT(out)   :: ilist(*)
+   INTEGER, OPTIONAL,INTENT(in)    :: xval
    INTEGER, OPTIONAL,INTENT(out)   :: ierr
 
+   CHARACTER(14)                   :: subname="parser_replica"
    CHARACTER(15), ALLOCATABLE      :: intstr(:)
    INTEGER,       ALLOCATABLE      :: intervals(:,:)
    INTEGER                         :: length
    INTEGER                         :: istart,iend
-   INTEGER                         :: indx, nint
-   INTEGER                         :: i, iint, ierr_
+   INTEGER                         :: indx, indx_x, ndim, repl
+   INTEGER                         :: i, iint, ival, ierr_
+   INTEGER                         :: xval_
+
    !
    ! ierr < 0     void string
    ! ierr = 0     no problem
    ! ierr > 0     wrong fmt
    !
-
    length=LEN_TRIM(str)
    nitem = 0
    IF ( PRESENT(ierr) ) ierr = -1
@@ -227,16 +230,20 @@ CONTAINS
        RETURN
    ENDIF
 
+   xval_ = -1
+   IF ( PRESENT( xval ) )   xval_ = xval
+
 
    IF ( PRESENT(ierr) ) ierr = 0
-   nint=1
+   ndim=1
    DO i=1,length
-      IF ( str(i:i) == "," ) nint=nint+1
+      IF ( str(i:i) == "," ) ndim=ndim+1
    ENDDO
-   ALLOCATE( intstr(nint), STAT=ierr_ )
-     IF ( ierr_ /= 0) CALL errore('parser_replica','Unable to allocate INTSTR',ABS(ierr_))
-   ALLOCATE( intervals(2,nint), STAT=ierr_ )
-     IF ( ierr_ /= 0) CALL errore('parser_replica','Unable to allocate intervals',ABS(ierr_))
+   !
+   ALLOCATE( intstr(ndim), STAT=ierr_ )
+   IF ( ierr_ /= 0) CALL errore(subname,'Unable to allocate INTSTR',ABS(ierr_))
+   ALLOCATE( intervals(2,ndim), STAT=ierr_ )
+   IF ( ierr_ /= 0) CALL errore(subname,'Unable to allocate intervals',ABS(ierr_))
 
 !
 ! recognize different intervals
@@ -251,42 +258,66 @@ CONTAINS
           istart=i+1
       ENDIF
    ENDDO
-   intstr(nint) = TRIM(str(istart:length))
+   intstr(ndim) = TRIM(str(istart:length))
    
 !
 ! for each interval determine the extrema
 !
-   DO iint=1,nint   
-      indx=SCAN(intstr(iint),"-")
-      length=LEN_TRIM(intstr(iint))
-      IF ( indx == 0 )  THEN
-          intervals(:,iint) = char2int( intstr(iint),IERR=ierr_ )
-          IF ( ierr_/= 0 ) CALL errore('parser_replica','Wrong internal fmt',ABS(ierr_))
-      ELSE
-          intervals(1,iint) = char2int( intstr(iint)(1:indx-1), IERR=ierr_ )
-          IF ( ierr_/= 0 ) CALL errore('parser_replica','Wrong internal fmt',ABS(ierr_))
-          intervals(2,iint) = char2int( intstr(iint)(indx+1:length), IERR=ierr_ )
-          IF ( ierr_/= 0 ) CALL errore('parser_replica','Wrong internal fmt',ABS(ierr_))
-      ENDIF
+   DO iint=1,ndim   
+       !
+       indx=SCAN(intstr(iint),"-")
+       indx_x=SCAN(intstr(iint),"x")
+       length=LEN_TRIM(intstr(iint))
+       !
+       IF ( indx_x /= 0 ) THEN
+           !
+           ! first check fir x
+           !
+           IF ( indx /= 0 ) CALL errore(subname,'- should not be present with x',71)
+           !
+           IF ( LEN_TRIM( intstr(iint)(1:indx_x-1) ) == 0 ) THEN
+                repl=1
+           ELSE
+                repl=char2int( intstr(iint)(1:indx_x-1),IERR=ierr_ )
+                IF ( ierr_/= 0 ) CALL errore(subname,'wrong x-fmt',ABS(ierr_))
+           ENDIF 
+           !
+           intervals(1,iint) = -1 * repl
+           intervals(2,iint) = -1 
+           !
+       ELSEIF ( indx == 0 )  THEN
+           intervals(:,iint) = char2int( intstr(iint),IERR=ierr_ )
+           IF ( ierr_/= 0 ) CALL errore(subname,'Wrong internal fmt',ABS(ierr_))
+       ELSE
+           intervals(1,iint) = char2int( intstr(iint)(1:indx-1), IERR=ierr_ )
+           IF ( ierr_/= 0 ) CALL errore(subname,'Wrong internal fmt',ABS(ierr_))
+           intervals(2,iint) = char2int( intstr(iint)(indx+1:length), IERR=ierr_ )
+           IF ( ierr_/= 0 ) CALL errore(subname,'Wrong internal fmt',ABS(ierr_))
+       ENDIF
+       !
    ENDDO
-   DEALLOCATE( intstr, STAT = ierr_)   
-     IF ( ierr_ /= 0 ) CALL errore('parser_replica','deallocating INTSTR',ABS(ierr_))
 
-!
-! write output quantities
-!
+   !
+   ! write output quantities
+   !
    nitem = 0
-   DO iint=1,nint
+   DO iint=1,ndim
       DO i = intervals(1,iint), intervals(2,iint)
           nitem = nitem + 1
-          IF ( PRESENT(index) ) index(nitem) = i
+          ival  = i
+          IF ( ival < 0 ) ival = xval_
+          IF ( PRESENT(ilist) ) ilist(nitem) = ival
       ENDDO
    ENDDO
-
+   !
+   ! cleanup
+   !
+   DEALLOCATE( intstr, STAT = ierr_)   
+   IF ( ierr_ /= 0 ) CALL errore(subname,'deallocating INTSTR',ABS(ierr_))
    DEALLOCATE( intervals, STAT = ierr_)   
-     IF ( ierr_ /= 0 ) CALL errore('parser_replica','deallocating INTERVALS',ABS(ierr_))
+   IF ( ierr_ /= 0 ) CALL errore(subname,'deallocating INTERVALS',ABS(ierr_))
 
-   END SUBROUTINE parser_replica
+END SUBROUTINE parser_replica
 
 
 !**********************************************************
