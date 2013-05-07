@@ -200,9 +200,9 @@
         ALL( blc_01L%icols(:) == blc_01R%icols(:) )   .AND. &  
         ALL( blc_01L%irows(:) == blc_01R%irows(:) )   .AND. &
         !
-        ALL( blc_00L%icols_sgm(:) == blc_00R%icols_sgm(:) ) .AND. &
-        ALL( blc_00L%irows_sgm(:) == blc_00R%irows_sgm(:) ) .AND. &  
-        ALL( blc_01L%icols_sgm(:) == blc_01R%icols_sgm(:) ) .AND. &  
+        ALL( blc_00L%icols_sgm(:) == blc_00R%icols_sgm(:) )   .AND. &
+        ALL( blc_00L%irows_sgm(:) == blc_00R%irows_sgm(:) )   .AND. &  
+        ALL( blc_01L%icols_sgm(:) == blc_01R%icols_sgm(:) )   .AND. &  
         ALL( blc_01L%irows_sgm(:) == blc_01R%irows_sgm(:) ) ) THEN 
        !
        leads_are_identical = .TRUE.

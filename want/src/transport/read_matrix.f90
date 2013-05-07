@@ -47,7 +47,7 @@
    INTEGER,      ALLOCATABLE :: ivr(:,:)
    COMPLEX(dbl), ALLOCATABLE :: A_loc(:,:), S_loc(:,:)
    COMPLEX(dbl), ALLOCATABLE :: A(:,:,:), S(:,:,:)
-   CHARACTER(nstrx)          :: attr, str
+   CHARACTER(nstrx)          :: attr, str, label
    !
    LOGICAL                   :: found, ivr_from_input, lhave_ovp
    INTEGER                   :: ind, ivr_aux(3), ivr_input, nr_aux(3)
@@ -76,7 +76,8 @@
    !
    ! parse tag (read from stdin)
    !
-   attr = TRIM( opr%tag )
+   attr   = TRIM( opr%tag )
+   label  = TRIM( opr%blc_name)
    !
    CALL iotk_scan_attr(attr, 'filein', filein, FOUND=found, IERR=ierr)
    IF (ierr/=0) CALL errore(subname, 'searching for file', ABS(ierr) )
@@ -122,48 +123,56 @@
 
    !
    ! get the number of required rows and cols
+   !
    CALL parser_replica( rows, nrows, IERR=ierr)
    IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in rows string I',ABS(ierr))
    CALL parser_replica( cols, ncols, IERR=ierr)
    IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in cols string I',ABS(ierr))
-   ! 
-   IF ( nrows /= dim1 ) CALL errore(subname,'invalid number of rows',3)
-   IF ( ncols /= dim2 ) CALL errore(subname,'invalid number of cols',3)
+   !
+   IF ( nrows /= dim1 ) CALL errore(subname,'invalid number of rows: '//TRIM(label),3)
+   IF ( ncols /= dim2 ) CALL errore(subname,'invalid number of cols:'//TRIM(label),3)
    !
    !
    CALL parser_replica( rows_sgm, nrows_sgm, IERR=ierr)
-   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in rows_sgm string I',ABS(ierr))
+   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in rows_sgm string I: '//TRIM(label),ABS(ierr))
    CALL parser_replica( cols_sgm, ncols_sgm, IERR=ierr)
-   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in cols_sgm string I',ABS(ierr))
+   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in cols_sgm string I: '//TRIM(label),ABS(ierr))
    !  
-   IF ( nrows_sgm /= dim1 ) CALL errore(subname,'invalid number of rows_sgm',3)
-   IF ( ncols_sgm /= dim2 ) CALL errore(subname,'invalid number of cols_sgm',3)
+   IF ( nrows_sgm /= dim1 ) CALL errore(subname,'invalid number of rows_sgm: '//TRIM(label),3)
+   IF ( ncols_sgm /= dim2 ) CALL errore(subname,'invalid number of cols_sgm: '//TRIM(label),3)
 
    !
    ! get the actual indexes for rows and cols
-   CALL parser_replica( rows, nrows, opr%irows, IERR=ierr)
-   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in rows string II',ABS(ierr))
    !
-   CALL parser_replica( cols, ncols, opr%icols, IERR=ierr)
-   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in cols string II',ABS(ierr))
+   opr%irows = 0
+   opr%icols = 0
+   !
+   CALL parser_replica( rows, nrows, opr%irows, XVAL=-1, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in rows string II: '//TRIM(label),ABS(ierr))
+   CALL parser_replica( cols, ncols, opr%icols, XVAL=-1, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in cols string II:'//TRIM(label),ABS(ierr))
+
    !
    ! simple check
-   IF ( ANY( opr%irows(:) <=0 ) ) CALL errore(subname,'invalid irows(:) I',10) 
-   IF ( ANY( opr%icols(:) <=0 ) ) CALL errore(subname,'invalid icols(:) I',10) 
+   !
+   IF ( ANY( opr%irows(1:nrows) < -1 ) ) CALL errore(subname,'invalid irows(:) I: '//TRIM(label),10) 
+   IF ( ANY( opr%icols(1:ncols) < -1 ) ) CALL errore(subname,'invalid icols(:) I'//TRIM(label),10) 
+
 
    !
    ! correlation data
    !
-   CALL parser_replica( rows_sgm, nrows_sgm, opr%irows_sgm, IERR=ierr)
-   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in rows string II',ABS(ierr))
+   opr%irows_sgm = 0
+   opr%icols_sgm = 0
    !
-   CALL parser_replica( cols_sgm, ncols_sgm, opr%icols_sgm, IERR=ierr)
-   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in cols string II',ABS(ierr))
+   CALL parser_replica( rows_sgm, nrows_sgm, opr%irows_sgm, XVAL=-1, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in rows string II: '//TRIM(label),ABS(ierr))
+   CALL parser_replica( cols_sgm, ncols_sgm, opr%icols_sgm, XVAL=-1, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'wrong FMT in cols string II: '//TRIM(label),ABS(ierr))
    !
    ! simple check
-   IF ( ANY( opr%irows_sgm(:) <=0 ) ) CALL errore(subname,'invalid irows_sgm(:) I',10) 
-   IF ( ANY( opr%icols_sgm(:) <=0 ) ) CALL errore(subname,'invalid icols_sgm(:) I',10) 
-
+   IF ( ANY( opr%irows_sgm(1:nrows) < -1 ) ) CALL errore(subname,'invalid irows_sgm(:) I: '//TRIM(label),10) 
+   IF ( ANY( opr%icols_sgm(1:ncols) < -1 ) ) CALL errore(subname,'invalid icols_sgm(:) I:'//TRIM(label),10) 
 
 
 !
@@ -226,8 +235,8 @@
        !
    ENDDO
    !
-   IF ( ANY( opr%icols(:) > ldimwann ) ) CALL errore(subname, 'invalid icols(:) II', 11)
-   IF ( ANY( opr%irows(:) > ldimwann ) ) CALL errore(subname, 'invalid irows(:) II', 11)
+   IF ( ANY( opr%icols(1:ncols) > ldimwann ) ) CALL errore(subname, 'invalid icols(:) II', 11)
+   IF ( ANY( opr%irows(1:nrows) > ldimwann ) ) CALL errore(subname, 'invalid irows(:) II', 11)
 
    !
    ALLOCATE( ivr(3,nrtot), STAT=ierr )
@@ -391,14 +400,20 @@
       !
       ! cut the total hamiltonian according to the required rows and cols
       !
-      DO j=1,dim2
-      DO i=1,dim1
+      A(:, :, ir_par) = 0.0d0
+      S(:, :, ir_par) = 0.0d0
+      !
+      dim2_loop: DO j = 1, ncols         !dim2
+      dim1_loop: DO i = 1, nrows         !dim1
+          !
+          IF ( opr%icols(j) < 0 ) CYCLE dim2_loop
+          IF ( opr%irows(i) < 0 ) CYCLE dim1_loop
           !
           A(i, j, ir_par) = A_loc( opr%irows(i), opr%icols(j) )
           S(i, j, ir_par) = S_loc( opr%irows(i), opr%icols(j) )
           !
-      ENDDO
-      ENDDO
+      ENDDO dim1_loop
+      ENDDO dim2_loop
 
    ENDDO R_loop
 

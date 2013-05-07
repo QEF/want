@@ -75,7 +75,7 @@
 
    CHARACTER(nstrx) :: carriers = 'electrons'
        ! ( 'electrons' | 'phonons' )
-	   ! electron or phonon case
+       ! electron or phonon case
 
    CHARACTER(nstrx) :: carriers_allowed(2)
    DATA carriers_allowed / 'electrons',  'phonons' /
