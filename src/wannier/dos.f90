@@ -1016,12 +1016,11 @@ END PROGRAM dos_main
           !
           CALL mp_sum( pdos )
           !
-      ENDIF
-      !
-      !
-      IF ( lhave_overlap ) THEN
-          DEALLOCATE( zc, STAT=ierr )
-          IF ( ierr/=0 ) CALL errore(subname, 'deallocating zc', ABS(ierr) )
+          IF ( lhave_overlap ) THEN
+              DEALLOCATE( zc, STAT=ierr )
+              IF ( ierr/=0 ) CALL errore(subname, 'deallocating zc', ABS(ierr) )
+          ENDIF
+          !
       ENDIF
 
 
