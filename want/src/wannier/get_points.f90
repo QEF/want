@@ -17,7 +17,7 @@
    USE kinds
    USE lattice_module,    ONLY : bvec
    USE constants,         ONLY : ZERO, EPS_m6
-   USE io_module,         ONLY : stdout
+   USE io_module,         ONLY : stdout, ionode
    USE converters_module, ONLY : cart2cry
    IMPLICIT NONE
 
@@ -109,56 +109,60 @@
        !
        ! summary
        !
-       WRITE(stdout, "(/,2x,'Generating kpts: ',i3,6x,'Segments: ',i3)") nkpts_in, nkpts_in-1
-       WRITE(stdout, "(2x,'Total kpts number: ',i3,4x,'Max kpt number: ',i3)") &
-                      nkpts_tot, nkpts_max
+       IF ( ionode ) THEN
+           !
+           WRITE(stdout, "(/,2x,'Generating kpts: ',i3,6x,'Segments: ',i3)") nkpts_in, nkpts_in-1
+           WRITE(stdout, "(2x,'Total kpts number: ',i3,4x,'Max kpt number: ',i3)") &
+                         nkpts_tot, nkpts_max
 
-       WRITE(stdout, "(2/,2x,'Generating kpts [cart. coord. Bohr^-1]')" )
-       !
-       DO i=1,nkpts_in
+           WRITE(stdout, "(2/,2x,'Generating kpts [cart. coord. Bohr^-1]')" )
            !
-           WRITE(stdout, "(6x, 'k point', i4, ':   ( ',3f9.5, ' ) ',3x,a2) ") &
-                           i, kpt_in(:,i), kptname_in(i)
-       ENDDO
-       !
-       WRITE(stdout, "(/,2x,'Number of kpts in each segment')" )
-       !
-       knum(1) = knum(1) +1
-       !
-       DO i=1,nkpts_in-1
+           DO i=1,nkpts_in
+               !
+               WRITE(stdout, "(6x, 'k point', i4, ':   ( ',3f9.5, ' ) ',3x,a2) ") &
+                              i, kpt_in(:,i), kptname_in(i)
+           ENDDO
            !
-           WRITE(stdout, "(6x, 'line', i4, ':   ',i5 )" ) i, knum(i)-1
+           WRITE(stdout, "(/,2x,'Number of kpts in each segment')" )
            !
-       ENDDO
-       !
-       WRITE(stdout, "(2/,2x,'Generated kpts  [cart. coord. Bohr^-1]')" )
-       !
-       DO i=1,nkpts_tot
+           knum(1) = knum(1) +1
            !
-           WRITE(stdout, "(6x, 'k point', i4, ':   ( ',3f9.5, ' ) ') " ) i, kpt(:,i)
+           DO i=1,nkpts_in-1
+               !
+               WRITE(stdout, "(6x, 'line', i4, ':   ',i5 )" ) i, knum(i)-1
+               !
+           ENDDO
            !
-       ENDDO
+           WRITE(stdout, "(2/,2x,'Generated kpts  [cart. coord. Bohr^-1]')" )
+           !
+           DO i=1,nkpts_tot
+               !
+               WRITE(stdout, "(6x, 'k point', i4, ':   ( ',3f9.5, ' ) ') " ) i, kpt(:,i)
+               !
+           ENDDO
 
-       !
-       ! convert to crystal and write to stdout
-       ! 
-       ALLOCATE( tmp(3,nkpts_tot), STAT=ierr )
-          IF (ierr/=0) CALL errore('get_points', 'allocating tmp', ABS(ierr) )
-          !
-       tmp(:,:) = kpt(:,1:nkpts_tot)
-       !
-       CALL cart2cry(tmp, bvec)
-       !
-       WRITE(stdout, "(2/,2x,'Generated kpts  [crystal coord.]')" )
-       !
-       DO i=1,nkpts_tot
            !
-           WRITE(stdout, "(6x, 'k point', i4, ':   ( ',3f9.5, ' ) ') " ) i, tmp(:,i)
+           ! convert to crystal and write to stdout
+           ! 
+           ALLOCATE( tmp(3,nkpts_tot), STAT=ierr )
+           IF (ierr/=0) CALL errore('get_points', 'allocating tmp', ABS(ierr) )
            !
-       ENDDO
-       !
-       DEALLOCATE( tmp, STAT=ierr )
-          IF (ierr/=0) CALL errore('get_points', 'deallocating tmp', ABS(ierr) )
+           tmp(:,:) = kpt(:,1:nkpts_tot)
+           !
+           CALL cart2cry(tmp, bvec)
+           !
+           WRITE(stdout, "(2/,2x,'Generated kpts  [crystal coord.]')" )
+           !
+           DO i=1,nkpts_tot
+               !
+               WRITE(stdout, "(6x, 'k point', i4, ':   ( ',3f9.5, ' ) ') " ) i, tmp(:,i)
+               !
+           ENDDO
+           !
+           DEALLOCATE( tmp, STAT=ierr )
+           IF (ierr/=0) CALL errore('get_points', 'deallocating tmp', ABS(ierr) )
+           !
+       ENDIF
 
    END SUBROUTINE get_points
                     
