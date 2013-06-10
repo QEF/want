@@ -6,7 +6,8 @@
    datafile_dft   = './SCRATCH/poly_pa.save/atomic_proj.dat'
    fileout        = './dos_PA.dat'
    do_orthoovp    = .FALSE.
-   eshift         = 10.0
+   atmproj_sh     = 10.0
+   atmproj_thr    = 0.0
    nk(1) = 1
    nk(2) = 1
    nk(3) = 200
