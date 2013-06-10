@@ -40,7 +40,9 @@
    ! parameters for the reconstruction 
    ! of the Hamiltonian
    !
-   REAL(dbl)          :: eshift = 20.0d0
+   REAL(dbl)          :: atmproj_sh = 10.0d0
+   REAL(dbl)          :: atmproj_thr = 0.0d0    ! 0.9d0
+   INTEGER            :: atmproj_nbnd = 0
    CHARACTER(256)     :: spin_component = "all"
 
 
@@ -50,7 +52,9 @@
    !
    PUBLIC :: atmproj_to_internal
    PUBLIC :: file_is_atmproj
-   PUBLIC :: eshift
+   PUBLIC :: atmproj_sh
+   PUBLIC :: atmproj_thr
+   PUBLIC :: atmproj_nbnd
    PUBLIC :: spin_component
 
 CONTAINS
@@ -110,7 +114,7 @@ END SUBROUTINE atmproj_tools_init
 
 
 !**********************************************************
-   SUBROUTINE atmproj_to_internal( filein, fileout, filetype, do_orthoovp )
+   SUBROUTINE atmproj_to_internal( filein, fileout, filetype, do_orthoovp, proj_thr, proj_nbnd )
    !**********************************************************
    !
    ! Convert the datafile written by the projwfc program (QE suite) to
@@ -132,7 +136,9 @@ END SUBROUTINE atmproj_tools_init
    CHARACTER(*), INTENT(IN) :: filein
    CHARACTER(*), INTENT(IN) :: fileout
    CHARACTER(*), INTENT(IN) :: filetype
-   LOGICAL, OPTIONAL, INTENT(IN) :: do_orthoovp
+   LOGICAL,   OPTIONAL, INTENT(IN) :: do_orthoovp
+   REAL(dbl), OPTIONAL, INTENT(IN) :: proj_thr
+   INTEGER,   OPTIONAL, INTENT(IN) :: proj_nbnd
    
    !
    ! local variables
@@ -140,11 +146,14 @@ END SUBROUTINE atmproj_tools_init
    CHARACTER(19)     :: subname="atmproj_to_internal"
    INTEGER           :: iunit, ounit
    LOGICAL           :: do_orthoovp_
+   REAL(dbl)         :: proj_thr_
+   INTEGER           :: proj_nbnd_
    !
    CHARACTER(nstrx)  :: attr, energy_units
    CHARACTER(nstrx)  :: filetype_
    LOGICAL           :: write_ham, write_space, write_loc
    REAL(dbl)         :: avec(3,3), bvec(3,3), norm, alat, efermi, nelec
+   REAL(dbl)         :: proj_wgt
    INTEGER           :: dimwann, natomwfc, nkpts, nspin, nbnd
    INTEGER           :: nk(3), shift(3), nrtot, nr(3)
    INTEGER           :: i, j, ir, ik, ib, isp
@@ -213,6 +222,11 @@ END SUBROUTINE atmproj_tools_init
    !
    do_orthoovp_ = .FALSE.
    IF ( PRESENT( do_orthoovp ) ) do_orthoovp_ = do_orthoovp
+   !
+   ! filtering (off by default at the moment)
+   !
+   proj_thr_ = 0.0d0
+   IF ( PRESENT( proj_thr) )  proj_thr_ = proj_thr
 
 !
 !---------------------------------
@@ -254,7 +268,10 @@ END SUBROUTINE atmproj_tools_init
    IF ( ierr/=0 ) CALL errore(subname, "reading dimensions I", ABS(ierr))
 
    dimwann = natomwfc
-   
+   !
+   proj_nbnd_ = nbnd
+   IF ( PRESENT( proj_nbnd ) )   proj_nbnd_ = proj_nbnd
+
    !
    ! allocations
    !
@@ -357,12 +374,14 @@ END SUBROUTINE atmproj_tools_init
    END SELECT
 
    !
-   ! apply the energy shift eshift,
+   ! shifting
+   !
+   ! apply the energy shift,
    ! meant to set the zero of the energy scale (where we may have
    ! spurious 0 eigenvalues) far from any physical energy region of interest
    !
-   eig    = eig    -eshift
-   efermi = efermi -eshift
+   eig    = eig    -atmproj_sh
+   efermi = efermi -atmproj_sh
 
 
 
@@ -388,30 +407,50 @@ END SUBROUTINE atmproj_tools_init
            IF ( TRIM(spin_component) == "down" .AND. isp == 1 ) CYCLE
            IF ( TRIM(spin_component) == "dw"   .AND. isp == 1 ) CYCLE
 
+           ALLOCATE( ztmp(natomwfc,nbnd), STAT=ierr)
+           IF ( ierr/=0 ) CALL errore(subname,'allocating ztmp', ABS(ierr) )
+
            !
            ! build kham
            !
+           kpt_loop:&
            DO ik = 1, nkpts
                !
-               DO j = 1, dimwann
-               DO i = 1, dimwann
+               kham(:,:,ik) = ZERO
+               !
+               ztmp(:,:) = CONJG( TRANSPOSE( proj(:,:,ik,isp) ) )
+               !
+               ibnd_loop:&
+               DO ib = 1, proj_nbnd_
+
                    !
-                   kham(i,j,ik) = ZERO
+                   ! filtering
                    !
-                   DO ib = 1, nbnd
+                   IF ( proj_thr_ > 0.0d0 ) THEN
+                       !
+                       proj_wgt = DOT_PRODUCT( ztmp(:,ib), ztmp(:,ib) )
+                       IF ( proj_wgt < proj_thr_ ) CYCLE ibnd_loop
+                       !
+                   ENDIF
+                   !
+                   !
+                   DO j = 1, dimwann
+                   DO i = 1, dimwann
                        !
                        kham(i,j,ik) = kham(i,j,ik) + &
-                                                ( proj(ib,i,ik,isp) ) * eig(ib,ik,isp) * &
-                                           CONJG( proj(ib,j,ik,isp) )
+                                                ( ztmp(i,ib) ) * eig(ib,ik,isp) * CONJG( ztmp(j,ib) )
                        !
                    ENDDO
+                   ENDDO
                    !
-               ENDDO
-               ENDDO
-               !
+               ENDDO ibnd_loop
+               ENDDO kpt_loop
                !
                IF ( .NOT. mat_is_herm( dimwann, kham(:,:,ik), TOLL=EPS_m8 ) ) &
                    CALL errore(subname,'kham not hermitian',10)
+               !
+               DEALLOCATE( ztmp, STAT=ierr)
+               IF ( ierr/=0 ) CALL errore(subname,'deallocating ztmp', ABS(ierr) )
 
 
                !

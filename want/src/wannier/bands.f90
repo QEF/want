@@ -38,7 +38,9 @@
    INTEGER            :: ircut(3)       ! real space curoff in terms of unit cells
                                         ! for directions i=1,2,3  (0 means no cutoff)
    CHARACTER(nstrx)   :: fileout        ! output filename
-   REAL(dbl)          :: eshift         ! energy shift when computing the proj Hamiltonian
+   REAL(dbl)          :: atmproj_sh     ! shifthing: energy shift when computing the proj Hamiltonian
+   REAL(dbl)          :: atmproj_thr    ! filtering: thr on projections 
+   INTEGER            :: atmproj_nbnd   ! filtering: # of bands
    LOGICAL            :: do_orthoovp
    CHARACTER(nstrx)   :: spin_component
 
@@ -47,7 +49,7 @@
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
                     fileout, nkpts_in, nkpts_max, ircut, debug_level, verbosity, &
-                    do_orthoovp, eshift, spin_component
+                    do_orthoovp, atmproj_sh, atmproj_thr, atmproj_nbnd, spin_component
    !
    ! end of declariations
    !   
@@ -103,7 +105,10 @@ CONTAINS
    !
    USE mp,                   ONLY : mp_bcast
    USE io_module,            ONLY : io_init, ionode, ionode_id
-   USE atmproj_tools_module, ONLY : eshift_ => eshift, spin_component_atmproj => spin_component
+   USE atmproj_tools_module, ONLY : atmproj_sh_ => atmproj_sh, &
+                                    atmproj_thr_ => atmproj_thr, &
+                                    atmproj_nbnd_ => atmproj_nbnd, &
+                                    spin_component_atmproj => spin_component
    !
    IMPLICIT NONE
 
@@ -130,7 +135,9 @@ CONTAINS
       debug_level                 = 0
       verbosity                   = 'medium'
       do_orthoovp                 = .FALSE.
-      eshift                      = 10.0
+      atmproj_sh                  = 10.0d0
+      atmproj_thr                 = 0.9d0
+      atmproj_nbnd                = 0
       spin_component              = 'all'
       
       
@@ -156,7 +163,9 @@ CONTAINS
       CALL mp_bcast( debug_level,     ionode_id )
       CALL mp_bcast( verbosity,       ionode_id )
       CALL mp_bcast( do_orthoovp,     ionode_id )
-      CALL mp_bcast( eshift,          ionode_id )
+      CALL mp_bcast( atmproj_sh,      ionode_id )
+      CALL mp_bcast( atmproj_thr,     ionode_id )
+      CALL mp_bcast( atmproj_nbnd,    ionode_id )
       CALL mp_bcast( spin_component,  ionode_id )
 
       !
@@ -175,9 +184,11 @@ CONTAINS
 
       !
       ! in case we need this
-      ! pass eshift to atmproj_tools_module
+      ! pass atmproj_ vars to atmproj_tools_module
       !
-      eshift_ = eshift
+      atmproj_sh_ = atmproj_sh
+      atmproj_thr_ = atmproj_thr
+      atmproj_nbnd_ = atmproj_nbnd
 
 
       !
@@ -187,6 +198,10 @@ CONTAINS
       IF ( nkpts_in <= 0 )        CALL errore(subname, 'Invalid nkpts_in', ABS(nkpts_in)+1)
       IF ( nkpts_max <= 0 )       CALL errore(subname, 'Invalid nkpts_max', ABS(nkpts_max)+1)
       IF ( ANY( ircut(:) < 0 ) )  CALL errore(subname, 'Invalid ircut', 10)
+      !
+      IF ( atmproj_thr > 1.0d0 .OR. atmproj_thr < 0.0d0) &
+                                  CALL errore(subname, 'invalid atmproj_thr', 10 )
+      IF ( atmproj_nbnd < 0)      CALL errore(subname, 'invalid atmproj_nbnd', 10 )
       !
       CALL change_case(spin_component,'lower')
       spin_component_atmproj = spin_component
@@ -217,7 +232,9 @@ CONTAINS
           IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
               WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
               WRITE( stdout,"(7x,'       use ortho basis :',5x,   a)") TRIM( log2char(do_orthoovp) )
-              WRITE( stdout,"(7x,'          energy shift :',5x,  f12.6)") eshift
+              WRITE( stdout,"(7x,'         atmproj shift :',5x,  f12.6)") atmproj_sh
+              WRITE( stdout,"(7x,'          atmproj nbnd :',5x,   i5)") atmproj_nbnd
+              WRITE( stdout,"(7x,'           atmproj thr :',5x,  f12.6)") atmproj_thr
           ENDIF
           !
           WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )
