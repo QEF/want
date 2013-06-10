@@ -4,6 +4,9 @@
 =======================================================
 
 
+10 Jun 2013     atmproj module updated according to the filtering+shifting 
+		algorithm (courtesy of Luis Agapito). (AF)
+
 07 May 2013     parser_replica routine updated allowing for skip symbol x.
 		Transport read_matrix routine updated accordingly. (AF)
 
