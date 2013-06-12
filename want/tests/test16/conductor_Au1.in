@@ -1,6 +1,6 @@
 
   &INPUT_CONDUCTOR
-    postfix='_PROJ_Au1'
+    postfix='_Au1_PROJ'
     work_dir = './SCRATCH'
     dimC = 9
     calculation_type = 'bulk'

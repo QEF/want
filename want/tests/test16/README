@@ -1,0 +1,15 @@
+
+==============================================================================
+@title@   CP2K and ATMPROJ Hamiltonians
+==============================================================================
+
+  DESCRIPTION:
+
+  This test shows how to use CP2K and ATMPROJ Hamiltonians to interpolate
+  the electronic structure of few selected systems. Bands, dos, and transmittance
+  are computed and compared with direct calculations.
+
+  RESULTS discussion:
+
+
+
