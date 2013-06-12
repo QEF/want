@@ -16,6 +16,7 @@
    USE parameters,         ONLY : nstrx
    USE timing_module,      ONLY : timing
    USE log_module,         ONLY : log_push, log_pop
+   USE io_global_module,   ONLY : stdout
    USE converters_module,  ONLY : cart2cry, cry2cart
    USE parser_module,      ONLY : change_case
    USE util_module,        ONLY : mat_is_herm
@@ -114,7 +115,7 @@ END SUBROUTINE atmproj_tools_init
 
 
 !**********************************************************
-   SUBROUTINE atmproj_to_internal( filein, fileout, filetype, do_orthoovp, proj_thr, proj_nbnd )
+   SUBROUTINE atmproj_to_internal( filein, fileout, filetype, do_orthoovp )
    !**********************************************************
    !
    ! Convert the datafile written by the projwfc program (QE suite) to
@@ -137,8 +138,6 @@ END SUBROUTINE atmproj_tools_init
    CHARACTER(*), INTENT(IN) :: fileout
    CHARACTER(*), INTENT(IN) :: filetype
    LOGICAL,   OPTIONAL, INTENT(IN) :: do_orthoovp
-   REAL(dbl), OPTIONAL, INTENT(IN) :: proj_thr
-   INTEGER,   OPTIONAL, INTENT(IN) :: proj_nbnd
    
    !
    ! local variables
@@ -146,8 +145,7 @@ END SUBROUTINE atmproj_tools_init
    CHARACTER(19)     :: subname="atmproj_to_internal"
    INTEGER           :: iunit, ounit
    LOGICAL           :: do_orthoovp_
-   REAL(dbl)         :: proj_thr_
-   INTEGER           :: proj_nbnd_
+   INTEGER           :: atmproj_nbnd_
    !
    CHARACTER(nstrx)  :: attr, energy_units
    CHARACTER(nstrx)  :: filetype_
@@ -222,11 +220,7 @@ END SUBROUTINE atmproj_tools_init
    !
    do_orthoovp_ = .FALSE.
    IF ( PRESENT( do_orthoovp ) ) do_orthoovp_ = do_orthoovp
-   !
-   ! filtering (off by default at the moment)
-   !
-   proj_thr_ = 0.0d0
-   IF ( PRESENT( proj_thr) )  proj_thr_ = proj_thr
+   
 
 !
 !---------------------------------
@@ -269,8 +263,17 @@ END SUBROUTINE atmproj_tools_init
 
    dimwann = natomwfc
    !
-   proj_nbnd_ = nbnd
-   IF ( PRESENT( proj_nbnd ) )   proj_nbnd_ = proj_nbnd
+   atmproj_nbnd_ = nbnd
+   IF ( atmproj_nbnd > 0 ) atmproj_nbnd_ = atmproj_nbnd
+
+   !
+   ! quick report
+   !
+   WRITE( stdout, "(2x, ' ATMPROJ conversion to be done using: ')")
+   WRITE( stdout, "(2x, '   atmproj_nbnd :  ',i5 )") atmproj_nbnd_
+   WRITE( stdout, "(2x, '   atmproj_thr  :  ',f12.6 )") atmproj_thr
+   WRITE( stdout, "(2x, '   atmproj_sh   :  ',f12.6 )") atmproj_sh
+   WRITE( stdout, "()" )
 
    !
    ! allocations
@@ -422,15 +425,15 @@ END SUBROUTINE atmproj_tools_init
                ztmp(:,:) = CONJG( TRANSPOSE( proj(:,:,ik,isp) ) )
                !
                ibnd_loop:&
-               DO ib = 1, proj_nbnd_
+               DO ib = 1, atmproj_nbnd_
 
                    !
                    ! filtering
                    !
-                   IF ( proj_thr_ > 0.0d0 ) THEN
+                   IF ( atmproj_thr > 0.0d0 ) THEN
                        !
                        proj_wgt = DOT_PRODUCT( ztmp(:,ib), ztmp(:,ib) )
-                       IF ( proj_wgt < proj_thr_ ) CYCLE ibnd_loop
+                       IF ( proj_wgt < atmproj_thr ) CYCLE ibnd_loop
                        !
                    ENDIF
                    !
@@ -439,7 +442,7 @@ END SUBROUTINE atmproj_tools_init
                    DO i = 1, dimwann
                        !
                        kham(i,j,ik) = kham(i,j,ik) + &
-                                                ( ztmp(i,ib) ) * eig(ib,ik,isp) * CONJG( ztmp(j,ib) )
+                                                CONJG( ztmp(i,ib) ) * eig(ib,ik,isp) * ( ztmp(j,ib) )
                        !
                    ENDDO
                    ENDDO

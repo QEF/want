@@ -219,8 +219,6 @@ CONTAINS
           WRITE( stdout, "(   7x,'               postfix :',5x,   a)") TRIM(postfix)
           WRITE( stdout, "(   7x,'        spin component :',5x,   a)") TRIM(spin_component)
           !
-          IF ( LEN_TRIM( datafile_dft ) /= 0 ) &
-              WRITE( stdout,"(7x,'          datafile_dft :',5x,   a)") TRIM(datafile_dft)
           WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
           WRITE( stdout, "(   7x,'             nkpts_in  :',3x,3i4 )") nkpts_in
           WRITE( stdout, "(   7x,'             nkpts_max :',3x,3i4 )") nkpts_max
@@ -230,7 +228,7 @@ CONTAINS
           ENDIF
           !
           IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
-              WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
+              WRITE( stdout,"(7x,'          datafile DFT :',5x,   a)") TRIM( datafile_dft )
               WRITE( stdout,"(7x,'       use ortho basis :',5x,   a)") TRIM( log2char(do_orthoovp) )
               WRITE( stdout,"(7x,'         atmproj shift :',5x,  f12.6)") atmproj_sh
               WRITE( stdout,"(7x,'          atmproj nbnd :',5x,   i5)") atmproj_nbnd
