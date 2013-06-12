@@ -101,7 +101,7 @@ NBROYDEN 8
       ABC [angstrom] 10 10 20
     &END CELL
     &TOPOLOGY
-     COORD_FILE_NAME ./coords.xyz                                                
+     COORD_FILE_NAME ./coords_Au8_cp2k.xyz                                                
      COORDINATE xyz  
     &END 
     &KIND Au
