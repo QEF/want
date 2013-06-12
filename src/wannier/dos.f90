@@ -54,6 +54,8 @@
    INTEGER          :: atmproj_nbnd  ! filtering: # of bands
    LOGICAL          :: do_orthoovp
    CHARACTER(nstrx) :: spin_component
+   !
+   LOGICAL          :: do_fermisurf  ! whether to dump files to plot the fermi surface
 
 
    !
@@ -63,7 +65,7 @@
                     nk, s, delta, smearing_type, fileout, debug_level,     &
                     emin, emax, ne, ircut, projdos, nprint, verbosity,     &
                     shift, scale, do_orthoovp, atmproj_sh, atmproj_thr,    &
-                    atmproj_nbnd, spin_component
+                    atmproj_nbnd, spin_component, do_fermisurf
    !
    ! end of declariations
    !   
@@ -98,7 +100,7 @@
       ! do the main task
       !
       CALL do_dos( fileout, nk, s, delta, smearing_type, emin, emax, ne, &
-                   shift, scale, ircut, projdos, nprint, verbosity )
+                   shift, scale, ircut, projdos, do_fermisurf, nprint, verbosity )
       !
       ! clean global memory
       !
@@ -163,6 +165,7 @@ CONTAINS
       atmproj_thr                 = 0.9d0
       atmproj_nbnd                = 0
       spin_component              = 'all'
+      do_fermisurf                = .FALSE.
        
       
       CALL input_from_file ( stdin )
@@ -200,6 +203,7 @@ CONTAINS
       CALL mp_bcast( atmproj_thr,     ionode_id )
       CALL mp_bcast( atmproj_nbnd,    ionode_id )      
       CALL mp_bcast( spin_component,  ionode_id )
+      CALL mp_bcast( do_fermisurf,    ionode_id )
 
       !
       ! Init
@@ -278,6 +282,7 @@ CONTAINS
           ENDIF
           !
           WRITE( stdout, "(   7x,'       compute projdos :',5x,   a)") TRIM( log2char( projdos ) )
+          WRITE( stdout, "(   7x,'    compute fermi surf :',5x,   a)") TRIM( log2char( do_fermisurf ) )
           !
           IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
               WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
@@ -303,7 +308,7 @@ END PROGRAM dos_main
 
 !********************************************************
    SUBROUTINE do_dos( fileout, nk, s, delta, smearing_type, emin, emax, ne, &
-                      shift, scale, ircut, projdos, nprint, verbosity )
+                      shift, scale, ircut, projdos, do_fermisurf, nprint, verbosity )
    !********************************************************
    !
    ! perform the main task of the calculation
@@ -328,7 +333,7 @@ END PROGRAM dos_main
    USE correlation_module,   ONLY : omg_grid, omg_nint
    USE timing_module,        ONLY : timing, timing_upto_now
    USE log_module,           ONLY : log_push, log_pop
-   USE parser_module,        ONLY : change_case
+   USE parser_module,        ONLY : change_case, int2char
    USE dyson_solver_module,  ONLY : dyson_solver
    USE operator_module
    !
@@ -346,6 +351,7 @@ END PROGRAM dos_main
       CHARACTER(*),  INTENT(IN)    :: smearing_type
       INTEGER,       INTENT(IN)    :: ircut(3)
       LOGICAL,       INTENT(IN)    :: projdos
+      LOGICAL,       INTENT(IN)    :: do_fermisurf
       INTEGER,       INTENT(IN)    :: nprint
       CHARACTER(*),  INTENT(IN)    :: verbosity
 
@@ -357,7 +363,7 @@ END PROGRAM dos_main
       INTEGER      :: nkpts_int     ! Number of interpolated k-points
       INTEGER      :: nrtot_nn
       LOGICAL      :: lhave_nn(3)
-      REAL(dbl)    :: arg, cost, raux
+      REAL(dbl)    :: arg, cost, raux, efermi
       COMPLEX(dbl) :: caux, ze
       !
       INTEGER,      ALLOCATABLE :: r_index(:)
@@ -370,12 +376,13 @@ END PROGRAM dos_main
       REAL(dbl),    ALLOCATABLE :: dos(:), dos0(:), pdos(:,:)
       REAL(dbl),    ALLOCATABLE :: vkpt_int(:,:), vkpt_int_cry(:,:), wk(:)
       REAL(dbl),    ALLOCATABLE :: eig_int(:,:)
+      REAL(dbl),    ALLOCATABLE :: eig_band(:,:,:), eig_coll(:,:)
       REAL(dbl),    ALLOCATABLE :: vr_cry(:,:), vr_nn(:,:), wr_nn(:), vr_sgm(:,:)
-      CHARACTER(nstrx)          :: filename, analyticity_sgm
+      CHARACTER(nstrx)          :: filename, analyticity_sgm, aux_fmt
       CHARACTER(4)              :: ctmp
       !
       INTEGER      :: iks, ike
-      INTEGER      :: i, j, ie, ik, ik_g, ir
+      INTEGER      :: i, j, k, ie, ik, ik_g, ir, ib
       INTEGER      :: ierr
       INTEGER      :: dimwann_sgm, nrtot_sgm
       !
@@ -481,7 +488,8 @@ END PROGRAM dos_main
       !
       ! furhter checks on non-implemented special cases
       !
-      IF ( ldynam_sgm .AND. projdos )   CALL errore(subname,'projdos and sigma NOT impl.', 10)
+      IF ( ldynam_sgm .AND. projdos )      CALL errore(subname,'projdos and dyn-sigma NOT impl.', 10)
+      IF ( ldynam_sgm .AND. do_fermisurf ) CALL errore(subname,'fermi surf and dyn-sigma NOT impl.', 10)
 
 
       !
@@ -1037,6 +1045,103 @@ END PROGRAM dos_main
               DEALLOCATE( zc, STAT=ierr )
               IF ( ierr/=0 ) CALL errore(subname, 'deallocating zc', ABS(ierr) )
           ENDIF
+          !
+      ENDIF
+
+ 
+      !
+      ! Fermi surface description
+      ! Dump files describing the shape of the bands in a fmt
+      ! consistent with isosurface plotting
+      !
+      IF ( do_fermisurf ) THEN
+          !
+          ! local workspace
+          !
+          ALLOCATE( vkpt_int_cry(3,nkpts_int), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname, 'allocating vkpt_int_cry', ABS(ierr) )
+          !
+          ALLOCATE( eig_coll(nkpts_int, dimwann), eig_band(nk(1),nk(2),nk(3)), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname, 'allocating eig_coll, eig_band', ABS(ierr) )
+          !
+          ! setting the kpt mesh
+          !
+          IF ( ANY( s(:) > 0.0 ) ) CALL errore(subname, "fermi surf and s>0 not implemented", 10 )
+          !
+          vkpt_int_cry = vkpt_int
+          CALL cart2cry( vkpt_int_cry, bvec)
+          !
+          vkpt_int_cry(:,:) = vkpt_int_cry(:,:) + 0.5d0
+
+          !
+          ! first we collect the interpolated eigenvalues
+          !
+          eig_coll = 0.0d0
+          !
+          DO ik_g = iks, ike
+              !
+              ik = ik_g -iks +1
+              !
+              DO ib = 1, dimwann
+                  eig_coll( ik_g, ib) = eig_int( ib, ik )
+              ENDDO
+              !
+          ENDDO
+          !
+          CALL mp_sum( eig_coll )
+
+          !
+          ! now search for the relevant bands
+          !
+          efermi = 0.0d0
+          !
+          DO ib = 1, dimwann
+              !
+              IF ( MINVAL( eig_coll(:,ib) ) <  efermi .AND. &
+                   MAXVAL( eig_coll(:,ib) ) >= efermi ) THEN
+                  ! 
+                  DO ik_g = 1, nkpts_int
+                      !
+                      i = 1+NINT( vkpt_int_cry(1,ik_g)*nk(1) ) 
+                      j = 1+NINT( vkpt_int_cry(2,ik_g)*nk(2) ) 
+                      k = 1+NINT( vkpt_int_cry(3,ik_g)*nk(3) ) 
+                      !
+                      eig_band(i,j,k) = eig_coll(ik_g,ib) 
+                      !
+                  ENDDO
+                  ! 
+                  IF ( ionode ) THEN
+                      !
+                      aux_fmt = ".xsf"
+                      !
+                      filename = TRIM(work_dir)//"/"//TRIM(prefix)//TRIM(postfix)// &
+                                 "_IBND"//TRIM( int2char(ib) ) //TRIM(aux_fmt)
+                      !
+                      WRITE( stdout,"(2x,'writing BAND(',i4,') plot on file: ',a)") &
+                      ib, TRIM(filename)
+                      !
+                      OPEN ( aux_unit, FILE=TRIM(filename), STATUS='unknown', IOSTAT=ierr )
+                      IF ( ierr/=0 ) CALL errore(subname,'opening file '//TRIM(filename),1)
+                      !
+                      CALL xsf_struct( bvec, 1, (/0.0d0, 0.0d0, 0.0d0/), (/'H '/), aux_unit )
+                      !
+                      CALL xsf_datagrid_3d ( eig_band(1:nk(1), 1:nk(2), 1:nk(3)),  &
+                                             nk(1), nk(2), nk(3), (/0.0d0, 0.0d0, 0.0d0/), &
+                                             bvec(:,1), bvec(:,2), bvec(:,3), aux_unit )                      
+                      !
+                      CLOSE( aux_unit )
+                      !
+                  ENDIF
+                  ! 
+              ENDIF
+              !
+          ENDDO
+
+          !
+          ! cleanup
+          !
+          DEALLOCATE( eig_coll, eig_band, STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname, 'deallocating eig_coll', ABS(ierr) )
           !
       ENDIF
 

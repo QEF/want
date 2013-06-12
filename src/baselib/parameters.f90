@@ -19,7 +19,7 @@ module parameters
        nstrx  = 600,       &! max lenght for strings
        ntypx  = 10,        &! max number of different types of atom
        npsx   = ntypx,     &! obsolete, for PWscf compatibility
-       npkx   = 10000,     &! max number of k-points               
+       npkx   = 100000,    &! max number of k-points               
        npwx   = 100000000, &! max number of density G vectors
        nshx   = 200,       &! max number of nearest neighb. k-point shells
        lmaxx  = 3,         &! max non local angular momentum       
@@ -38,7 +38,7 @@ module parameters
        nnhx = 6             ! halp the previous value
 
   INTEGER, PARAMETER :: natx  = 600     ! maximum number of atoms
-  INTEGER, PARAMETER :: nbndxx = 1000   ! maximum number of electronic states
+  INTEGER, PARAMETER :: nbndxx = 10000  ! maximum number of electronic states
   INTEGER, PARAMETER :: nspinx = 2      ! maximum number of spinors
   !
 end module parameters
