@@ -1,0 +1,22 @@
+
+ &INPUT
+   prefix         = 'gold1'
+   postfix        = '_WanT'
+   work_dir       = './SCRATCH'
+   datafile_dft   = './SCRATCH/gold1.save/atomic_proj.xml'
+   fileout        = './dos_Au1_PROJ.dat'
+   do_orthoovp    = .FALSE.
+   atmproj_sh     = 10.0
+   atmproj_thr    = 0.0
+   nk(1) = 1
+   nk(2) = 1
+   nk(3) = 200
+   delta = 0.05
+   emin  = -20.0
+   emax  =  5.0
+   ne    = 1200
+   smearing_type = 'gaussian'
+   projdos = .FALSE.
+ /
+
+
