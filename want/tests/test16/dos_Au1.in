@@ -10,7 +10,7 @@
    atmproj_thr    = 0.0
    nk(1) = 1
    nk(2) = 1
-   nk(3) = 200
+   nk(3) = 400
    delta = 0.05
    emin  = -20.0
    emax  =  5.0
