@@ -235,8 +235,8 @@ END SUBROUTINE atmproj_tools_init
    CALL qexml_openfile( file_data, "read", IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname,"opening "//TRIM(file_data), ABS(ierr) )
    ! 
-   CALL qexml_read_cell( A1=avec(:,1), A2=avec(:,2), A3=avec(:,3), &
-                         B1=bvec(:,1), B2=bvec(:,2), B3=bvec(:,3), IERR=ierr )
+   CALL qexml_read_cell( ALAT=alat, A1=avec(:,1), A2=avec(:,2), A3=avec(:,3), &
+                                    B1=bvec(:,1), B2=bvec(:,2), B3=bvec(:,3), IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname,"reading avec, bvec", ABS(ierr) )
    !
    CALL qexml_closefile( "read", IERR=ierr )
@@ -245,9 +245,6 @@ END SUBROUTINE atmproj_tools_init
    !
    ! bvec is in 2pi/a units
    ! convert it to bohr^-1
-   !
-   alat = DOT_PRODUCT( avec(:,1), avec(:,1) )
-   alat = SQRT(alat)
    !
    bvec = bvec * TPI / alat
 
@@ -286,7 +283,7 @@ END SUBROUTINE atmproj_tools_init
    ALLOCATE( eig(nbnd,nkpts,nspin), STAT=ierr )
    IF (ierr/=0) CALL errore(subname, 'allocating eig', ABS(ierr))
    !
-   ALLOCATE( proj(nbnd,natomwfc,nkpts,nspin), STAT=ierr )
+   ALLOCATE( proj(natomwfc,nbnd,nkpts,nspin), STAT=ierr )
    IF (ierr/=0) CALL errore(subname, 'allocating proj', ABS(ierr))
 
    !
@@ -304,7 +301,7 @@ END SUBROUTINE atmproj_tools_init
        ALLOCATE( kovp(natomwfc,natomwfc,nkpts,nspin), STAT=ierr )
        IF (ierr/=0) CALL errore(subname, 'allocating kovp II', ABS(ierr))
        !
-       ! reading < beta_i | evc_n >
+       ! reading  proj(i,b)  = < phi^at_i | evc_b >
        !
        CALL atmproj_read_ext( filein, VKPT=vkpt, WK=wk, EIG=eig, PROJ=proj, KOVP=kovp, IERR=ierr )
        !
@@ -422,7 +419,9 @@ END SUBROUTINE atmproj_tools_init
                ALLOCATE( ztmp(natomwfc,nbnd), STAT=ierr)
                IF ( ierr/=0 ) CALL errore(subname,'allocating ztmp', ABS(ierr) )
                !
-               ztmp(:,:) = CONJG( TRANSPOSE( proj(:,:,ik,isp) ) )
+               ! ztmp(i, b) = < phi^at_i | evc_b >
+               !
+               ztmp(1:natomwfc,1:nbnd) = proj(1:natomwfc,1:nbnd,ik,isp) 
                !
                ibnd_loop:&
                DO ib = 1, atmproj_nbnd_
@@ -442,7 +441,7 @@ END SUBROUTINE atmproj_tools_init
                    DO i = 1, dimwann
                        !
                        kham(i,j,ik) = kham(i,j,ik) + &
-                                                CONJG( ztmp(i,ib) ) * eig(ib,ik,isp) * ( ztmp(j,ib) )
+                                                ( ztmp(i,ib) ) * eig(ib,ik,isp) * CONJG( ztmp(j,ib) )
                        !
                    ENDDO
                    ENDDO
@@ -693,7 +692,7 @@ END SUBROUTINE atmproj_tools_init
            DO ik = 1, nkpts
                !
                CALL iotk_write_dat( ounit, "EAMP"//TRIM(iotk_index(ik)), &
-                                    proj(1:nbnd,1:dimwann,ik,isp) ) 
+                                    CONJG(TRANSPOSE(proj(1:dimwann,1:nbnd,ik,isp) )) )
                !
            ENDDO
            !
@@ -865,6 +864,8 @@ SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
    INTEGER           :: nbnd_, nkpt_, nspin_, natomwfc_ 
    REAL(dbl)         :: nelec_, efermi_
    CHARACTER(20)     :: energy_units_
+   !
+   COMPLEX(dbl), ALLOCATABLE :: ztmp(:,:)
 
 
    CALL iotk_free_unit( iunit )
@@ -968,6 +969,8 @@ SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
    ! 
    IF ( PRESENT( proj ) ) THEN
        !
+       ALLOCATE( ztmp(nbnd_, natomwfc_) )
+       !
        CALL iotk_scan_begin( iunit, "PROJECTIONS", IERR=ierr )
        IF ( ierr/=0 ) RETURN
        !
@@ -981,26 +984,29 @@ SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
            DO isp = 1, nspin_
                !
                IF ( nspin_ == 2 ) THEN
-                  !
-                  CALL iotk_scan_begin( iunit, "SPIN"//TRIM(iotk_index(isp)), IERR=ierr )
-                  IF ( ierr/=0 ) RETURN
-                  !
+                   !
+                   CALL iotk_scan_begin( iunit, "SPIN"//TRIM(iotk_index(isp)), IERR=ierr )
+                   IF ( ierr/=0 ) RETURN
+                   !
                ENDIF
                !
                DO ias = 1, natomwfc_
-                  !
-                  str= "ATMWFC"//TRIM( iotk_index( ias ) )
-                  !
-                  CALL iotk_scan_dat(iunit, TRIM(str) , proj( :, ias, ik, isp ), IERR=ierr)
-                  IF ( ierr /= 0 ) RETURN
-                  !
+                   !
+                   str= "ATMWFC"//TRIM( iotk_index( ias ) )
+                   !
+                   CALL iotk_scan_dat(iunit, TRIM(str) , ztmp( :, ias ), IERR=ierr)
+                   IF ( ierr /= 0 ) RETURN
+                   !
                ENDDO
                !
+               proj( 1:natomwfc_, 1:nbnd_, ik, isp ) = TRANSPOSE( ztmp(1:nbnd_,1:natomwfc_) ) 
+               !
+               !
                IF ( nspin_ == 2 ) THEN
-                  !
-                  CALL iotk_scan_end( iunit, "SPIN"//TRIM(iotk_index(isp)), IERR=ierr )
-                  IF ( ierr/=0 ) RETURN
-                  !
+                   !
+                   CALL iotk_scan_end( iunit, "SPIN"//TRIM(iotk_index(isp)), IERR=ierr )
+                   IF ( ierr/=0 ) RETURN
+                   !
                ENDIF
                !
            ENDDO
@@ -1009,8 +1015,10 @@ SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
            CALL iotk_scan_end( iunit, "K-POINT"//TRIM(iotk_index(ik)), IERR=ierr )
            IF ( ierr/=0 ) RETURN
            !
+           !
        ENDDO
        !
+       DEALLOCATE( ztmp )
        !
        CALL iotk_scan_end( iunit, "PROJECTIONS", IERR=ierr )
        IF ( ierr/=0 ) RETURN
