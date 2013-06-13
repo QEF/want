@@ -363,7 +363,7 @@ END PROGRAM dos_main
       INTEGER      :: nkpts_int     ! Number of interpolated k-points
       INTEGER      :: nrtot_nn
       LOGICAL      :: lhave_nn(3)
-      REAL(dbl)    :: arg, cost, raux, efermi
+      REAL(dbl)    :: arg, cost, raux, efermi, x0(3)
       COMPLEX(dbl) :: caux, ze
       !
       INTEGER,      ALLOCATABLE :: r_index(:)
@@ -1061,7 +1061,7 @@ END PROGRAM dos_main
           ALLOCATE( vkpt_int_cry(3,nkpts_int), STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname, 'allocating vkpt_int_cry', ABS(ierr) )
           !
-          ALLOCATE( eig_coll(nkpts_int, dimwann), eig_band(nk(1),nk(2),nk(3)), STAT=ierr )
+          ALLOCATE( eig_coll(nkpts_int, dimwann), eig_band( nk(1)+1, nk(2)+1, nk(3)+1), STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname, 'allocating eig_coll, eig_band', ABS(ierr) )
           !
           ! setting the kpt mesh
@@ -1100,6 +1100,8 @@ END PROGRAM dos_main
               IF ( MINVAL( eig_coll(:,ib) ) <  efermi .AND. &
                    MAXVAL( eig_coll(:,ib) ) >= efermi ) THEN
                   ! 
+                  eig_band(:,:,:) = -10.0 
+                  !
                   DO ik_g = 1, nkpts_int
                       !
                       i = 1+NINT( vkpt_int_cry(1,ik_g)*nk(1) ) 
@@ -1109,6 +1111,11 @@ END PROGRAM dos_main
                       eig_band(i,j,k) = eig_coll(ik_g,ib) 
                       !
                   ENDDO
+                  !
+                  eig_band(nk(1)+1,:,:) = eig_band(1,:,:) 
+                  eig_band(:,nk(2)+1,:) = eig_band(:,1,:) 
+                  eig_band(:,:,nk(3)+1) = eig_band(:,:,1)
+                  
                   ! 
                   IF ( ionode ) THEN
                       !
@@ -1123,10 +1130,12 @@ END PROGRAM dos_main
                       OPEN ( aux_unit, FILE=TRIM(filename), STATUS='unknown', IOSTAT=ierr )
                       IF ( ierr/=0 ) CALL errore(subname,'opening file '//TRIM(filename),1)
                       !
-                      CALL xsf_struct( bvec, 1, (/0.0d0, 0.0d0, 0.0d0/), (/'H '/), aux_unit )
+                      CALL xsf_struct( bvec, 1, (/0.0d0, 0.0d0, 0.0d0/), (/'H  '/), aux_unit )
                       !
-                      CALL xsf_datagrid_3d ( eig_band(1:nk(1), 1:nk(2), 1:nk(3)),  &
-                                             nk(1), nk(2), nk(3), (/0.0d0, 0.0d0, 0.0d0/), &
+                      x0 = -0.5d0 * ( bvec(:,1) + bvec(:,2) + bvec(:,3) )
+                      !
+                      CALL xsf_datagrid_3d ( eig_band( 1:nk(1)+1, 1:nk(2)+1, 1:nk(3)+1 ),  &
+                                             nk(1)+1, nk(2)+1, nk(3)+1, x0, &
                                              bvec(:,1), bvec(:,2), bvec(:,3), aux_unit )                      
                       !
                       CLOSE( aux_unit )
