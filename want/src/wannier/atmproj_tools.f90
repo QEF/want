@@ -456,20 +456,6 @@ END SUBROUTINE atmproj_tools_init
 
 
                !
-               ! fermi energy is taken into accout
-               ! The energy shift is performed on the final matrix
-               ! and not on the DFT eigenvalues            
-               ! as     eig(:,:,:) = eig(:,:,:) -efermi
-               ! because the atomic basis is typically very large 
-               ! and would require a lot of bands to be described
-               !
-               DO i = 1, dimwann
-                   !
-                   kham(i,i,ik) = kham(i,i,ik) -efermi
-                   !
-               ENDDO
-
-               !
                ! overlaps
                ! projections are read orthogonals, if non-orthogonality
                ! is required, we multiply by S^1/2
@@ -517,8 +503,33 @@ END SUBROUTINE atmproj_tools_init
                    IF ( ierr/=0 ) CALL errore(subname,'deallocating w, kovp_sq',ABS(ierr))
                    !
                ENDIF
+               
+               !
+               ! fermi energy is taken into accout
+               ! The energy shift is performed on the final matrix
+               ! and not on the DFT eigenvalues            
+               ! as     eig(:,:,:) = eig(:,:,:) -efermi
+               ! because the atomic basis is typically very large 
+               ! and would require a lot of bands to be described
+               !
+               IF ( .NOT. do_orthoovp_ ) THEN
+                   !
+                   DO j = 1, dimwann
+                   DO i = 1, dimwann
+                       kham(i,j,ik) = kham(i,j,ik) -efermi * kovp(i,j,ik,isp)
+                   ENDDO
+                   ENDDO
+                   !
+               ELSE
+                   !
+                   DO i = 1, dimwann
+                       kham(i,i,ik) = kham(i,i,ik) -efermi
+                   ENDDO
+                   !
+               ENDIF
                !
            ENDDO kpt_loop
+
 
            ! 
            ! convert to real space
