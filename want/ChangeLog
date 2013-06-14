@@ -4,6 +4,8 @@
 =======================================================
 
 
+15 Jun 2013     Plotting of the fermi surface upon wannier interpolation added. (AF)
+
 13 Jun 2013     Nasty bug fixed in atmproj module (showing when alat != |a1| ). (AF)
 
 10 Jun 2013     atmproj module updated according to the filtering+shifting 
