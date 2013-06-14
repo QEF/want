@@ -206,3 +206,61 @@ SUBROUTINE xsf_datagrid_3d (rho, nx, ny, nz, x0, e1, e2, e3, ounit)
   write(ounit,'(a)') 'END_BLOCK_DATAGRID_3D'
   return
 END SUBROUTINE xsf_datagrid_3d
+
+SUBROUTINE xsf_bandgrid_3d (bands, nx, ny, nz, nbnd, ind, efermi, x0, e1, e2, e3, ounit)
+  !
+  ! x0, e1, e2, e3 in bohr
+  ! but here inside converted to Ang
+  !
+  USE kinds,     ONLY : dbl
+  IMPLICIT NONE
+  !
+  integer       :: nx, ny, nz, nbnd, ounit
+  integer       :: ind(nbnd)
+  real(kind=dbl):: efermi
+  real(kind=dbl):: x0(3), e1(3),e2(3),e3(3), bands(nx, ny, nz, nbnd)
+  ! --
+  integer       :: ix, iy, iz, count, i, ind_x(10), ind_y(10), ind_z(10)
+  integer       :: ib
+
+  ! INFO
+  write(ounit,'(/,a)') 'BEGIN_INFO'
+  write(ounit,'(a,f15.9)') '  Fermi Energy: ', efermi
+  write(ounit,'(a,/)') 'END_INFO'
+  
+  ! BXSF scalar-field header
+  write(ounit,'(a)') 'BEGIN_BLOCK_BANDGRID_3D'
+  write(ounit,'(a)') 'band_energies'
+  write(ounit,'(a)') 'BANDGRID_3D_BANDS'
+
+  ! number of points in each direction
+  write(ounit,*) nbnd
+  write(ounit,*) nx, ny, nz
+  ! origin (should be zero, if I understan correctly)
+  write(ounit,'(2x,3f10.6)') x0(:)
+  ! 1st spanning (=lattice) vector
+  write(ounit,'(2x,3f10.6)') e1(:)
+  ! 2nd spanning (=lattice) vector
+  write(ounit,'(2x,3f10.6)') e2(:)
+  ! 3rd spanning (=lattice) vector
+  write(ounit,'(2x,3f10.6)') e3(:)
+
+  do ib = 1, nbnd
+      !
+      write(ounit,'(2x,a,i5)') "BAND: ", ind(ib)
+      do ix=1,nx
+      do iy=1,ny
+          !
+          write(ounit,'(4x,6f15.9)') bands(ix,iy,:,ib)
+          !
+      enddo
+      enddo
+      !
+  enddo
+  !
+  write(ounit,'(a)') 'END_BANDGRID_3D'
+  write(ounit,'(a)') 'END_BLOCK_BANDGRID_3D'
+  !
+  return
+END SUBROUTINE xsf_bandgrid_3d
+
