@@ -1127,21 +1127,6 @@ END PROGRAM dos_main
                       j = 1+NINT( vkpt_int_cry(2,ik_g)*nk(2) ) 
                       k = 1+NINT( vkpt_int_cry(3,ik_g)*nk(3) ) 
                       !
-                      !i = NINT( vkpt_int_cry(1,ik_g)*nk(1) )
-                      !j = NINT( vkpt_int_cry(2,ik_g)*nk(2) )
-                      !k = NINT( vkpt_int_cry(3,ik_g)*nk(3) )
-                      !!
-                      !IF ( i < 0 ) i = i+nk(1)
-                      !IF ( j < 0 ) j = j+nk(2)
-                      !IF ( k < 0 ) k = k+nk(3)
-                      !!
-                      !i = i+1
-                      !j = j+1
-                      !k = k+1
-                      !
-! XXX
-WRITE(2,"(a,3i4,2x,i5)") "ijk, ig", i,j,k, ik_g
-                      !
                       eig_band(i,j,k,icount) = eig_coll(ik_g,ib) 
                       !
                   ENDDO
@@ -1149,41 +1134,32 @@ WRITE(2,"(a,3i4,2x,i5)") "ijk, ig", i,j,k, ik_g
                   eig_band(nk(1)+1,:,:,icount) = eig_band(1,:,:,icount) 
                   eig_band(:,nk(2)+1,:,icount) = eig_band(:,1,:,icount) 
                   eig_band(:,:,nk(3)+1,icount) = eig_band(:,:,1,icount)
-                  
-                  ! 
-                  IF ( ionode ) THEN
-                      !
-                      aux_fmt = ".bxsf"
-                      !
-                      filename = TRIM(work_dir)//"/"//TRIM(prefix)//TRIM(postfix)// &
-                                 "_IBND"//TRIM( int2char(ib) ) //TRIM(aux_fmt)
-                      !
-                      WRITE( stdout,"(2x,'writing BAND(',i4,') plot on file: ',a)") &
-                      ib, TRIM(filename)
-                      !
-                      OPEN ( aux_unit, FILE=TRIM(filename), STATUS='unknown', IOSTAT=ierr )
-                      IF ( ierr/=0 ) CALL errore(subname,'opening file '//TRIM(filename),1)
-                      !
-                      !CALL xsf_struct( bvec, 1, (/0.0d0, 0.0d0, 0.0d0/), (/'H  '/), aux_unit )
-                      !!
-                      !x0 = -0.5d0 * ( bvec(:,1) + bvec(:,2) + bvec(:,3) )
-                      !
-                      !CALL xsf_datagrid_3d ( eig_band( 1:nk(1)+1, 1:nk(2)+1, 1:nk(3)+1 ),  &
-                      !                       nk(1)+1, nk(2)+1, nk(3)+1, x0, &
-                      !                       bvec(:,1), bvec(:,2), bvec(:,3), aux_unit )                      
-                      !
-                      x0(1:3) = 0.0d0
-                      !
-                      CALL xsf_bandgrid_3d ( eig_band, nk(1)+1, nk(2)+1, nk(3)+1, icount, ind_plot, &
-                                             efermi, x0, bvec(:,1), bvec(:,2), bvec(:,3), aux_unit )                      
-                      !
-                      CLOSE( aux_unit )
-                      !
-                  ENDIF
                   ! 
               ENDIF
               !
           ENDDO
+          !
+          IF ( ionode ) THEN
+              !
+              aux_fmt = ".bxsf"
+              !
+              filename = TRIM(work_dir)//"/"//TRIM(prefix)//TRIM(postfix)// &
+                         "_FERMISURF"//TRIM(aux_fmt)
+              !
+              WRITE( stdout,"(2x,'writing FERMI-SURF plot on file: ',a)") &
+              TRIM(filename)
+              !
+              OPEN ( aux_unit, FILE=TRIM(filename), STATUS='unknown', IOSTAT=ierr )
+              IF ( ierr/=0 ) CALL errore(subname,'opening file '//TRIM(filename),1)
+              !
+              x0(1:3) = 0.0d0
+              !
+              CALL xsf_bandgrid_3d ( eig_band, nk(1)+1, nk(2)+1, nk(3)+1, icount, ind_plot, &
+                                     efermi, x0, bvec(:,1), bvec(:,2), bvec(:,3), aux_unit )                      
+              !
+              CLOSE( aux_unit )
+              !
+          ENDIF
 
           !
           ! cleanup
