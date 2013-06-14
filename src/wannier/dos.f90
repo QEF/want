@@ -366,7 +366,7 @@ END PROGRAM dos_main
       REAL(dbl)    :: arg, cost, raux, efermi, x0(3)
       COMPLEX(dbl) :: caux, ze
       !
-      INTEGER,      ALLOCATABLE :: r_index(:)
+      INTEGER,      ALLOCATABLE :: r_index(:), ind_plot(:)
       COMPLEX(dbl), ALLOCATABLE :: kham(:,:), rham_nn(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: ksgm(:,:), rsgm_nn(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: kovp(:,:), rovp_nn(:,:,:)
@@ -376,14 +376,14 @@ END PROGRAM dos_main
       REAL(dbl),    ALLOCATABLE :: dos(:), dos0(:), pdos(:,:)
       REAL(dbl),    ALLOCATABLE :: vkpt_int(:,:), vkpt_int_cry(:,:), wk(:)
       REAL(dbl),    ALLOCATABLE :: eig_int(:,:)
-      REAL(dbl),    ALLOCATABLE :: eig_band(:,:,:), eig_coll(:,:)
+      REAL(dbl),    ALLOCATABLE :: eig_band(:,:,:,:), eig_coll(:,:)
       REAL(dbl),    ALLOCATABLE :: vr_cry(:,:), vr_nn(:,:), wr_nn(:), vr_sgm(:,:)
       CHARACTER(nstrx)          :: filename, analyticity_sgm, aux_fmt
       CHARACTER(4)              :: ctmp
       !
       INTEGER      :: iks, ike
       INTEGER      :: i, j, k, ie, ik, ik_g, ir, ib
-      INTEGER      :: ierr
+      INTEGER      :: ierr, icount, nbndx_plot
       INTEGER      :: dimwann_sgm, nrtot_sgm
       !
       ! end of declarations
@@ -1058,20 +1058,35 @@ END PROGRAM dos_main
           !
           ! local workspace
           !
+          nbndx_plot = 5
+          !
           ALLOCATE( vkpt_int_cry(3,nkpts_int), STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname, 'allocating vkpt_int_cry', ABS(ierr) )
           !
-          ALLOCATE( eig_coll(nkpts_int, dimwann), eig_band( nk(1)+1, nk(2)+1, nk(3)+1), STAT=ierr )
-          IF ( ierr/=0 ) CALL errore(subname, 'allocating eig_coll, eig_band', ABS(ierr) )
+          ALLOCATE( eig_coll(nkpts_int, dimwann), &
+                    eig_band( nk(1)+1, nk(2)+1, nk(3)+1, nbndx_plot), &
+                    ind_plot(nbndx_plot), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname, 'allocating eig_coll, eig_band, ind_plot', ABS(ierr) )
           !
           ! setting the kpt mesh
           !
-          IF ( ANY( s(:) > 0.0 ) ) CALL errore(subname, "fermi surf and s>0 not implemented", 10 )
+          IF ( ANY( s(:) > 0.0 ) )     CALL errore(subname, "fermi surf and s>0 not implemented", 10 )
+          DO i = 1, 3
+              IF ( MOD(nk(i),2) /= 0 ) CALL errore(subname, "fermi surf and nk odd not implemented", 1 )
+          ENDDO
           !
           vkpt_int_cry = vkpt_int
           CALL cart2cry( vkpt_int_cry, bvec)
           !
-          vkpt_int_cry(:,:) = vkpt_int_cry(:,:) + 0.5d0
+          !vkpt_int_cry(:,:) = vkpt_int_cry(:,:) + 0.5d0
+          DO ik_g = 1, nkpts_int
+              DO i = 1, 3
+                  !
+                  IF ( vkpt_int_cry(i,ik_g) < 0.0d0 ) &
+                       vkpt_int_cry(i,ik_g) = vkpt_int_cry(i,ik_g) +1.0d0 
+                  !
+              ENDDO
+          ENDDO
 
           !
           ! first we collect the interpolated eigenvalues
@@ -1100,7 +1115,11 @@ END PROGRAM dos_main
               IF ( MINVAL( eig_coll(:,ib) ) <  efermi .AND. &
                    MAXVAL( eig_coll(:,ib) ) >= efermi ) THEN
                   ! 
-                  eig_band(:,:,:) = -10.0 
+                  icount = icount+1
+                  IF ( icount > nbndx_plot ) CALL errore(subname,"too many bands contributing",10)
+                  !
+                  eig_band(:,:,:,icount) = -10.0 
+                  ind_plot(icount) = ib
                   !
                   DO ik_g = 1, nkpts_int
                       !
@@ -1108,18 +1127,33 @@ END PROGRAM dos_main
                       j = 1+NINT( vkpt_int_cry(2,ik_g)*nk(2) ) 
                       k = 1+NINT( vkpt_int_cry(3,ik_g)*nk(3) ) 
                       !
-                      eig_band(i,j,k) = eig_coll(ik_g,ib) 
+                      !i = NINT( vkpt_int_cry(1,ik_g)*nk(1) )
+                      !j = NINT( vkpt_int_cry(2,ik_g)*nk(2) )
+                      !k = NINT( vkpt_int_cry(3,ik_g)*nk(3) )
+                      !!
+                      !IF ( i < 0 ) i = i+nk(1)
+                      !IF ( j < 0 ) j = j+nk(2)
+                      !IF ( k < 0 ) k = k+nk(3)
+                      !!
+                      !i = i+1
+                      !j = j+1
+                      !k = k+1
+                      !
+! XXX
+WRITE(2,"(a,3i4,2x,i5)") "ijk, ig", i,j,k, ik_g
+                      !
+                      eig_band(i,j,k,icount) = eig_coll(ik_g,ib) 
                       !
                   ENDDO
                   !
-                  eig_band(nk(1)+1,:,:) = eig_band(1,:,:) 
-                  eig_band(:,nk(2)+1,:) = eig_band(:,1,:) 
-                  eig_band(:,:,nk(3)+1) = eig_band(:,:,1)
+                  eig_band(nk(1)+1,:,:,icount) = eig_band(1,:,:,icount) 
+                  eig_band(:,nk(2)+1,:,icount) = eig_band(:,1,:,icount) 
+                  eig_band(:,:,nk(3)+1,icount) = eig_band(:,:,1,icount)
                   
                   ! 
                   IF ( ionode ) THEN
                       !
-                      aux_fmt = ".xsf"
+                      aux_fmt = ".bxsf"
                       !
                       filename = TRIM(work_dir)//"/"//TRIM(prefix)//TRIM(postfix)// &
                                  "_IBND"//TRIM( int2char(ib) ) //TRIM(aux_fmt)
@@ -1130,13 +1164,18 @@ END PROGRAM dos_main
                       OPEN ( aux_unit, FILE=TRIM(filename), STATUS='unknown', IOSTAT=ierr )
                       IF ( ierr/=0 ) CALL errore(subname,'opening file '//TRIM(filename),1)
                       !
-                      CALL xsf_struct( bvec, 1, (/0.0d0, 0.0d0, 0.0d0/), (/'H  '/), aux_unit )
+                      !CALL xsf_struct( bvec, 1, (/0.0d0, 0.0d0, 0.0d0/), (/'H  '/), aux_unit )
+                      !!
+                      !x0 = -0.5d0 * ( bvec(:,1) + bvec(:,2) + bvec(:,3) )
                       !
-                      x0 = -0.5d0 * ( bvec(:,1) + bvec(:,2) + bvec(:,3) )
+                      !CALL xsf_datagrid_3d ( eig_band( 1:nk(1)+1, 1:nk(2)+1, 1:nk(3)+1 ),  &
+                      !                       nk(1)+1, nk(2)+1, nk(3)+1, x0, &
+                      !                       bvec(:,1), bvec(:,2), bvec(:,3), aux_unit )                      
                       !
-                      CALL xsf_datagrid_3d ( eig_band( 1:nk(1)+1, 1:nk(2)+1, 1:nk(3)+1 ),  &
-                                             nk(1)+1, nk(2)+1, nk(3)+1, x0, &
-                                             bvec(:,1), bvec(:,2), bvec(:,3), aux_unit )                      
+                      x0(1:3) = 0.0d0
+                      !
+                      CALL xsf_bandgrid_3d ( eig_band, nk(1)+1, nk(2)+1, nk(3)+1, icount, ind_plot, &
+                                             efermi, x0, bvec(:,1), bvec(:,2), bvec(:,3), aux_unit )                      
                       !
                       CLOSE( aux_unit )
                       !
@@ -1149,7 +1188,7 @@ END PROGRAM dos_main
           !
           ! cleanup
           !
-          DEALLOCATE( eig_coll, eig_band, STAT=ierr )
+          DEALLOCATE( eig_coll, eig_band, ind_plot, STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname, 'deallocating eig_coll', ABS(ierr) )
           !
       ENDIF
