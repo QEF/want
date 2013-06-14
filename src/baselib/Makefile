@@ -6,6 +6,7 @@
 include ../../make.sys
 
 OBJS= \
+compute_efermi.o \
 constants.o \
 crystal_io.o \
 crystal_io_base.o \
@@ -14,6 +15,7 @@ date_and_tim.o \
 descriptors.o \
 dspev_drv.o \
 divide_et_impera.o \
+efermig.o \
 erf.o \
 error.o \
 etsf_error.o \
