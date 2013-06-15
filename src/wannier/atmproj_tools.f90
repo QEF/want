@@ -48,7 +48,7 @@
 
 
    ! contains:
-   ! SUBROUTINE  atmproj_to_internal( filein, fileout, filetype, do_orthoovp )
+   ! SUBROUTINE  atmproj_to_internal( filein, fileham, filespace, filewan, do_orthoovp )
    ! FUNCTION    file_is_atmproj( filein )
    !
    PUBLIC :: atmproj_to_internal
@@ -115,15 +115,13 @@ END SUBROUTINE atmproj_tools_init
 
 
 !**********************************************************
-   SUBROUTINE atmproj_to_internal( filein, fileout, filetype, do_orthoovp )
+   SUBROUTINE atmproj_to_internal( filein, fileham, filespace, filewan, do_orthoovp )
    !**********************************************************
    !
    ! Convert the datafile written by the projwfc program (QE suite) to
    ! the internal representation.
    !
-   ! FILETYPE values are:
-   !  - ham, hamiltonian
-   !  - space, subspace
+   ! 3 files are creates: fileham, filespace, filewan
    !
    USE util_module
    !
@@ -135,9 +133,8 @@ END SUBROUTINE atmproj_tools_init
    ! input variables
    !
    CHARACTER(*), INTENT(IN) :: filein
-   CHARACTER(*), INTENT(IN) :: fileout
-   CHARACTER(*), INTENT(IN) :: filetype
-   LOGICAL,   OPTIONAL, INTENT(IN) :: do_orthoovp
+   CHARACTER(*), OPTIONAL, INTENT(IN) :: fileham, filespace, filewan
+   LOGICAL,      OPTIONAL, INTENT(IN) :: do_orthoovp
    
    !
    ! local variables
@@ -185,7 +182,6 @@ END SUBROUTINE atmproj_tools_init
    CALL atmproj_tools_init( filein, ierr )
    IF ( ierr/=0 ) CALL errore(subname,'initializing atmproj',10)
 
-
    !
    ! search for units indipendently of io_module
    !
@@ -193,26 +189,14 @@ END SUBROUTINE atmproj_tools_init
    CALL iotk_free_unit( ounit )
 
    !
-   ! select the operation to do
+   ! what files are to be written
    !
-   write_ham     = .FALSE.
-   write_space   = .FALSE.
-   write_loc     = .FALSE.
-   !
-   filetype_ = TRIM( filetype )
-   CALL change_case( filetype_, 'lower' )
-   !
-   SELECT CASE( TRIM( filetype_ ) )
-   !
-   CASE( 'ham', 'hamiltonian' )
-      write_ham   = .TRUE.
-   CASE( 'space', 'subspace' )
-      write_space = .TRUE.
-   CASE( 'loc', 'localization' )
-      write_loc = .TRUE.
-   CASE DEFAULT
-      CALL errore(subname, 'invalid filetype: '//TRIM(filetype_), 71 )
-   END SELECT
+   write_ham = .FALSE.
+   write_space = .FALSE.
+   write_loc = .FALSE.
+   IF ( PRESENT(fileham) )    write_ham = .TRUE.
+   IF ( PRESENT(filespace) )  write_space = .TRUE.
+   IF ( PRESENT(filewan) )    write_loc = .TRUE.
 
    !
    ! orthogonalization controlled by input
@@ -568,7 +552,7 @@ END SUBROUTINE atmproj_tools_init
 !
    IF ( write_ham ) THEN
        !
-       CALL iotk_open_write( ounit, FILE=TRIM(fileout), BINARY=binary )
+       CALL iotk_open_write( ounit, FILE=TRIM(fileham), BINARY=binary )
        CALL iotk_write_begin( ounit, "HAMILTONIAN" )
        !
        !
@@ -643,7 +627,7 @@ END SUBROUTINE atmproj_tools_init
 
    IF ( write_space ) THEN
        !
-       CALL iotk_open_write( ounit, FILE=TRIM(fileout), BINARY=binary )
+       CALL iotk_open_write( ounit, FILE=TRIM(filespace), BINARY=binary )
        !
        !
        CALL iotk_write_begin( ounit, "WINDOWS" )
@@ -726,7 +710,7 @@ END SUBROUTINE atmproj_tools_init
 
    IF ( write_loc ) THEN
        !
-       CALL iotk_open_write( ounit, FILE=TRIM(fileout), BINARY=binary )
+       CALL iotk_open_write( ounit, FILE=TRIM(filewan), BINARY=binary )
        !
        CALL iotk_write_begin( ounit, "WANNIER_LOCALIZATION" )
        !

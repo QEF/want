@@ -60,6 +60,7 @@ CONTAINS
    CHARACTER(14)    :: subname="datafiles_init"
    CHARACTER(nstrx) :: fmtstr
    CHARACTER(nstrx) :: filein, fileout
+   CHARACTER(nstrx) :: fileham, filespace, filewan
    LOGICAL          :: exists, do_orthoovp_
 
 !
@@ -140,13 +141,12 @@ CONTAINS
            !
        CASE ( 'atmproj' )
            !
-           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
-           CALL atmproj_to_internal( filein, fileout, 'hamiltonian', do_orthoovp_ )
+           fileham   = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
+           filespace = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
+           filewan   = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.wan'
            !
-           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
-           CALL atmproj_to_internal( filein, fileout, 'subspace', do_orthoovp_ )
-           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.wan'
-           CALL atmproj_to_internal( filein, fileout, 'localization', do_orthoovp_ )
+           CALL atmproj_to_internal( filein, FILEHAM=fileham, FILESPACE=filespace, & 
+                                             FILEWAN=filewan, DO_ORTHOOVP=do_orthoovp_ )
            !
            WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
            !

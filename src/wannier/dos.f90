@@ -1071,9 +1071,6 @@ END PROGRAM dos_main
           ! setting the kpt mesh
           !
           IF ( ANY( s(:) > 0.0 ) )     CALL errore(subname, "fermi surf and s>0 not implemented", 10 )
-          DO i = 1, 3
-              IF ( MOD(nk(i),2) /= 0 ) CALL errore(subname, "fermi surf and nk odd not implemented", 1 )
-          ENDDO
           !
           vkpt_int_cry = vkpt_int
           CALL cart2cry( vkpt_int_cry, bvec)
@@ -1082,11 +1079,12 @@ END PROGRAM dos_main
           DO ik_g = 1, nkpts_int
               DO i = 1, 3
                   !
-                  IF ( vkpt_int_cry(i,ik_g) < 0.0d0 ) &
+                  IF ( vkpt_int_cry(i,ik_g) < -EPS_m8 ) &
                        vkpt_int_cry(i,ik_g) = vkpt_int_cry(i,ik_g) +1.0d0 
                   !
               ENDDO
           ENDDO
+
 
           !
           ! first we collect the interpolated eigenvalues
@@ -1118,7 +1116,7 @@ END PROGRAM dos_main
                   icount = icount+1
                   IF ( icount > nbndx_plot ) CALL errore(subname,"too many bands contributing",10)
                   !
-                  eig_band(:,:,:,icount) = -10.0 
+                  eig_band(:,:,:,icount) = -20.0 
                   ind_plot(icount) = ib
                   !
                   DO ik_g = 1, nkpts_int
@@ -1126,6 +1124,9 @@ END PROGRAM dos_main
                       i = 1+NINT( vkpt_int_cry(1,ik_g)*nk(1) ) 
                       j = 1+NINT( vkpt_int_cry(2,ik_g)*nk(2) ) 
                       k = 1+NINT( vkpt_int_cry(3,ik_g)*nk(3) ) 
+                      !
+                      IF ( i < 1 .OR. i > nk(1)+1 .OR. j < 1 .OR. j > nk(2)+1 .OR. k < 1 .OR. k > nk(3)+1 ) &
+                          CALL errore(subname,"invalid i,j,k",ik_g)
                       !
                       eig_band(i,j,k,icount) = eig_coll(ik_g,ib) 
                       !
