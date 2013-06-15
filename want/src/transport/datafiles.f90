@@ -175,7 +175,7 @@ CONTAINS
                !
            CASE( 'atmproj' )
                !
-               CALL atmproj_to_internal( TRIM(filename), TRIM(filename)//'.ham', 'hamiltonian', do_orthoovp )
+               CALL atmproj_to_internal( TRIM(filename), FILEHAM=TRIM(filename)//'.ham', DO_ORTHOOVP=do_orthoovp )
                !
                WRITE( stdout, "(2x, A,' converted from ATMPROJ to internal fmt' )") &
                    TRIM( filename )
