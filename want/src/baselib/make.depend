@@ -1,6 +1,9 @@
+compute_efermi.o : kind.o
 constants.o : kind.o
 crystal_io.o : crystal_io_base.o
 dspev_drv.o : kind.o
+efermig.o : io_global.o
+efermig.o : kind.o
 erf.o : kind.o
 error.o : io_global.o
 error.o : parallel_include.o
