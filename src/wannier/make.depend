@@ -11,6 +11,7 @@ allocate_nlpot.o : uspp.o
 allocate_nlpot.o : windows.o
 atmproj_tools.o : ../baselib/constants.o
 atmproj_tools.o : ../baselib/files.o
+atmproj_tools.o : ../baselib/io_global.o
 atmproj_tools.o : ../baselib/kind.o
 atmproj_tools.o : ../baselib/log_module.o
 atmproj_tools.o : ../baselib/parameters.o
