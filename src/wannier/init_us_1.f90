@@ -199,21 +199,31 @@ SUBROUTINE init_us_1
            !
            do ib = 1, upf(nt)%nbeta
               do jb = ib, upf(nt)%nbeta
+                 !
                  respect_sum_rule : &
                  if ( (l >= abs (upf(nt)%lll(ib) - upf(nt)%lll(jb) ) ) .and. &
                       (l <=      upf(nt)%lll(ib) + upf(nt)%lll(jb) )   .and. &
                       (mod (l+upf(nt)%lll(ib) + upf(nt)%lll(jb), 2) == 0) ) then
                     ijv = jb * (jb-1) / 2 + ib
-                    do ir = 1, upf(nt)%kkbeta
-                       if ( rgrid(nt)%r(ir) >= upf(nt)%rinner (l+1) ) then
-                          qtot (ir, ijv) = upf(nt)%qfunc (ir, ijv)
-                       else
-                          ilast = ir
-                       endif
-                    enddo
-                   if ( upf(nt)%rinner (l+1) > ZERO ) &
-                         call setqf(upf(nt)%qfcoef (1, l+1, ib, jb), &
-                                    qtot(1,ijv), rgrid(nt)%r(1), upf(nt)%nqf,l,ilast)
+                    !
+                    paw : & ! in PAW formalism aug. charge is computed elsewhere
+                    if (upf(nt)%q_with_l .or. upf(nt)%tpawp) then
+                         qtot(1:upf(nt)%kkbeta,ijv) =&
+                                     upf(nt)%qfuncl(1:upf(nt)%kkbeta,ijv,l)
+                    else
+                        do ir = 1, upf(nt)%kkbeta
+                           if ( rgrid(nt)%r(ir) >= upf(nt)%rinner (l+1) ) then
+                              qtot (ir, ijv) = upf(nt)%qfunc (ir, ijv)
+                           else
+                              ilast = ir
+                           endif
+                        enddo
+                        !
+                        if ( upf(nt)%rinner (l+1) > ZERO ) &
+                             call setqf(upf(nt)%qfcoef (1, l+1, ib, jb), &
+                                        qtot(1,ijv), rgrid(nt)%r, upf(nt)%nqf,l,ilast)
+                    endif paw
+                    !
                  endif respect_sum_rule
               enddo
            enddo
