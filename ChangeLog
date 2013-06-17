@@ -4,6 +4,8 @@
 =======================================================
 
 
+17 Jun 2013     Compilation bugs fixed (courtesy of Marco Gibertini). (AF)
+
 15 Jun 2013     Plotting of the fermi surface upon wannier interpolation added. (AF)
 
 13 Jun 2013     Nasty bug fixed in atmproj module (showing when alat != |a1| ). (AF)
