@@ -1356,7 +1356,7 @@ END PROGRAM plot_main
               !
               IF ( uspp_augmentation ) THEN
                   rstates_out(:,:,:) = REAL( cstates(:,:,:,m) * CONJG( cstates(:,:,:,m) ) ) +  &
-                                     REAL( cstates_aug(:,:,:,m), dbl ) 
+                                       REAL( cstates_aug(:,:,:,m), dbl ) 
               ELSE
                   rstates_out(:,:,:) = REAL( cstates(:,:,:,m) * CONJG( cstates(:,:,:,m) ) )
               ENDIF
