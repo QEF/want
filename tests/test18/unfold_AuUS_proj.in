@@ -10,5 +10,6 @@
     ndiv(2) = 1
     ndiv(3) = 5
     do_orthoovp = .FALSE.
-    eshift = 20.0
+    atmproj_sh = 20.0
+    atmproj_thr = 0.0
 /
