@@ -10,7 +10,11 @@
     datafile_C = "./SCRATCH/gold1.save/atomic_proj.xml"
     transport_dir = 3
     delta = 0.001
-!    do_orthoovp = .TRUE.
+    !
+    do_orthoovp    = .FALSE.
+    atmproj_sh     = 0.0
+    atmproj_thr    = 0.5
+    atmproj_nbnd   = 6
   /
 
 <HAMILTONIAN_DATA>
