@@ -9,7 +9,7 @@
    nkpts_max      = 500
    do_orthoovp    = .FALSE.
    atmproj_sh     = 4.0
-   atmproj_thr    = 0.0
+   atmproj_thr    = 0.9
  /
 G   0.000  0.000  0.000
 Z   0.000  0.000  0.500
