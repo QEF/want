@@ -15,6 +15,7 @@ MANUAL=" Usage
  scf             DFT self-consistent calculation
  nscf            DFT non-self-consistent calculation
  pwexport        export DFT data to WanT package in IOTK fmt
+ bands_dft       compute bands using DFT
  dft             perform SCF, NSCF, PWEXPORT all together
  proj            compute atomic projected DOS
  disentangle     select the optimal subspace on which perform
@@ -51,6 +52,7 @@ SUFFIX="_Au"
 SCF=
 NSCF=
 PWEXPORT=
+BANDS_DFT=
 PROJ=
 DISENTANGLE=
 WANNIER=
@@ -68,6 +70,7 @@ case $INPUT in
    (scf)            SCF=yes ;;
    (nscf)           NSCF=yes ;;
    (pwexport)       PWEXPORT=yes ;;
+   (bands_dft)      BANDS_DFT=yes ;;
    (proj)           PROJ=yes ;;
    (dft)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ; PROJ=no ;;
    (disentangle)    DISENTANGLE=yes ;;
@@ -117,6 +120,11 @@ run_dft  NAME=NSCF  SUFFIX=$SUFFIX  RUN=$NSCF
 # running DFT PWEXPORT
 #
 run_export  SUFFIX=$SUFFIX  RUN=$PWEXPORT
+
+#
+# running DFT NSCF
+#
+run_dft  NAME=BANDS_DFT  SUFFIX=$SUFFIX  RUN=$BANDS_DFT
 
 #
 # running DFT PROJ
