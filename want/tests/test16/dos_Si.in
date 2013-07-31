@@ -6,6 +6,8 @@
    datafile_dft   = './SCRATCH/silicon.save/atomic_proj.dat'
    fileout        = './dos_Si.dat'
    do_orthoovp    = .TRUE.
+   atmproj_sh     = 15.0
+   atmproj_thr    = 0.9
    nk(1) = 8
    nk(2) = 8
    nk(3) = 8
