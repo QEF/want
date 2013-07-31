@@ -5,14 +5,15 @@
 
 The development and maintenance of the WanT code is promoted by: 
 
-  * the National Research Center on nanoStructures and bioSystems at Surfaces (S3) 
-    of the Italian INFM-CNR (http://www.s3.infm.it) 
+  * S3 Center, Istituto Nanoscienze, 
+    of the Italian CNR (http://www.nano.cnr.it) 
 
-  * the North Carolina State University (NCSU)
-    (http://ermes.physics.ncsu.edu) 
+  * the University of North Texas
+    (http://ermes.unt.edu) 
 
 The present release of the WanT package has been realized
-by Andrea Ferretti (S3, MIT, Uni Oxford), Apr 2010.
+by Andrea Ferretti (CNR-NANO), Luis A. Agapito (UNT), 
+   Arrigo Calzolari (CNR-NANO), Marco Buongiorno Nardelli, (UNT), Aug 2013.
 
 
 =========================================================================
@@ -20,7 +21,29 @@ Full list of developers and contributors for each release of the code:
 =========================================================================
 
 
-Developers and contributors of WanT v2.2 and v2.3:
+Developers and contributors of WanT v2.5:
+===========================================
+
+Andrea Ferretti             CNR-NANO, Modena    andrea.ferretti@nano.cnr.it
+Luis A. Agapito             UNT                 luis.agapito@gmail.com
+Arrigo Calzolari            CNR-NANO, Modena    arrigo.calzolari@nano.cnr.it
+Marco Buongiorno Nardelli   UNT                 mbn@unt.edu
+
+time stamp: Aug 2013
+
+
+Developers and contributors of WanT v2.4:
+===========================================
+
+Andrea Ferretti             CNR-NANO, Modena    andrea.ferretti@nano.cnr.it
+
+Arrigo Calzolari            CNR-NANO, Modena    calzolari.arrigo@unimore.it
+Marco Buongiorno Nardelli   NCSU                mbnardelli@ncsu.edu
+
+time stamp: Oct 2012
+
+
+Developers and contributors of WanT v2.2, v2.3:
 ===========================================
 
 Andrea Ferretti             S3, Modena    andrea.ferretti@unimore.it
