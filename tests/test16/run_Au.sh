@@ -20,7 +20,6 @@ MANUAL=" Usage
 
  bands           interpolate the band structure using atmproj wfcs
  dos             compute DOS using atmproj wfcs
- conductor       evaluate the transmittance, for the bulk case
  want            all WANT calculations
  all             perform all the above described steps
 
@@ -66,10 +65,10 @@ case $INPUT in
    (dft)            SCF=yes ; NSCF=yes ; PROJ=yes ;;
    (bands)          BANDS=yes ;;
    (dos)            DOS=yes ;;
-   (conductor)      CONDUCTOR=yes ;;
-   (want)           BANDS=yes ; DOS=yes ; CONDUCTOR=yes ;;
+#   (conductor)      CONDUCTOR=yes ;;
+   (want)           BANDS=yes ; DOS=yes ;;
    (all)            SCF=yes ; NSCF=yes ; PROJ=yes ;
-                    BANDS=yes ; DOS=yes ; CONDUCTOR=yes ;;
+                    BANDS=yes ; DOS=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -127,10 +126,10 @@ run_bands  SUFFIX=$SUFFIX  RUN=$BANDS
 #
 run_dos  SUFFIX=$SUFFIX  RUN=$DOS
 
-#
-# running CONDUCTOR
-#
-run_conductor SUFFIX=$SUFFIX  RUN=$CONDUCTOR
+##
+## running CONDUCTOR
+##
+#run_conductor SUFFIX=$SUFFIX  RUN=$CONDUCTOR
 
 
 #
