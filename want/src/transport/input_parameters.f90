@@ -207,6 +207,15 @@
        ! if a non-orthogonal set is used, it is lowdin-orthogonalized
        ! during conversion
 
+   REAL(dbl) :: atmproj_sh = 10.0d0
+       ! atmproj shifthing: energy shift when computing the proj Hamiltonian
+
+   REAL(dbl) :: atmproj_thr = 0.9d0
+       ! atmproj filtering: thr on projections
+
+   INTEGER :: atmproj_nbnd = 0
+       ! atmproj filtering: number of bands used for filtering
+
    REAL(dbl) :: shift_L = 0.0
        ! global energy shift [eV] to be applied to the matrix elements
        ! of the left lead (H00_L, H01_L)
@@ -234,14 +243,15 @@
 
    NAMELIST / INPUT_CONDUCTOR / dimL, dimC, dimR, calculation_type,             &
                  conduct_formula, niterx, ne, ne_buffer, emin, emax,            &
-                 nprint, delta, bias, do_orthoovp,                              &
+                 nprint, delta, bias,                                           &
                  datafile_L,     datafile_C,     datafile_R, datafile_sgm,      &
                  datafile_L_sgm, datafile_C_sgm, datafile_R_sgm,                &
                  transport_dir, smearing_type, do_eigenchannels, do_eigplot,    &
-                 ie_eigplot, ik_eigplot, neigchnx, carriers,                             &
+                 ie_eigplot, ik_eigplot, neigchnx, carriers,                    &
                  delta_ratio, xmax, nk, s, use_symm, debug_level,               &
                  work_dir, prefix, postfix, ispin,                              &
                  write_kdata, write_lead_sgm, write_gf,                         &
+                 do_orthoovp, atmproj_sh, atmproj_thr, atmproj_nbnd,            &
                  shift_L, shift_C, shift_R, shift_corr, nfailx, transfer_thr
 
 
@@ -249,7 +259,8 @@
    PUBLIC :: ne, ne_buffer, emin, emax, nprint, delta, bias, delta_ratio, xmax 
    PUBLIC :: datafile_L,     datafile_C,     datafile_R,     datafile_sgm, transport_dir, carriers
    PUBLIC :: datafile_L_sgm, datafile_C_sgm, datafile_R_sgm
-   PUBLIC :: nk, s, use_symm, debug_level, do_orthoovp
+   PUBLIC :: nk, s, use_symm, debug_level
+   PUBLIC :: do_orthoovp, atmproj_sh, atmproj_thr, atmproj_nbnd
    PUBLIC :: work_dir, prefix, postfix, ispin, write_kdata, write_lead_sgm, write_gf 
    PUBLIC :: do_eigenchannels, neigchnx, do_eigplot, ie_eigplot, ik_eigplot
    PUBLIC :: shift_L, shift_C, shift_R, shift_corr, nfailx, transfer_thr
@@ -277,8 +288,8 @@ CONTAINS
       LOGICAL :: allowed, exists
       INTEGER :: i, ios
 
-    REAL(dbl) :: rydcm1 = 13.6058d0*8065.5d0
-    REAL(dbl) :: amconv = 1.66042d-24/9.1095d-28*0.5d0
+      REAL(dbl) :: rydcm1 = 13.6058d0*8065.5d0
+      REAL(dbl) :: amconv = 1.66042d-24/9.1095d-28*0.5d0
 
       CALL log_push( 'read_namelist_input_conductor' )
 
@@ -290,22 +301,22 @@ CONTAINS
       ENDIF
 
 
+      !
       ! scale energies depending of carriers
+      !
+      CALL change_case(carriers,'lower')
+      allowed=.FALSE.
+      DO i=1,SIZE(carriers_allowed)
+          IF ( TRIM(carriers) == carriers_allowed(i) ) allowed=.TRUE. 
+      ENDDO
+      IF (.NOT. allowed) &
+          CALL errore(subname,'Invalid carriers ='//TRIM(carriers),10)
 
-    CALL change_case(carriers,'lower')
-    allowed=.FALSE.
-    DO i=1,SIZE(carriers_allowed)
-        IF ( TRIM(carriers) == carriers_allowed(i) ) allowed=.TRUE. 
-    ENDDO
-    IF (.NOT. allowed) &
-        CALL errore(subname,'Invalid carriers ='//TRIM(carriers),10)
-
-    IF ( TRIM(carriers) == 'phonons') THEN
-        emin=emin**2/(rydcm1/dsqrt(amconv))**2
-        IF ( emin < 0.0) CALL errore(subname,'Invalid emin',1)
-        emax=emax**2/(rydcm1/dsqrt(amconv))**2
-
-    ENDIF
+      IF ( TRIM(carriers) == 'phonons') THEN
+          emin=emin**2/(rydcm1/dsqrt(amconv))**2
+          IF ( emin < 0.0) CALL errore(subname,'Invalid emin',1)
+          emax=emax**2/(rydcm1/dsqrt(amconv))**2
+      ENDIF
 
       !
       ! variable bcasting
@@ -352,6 +363,9 @@ CONTAINS
       CALL mp_bcast( datafile_C_sgm,     ionode_id)      
       CALL mp_bcast( datafile_R_sgm,     ionode_id)      
       CALL mp_bcast( do_orthoovp,        ionode_id)      
+      CALL mp_bcast( atmproj_sh,         ionode_id)      
+      CALL mp_bcast( atmproj_thr,        ionode_id)      
+      CALL mp_bcast( atmproj_nbnd,       ionode_id)      
       CALL mp_bcast( shift_L,            ionode_id)      
       CALL mp_bcast( shift_C,            ionode_id)      
       CALL mp_bcast( shift_R,            ionode_id)      
@@ -482,6 +496,9 @@ CONTAINS
 
       IF ( transfer_thr <= ZERO ) CALL errore(subname,'invalid value for transfer_thr',10)
 
+      IF ( atmproj_thr > 1.0d0 .OR. atmproj_thr < 0.0d0) &
+                                  CALL errore(subname, 'invalid atmproj_thr', 10 )
+      IF ( atmproj_nbnd < 0)      CALL errore(subname, 'invalid atmproj_nbnd', 10 )
 
       CALL log_pop( 'read_namelist_input_conductor' )
 

@@ -158,12 +158,18 @@ CONTAINS
       USE io_module,                ONLY : work_dir, &
                                            prefix,   &
                                            postfix
+      USE atmproj_tools_module,     ONLY : atmproj_sh, &
+                                           atmproj_thr, &
+                                           atmproj_nbnd
       USE T_control_module,         ONLY : debug_level, &
                                            use_debug_mode
-      USE T_input_parameters_module,ONLY : work_dir_          => work_dir, &
-                                           prefix_            => prefix,   &
-                                           postfix_           => postfix,  &
-                                           debug_level_       => debug_level
+      USE T_input_parameters_module,ONLY : work_dir_       => work_dir,    &
+                                           prefix_         => prefix,      &
+                                           postfix_        => postfix,     &
+                                           atmproj_sh_     => atmproj_sh,  &
+                                           atmproj_thr_    => atmproj_thr, &
+                                           atmproj_nbnd_   => atmproj_nbnd,&
+                                           debug_level_    => debug_level
       IMPLICIT NONE
       !
       CHARACTER( nstrx ) :: logfile
@@ -171,6 +177,10 @@ CONTAINS
       work_dir            = work_dir_
       prefix              = prefix_
       postfix             = postfix_
+      !
+      atmproj_sh          = atmproj_sh_
+      atmproj_thr         = atmproj_thr_
+      atmproj_nbnd        = atmproj_nbnd_
 
       !
       ! this part is replicated for the sake of robustness
