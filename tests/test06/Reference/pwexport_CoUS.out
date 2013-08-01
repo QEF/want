@@ -1,24 +1,38 @@
 
-     Program POST-PROC v.4.0.3  starts ...
-     Today is 26Dec2008 at 12:12:28 
+     Program PW_EXPORT v.5.0.2 (svn rev. 10303M) starts on  1Aug2013 at 11:19:58 
 
-     Parallel version (MPI)
+     This program is part of the open-source Quantum ESPRESSO suite
+     for quantum simulation of materials; please cite
+         "P. Giannozzi et al., J. Phys.:Condens. Matter 21 395502 (2009);
+          URL http://www.quantum-espresso.org", 
+     in publications or presentations arising from this work. More details at
+     http://www.quantum-espresso.org/quote
 
-     Number of processors in use:       4
-     R & G space division:  proc/pool =    4
+     Parallel version (MPI & OpenMP), running on       6 processor cores
+     Number of MPI processes:                 6
+     Threads/MPI process:                     1
+     R & G space division:  proc/nbgrp/npool/nimage =       6
 
-     Planes per process (thick) : nr3 = 24 npp =   6 ncplane =20736
-     Planes per process (smooth): nr3s= 15 npps=   4 ncplanes= 8100
+   Info: using nr1, nr2, nr3 values from input
+
+   Info: using nr1s, nr2s, nr3s values from input
+
+     IMPORTANT: XC functional enforced from input :
+     Exchange-correlation      =  SLA  PW   PBE  PBE ( 1 4 3 4 0)
+     EXX-fraction              =        0.00
+     Any further DFT definition will be discarded
+     Please, verify this is what you really want
+
+               file Co.pbe-nd-rrkjus.UPF: wavefunction(s)  4S 3D renormalized
  
-     Proc/  planes cols     G    planes cols    G      columns  G
-     Pool       (dense grid)       (smooth grid)      (wavefct grid)
-       1      6   3582    50808    4   1430    12866    566     3206
-       2      6   3581    50807    4   1431    12869    565     3205
-       3      6   3583    50807    4   1430    12864    565     3205
-       4      6   3583    50807    3   1430    12862    565     3205
-     tot     24  14329   203229   15   5721    51461   2261    12821
+     Parallelization info
+     --------------------
+     sticks:   dense  smooth     PW     G-vecs:    dense   smooth      PW
+     Min        2387     953    376                33871     8573    2136
+     Max        2389     954    377                33872     8582    2137
+     Sum       14329    5721   2261               203229    51461   12821
  
 
      Check: negative/imaginary core charge=   -0.000009    0.000000
 
-     negative rho (up, down):  0.241E-01 0.000E+00
+     negative rho (up, down):  2.391E-02 0.000E+00
