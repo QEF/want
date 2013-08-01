@@ -8,7 +8,7 @@
    nkpts_in       = 2
    nkpts_max      = 500
    do_orthoovp    = .FALSE.
-   atmproj_sh     = 0.0
+   atmproj_sh     = 2.0
    atmproj_thr    = 0.5
    atmproj_nbnd   = 6
  /
