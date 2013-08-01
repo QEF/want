@@ -7,8 +7,8 @@
   Cobalt chains, using both NC and US pseudopotentials in the Gold case, only 
   US for Cobalt. 
   Calculations are done setting one atom in the unit cell, using a 
-  (1 1 4, 0 0 1) (according to PWSCF notation) Monkhorst-Pack grid in the SCF 
-  run and a (1 1 4, 0 0 0) grid in the NSCF run. 
+  (1 1 24, 0 0 1) (according to PWSCF notation) Monkhorst-Pack grid in the SCF 
+  run and a (1 1 8, 0 0 0) grid in the NSCF run. 
   The wave-function and charge-density cutoff in the NCPP case has been chosen 
   to be 20 Ry in order to make the test running fast, but results are of course 
   not converged. A cutoff of 40 Ry or more will lead to more physical results.

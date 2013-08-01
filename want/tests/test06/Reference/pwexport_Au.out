@@ -1,21 +1,35 @@
 
-     Program POST-PROC v.4.0.3  starts ...
-     Today is 26Dec2008 at 12:10:38 
+     Program PW_EXPORT v.5.0.2 (svn rev. 10303M) starts on  1Aug2013 at 10:58:26 
 
-     Parallel version (MPI)
+     This program is part of the open-source Quantum ESPRESSO suite
+     for quantum simulation of materials; please cite
+         "P. Giannozzi et al., J. Phys.:Condens. Matter 21 395502 (2009);
+          URL http://www.quantum-espresso.org", 
+     in publications or presentations arising from this work. More details at
+     http://www.quantum-espresso.org/quote
 
-     Number of processors in use:       4
-     R & G space division:  proc/pool =    4
+     Parallel version (MPI & OpenMP), running on       6 processor cores
+     Number of MPI processes:                 6
+     Threads/MPI process:                     1
+     R & G space division:  proc/nbgrp/npool/nimage =       6
 
-     Planes per process (thick) : nr3 = 24 npp =   6 ncplane = 9216
+   Info: using nr1, nr2, nr3 values from input
+
+   Info: using nr1s, nr2s, nr3s values from input
+
+     IMPORTANT: XC functional enforced from input :
+     Exchange-correlation      =  SLA  PW   GGX  GGC ( 1 4 2 2 0)
+     EXX-fraction              =        0.00
+     Any further DFT definition will be discarded
+     Please, verify this is what you really want
+
  
-     Proc/  planes cols     G    planes cols    G      columns  G
-     Pool       (dense grid)       (smooth grid)      (wavefct grid)
-       1      6   1592    22586    6   1592    22586    540     4450
-       2      6   1591    22585    6   1591    22585    539     4449
-       3      6   1593    22585    6   1593    22585    541     4449
-       4      6   1593    22585    6   1593    22585    541     4449
-     tot     24   6369    90341   24   6369    90341   2161    17797
+     Parallelization info
+     --------------------
+     sticks:   dense  smooth     PW     G-vecs:    dense   smooth      PW
+     Min        1061    1061    360                15056    15056    2966
+     Max        1063    1063    361                15057    15057    2967
+     Sum        6369    6369   2161                90341    90341   17797
  
 
      Check: negative/imaginary core charge=   -0.000021    0.000000
