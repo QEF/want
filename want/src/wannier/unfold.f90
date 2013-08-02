@@ -42,7 +42,8 @@
                                          ! written on the Bloch or Wannier basis
    CHARACTER(nstrx)   :: postfix_unfld   ! postfix to describe the unfolded data
    CHARACTER(nstrx)   :: datafile_transl ! specifies the name of the file with the translations
-                                         ! usually not needed.
+   CHARACTER(nstrx)   :: orb_mapping     ! ("automatic","first_orbitals")
+                                         ! 
    REAL(dbl)          :: atmproj_sh      ! shifthing: energy shift when computing the proj Hamiltonian
    REAL(dbl)          :: atmproj_thr     ! filtering: thr on projections 
    INTEGER            :: atmproj_nbnd    ! filtering: # of bands
@@ -53,12 +54,15 @@
    !
    NAMELIST /INPUT/ prefix, postfix, postfix_unfld, work_dir, datafile_dft, datafile_transl, &
                     translations, ndiv, debug_level, verbosity, nkb_buffer, nwfc_buffer, assume_ncpp, &
-                    atmproj_sh, atmproj_thr, atmproj_nbnd, do_orthoovp
+                    atmproj_sh, atmproj_thr, atmproj_nbnd, do_orthoovp, orb_mapping
 
    LOGICAL            :: lhave_transl
    !
    CHARACTER(nstrx)   :: translations_allowed(2)
    DATA  translations_allowed / 'from_file', 'from_scratch' /
+   !
+   CHARACTER(nstrx)   :: orb_mapping_allowed(3)
+   DATA  orb_mapping_allowed / 'automatic', 'first', 'first_orbitals' /
 
    !
    ! end of declariations
@@ -94,7 +98,7 @@
       !
       ! do the main task
       !
-      CALL do_unfold( postfix_unfld, ndiv, lhave_transl, datafile_transl )
+      CALL do_unfold( postfix_unfld, ndiv, lhave_transl, datafile_transl, orb_mapping )
 
       !
       ! Clean global memory
@@ -152,6 +156,7 @@ CONTAINS
       atmproj_sh                  = 10.0d0
       atmproj_thr                 = 0.9d0
       atmproj_nbnd                = 0
+      orb_mapping                 = "first_orbitals"
  
       
       CALL input_from_file ( stdin )
@@ -181,6 +186,7 @@ CONTAINS
       CALL mp_bcast( atmproj_thr,     ionode_id )
       CALL mp_bcast( atmproj_nbnd,    ionode_id )
       CALL mp_bcast( do_orthoovp,     ionode_id )
+      CALL mp_bcast( orb_mapping,     ionode_id )
 
       !
       ! init
@@ -249,6 +255,7 @@ CONTAINS
           WRITE( stdout, "(   7x,'                prefix :',5x,   a)") TRIM(prefix)
           WRITE( stdout, "(   7x,'               postfix :',5x,   a)") TRIM(postfix)
           WRITE( stdout, "(   7x,'         postfix_unfld :',5x,   a)") TRIM(postfix_unfld)
+          WRITE( stdout, "(   7x,'           orb_mapping :',5x,   a)") TRIM(orb_mapping)
           !
           IF ( LEN_TRIM( datafile_dft ) /= 0 ) THEN
               WRITE( stdout,"(7x,'          datafile_dft :',5x,   a)") TRIM(datafile_dft)
@@ -279,7 +286,7 @@ END PROGRAM unfold
 
 
 !********************************************************
-   SUBROUTINE do_unfold( postfix_unfld, ndiv, lhave_transl, datafile_transl )
+   SUBROUTINE do_unfold( postfix_unfld, ndiv, lhave_transl, datafile_transl, orb_mapping )
    !********************************************************
    !
    ! perform the main task of the calculation
@@ -315,6 +322,7 @@ END PROGRAM unfold
       INTEGER,       INTENT(IN) :: ndiv(3)
       LOGICAL,       INTENT(IN) :: lhave_transl
       CHARACTER(*),  INTENT(IN) :: datafile_transl
+      CHARACTER(*),  INTENT(IN) :: orb_mapping
    
       !
       ! local vars
@@ -455,149 +463,165 @@ END PROGRAM unfold
       ALLOCATE( trmat(dimwann,dimwann,ndir), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating trmat",ABS(ierr))
 
-! XXX
-! tentative implementation
-!#define __WF_SELECT_AUTOMATIC
-#ifdef __WF_SELECT_AUTOMATIC
-      !
-      ALLOCATE( orb_map_tmp(dimwann), STAT=ierr )
-      IF ( ierr/=0 ) CALL errore(subname,"allocating orb_map_tmp",ABS(ierr))
-      !
-      ALLOCATE( rtmp(dimwann), STAT=ierr )
-      IF ( ierr/=0 ) CALL errore(subname,"allocating rtmp",ABS(ierr))
-      !
-      ALLOCATE( indx(dimwann), STAT=ierr )
-      IF ( ierr/=0 ) CALL errore(subname,"allocating indx",ABS(ierr))
-      !
-      ! take first wannier function ( wf )
-      orb_map(1)=1
-      !
-      ref_rave(1:3)=rave(1:3,1)
-      !
-      ! compute distance of other wfs from it
-      !
-      do i=1,dimwann
-         !
-         rtmp(i) = SQRT ( DOT_PRODUCT( rave(:,i)-ref_rave(:), rave(:,i)-ref_rave(:) ) )
-         indx(i) = i
-         !
-      enddo
-      !
-      ! this is to make sure the first wavefuntion will be the 
-      ! "closest to itself" (other wfs might have the same center)
-      !
-      rtmp(1)=-1.d0
-      !
-      ! sort wf by center distance from first wf center
-      !
-      write(6,*) "rtmp", rtmp(:), "f_index"
-      write(6,*) "index", indx(:), "f_index"
-      !
-      CALL hpsort_eps(dimwann, rtmp(:), indx(:), toll_dist )
-      !
-      write(6,*) "index", indx(:), "f_index"
-      !
-      ! we now start from the identity matrix and write it 
-      ! and its translated along all sublattice directions
-      ! (treating it as a "hamiltonian" to unfold). IF we selected
-      ! a good dimwann_unfld subset, we should have that we get no
-      ! off-diagonal elements. As soon as we get an off-diagonal
-      ! element, this tells us that one of the functions in the  
-      !  subset is the translated of another, so we kill it
-      !
-      orb_map_tmp(:) = indx(:)
-      !
-      DO ir = 1, nrtot_unfld
+
+      SELECT CASE ( TRIM(orb_mapping) )
+      CASE ( "automatic" )
           !
+          ALLOCATE( orb_map_tmp(dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,"allocating orb_map_tmp",ABS(ierr))
           !
-          ! Initialize work to identity matrix... its translated 
-          ! is the translation matrix itself
+          ALLOCATE( rtmp(dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,"allocating rtmp",ABS(ierr))
           !
-          work(:,:) = 0.d0
+          ALLOCATE( indx(dimwann), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,"allocating indx",ABS(ierr))
           !
-          DO j=1,dimwann
-              work(j,j)=1.d0
-          ENDDO
+          ! take first wannier function ( wf )
+          orb_map(1)=1
           !
-          ! build T1^a T2^b T3^c
+          ref_rave(1:3)=rave(1:3,1)
           !
-          DO j = 1, ndir
+          ! compute distance of other wfs from it
+          !
+          do i=1,dimwann
+             !
+             rtmp(i) = SQRT ( DOT_PRODUCT( rave(:,i)-ref_rave(:), rave(:,i)-ref_rave(:) ) )
+             indx(i) = i
+             !
+          enddo
+          !
+          ! this is to make sure the first wavefuntion will be the 
+          ! "closest to itself" (other wfs might have the same center)
+          !
+          rtmp(1)=-1.d0
+          !
+          ! sort wf by center distance from first wf center
+          !
+          !write(6,*) "rtmp", rtmp(:), "f_index"
+          !write(6,*) "index", indx(:), "f_index"
+          !
+          CALL hpsort_eps(dimwann, rtmp(:), indx(:), toll_dist )
+          !
+          !write(6,*) "index", indx(:), "f_index"
+          !
+          ! we now start from the identity matrix and write it 
+          ! and its translated along all sublattice directions
+          ! (treating it as a "hamiltonian" to unfold). IF we selected
+          ! a good dimwann_unfld subset, we should have that we get no
+          ! off-diagonal elements. As soon as we get an off-diagonal
+          ! element, this tells us that one of the functions in the  
+          !  subset is the translated of another, so we kill it
+          !
+          orb_map_tmp(:) = indx(:)
+          !
+          DO ir = 1, nrtot_unfld
               !
-              op="N"
-              IF ( ivr_unfld( dir_map(j) ,ir) < 0 ) op="C"
               !
-              trmat(:,:,j) =0.0d0 
-              DO i = 1, dimwann
-                  trmat(i,i,j) =1.0d0
-              ENDDO
-              ! nb 
-              DO k = 1, ABS( ivr_unfld( dir_map(j), ir) )
-                  CALL mat_mul( trmat(:,:,j), trmat(:,:,j), 'N', transl(:,:,j), op, dimwann, dimwann, dimwann )
+              ! Initialize work to identity matrix... its translated 
+              ! is the translation matrix itself
+              !
+              work(:,:) = 0.d0
+              !
+              DO j=1,dimwann
+                  work(j,j)=1.d0
               ENDDO
               !
-              CALL mat_mul( work, work, 'N', trmat(:,:,j), 'N', dimwann, dimwann, dimwann )
+              ! build T1^a T2^b T3^c
               !
-          ENDDO
-          !
-          ! now we eliminate those wfs which are ir-translate of a
-          ! previous one 
-          !
-          DO j = 1, dimwann-1
-              !
-              IF(orb_map_tmp(j) > 0) THEN
-                  ! check only wf farther from wf 1 than j                 
-                  DO i = j+1, dimwann
-                      !
-                      ! is wf i translated of wf j? 
-                      ! (are they connected by a translation)
-                      !
-                      IF( ABS(work(indx(j),indx(i))) > EPS_m2 ) THEN
-                          ! discard the wf
-                          orb_map_tmp(i) = -1 
-                          !
-                      ENDIF
-                      !
+              DO j = 1, ndir
+                  !
+                  op="N"
+                  IF ( ivr_unfld( dir_map(j) ,ir) < 0 ) op="C"
+                  !
+                  trmat(:,:,j) =0.0d0 
+                  DO i = 1, dimwann
+                      trmat(i,i,j) =1.0d0
                   ENDDO
-              ENDIF
+                  ! nb 
+                  DO k = 1, ABS( ivr_unfld( dir_map(j), ir) )
+                      CALL mat_mul( trmat(:,:,j), trmat(:,:,j), 'N', transl(:,:,j), op, dimwann, dimwann, dimwann )
+                  ENDDO
+                  !
+                  CALL mat_mul( work, work, 'N', trmat(:,:,j), 'N', dimwann, dimwann, dimwann )
+                  !
+              ENDDO
+              !
+              ! now we eliminate those wfs which are ir-translate of a
+              ! previous one 
+              !
+              DO j = 1, dimwann-1
+                  !
+                  IF(orb_map_tmp(j) > 0) THEN
+                      ! check only wf farther from wf 1 than j                 
+                      DO i = j+1, dimwann
+                          !
+                          ! is wf i translated of wf j? 
+                          ! (are they connected by a translation)
+                          !
+                          IF( ABS(work(indx(j),indx(i))) > EPS_m2 ) THEN
+                              ! discard the wf
+                              orb_map_tmp(i) = -1 
+                              !
+                          ENDIF
+                          !
+                      ENDDO
+                  ENDIF
+              ENDDO
           ENDDO
-      ENDDO
-      !
-      ! Now we should have selected the correct subset of wfs
-      !
-      k=2
-      !
-      DO j=2,dimwann
           !
-          IF( orb_map_tmp(j) > 0 ) THEN
-              !
-              orb_map(k)=orb_map_tmp(j)
-              !
-              k=k+1
-              ! 
-              IF( k > dimwann_unfld ) EXIT
-              !
-          ENDIF
+          ! Now we should have selected the correct subset of wfs
           !
-      ENDDO
+          k=2
+          !
+          DO j=2,dimwann
+              !
+              IF( orb_map_tmp(j) > 0 ) THEN
+                  !
+                  orb_map(k)=orb_map_tmp(j)
+                  !
+                  k=k+1
+                  ! 
+                  IF( k > dimwann_unfld ) EXIT
+                  !
+              ENDIF
+              !
+          ENDDO
+          !
+          !write(6,*) "this is orb_map", orb_map(:)
+          !write(6,*) "this is orb_map_tmp", orb_map_tmp(:)
+          !
+          ! find the distance between wannier function one and all other wannier functions: 
+          ! store distance in array of size (dimwann_unfld)
+          ! compute the nearest and next nearest neighbors of wf N=1 by translation
+          ! take the first wf closest to N=1 wf, check it is not a n or nn neighbor of wf N=1
+          ! if not, call this wf N+1, set N=N+1 and goto 3
+          ! if it is, skip this, go to next wf, goto 4
+          !
+          ! as an alternative, one can check the neighbors and next-nearest neighbors 
+          ! by having operators T and T^2 in each direction at hand 
+          ! (for 3d we have 36+6 operators... is it feasible?)
+      
+      CASE ( "first", "first_orbitals" )
+          !
+          DO i = 1, dimwann_unfld
+               orb_map(i)=i
+          ENDDO
+          !
+      CASE DEFAULT
+          !
+          CALL errore(subname,"invalid orb_mapping "//TRIM(orb_mapping), 10)
+          !
+      END SELECT
       !
-      write(6,*) "this is orb_map", orb_map(:)
-      write(6,*) "this is orb_map_tmp", orb_map_tmp(:)
-      !
-      ! find the distance between wannier function one and all other wannier functions: 
-      ! store distance in array of size (dimwann_unfld)
-      ! compute the nearest and next nearest neighbors of wf N=1 by translation
-      ! take the first wf closest to N=1 wf, check it is not a n or nn neighbor of wf N=1
-      ! if not, call this wf N+1, set N=N+1 and goto 3
-      ! if it is, skip this, go to next wf, goto 4
-      !
-      ! as an alternative, one can check the neighbors and next-nearest neighbors 
-      ! by having operators T and T^2 in each direction at hand 
-      ! (for 3d we have 36+6 operators... is it feasible?)
-#else 
-      DO i = 1, dimwann_unfld
-          orb_map(i)=i
-      ENDDO
-#endif
+      IF ( ionode ) THEN
+          !
+          WRITE(stdout, "(/,2x,'Orbital Mapping: ( ',a,' )')") TRIM(orb_mapping)
+          WRITE(stdout, "(8i5)") orb_map(:)
+          !
+      ENDIF
+       
+
+
       !
       ! redefine the hamiltonian
       !
