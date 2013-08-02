@@ -98,6 +98,7 @@ symmetrize_kgrid.o \
 symmetry.o \
 translations.o \
 translations_calc.o \
+translations_calc_atmproj.o \
 trial_center_data.o \
 trial_center.o \
 unitary_update.o \

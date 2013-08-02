@@ -487,6 +487,7 @@
                                        SIDE='left', TOLL=unitary_thr ) )&
                  CALL errore(subname,"Lamp matrices not orthogonal",ik_g)
 
+           !      (AF: the ZGEMM routine should be used here)
            DO j = 1, dimwann
            DO i = 1, dimwann
                !
@@ -494,7 +495,7 @@
                DO l = 1, dimwin(ik_g)
                    !
                    ham(i,j) = ham(i,j) + &
-                                 CONJG(lamp(l,i,ik_g)) * lamp(l,j,ik_g) * eig(imin(ik_g)+l-1,ik_g)
+                                 CONJG(lamp(l,i,ik_g)) * eig(imin(ik_g)+l-1,ik_g) * lamp(l,j,ik_g)
                    !
                ENDDO
                !
@@ -508,6 +509,7 @@
            !
            ! ...  Calculate amplitudes of the corresponding energy eigenvectors in terms of 
            !      the original ("window space") energy eigenvectors
+           !      (AF: the ZGEMM routine should be used here)
            !
            eamp(:,:,ik_g) = CZERO
            !
@@ -515,7 +517,7 @@
            DO i = 1, dimwin(ik_g)
                !
                DO l = 1, dimwann
-                   eamp(i,j,ik_g) = eamp(i,j,ik_g) + z(l,j)*lamp(i,l,ik_g)
+                   eamp(i,j,ik_g) = eamp(i,j,ik_g) + lamp(i,l,ik_g)*z(l,j)
                ENDDO
                !
            ENDDO

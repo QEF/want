@@ -4,6 +4,9 @@
 =======================================================
 
 
+02 Aug 2013     unfold.x utility further tested and debugged (especially when
+		working with ATMPROJ basis). Test18 updated. (AF)
+
 31 Jul 2013     tests (test16 in particular) updated. (AF)
 
 17 Jun 2013     Compilation bugs fixed (courtesy of Marco Gibertini). 

@@ -323,28 +323,30 @@ END PROGRAM unfold
 
       INTEGER           :: dimwann_unfld
       INTEGER           :: ndir, dir_map(3)
+      INTEGER           :: ndimx_
       !
       INTEGER           :: nrtot_unfld, nr_unfld(3)
       INTEGER           :: nkpts_unfld, nk_unfld(3), s_unfld(3)
       REAL(dbl)         :: avec_unfld(3,3), bvec_unfld(3,3)
       REAL(dbl)         :: rvect_unfld(3,3)
+      REAL(dbl)         :: ref_rave(3)
       !
-      REAL(dbl),    ALLOCATABLE :: vkpt_unfld(:,:), vr_unfld(:,:)
+      REAL(dbl),    ALLOCATABLE :: vkpt_unfld(:,:), vkpt_cry_unfld(:,:), vr_unfld(:,:)
       REAL(dbl),    ALLOCATABLE :: wk_unfld(:), wr_unfld(:)
       INTEGER,      ALLOCATABLE :: ivr_unfld(:,:)
       COMPLEX(dbl), ALLOCATABLE :: rham_unfld(:,:,:), rovp_unfld(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: work(:,:), work_ovp(:,:), trmat(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE :: kham_aux(:,:,:), kovp_aux(:,:,:)
       !
-      INTEGER, ALLOCATABLE :: orb_map(:), orb_map_tmp(:)
-      REAL(dbl), ALLOCATABLE :: rtmp(:)
-      INTEGER, ALLOCATABLE :: index(:)
-      REAL(dbl)            :: ref_rave(3)
-      REAL(dbl), PARAMETER :: toll_dist = 5.0 * EPS_m2
+      INTEGER,      ALLOCATABLE :: orb_map(:), orb_map_tmp(:)
+      REAL(dbl),    ALLOCATABLE :: rtmp(:)
+      INTEGER,      ALLOCATABLE :: indx(:)
+      REAL(dbl),      PARAMETER :: toll_dist = 5.0d0 * EPS_m2
       !
       CHARACTER(nstrx)  :: fileham, filespace
       CHARACTER(1)      :: op
       !
-      INTEGER           :: i, j, k, ir
+      INTEGER           :: i, j, k, ir, ik
       INTEGER           :: ierr
       !
       ! end of declarations
@@ -387,17 +389,20 @@ END PROGRAM unfold
       !
       ALLOCATE( vkpt_unfld(3,nkpts_unfld), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating vkpt_unfld",ABS(ierr))
+      ALLOCATE( vkpt_cry_unfld(3,nkpts_unfld), STAT=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,"allocating vkpt_cry_unfld",ABS(ierr))
       ALLOCATE( wk_unfld(nkpts_unfld), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating wk_unfld",ABS(ierr))
       !
       ! generate the kpt grid
-      ! vkpt_unfld in crystal units
+      ! vkpt_cry_unfld in crystal units
       !
-      CALL monkpack( nk_unfld, s_unfld, vkpt_unfld )
+      CALL monkpack( nk_unfld, s_unfld, vkpt_cry_unfld )
       wk_unfld(:) = 1.0_dbl/REAL( nkpts_unfld )
       !
-      !! convert to cartesian units
-      !!CALL cry2cart( vkpt_unfld, bvec_unfld )
+      ! convert to cartesian units
+      vkpt_unfld = vkpt_cry_unfld 
+      CALL cry2cart( vkpt_unfld, bvec_unfld )
       !
       ! real space grid
       nr_unfld(1:3) = ndiv(1:3)
@@ -438,7 +443,8 @@ END PROGRAM unfold
       ! translations are read or computed and moved to the current
       ! WF basis
       !
-      CALL translations_drv( dimwann, dimwinx, ndir, rvect_unfld, lhave_transl, datafile_transl )
+      ndimx_ = MAX( dimwann, dimwinx)
+      CALL translations_drv( dimwann, ndimx_, ndir, rvect_unfld, lhave_transl, datafile_transl )
       !
       ! basis selection
       !
@@ -448,17 +454,20 @@ END PROGRAM unfold
       IF ( ierr/=0 ) CALL errore(subname,"allocating work",ABS(ierr))
       ALLOCATE( trmat(dimwann,dimwann,ndir), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating trmat",ABS(ierr))
-      ! XXX to be properly implemented
 
+! XXX
+! tentative implementation
+!#define __WF_SELECT_AUTOMATIC
 #ifdef __WF_SELECT_AUTOMATIC
+      !
       ALLOCATE( orb_map_tmp(dimwann), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating orb_map_tmp",ABS(ierr))
       !
       ALLOCATE( rtmp(dimwann), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating rtmp",ABS(ierr))
       !
-      ALLOCATE( index(dimwann), STAT=ierr )
-      IF ( ierr/=0 ) CALL errore(subname,"allocating index",ABS(ierr))
+      ALLOCATE( indx(dimwann), STAT=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,"allocating indx",ABS(ierr))
       !
       ! take first wannier function ( wf )
       orb_map(1)=1
@@ -470,7 +479,7 @@ END PROGRAM unfold
       do i=1,dimwann
          !
          rtmp(i) = SQRT ( DOT_PRODUCT( rave(:,i)-ref_rave(:), rave(:,i)-ref_rave(:) ) )
-         index(i) = i
+         indx(i) = i
          !
       enddo
       !
@@ -482,30 +491,33 @@ END PROGRAM unfold
       ! sort wf by center distance from first wf center
       !
       write(6,*) "rtmp", rtmp(:), "f_index"
-      write(6,*) "index", index(:), "f_index"
-      CALL hpsort_eps(dimwann, rtmp(:), index(:), toll_dist )
-      write(6,*) "index", index(:), "f_index"
+      write(6,*) "index", indx(:), "f_index"
+      !
+      CALL hpsort_eps(dimwann, rtmp(:), indx(:), toll_dist )
+      !
+      write(6,*) "index", indx(:), "f_index"
       !
       ! we now start from the identity matrix and write it 
       ! and its translated along all sublattice directions
       ! (treating it as a "hamiltonian" to unfold). IF we selected
       ! a good dimwann_unfld subset, we should have that we get no
       ! off-diagonal elements. As soon as we get an off-diagonal
-      ! element, this tells us that one of the functions in the  !  subset is the translated of another, so we kill it
-      orb_map_tmp(:) = index(:)
+      ! element, this tells us that one of the functions in the  
+      !  subset is the translated of another, so we kill it
+      !
+      orb_map_tmp(:) = indx(:)
       !
       DO ir = 1, nrtot_unfld
           !
-          work(:,:) = 0.d0
           !
           ! Initialize work to identity matrix... its translated 
           ! is the translation matrix itself
           !
-          do j=1,dimwann
-              !
+          work(:,:) = 0.d0
+          !
+          DO j=1,dimwann
               work(j,j)=1.d0
-              !
-          enddo
+          ENDDO
           !
           ! build T1^a T2^b T3^c
           !
@@ -532,14 +544,16 @@ END PROGRAM unfold
           !
           DO j = 1, dimwann-1
               !
-              IF(orb_map_tmp(j).gt.0) THEN
+              IF(orb_map_tmp(j) > 0) THEN
                   ! check only wf farther from wf 1 than j                 
                   DO i = j+1, dimwann
-                  ! is wf i translated of wf j? (are they connected by
-                  ! translation)
-                      IF(abs(work(index(j),index(i))).gt.EPS_m2) THEN
-                          !
-                          orb_map_tmp(i) = -1 !discard the wf
+                      !
+                      ! is wf i translated of wf j? 
+                      ! (are they connected by a translation)
+                      !
+                      IF( ABS(work(indx(j),indx(i))) > EPS_m2 ) THEN
+                          ! discard the wf
+                          orb_map_tmp(i) = -1 
                           !
                       ENDIF
                       !
@@ -553,31 +567,32 @@ END PROGRAM unfold
       k=2
       !
       DO j=2,dimwann
-         !
-         IF(orb_map_tmp(j).gt.0) THEN
-            !
-            orb_map(k)=orb_map_tmp(j)
-            !
-            k=k+1
-            ! 
-            IF(k.gt.dimwann_unfld) THEN
-                !
-                exit
-                !
-            ENDIF
-            !
-         ENDIF
-         !
+          !
+          IF( orb_map_tmp(j) > 0 ) THEN
+              !
+              orb_map(k)=orb_map_tmp(j)
+              !
+              k=k+1
+              ! 
+              IF( k > dimwann_unfld ) EXIT
+              !
+          ENDIF
+          !
       ENDDO
+      !
       write(6,*) "this is orb_map", orb_map(:)
       write(6,*) "this is orb_map_tmp", orb_map_tmp(:)
-      !2 find the distance between wannier function one and all other wannier functions: store distance in array of size (dimwann_unfld)
-      !3 compute the nearest and next nearest neighbors of wf N=1 by translation
-      !4 take the first wf closest to N=1 wf, check it is not a n or nn neighbor of wf N=1
-      !5 if not, call this wf N+1, set N=N+1 and goto 3
-      !6 if it is, skip this, go to next wf, goto 4
-
-      !! as an alternative, one can check the neighbors and next-nearest neighbors by having operators T and T^2 in each direction at hand (for 3d we have 36+6 operators... is it feasible?)
+      !
+      ! find the distance between wannier function one and all other wannier functions: 
+      ! store distance in array of size (dimwann_unfld)
+      ! compute the nearest and next nearest neighbors of wf N=1 by translation
+      ! take the first wf closest to N=1 wf, check it is not a n or nn neighbor of wf N=1
+      ! if not, call this wf N+1, set N=N+1 and goto 3
+      ! if it is, skip this, go to next wf, goto 4
+      !
+      ! as an alternative, one can check the neighbors and next-nearest neighbors 
+      ! by having operators T and T^2 in each direction at hand 
+      ! (for 3d we have 36+6 operators... is it feasible?)
 #else 
       DO i = 1, dimwann_unfld
           orb_map(i)=i
@@ -631,6 +646,7 @@ END PROGRAM unfold
               rham_unfld(i,j,ir) = work(orb_map(i),orb_map(j))
           ENDDO
           ENDDO
+
           !
           ! do the same for overlaps if needed
           !
@@ -652,6 +668,52 @@ END PROGRAM unfold
 
 
       !
+      ! since numerical noise in the calculation of transl may lead
+      ! to non-hermitean Hamiltonians, here we force them to
+      ! be hermietan by construction
+      !
+      ALLOCATE( kham_aux(dimwann_unfld,dimwann_unfld,nkpts_unfld), &
+                kovp_aux(dimwann_unfld,dimwann_unfld,nkpts_unfld), STAT=ierr)
+      IF ( ierr/=0 ) CALL errore(subname,"allocating kham_unfld, kovp_unfld")
+      !
+      DO ik = 1, nkpts_unfld
+          !
+          CALL compute_kham( dimwann_unfld, nrtot_unfld, vr_unfld, wr_unfld, rham_unfld, &
+                             vkpt_unfld(:,ik), kham_aux(:,:,ik) ) 
+          !
+          CALL mat_herm( kham_aux(:,:,ik), dimwann_unfld )
+          !
+          IF ( lhave_overlap ) THEN
+              !
+              CALL compute_kham( dimwann_unfld, nrtot_unfld, vr_unfld, wr_unfld, rovp_unfld, &
+                                 vkpt_unfld(:,ik), kovp_aux(:,:,ik) ) 
+              !
+              CALL mat_herm( kovp_aux(:,:,ik), dimwann_unfld )
+              !
+          ENDIF
+          !
+      ENDDO
+      !
+      DO ir = 1, nrtot_unfld
+          !
+          CALL compute_rham( dimwann_unfld, vr_unfld(:,ir), rham_unfld(:,:,ir), &
+                             nkpts_unfld, vkpt_unfld, wk_unfld, kham_aux )
+          !
+          IF ( lhave_overlap ) THEN
+              !
+              CALL compute_rham( dimwann_unfld, vr_unfld(:,ir), rovp_unfld(:,:,ir), &
+                                 nkpts_unfld, vkpt_unfld, wk_unfld, kovp_aux )
+              !
+          ENDIF
+          !
+      ENDDO 
+      !
+      DEALLOCATE( kovp_aux, kham_aux, STAT=ierr)
+      IF ( ierr/=0 ) CALL errore(subname,"deallocating kovp_aux, kham_aux", ABS(ierr))
+
+
+
+      !
       ! dump new datafiles
       !
       CALL io_name('space', filespace, LPOSTFIX=.TRUE., POSTFIX_LOC=TRIM(postfix_unfld) )
@@ -664,7 +726,7 @@ END PROGRAM unfold
       ENDIF
       !
       CALL write_unfld_data( .TRUE., fileham, .TRUE., filespace, dimwann_unfld, nspin, &
-                             nkpts_unfld, nk_unfld, s_unfld, vkpt_unfld, wk_unfld, &
+                             nkpts_unfld, nk_unfld, s_unfld, vkpt_cry_unfld, wk_unfld, &
                              nrtot_unfld, nr_unfld, ivr_unfld, wr_unfld, &
                              avec_unfld, bvec_unfld, lhave_overlap, 0.0_dbl, &
                              rham_unfld, rovp_unfld )
@@ -672,23 +734,26 @@ END PROGRAM unfold
       !
       ! Clean local memory
       !
-      DEALLOCATE( work, STAT=ierr)
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating work', ABS(ierr) )
       DEALLOCATE( trmat, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating trmat', ABS(ierr) )
+      DEALLOCATE( vkpt_cry_unfld, vkpt_unfld, wk_unfld, STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating vkpt_cry_unfld, vkpt_unfld, wk_unfld', ABS(ierr) )
+      DEALLOCATE( ivr_unfld, vr_unfld, wr_unfld, STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating ivr_unfld, vr_unfld, wr_unfld', ABS(ierr) )
+      DEALLOCATE( rham_unfld, rovp_unfld, STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating rham_unfld, rovp_unfld', ABS(ierr) )
+      DEALLOCATE( work, work_ovp, STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating work, work_ovp', ABS(ierr) )
       !
       DEALLOCATE( orb_map, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating orb_map', ABS(ierr) )
       !
-      IF(allocated(orb_map_tmp)) &
-      DEALLOCATE( orb_map_tmp, STAT=ierr)
+      IF(ALLOCATED(orb_map_tmp)) DEALLOCATE( orb_map_tmp, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating orb_map_tmp', ABS(ierr) )
-      IF(allocated(rtmp)) &
-      DEALLOCATE( rtmp, STAT=ierr)
+      IF(ALLOCATED(rtmp)) DEALLOCATE( rtmp, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating rtmp', ABS(ierr) )
-      IF(allocated(index)) &
-      DEALLOCATE( index, STAT=ierr)
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating index', ABS(ierr) )
+      IF(ALLOCATED(indx)) DEALLOCATE( indx, STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating indx', ABS(ierr) )
       !
       CALL timing(subname,OPR='stop')
       CALL log_pop(subname)
@@ -713,8 +778,10 @@ END SUBROUTINE do_unfold
                                          rvect_mod => rvect, ndimx_mod => ndimx, ndim_mod => ndim
    USE iotk_module,               ONLY : iotk_free_unit
    USE subspace_module,           ONLY : eamp, dimwann, dimwin, dimwinx, nkpts_g, subspace_alloc => alloc
+   USE hamiltonian_module,        ONLY : lhave_overlap, rovp
    USE localization_module,       ONLY : cu
    USE util_module,               ONLY : mat_mul
+   USE datafiles_module,          ONLY : datafiles_fmt
    USE want_interfaces_module
    !
    IMPLICIT NONE
@@ -733,6 +800,7 @@ END SUBROUTINE do_unfold
       CHARACTER(16)  :: subname="translations_drv"
       CHARACTER(256) :: filename
       INTEGER        :: i, ik, iunit, ierr
+      INTEGER        :: nwork
       !
       COMPLEX(dbl), ALLOCATABLE :: work(:,:)
       
@@ -749,6 +817,7 @@ END SUBROUTINE do_unfold
       !
       ! check whether translations are read or computed
       !
+      if_compute: &
       IF ( lhave_transl ) THEN
           !
           ! operators are read from file 
@@ -785,11 +854,14 @@ END SUBROUTINE do_unfold
           ENDDO
           !
           !
-      ELSE
+      ELSE if_compute
           !
           ! translation operators are computed (output on the WF basis)
           !
-          IF ( ionode ) WRITE( stdout, "(2x,'Translation operators are computed',/)")
+          IF ( ionode ) WRITE( stdout, "(2x,'Translation operators are computed')")
+          !
+          IF ( nkpts_g /= 1) CALL errore(subname,"invalid nkpts /= 1: not yet implemented",10)
+          ik = 1
           !
           IF ( transl_alloc ) CALL errore(subname,"unexpected transl alloc",10)
           !
@@ -797,42 +869,77 @@ END SUBROUTINE do_unfold
           !
           rvect_mod(:,:) = rvect(:,:)
           ndim_mod       = ndim
-          !
-          CALL wfc_drv( DO_PROJ=.FALSE., DO_OVP=.FALSE., DO_TRANSL=.TRUE. )
-          !
-          basis = "dft_wfc"
 
           !
-          ! convert to the wannier basis
+          ! exploit the atomic basis if present
           !
-          IF ( .NOT. subspace_alloc ) CALL errore(subname,"subspace not alloc",10)
-          !
-          ALLOCATE( work(dimwinx, dimwinx), STAT=ierr )
-          IF ( ierr/=0 ) CALL errore(subname,"allocatign work",ABS(ierr))
-          !
-          IF ( nkpts_g /= 1) CALL errore(subname,"invalid nkpts /= 1: not yet implemented",10)
-          !
-          ik = 1
-          ! 
-          DO i = 1, nvect
+          if_algorithm: &
+          IF ( TRIM(datafiles_fmt) == "atmproj" ) THEN
               !
-              work(:,:) = ZERO
+              IF ( ionode ) WRITE( stdout, "(2x,'ATMPROJ algorithm used',/)")
               !
-              CALL mat_mul( work, eamp(:,:,ik), 'C', transl(:,:,i), 'N', dimwann, dimwin(ik), dimwin(ik) )
-              CALL mat_mul( work, work, 'N', eamp(:,:,ik), 'N', dimwann, dimwann, dimwin(ik) )
+              ALLOCATE( work(ndimx,ndimx), STAT=ierr )
+              IF ( ierr/=0 ) CALL errore(subname,"allocating work", ABS(ierr))
               !
-              CALL mat_mul( work, cu(:,:,ik), 'C', work, 'N', dimwann, dimwann, dimwann )
-              CALL mat_mul( work, work, 'N', cu(:,:,ik), 'N', dimwann, dimwann, dimwann )
+              work = 0.0d0
+              !IF ( lhave_overlap ) THEN
+              !    work(1:dimwann,1:dimwann) = rovp(1:dimwann,1:dimwann,1)
+              !ELSE
+                  DO i = 1, ndimx
+                      work(i,i) = 1.0d0
+                  ENDDO
+              !ENDIF
               !
-              transl(:,:,i) = ZERO
-              transl(1:dimwann,1:dimwann,i) = work(1:dimwann,1:dimwann)
+              DO i = 1, nvect
+                  !
+                  CALL translations_calc_atmproj( rvect(:,i), dimwann, ndimx, work, transl(:,:,i) )
+                  !
+              ENDDO
               !
-          ENDDO
-          !
-          DEALLOCATE( work, STAT=ierr )
-          IF ( ierr/=0 ) CALL errore(subname,"deallocating work",ABS(ierr))
-          !
-          basis = "wannier"
+              DEALLOCATE( work, STAT=ierr )
+              IF ( ierr/=0 ) CALL errore(subname,"allocating work", ABS(ierr))
+              !
+          ELSE 
+              !
+              IF ( ionode ) WRITE( stdout, "(2x,'WFs algorithm used',/)")
+              !
+              CALL wfc_drv( DO_PROJ=.FALSE., DO_OVP=.FALSE., DO_TRANSL=.TRUE. )
+              !
+              basis = "dft_wfc"
+
+              !
+              ! convert to the wannier basis
+              !
+              IF ( .NOT. subspace_alloc ) CALL errore(subname,"subspace not alloc",10)
+              !
+              ! there could be cases (atmproj) such that
+              ! dimwann > dimwinx
+              nwork=MAX(dimwinx, dimwann)
+              !
+              ALLOCATE( work(nwork, nwork), STAT=ierr )
+              IF ( ierr/=0 ) CALL errore(subname,"allocatign work",ABS(ierr))
+              !
+              DO i = 1, nvect
+                  !
+                  work(:,:) = ZERO
+                  !
+                  CALL mat_mul( work, eamp(:,:,ik), 'C', transl(:,:,i), 'N', dimwann, dimwin(ik), dimwin(ik) )
+                  CALL mat_mul( work, work, 'N', eamp(:,:,ik), 'N', dimwann, dimwann, dimwin(ik) )
+                  !
+                  CALL mat_mul( work, cu(:,:,ik), 'C', work, 'N', dimwann, dimwann, dimwann )
+                  CALL mat_mul( work, work, 'N', cu(:,:,ik), 'N', dimwann, dimwann, dimwann )
+                  !
+                  transl(:,:,i) = ZERO
+                  transl(1:dimwann,1:dimwann,i) = work(1:dimwann,1:dimwann)
+                  !
+              ENDDO
+              !
+              DEALLOCATE( work, STAT=ierr )
+              IF ( ierr/=0 ) CALL errore(subname,"deallocating work",ABS(ierr))
+              !
+              basis = "wannier"
+              !
+          ENDIF if_algorithm
 
           !
           ! dump translation vectors to file
@@ -852,7 +959,7 @@ END SUBROUTINE do_unfold
           ENDIF
           !
           !
-      ENDIF
+      ENDIF if_compute
       !
       !
       CALL timing(subname,OPR='stop')

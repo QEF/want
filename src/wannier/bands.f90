@@ -258,7 +258,7 @@ END PROGRAM bands
    ! perform the main task of the calculation
    !
    USE kinds
-   USE constants,            ONLY : ZERO, CZERO, TWO, EPS_m6
+   USE constants,            ONLY : ZERO, CZERO, TWO, EPS_m6, EPS_m8
    USE parameters,           ONLY : nstrx, nkpts_inx
    USE io_module,            ONLY : stdout, stdin, io_name, ionode, ionode_id, ham_unit, sgm_unit
    USE io_module,            ONLY : work_dir, prefix, postfix
@@ -266,7 +266,7 @@ END PROGRAM bands
    USE mp,                   ONLY : mp_bcast, mp_sum
    USE mp_global,            ONLY : mpime, nproc
    USE files_module,         ONLY : file_open, file_close
-   USE util_module,          ONLY : mat_hdiag, mat_herm
+   USE util_module,          ONLY : mat_hdiag, mat_herm, mat_is_herm
    USE converters_module,    ONLY : cry2cart, cart2cry
    USE lattice_module,       ONLY : avec, bvec
    USE kpoints_module,       ONLY : nkpts, nrtot, vr, wr 
@@ -567,11 +567,16 @@ END PROGRAM bands
           CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rham_nn,  &
                              vkpt_int(:,ik), kham)
 
+          IF ( .NOT. mat_is_herm(dimwann, kham, TOLL=EPS_m8) ) &
+               CALL errore(subname,'kham not herm',ik)
+          !
           IF ( lhave_overlap ) THEN
               !
               CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn,  &
                                  vkpt_int(:,ik), kovp)
               !
+              IF ( .NOT. mat_is_herm(dimwann, kovp, TOLL=EPS_m8) ) &
+                   CALL errore(subname,'kovp not herm',ik)
           ENDIF
 
           IF ( lhave_sgm ) THEN

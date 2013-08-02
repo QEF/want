@@ -121,6 +121,7 @@ input.o : hamiltonian.o
 input.o : input_parameters.o
 input.o : kpoints.o
 input.o : smearing_T.o
+input.o : ../wannier/atmproj_tools.o
 input.o : ../wannier/io_module.o
 input_parameters.o : ../baselib/constants.o
 input_parameters.o : ../baselib/kind.o

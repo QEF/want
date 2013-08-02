@@ -19,7 +19,7 @@
    USE io_global_module,   ONLY : stdout
    USE converters_module,  ONLY : cart2cry, cry2cart
    USE parser_module,      ONLY : change_case
-   USE util_module,        ONLY : mat_is_herm
+   USE util_module,        ONLY : mat_is_herm, mat_mul
    USE grids_module,       ONLY : grids_get_rgrid
    USE files_module,       ONLY : file_exist
    USE iotk_module
@@ -161,7 +161,7 @@ END SUBROUTINE atmproj_tools_init
    COMPLEX(dbl),   ALLOCATABLE :: rham(:,:,:,:), kham(:,:,:)
    COMPLEX(dbl),   ALLOCATABLE :: proj(:,:,:,:)
    COMPLEX(dbl),   ALLOCATABLE :: kovp(:,:,:,:), rovp(:,:,:,:)
-   COMPLEX(dbl),   ALLOCATABLE :: cu_tmp(:,:,:)
+   COMPLEX(dbl),   ALLOCATABLE :: cu_tmp(:,:,:), eamp_tmp(:,:)
    !
    COMPLEX(dbl),   ALLOCATABLE :: zaux(:,:), ztmp(:,:)
    COMPLEX(dbl),   ALLOCATABLE :: kovp_sq(:,:)
@@ -415,7 +415,7 @@ END SUBROUTINE atmproj_tools_init
                    !
                    IF ( atmproj_thr > 0.0d0 ) THEN
                        !
-                       proj_wgt = DOT_PRODUCT( ztmp(:,ib), ztmp(:,ib) )
+                       proj_wgt = REAL( DOT_PRODUCT( ztmp(:,ib), ztmp(:,ib) ) )
                        IF ( proj_wgt < atmproj_thr ) CYCLE ibnd_loop
                        !
                    ENDIF
@@ -633,22 +633,24 @@ END SUBROUTINE atmproj_tools_init
        CALL iotk_write_begin( ounit, "WINDOWS" )
        !
        !
-       CALL iotk_write_attr( attr,"nbnd",nbnd,FIRST=.TRUE.)
+       CALL iotk_write_attr( attr,"nbnd",atmproj_nbnd_,FIRST=.TRUE.)
        CALL iotk_write_attr( attr,"nkpts",nkpts)
        CALL iotk_write_attr( attr,"nspin",nspin)
        CALL iotk_write_attr( attr,"spin_component",TRIM(spin_component))
        CALL iotk_write_attr( attr,"efermi", 0.0_dbl )
-       CALL iotk_write_attr( attr,"dimwinx", nbnd )
+       CALL iotk_write_attr( attr,"dimwinx", atmproj_nbnd_ )
        CALL iotk_write_empty( ounit,"DATA",ATTR=attr)
        !
        ALLOCATE( itmp(nkpts), STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname, 'allocating itmp', ABS(ierr))
+       ALLOCATE( eamp_tmp(atmproj_nbnd_,dimwann), STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname, 'allocating eamp_tmp', ABS(ierr))
        !
-       itmp(:) = nbnd
+       itmp(:) = atmproj_nbnd_
        CALL iotk_write_dat( ounit, "DIMWIN", itmp, COLUMNS=8 )
        itmp(:) = 1
        CALL iotk_write_dat( ounit, "IMIN", itmp, COLUMNS=8 )
-       itmp(:) = nbnd
+       itmp(:) = atmproj_nbnd_
        CALL iotk_write_dat( ounit, "IMAX", itmp, COLUMNS=8 )
        !
        DO isp = 1, nspin
@@ -657,7 +659,7 @@ END SUBROUTINE atmproj_tools_init
                CALL iotk_write_begin( ounit, "SPIN"//TRIM(iotk_index(isp)) )
            ENDIF
            !
-           CALL iotk_write_dat( ounit, "EIG", eig(:,:,isp), COLUMNS=4)
+           CALL iotk_write_dat( ounit, "EIG", eig(1:atmproj_nbnd_,:,isp), COLUMNS=4)
            !
            IF ( nspin == 2 ) THEN
                CALL iotk_write_end( ounit, "SPIN"//TRIM(iotk_index(isp)) )
@@ -670,12 +672,12 @@ END SUBROUTINE atmproj_tools_init
        !
        CALL iotk_write_begin( ounit, "SUBSPACE" )
        !
-       CALL iotk_write_attr( attr,"dimwinx",nbnd,FIRST=.TRUE.)
+       CALL iotk_write_attr( attr,"dimwinx",atmproj_nbnd_,FIRST=.TRUE.)
        CALL iotk_write_attr( attr,"nkpts",nkpts)
        CALL iotk_write_attr( attr,"dimwann", dimwann)
        CALL iotk_write_empty( ounit,"DATA",ATTR=attr)
        !
-       itmp(:) = nbnd 
+       itmp(:) = atmproj_nbnd_
        CALL iotk_write_dat( ounit, "DIMWIN", itmp, COLUMNS=8 )
        !
        DO isp = 1, nspin
@@ -686,8 +688,15 @@ END SUBROUTINE atmproj_tools_init
            !
            DO ik = 1, nkpts
                !
-               CALL iotk_write_dat( ounit, "EAMP"//TRIM(iotk_index(ik)), &
-                                    CONJG(TRANSPOSE(proj(1:dimwann,1:nbnd,ik,isp) )) )
+               eamp_tmp(1:atmproj_nbnd_, 1:dimwann) = &
+                        CONJG(TRANSPOSE(proj(1:dimwann,1:atmproj_nbnd_,ik,isp) )) 
+               !
+               DO ib = 1, atmproj_nbnd_
+                   proj_wgt = REAL( DOT_PRODUCT( proj(:,ib,ik,isp ), proj(:,ib,ik,isp ) ) )
+                   IF ( proj_wgt < atmproj_thr ) eamp_tmp( ib, :) = 0.0d0
+               ENDDO
+               !
+               CALL iotk_write_dat( ounit, "EAMP"//TRIM(iotk_index(ik)), eamp_tmp )
                !
            ENDDO
            !
@@ -702,8 +711,8 @@ END SUBROUTINE atmproj_tools_init
        !
        CALL iotk_close_write( ounit )
        !
-       DEALLOCATE( itmp, STAT=ierr )
-       IF ( ierr/=0 ) CALL errore(subname, 'deallocating itmp', ABS(ierr))
+       DEALLOCATE( itmp, eamp_tmp, STAT=ierr )
+       IF ( ierr/=0 ) CALL errore(subname, 'deallocating itmp, eamp', ABS(ierr))
        !
    ENDIF
 
