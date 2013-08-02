@@ -1,15 +1,15 @@
 
 &INPUT
     prefix = "gold_US"
-    postfix = "_WanT"
+    postfix = "_WanT_PROJ"
     postfix_unfld = "_WanT_UNFLD_PROJ"
     datafile_dft = "./SCRATCH/gold_US.save/atomic_proj.dat"
     translations = "from_scratch"
     work_dir = "./SCRATCH"
     ndiv(1) = 1
     ndiv(2) = 1
-    ndiv(3) = 5
+    ndiv(3) = 12
     do_orthoovp = .FALSE.
-    atmproj_sh = 20.0
-    atmproj_thr = 0.0
+    atmproj_sh = 2.0
+    atmproj_thr = 0.3
 /

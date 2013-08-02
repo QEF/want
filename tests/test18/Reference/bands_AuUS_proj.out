@@ -9,7 +9,7 @@
 
 
   Program <bands>  v. 2.5.0alpha2  starts ...
-  Date  2Aug2013 at 15:19: 4 
+  Date  2Aug2013 at 15:19: 8 
 
      Number of MPI processes:       1
 
@@ -39,12 +39,12 @@
 
                      work dir :     ./SCRATCH
                        prefix :     gold_US
-                      postfix :     _WanT_UNFLD
+                      postfix :     _WanT_UNFLD_PROJ
                spin component :     all
-                      fileout :     bands_AuUS_unfld.dat
+                      fileout :     bands_AuUS_unfld_proj.dat
                     nkpts_in  :      2
                     nkpts_max :    100
-                 datafile DFT :     ./SCRATCH/gold_US_WanT_UNFLD.ham
+                 datafile DFT :     ./SCRATCH/gold_US_WanT_UNFLD_PROJ.ham
               use ortho basis :     FALSE
                 atmproj shift :        10.000000
                  atmproj nbnd :         0
@@ -57,12 +57,12 @@
   ======================================================================
 
    file fmt: internal
-  ./SCRATCH/gold_US_WanT_UNFLD.ham used as internal fmt
-  DFT-data read from file: ./SCRATCH/gold_US_WanT_UNFLD.ham
+  ./SCRATCH/gold_US_WanT_UNFLD_PROJ.ham used as internal fmt
+  DFT-data read from file: ./SCRATCH/gold_US_WanT_UNFLD_PROJ.ham
 
-      Windows data read from file: gold_US_WanT_UNFLD.space
-     Subspace data read from file: gold_US_WanT_UNFLD.space
-  Hamiltonian data read from file: gold_US_WanT_UNFLD.ham
+      Windows data read from file: gold_US_WanT_UNFLD_PROJ.space
+     Subspace data read from file: gold_US_WanT_UNFLD_PROJ.space
+  Hamiltonian data read from file: gold_US_WanT_UNFLD_PROJ.ham
 
 
 
@@ -371,7 +371,7 @@
                 want_init :     0.00s CPU
              windows_read :     0.00s CPU
             subspace_read :     0.00s CPU
-                 do_bands :     0.01s CPU
-             compute_kham :     0.00s CPU (     100 calls,   0.000 s avg)
+                 do_bands :     0.02s CPU
+             compute_kham :     0.01s CPU (     200 calls,   0.000 s avg)
 
 

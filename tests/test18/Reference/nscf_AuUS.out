@@ -1,21 +1,23 @@
 
-     Program PWSCF v.5.0        starts on  4Dec2012 at 23:36: 3 
+     Program PWSCF v.5.0.2 (svn rev. 10303M) starts on  2Aug2013 at 10:14:28 
 
      This program is part of the open-source Quantum ESPRESSO suite
      for quantum simulation of materials; please cite
          "P. Giannozzi et al., J. Phys.:Condens. Matter 21 395502 (2009);
           URL http://www.quantum-espresso.org", 
      in publications or presentations arising from this work. More details at
-     http://www.quantum-espresso.org/quote.php
+     http://www.quantum-espresso.org/quote
 
-     Parallel version (MPI), running on     6 processors
-     R & G space division:  proc/pool =    6
+     Parallel version (MPI & OpenMP), running on       6 processor cores
+     Number of MPI processes:                 6
+     Threads/MPI process:                     1
+     R & G space division:  proc/nbgrp/npool/nimage =       6
+     Reading input from /home/ferretti/want/tests/test18/nscf_AuUS.in
 
      Current dimensions of program PWSCF are:
      Max number of different atomic species (ntypx) = 10
      Max number of k-points (npk) =  40000
      Max angular momentum in pseudopotentials (lmaxx) =  3
-     Reading input from /home/ferretti/want/tests/test18/nscf_AuUS.in
 
      Atomic positions and unit cell read from directory:
      ./SCRATCH/gold_US.save/
@@ -26,43 +28,43 @@
      Subspace diagonalization in iterative solution of the eigenvalue problem:
      a serial algorithm will be used
 
-     Found symmetry operation: I + (  0.0000  0.0000  0.2000)
+     Found symmetry operation: I + (  0.0000  0.0000  0.0833)
      This is a supercell, fractional translations are disabled
  
      Parallelization info
      --------------------
      sticks:   dense  smooth     PW     G-vecs:    dense   smooth      PW
-     Min        1060     530    131                75196    26590    3332
-     Max        1064     531    134                75198    26641    3342
-     Sum        6369    3181    793               451179   159687   20005
+     Min        1060     530    131               180508    63766    7981
+     Max        1064     531    134               180516    63859    7998
+     Sum        6369    3181    793              1083071   382897   47923
      Tot        3185    1591    397
  
 
 
      bravais-lattice index     =            8
      lattice parameter (alat)  =      20.0000  a.u.
-     unit-cell volume          =    9448.6400 (a.u.)^3
-     number of atoms/cell      =            5
+     unit-cell volume          =   22676.7225 (a.u.)^3
+     number of atoms/cell      =           12
      number of atomic types    =            1
-     number of electrons       =        55.00
-     number of Kohn-Sham states=           50
+     number of electrons       =       132.00
+     number of Kohn-Sham states=           80
      kinetic-energy cutoff     =      25.0000  Ry
      charge density cutoff     =     200.0000  Ry
      Exchange-correlation      =  SLA  PW   GGX  GGC ( 1 4 2 2 0)
      EXX-fraction              =        0.00
 
-     celldm(1)=  20.000000  celldm(2)=   1.000000  celldm(3)=   1.181080
+     celldm(1)=  20.000000  celldm(2)=   1.000000  celldm(3)=   2.834590
      celldm(4)=   0.000000  celldm(5)=   0.000000  celldm(6)=   0.000000
 
      crystal axes: (cart. coord. in units of alat)
                a(1) = (   1.000000   0.000000   0.000000 )  
                a(2) = (   0.000000   1.000000   0.000000 )  
-               a(3) = (   0.000000   0.000000   1.181080 )  
+               a(3) = (   0.000000   0.000000   2.834590 )  
 
      reciprocal axes: (cart. coord. in units 2 pi/alat)
                b(1) = (  1.000000  0.000000  0.000000 )  
                b(2) = (  0.000000  1.000000  0.000000 )  
-               b(3) = (  0.000000  0.000000  0.846683 )  
+               b(3) = (  0.000000  0.000000  0.352785 )  
 
 
      PseudoPot. # 1 for Au read from file:
@@ -91,106 +93,114 @@
 
      site n.     atom                  positions (alat units)
          1           Au  tau(   1) = (   0.0000000   0.0000000   0.0000000  )
-         2           Au  tau(   2) = (   0.0000000   0.0000000   0.2362160  )
-         3           Au  tau(   3) = (   0.0000000   0.0000000   0.4724320  )
-         4           Au  tau(   4) = (   0.0000000   0.0000000   0.7086480  )
-         5           Au  tau(   5) = (   0.0000000   0.0000000   0.9448640  )
+         2           Au  tau(   2) = (   0.0000000   0.0000000   0.2362158  )
+         3           Au  tau(   3) = (   0.0000000   0.0000000   0.4724315  )
+         4           Au  tau(   4) = (   0.0000000   0.0000000   0.7086473  )
+         5           Au  tau(   5) = (   0.0000000   0.0000000   0.9448631  )
+         6           Au  tau(   6) = (   0.0000000   0.0000000   1.1810788  )
+         7           Au  tau(   7) = (   0.0000000   0.0000000   1.4172946  )
+         8           Au  tau(   8) = (   0.0000000   0.0000000   1.6535104  )
+         9           Au  tau(   9) = (   0.0000000   0.0000000   1.8897261  )
+        10           Au  tau(  10) = (   0.0000000   0.0000000   2.1259419  )
+        11           Au  tau(  11) = (   0.0000000   0.0000000   2.3621577  )
+        12           Au  tau(  12) = (   0.0000000   0.0000000   2.5983734  )
 
      number of k points=     1  gaussian smearing, width (Ry)=  0.0100
                        cart. coord. in units 2pi/alat
         k(    1) = (   0.0000000   0.0000000   0.0000000), wk =   2.0000000
 
-     Dense  grid:   225590 G-vectors     FFT dimensions: (  96,  96, 108)
+     Dense  grid:   541536 G-vectors     FFT dimensions: (  96,  96, 256)
 
-     Smooth grid:    79844 G-vectors     FFT dimensions: (  64,  64,  75)
+     Smooth grid:   191449 G-vectors     FFT dimensions: (  64,  64, 192)
 
      Largest allocated arrays     est. size (Mb)     dimensions
-        Kohn-Sham Wavefunctions         1.27 Mb     (   1668,   50)
-        NL pseudopotentials             2.29 Mb     (   1668,   90)
-        Each V/rho on FFT grid          2.53 Mb     ( 165888)
-        Each G-vector array             0.29 Mb     (  37599)
-        G-vector shells                 0.10 Mb     (  13299)
+        Kohn-Sham Wavefunctions         4.87 Mb     (    3992,   80)
+        NL pseudopotentials            13.16 Mb     (    3992,  216)
+        Each V/rho on FFT grid          6.05 Mb     (  396288)
+        Each G-vector array             0.69 Mb     (   90258)
+        G-vector shells                 0.26 Mb     (   33638)
      Largest temporary arrays     est. size (Mb)     dimensions
-        Auxiliary wavefunctions         2.55 Mb     (   1668,  200)
-        Each subspace H/S matrix        0.31 Mb     ( 200, 200)
-        Each <psi_i|beta_j> matrix      0.03 Mb     (     90,   50)
+        Auxiliary wavefunctions         9.75 Mb     (    3992,  320)
+        Each subspace H/S matrix        0.78 Mb     (     320,  320)
+        Each <psi_i|beta_j> matrix      0.13 Mb     (     216,   80)
 
      The potential is recalculated from file :
      ./SCRATCH/gold_US.save/charge-density.dat
 
 
-     negative rho (up, down):  0.486E-02 0.000E+00
-     Starting wfc are   45 randomized atomic wfcs
-
-     total cpu time spent up to now is        1.8 secs
-
-     per-process dynamical memory:    33.8 Mb
+     negative rho (up, down):  1.159E-02 0.000E+00
+     Starting wfc are  108 randomized atomic wfcs
 
      Band Structure Calculation
      Davidson diagonalization with overlap
-     WARNING:    11 eigenvalues not converged in regterg
+     WARNING:     3 eigenvalues not converged in regterg
+     WARNING:     2 eigenvalues not converged in regterg
+     WARNING:     1 eigenvalues not converged in regterg
+     WARNING:     2 eigenvalues not converged in regterg
+     WARNING:     2 eigenvalues not converged in regterg
 
-     ethr =  1.82E-11,  avg # of iterations = 30.0
+     ethr =  7.58E-12,  avg # of iterations =105.0
 
-     total cpu time spent up to now is        6.0 secs
+     total cpu time spent up to now is       40.2 secs
 
      End of band structure calculation
 
-          k = 0.0000 0.0000 0.0000     band energies (ev):
+          k = 0.0000 0.0000 0.0000 ( 23962 PWs)   bands (ev):
 
-   -11.0425  -9.0401  -9.0400  -8.4602  -8.4602  -8.4595  -8.4595  -6.9701
-    -6.9701  -6.8550  -6.8550  -6.8549  -6.8549  -6.7474  -6.7473  -6.7467
-    -6.7466  -6.6154  -6.3690  -6.3684  -6.3679  -6.3672  -6.0235  -6.0234
-    -5.8423  -5.8416  -5.3833  -5.3833  -2.8216  -2.8215  -1.2462  -1.2462
-     0.2899   0.2899   0.2900   0.2900   1.0166   1.9563   1.9565   1.9775
-     2.7524   2.7524   2.7580   2.8149   2.9190   2.9200   3.3816   3.3816
-     3.3817   3.3817
+   -10.8679 -10.5042 -10.5041  -9.4519  -9.4517  -8.5618  -8.5618  -8.4031
+    -8.4031  -8.4030  -8.4030  -7.9414  -7.9414  -7.9414  -7.9414  -7.8685
+    -7.8685  -7.2315  -7.2315  -7.2315  -7.2315  -6.8978  -6.8978  -6.8547
+    -6.8547  -6.8546  -6.8546  -6.7367  -6.7366  -6.7358  -6.7357  -6.5721
+    -6.5721  -6.5710  -6.5710  -6.5607  -6.4583  -6.4583  -6.4026  -6.4025
+    -6.4012  -6.4012  -6.3832  -6.3832  -6.3831  -6.3831  -6.3439  -6.3437
+    -6.2740  -6.2739  -6.2729  -6.2728  -6.2252  -6.2244  -6.1526  -6.1525
+    -5.6353  -5.6352  -5.6067  -5.6067  -5.6009  -5.6009  -5.6008  -5.6008
+    -5.4413  -5.2506  -5.2506  -4.4444  -4.4444  -2.2304  -2.2304  -1.2229
+    -1.2229  -0.8887  -0.8887  -0.8887  -0.8887  -0.3485  -0.0870  -0.0870
 
-     the Fermi energy is    -5.3184 ev
+     the Fermi energy is    -5.2479 ev
 
      Writing output data file gold_US.save
  
-     init_run     :      1.53s CPU      1.61s WALL (       1 calls)
-     electrons    :      4.17s CPU      4.22s WALL (       1 calls)
+     init_run     :      6.75s CPU      6.88s WALL (       1 calls)
+     electrons    :     32.80s CPU     33.10s WALL (       1 calls)
 
      Called by init_run:
      wfcinit      :      0.00s CPU      0.00s WALL (       1 calls)
-     potinit      :      0.37s CPU      0.42s WALL (       1 calls)
+     potinit      :      0.91s CPU      0.98s WALL (       1 calls)
 
      Called by electrons:
-     c_bands      :      4.17s CPU      4.22s WALL (       1 calls)
-     v_of_rho     :      0.28s CPU      0.30s WALL (       1 calls)
-     newd         :      0.64s CPU      0.64s WALL (       1 calls)
+     c_bands      :     32.80s CPU     33.09s WALL (       1 calls)
+     v_of_rho     :      0.62s CPU      0.68s WALL (       1 calls)
+     newd         :      4.91s CPU      4.92s WALL (       1 calls)
 
      Called by c_bands:
-     init_us_2    :      0.00s CPU      0.00s WALL (       1 calls)
-     regterg      :      3.97s CPU      4.01s WALL (       2 calls)
+     init_us_2    :      0.00s CPU      0.01s WALL (       1 calls)
+     regterg      :     31.40s CPU     31.68s WALL (       6 calls)
 
      Called by *egterg:
-     h_psi        :      2.86s CPU      2.90s WALL (      33 calls)
-     s_psi        :      0.28s CPU      0.27s WALL (      33 calls)
-     g_psi        :      0.04s CPU      0.04s WALL (      30 calls)
-     rdiaghg      :      0.25s CPU      0.26s WALL (      31 calls)
+     h_psi        :     23.42s CPU     23.55s WALL (     112 calls)
+     s_psi        :      1.46s CPU      1.50s WALL (     112 calls)
+     g_psi        :      0.17s CPU      0.17s WALL (     105 calls)
+     rdiaghg      :      1.92s CPU      1.96s WALL (     106 calls)
 
      Called by h_psi:
-     add_vuspsi   :      0.25s CPU      0.26s WALL (      33 calls)
+     add_vuspsi   :      1.57s CPU      1.53s WALL (     112 calls)
 
      General routines
-     calbec       :      0.22s CPU      0.19s WALL (     119 calls)
-     fft          :      0.20s CPU      0.23s WALL (      12 calls)
-     ffts         :      0.00s CPU      0.00s WALL (       1 calls)
-     fftw         :      1.77s CPU      1.86s WALL (     912 calls)
-     interpolate  :      0.02s CPU      0.03s WALL (       1 calls)
-     davcio       :      0.00s CPU      0.01s WALL (       3 calls)
+     calbec       :      1.41s CPU      1.50s WALL (     112 calls)
+     fft          :      0.51s CPU      0.52s WALL (      12 calls)
+     ffts         :      0.01s CPU      0.01s WALL (       1 calls)
+     fftw         :     16.01s CPU     16.12s WALL (    2290 calls)
+     interpolate  :      0.06s CPU      0.06s WALL (       1 calls)
  
      Parallel routines
-     fft_scatter  :      0.73s CPU      0.71s WALL (     925 calls)
-     EXX routines
+     fft_scatter  :      5.87s CPU      5.90s WALL (    2303 calls)
  
-     PWSCF        :     5.96s CPU         6.19s WALL
+     PWSCF        :    39.98s CPU        40.55s WALL
 
  
-   This run was terminated on:  23:36: 9   4Dec2012            
+   This run was terminated on:  10:15: 9   2Aug2013            
 
 =------------------------------------------------------------------------------=
    JOB DONE.

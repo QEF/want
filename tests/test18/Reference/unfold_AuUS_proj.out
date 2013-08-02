@@ -9,7 +9,7 @@
 
 
   Program <unfold>  v. 2.5.0alpha2  starts ...
-  Date  2Aug2013 at 15:13: 3 
+  Date  2Aug2013 at 15:17:23 
 
      Number of MPI processes:       1
 
@@ -42,8 +42,13 @@
 
                      work dir :     ./SCRATCH
                        prefix :     gold_US
-                      postfix :     _WanT
-                postfix_unfld :     _WanT_UNFLD
+                      postfix :     _WanT_PROJ
+                postfix_unfld :     _WanT_UNFLD_PROJ
+                 datafile_dft :     ./SCRATCH/gold_US.save/atomic_proj.dat
+              use ortho basis :     FALSE
+                atmproj shift :         2.000000
+                 atmproj nbnd :         0
+                  atmproj thr :         0.300000
                  translations :     from_scratch
                          ndiv :      1   1  12
                    nkb_buffer :     -1
@@ -55,12 +60,19 @@
   =  Post Processing Init                                              =
   ======================================================================
 
+   file fmt: atmproj
+   ATMPROJ conversion to be done using: 
+     atmproj_nbnd :     80
+     atmproj_thr  :      0.300000
+     atmproj_sh   :      2.000000
+
+  ./SCRATCH/gold_US.save/atomic_proj.dat converted to internal fmt
   DFT-data read from file: gold_US.save/data-file.xml
 
-      Windows data read from file: gold_US_WanT.space
-     Subspace data read from file: gold_US_WanT.space
-  Hamiltonian data read from file: gold_US_WanT.ham
-      Wannier data read from file: gold_US_WanT.wan
+      Windows data read from file: gold_US_WanT_PROJ.space
+     Subspace data read from file: gold_US_WanT_PROJ.space
+  Hamiltonian data read from file: gold_US_WanT_PROJ.ham
+      Wannier data read from file: gold_US_WanT_PROJ.wan
 
 
 
@@ -132,66 +144,7 @@
   ======================================================================
 
   Translation operators are computed
-  WFs algorithm used
-
-  Reading density G-grid from file: gold_US.save/data-file.xml
-  Reading Wfc grids from file: gold_US.save/data-file.xml
-
-
-          Energy cut-off for rho  =        200.00 (Ry)
-      Total number of PW for rho  =     541536
-                    (smooth grid) =     191449
-        FFT grid components (rho) =  (    96   96  256 )
-                    (smooth grid) =  (    64   64  192 )
-             Use gamma-only trick =       .TRUE.
-
-          Energy cut-off for wfcs =         25.00 (Ry)
-        Max number of PW for wfc  =      23962
-
-
-  Initializing global dft data
-
- <WFC_BUFFERING>
-
-       dimwinx =     80
-   nwfc_buffer =     80
-    nkb_buffer =    216
-         nwfcx =     80
-          nkbx =    216
-
-    ik(   1 )  -->     1  step(s)
-
-    beta kb    -->     1  step(s)
-
- </WFC_BUFFERING>
-
-  Initializing US pseudopot. data
-  Total number Nkb of beta functions:   216
-
- <MEMORY_USAGE>
-                 kpoints:          0.000 MB
-                   rgrid:          0.000 MB
-                 bshells:          0.000 MB
-                    ions:          0.003 MB
-                 windows:          0.001 MB
-                subspace:          0.092 MB
-                  ggrids:         23.828 MB
-                wfc_data:         61.441 MB
-            localization:          0.086 MB
-             hamiltonian:          0.083 MB
-             struct_fact:          8.837 MB
-                      us:         21.186 MB
-                    uspp:         82.900 MB
-
-     Total alloc. Memory:        198.458 MB
- </MEMORY_USAGE>
-
-
-    Matrix elements calculation for k-point:    1
-    npw =  23962,    dimwin =   80
-                              Total time spent up to now :     5.17 secs
-
-                              Total time spent up to now :     5.19 secs
+  ATMPROJ algorithm used
 
 
   ======================================================================
@@ -200,37 +153,30 @@
 
 
   Unfold data dumped to files:
-          ./SCRATCH/gold_US_WanT_UNFLD.ham
-          ./SCRATCH/gold_US_WanT_UNFLD.space
+          ./SCRATCH/gold_US_WanT_UNFLD_PROJ.ham
+          ./SCRATCH/gold_US_WanT_UNFLD_PROJ.space
 
   ======================================================================
 
    <global routines>
-             clock number :    23
+             clock number :    16
 
-                   unfold :     5.00s CPU 
+                   unfold :     0.00s CPU 
 
              unfold_input :     0.09s CPU
-            postproc_init :     0.10s CPU
+           datafiles_init :     0.09s CPU
+      atmproj_to_internal :     0.08s CPU
+             compute_rham :     0.00s CPU (      28 calls,   0.000 s avg)
+            postproc_init :     0.09s CPU
              want_dftread :     0.09s CPU
                 want_init :     0.00s CPU
              bshells_init :     0.00s CPU
              windows_read :     0.00s CPU
             subspace_read :     0.00s CPU
-                do_unfold :     5.06s CPU
-         translations_drv :     5.04s CPU
-                  wfc_drv :     5.01s CPU
-          ggrids_read_ext :     0.21s CPU
-      wfc_data_grids_read :     0.00s CPU
-              struct_fact :     0.28s CPU
-                init_us_1 :     2.84s CPU
-           wfc_data_kread :     0.27s CPU (       2 calls,   0.134 s avg)
-                init_us_2 :     0.29s CPU (       2 calls,   0.145 s avg)
-                  ccalbec :     0.23s CPU
-                    s_psi :     0.58s CPU
-        translations_calc :     0.42s CPU
-       translations_write :     0.05s CPU
-             compute_kham :     0.00s CPU (      12 calls,   0.000 s avg)
-             compute_rham :     0.00s CPU (      13 calls,   0.000 s avg)
+                do_unfold :     0.14s CPU
+         translations_drv :     0.03s CPU
+     translations_calc_at :     0.00s CPU
+       translations_write :     0.14s CPU
+             compute_kham :     0.00s CPU (      24 calls,   0.000 s avg)
 
 
