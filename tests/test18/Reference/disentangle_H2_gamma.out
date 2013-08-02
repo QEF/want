@@ -9,13 +9,13 @@
 
 
   Program <disentangle>  v. 2.5.0alpha2  starts ...
-  Date  4Dec2012 at 17:39:45 
+  Date  2Aug2013 at 16: 0:29 
 
      Number of MPI processes:       6
 
 
 
-          BUILT :    Fri 30 Nov 2012 07:22:02 PM CET
+          BUILT :    Wed 31 Jul 2013 06:56:36 PM CEST
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    x86_64
              CC :    icc
@@ -249,6 +249,21 @@
 
   Initializing global dft data
 
+ <WFC_BUFFERING>
+
+       dimwinx =     10
+   nwfc_buffer =     10
+    nkb_buffer =      0
+         nwfcx =     10
+          nkbx =      1
+
+    ik(   1 )  -->     1  step(s)
+
+    beta kb    -->     1  step(s)
+
+ </WFC_BUFFERING>
+
+
  <MEMORY_USAGE>
                  kpoints:          0.000 MB
                    rgrid:          0.000 MB
@@ -271,11 +286,11 @@
 
     Matrix elements calculation for k-point:    1
     npw =  42743,    dimwin =   10
-                              Total time spent up to now :     1.55 secs
+                              Total time spent up to now :     1.57 secs
 
 
   Overlaps and projections written on file: H2_gamma_WanT.ovp
-                              Total time spent up to now :     1.57 secs
+                              Total time spent up to now :     1.58 secs
 
  <MEMORY_USAGE>
                  kpoints:          0.000 MB
@@ -312,7 +327,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):      42.477775        11.894979
    Avrg Omega_I                     :       4.247778         1.189498
 
-                              Total time spent up to now :     1.57 secs
+                              Total time spent up to now :     1.58 secs
 
 
   Subspace data written on file: H2_gamma_WanT.space
@@ -326,19 +341,19 @@
 
              want_dftread :     0.05s CPU
          windows_read_ext :     0.01s CPU
-                want_init :     0.01s CPU
+                want_init :     0.00s CPU
        para_get_poolindex :     0.00s CPU
              bshells_init :     0.00s CPU
              windows_init :     0.00s CPU
-                  wfc_drv :     1.42s CPU
-          ggrids_read_ext :     0.15s CPU
+                  wfc_drv :     1.43s CPU
+          ggrids_read_ext :     0.16s CPU
       wfc_data_grids_read :     0.00s CPU
               struct_fact :     0.30s CPU
-           wfc_data_kread :     0.13s CPU (       4 calls,   0.032 s avg)
-             overlap_calc :     0.65s CPU (       3 calls,   0.218 s avg)
+           wfc_data_kread :     0.13s CPU (       4 calls,   0.033 s avg)
+             overlap_calc :     0.65s CPU (       3 calls,   0.217 s avg)
            overlap_setmap :     0.25s CPU (      12 calls,   0.021 s avg)
                     s_psi :     0.00s CPU
-          projection_calc :     0.17s CPU
+          projection_calc :     0.16s CPU
        trial_center_setup :     0.09s CPU (      10 calls,   0.009 s avg)
             overlap_write :     0.00s CPU
                mp_get_ovp :     0.00s CPU (       2 calls,   0.000 s avg)

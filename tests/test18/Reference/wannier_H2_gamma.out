@@ -9,13 +9,13 @@
 
 
   Program <wannier>  v. 2.5.0alpha2  starts ...
-  Date  4Dec2012 at 17:39:48 
+  Date  2Aug2013 at 16: 0:31 
 
      Number of MPI processes:       6
 
 
 
-          BUILT :    Fri 30 Nov 2012 07:22:02 PM CET
+          BUILT :    Wed 31 Jul 2013 06:56:36 PM CEST
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    x86_64
              CC :    icc
@@ -212,7 +212,7 @@
   Overlap and projections read from file: H2_gamma_WanT.ovp
 
   Overlaps and projections setup completed
-                              Total time spent up to now :     0.16 secs
+                              Total time spent up to now :     0.18 secs
 
 
   ======================================================================
@@ -293,7 +293,7 @@
   ! Center Sum = (      0.000000     0.000000   -15.000001 )  Omega =     43.171484
 
   Omega variation (Bohr^2):       0.000000
-                              Total time spent up to now :     0.21 secs
+                              Total time spent up to now :     0.24 secs
 
 
 
@@ -345,7 +345,7 @@
     Total dipole  =     (     0.000001    0.000000    0.000001 )
                   =     |     0.000001 |
 
-                              Total time spent up to now :     0.21 secs
+                              Total time spent up to now :     0.24 secs
 
 
   Unitary transf. matrixes written on file: H2_gamma_WanT.wan
@@ -383,12 +383,12 @@
              windows_read :     0.00s CPU
             subspace_read :     0.00s CPU
              overlap_read :     0.00s CPU
-        localization_init :     0.04s CPU
-         para_poolrecover :     0.04s CPU (       2 calls,   0.019 s avg)
-                   mp_sum :     0.02s CPU (       2 calls,   0.010 s avg)
+        localization_init :     0.06s CPU
+         para_poolrecover :     0.06s CPU (       2 calls,   0.028 s avg)
+                   mp_sum :     0.02s CPU (       2 calls,   0.009 s avg)
            overlap_update :     0.00s CPU (       3 calls,   0.000 s avg)
-                   omegai :     0.01s CPU
-             mp_sum_omega :     0.01s CPU (      10 calls,   0.001 s avg)
+                   omegai :     0.00s CPU
+             mp_sum_omega :     0.00s CPU (      10 calls,   0.000 s avg)
                     omega :     0.00s CPU (       3 calls,   0.000 s avg)
              polarization :     0.00s CPU (       2 calls,   0.000 s avg)
                iterations :     0.00s CPU
