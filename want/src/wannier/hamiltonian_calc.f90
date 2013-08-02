@@ -120,25 +120,6 @@
       !
       DO ir = 1, nrtot
           !
-          !DO j = 1, dimwann
-          !DO i = 1, dimwann
-          !    !
-          !    rham(i,j,ir) = CZERO
-          !    !
-          !    DO ik = 1, nkpts
-          !        !
-          !        arg = DOT_PRODUCT( vkpt(:,ik), vr(:,ir) )
-          !        phase = CMPLX( COS(arg), -SIN(arg), dbl )
-          !        !
-          !        rham(i,j,ir) = rham(i,j,ir) + phase * kham(i,j,ik)
-          !        !
-          !    ENDDO
-          !    !
-          !    rham(i,j,ir) = rham(i,j,ir) * fact
-          !    !
-          !ENDDO
-          !ENDDO
-          !
           rham(:,:,ir) = ZERO
           !
           CALL compute_rham( dimwann, vr(:,ir), rham(:,:,ir), nkpts, vkpt, wk, kham ) 

@@ -774,6 +774,15 @@ symmetry.o : ../baselib/parameters.o
 symmetry.o : ../baselib/qexml.o
 symmetry.o : ../baselib/qexpt.o
 symmetry.o : etsf_io_data.o
+translations_calc_atmproj.o : ../baselib/constants.o
+translations_calc_atmproj.o : ../baselib/kind.o
+translations_calc_atmproj.o : ../baselib/log_module.o
+translations_calc_atmproj.o : ../baselib/timing.o
+translations_calc_atmproj.o : converters.o
+translations_calc_atmproj.o : ions.o
+translations_calc_atmproj.o : kpoints.o
+translations_calc_atmproj.o : lattice.o
+translations_calc_atmproj.o : uspp.o
 translations_calc.o : ../baselib/constants.o
 translations_calc.o : ../baselib/kind.o
 translations_calc.o : ../baselib/log_module.o

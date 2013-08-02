@@ -235,7 +235,8 @@
               CALL errore(subname,'nkbx too large', 10)
           !
           !
-          IF (ionode .AND. ( nwfc_buffer /= dimwinx .OR. nkb_buffer /= nkb ) ) THEN
+          !IF (ionode .AND. ( nwfc_buffer /= dimwinx .OR. nkb_buffer /= nkb ) ) THEN
+          IF ( ionode ) THEN
               !
               WRITE( stdout, "(/, 1x, '<WFC_BUFFERING>',/ )")
               WRITE( stdout, "(   2x, '     dimwinx = ', i6)") dimwinx

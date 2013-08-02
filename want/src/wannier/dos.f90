@@ -737,6 +737,9 @@ END PROGRAM dos_main
                   CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn,  &
                                      vkpt_int(:,ik_g), kovp(:,:))
                   !
+                  IF ( .NOT. mat_is_herm(dimwann, kovp, TOLL=EPS_m8) ) &
+                      CALL errore(subname,'kovp not herm',ik)
+                  !
               ENDIF
 
               IF ( lhave_sgm ) THEN

@@ -28,11 +28,18 @@
    !
    IMPLICIT NONE
    PRIVATE 
+   SAVE
 
+  
+   CHARACTER(nstrx) :: datafiles_fmt=""
+   LOGICAL          :: alloc = .FALSE.
 
    PUBLIC :: datafiles_init
    PUBLIC :: datafiles_check_fmt
    PUBLIC :: file_is_internal
+   !
+   PUBLIC :: datafiles_fmt
+   PUBLIC :: alloc
 
 
 CONTAINS
@@ -164,8 +171,11 @@ CONTAINS
    CALL mp_bcast( fmtstr,      ionode_id )
    !
    IF ( LEN_TRIM(fmtstr) == 0 ) CALL errore(subname, 'no input fmt detected', 71)
-
-
+   !
+   datafiles_fmt = TRIM( fmtstr )
+   alloc = .TRUE. 
+   !
+   !
    CALL log_pop( subname )
    CALL timing( subname, OPR='stop')
    !
