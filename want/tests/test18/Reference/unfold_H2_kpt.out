@@ -9,13 +9,13 @@
 
 
   Program <unfold>  v. 2.5.0alpha2  starts ...
-  Date  4Dec2012 at 17:41:27 
+  Date  2Aug2013 at 16: 1: 6 
 
      Number of MPI processes:       6
 
 
 
-          BUILT :    Fri 30 Nov 2012 07:22:02 PM CET
+          BUILT :    Wed 31 Jul 2013 06:56:36 PM CEST
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    x86_64
              CC :    icc
@@ -44,6 +44,7 @@
                        prefix :     H2_kpt
                       postfix :     _WanT
                 postfix_unfld :     _WanT_UNFLD
+                  orb_mapping :     first_orbitals
                  translations :     from_scratch
                          ndiv :      1   1  10
                    nkb_buffer :     -1
@@ -138,6 +139,7 @@
   ======================================================================
 
   Translation operators are computed
+  WFs algorithm used
 
   Reading density G-grid from file: H2_kpt.save/data-file.xml
   Reading Wfc grids from file: H2_kpt.save/data-file.xml
@@ -152,6 +154,21 @@
 
 
   Initializing global dft data
+
+ <WFC_BUFFERING>
+
+       dimwinx =     10
+   nwfc_buffer =     10
+    nkb_buffer =      0
+         nwfcx =     10
+          nkbx =      1
+
+    ik(   1 )  -->     1  step(s)
+
+    beta kb    -->     1  step(s)
+
+ </WFC_BUFFERING>
+
 
  <MEMORY_USAGE>
                  kpoints:          0.000 MB
@@ -174,10 +191,13 @@
 
     Matrix elements calculation for k-point:    1
     npw =  85485,    dimwin =   10
-                              Total time spent up to now :     1.25 secs
-
                               Total time spent up to now :     1.26 secs
 
+                              Total time spent up to now :     1.28 secs
+
+
+  Orbital Mapping: ( first_orbitals )
+    1
 
   ======================================================================
   =  Hamiltonian redefinition                                          =
@@ -191,11 +211,11 @@
   ======================================================================
 
    <global routines>
-             clock number :    19
+             clock number :    21
 
                    unfold :     1.00s CPU 
 
-             unfold_input :     0.08s CPU
+             unfold_input :     0.09s CPU
             postproc_init :     0.05s CPU
              want_dftread :     0.05s CPU
                 want_init :     0.00s CPU
@@ -203,15 +223,17 @@
              bshells_init :     0.00s CPU
              windows_read :     0.00s CPU
             subspace_read :     0.00s CPU
-                do_unfold :     1.13s CPU
-         translations_drv :     1.13s CPU
-                  wfc_drv :     1.12s CPU
+                do_unfold :     1.14s CPU
+         translations_drv :     1.14s CPU
+                  wfc_drv :     1.14s CPU
           ggrids_read_ext :     0.29s CPU
       wfc_data_grids_read :     0.01s CPU
-              struct_fact :     0.60s CPU
+              struct_fact :     0.61s CPU
            wfc_data_kread :     0.13s CPU (       2 calls,   0.066 s avg)
                     s_psi :     0.01s CPU
         translations_calc :     0.08s CPU
        translations_write :     0.00s CPU
+             compute_kham :     0.00s CPU (      10 calls,   0.000 s avg)
+             compute_rham :     0.00s CPU (      11 calls,   0.000 s avg)
 
 

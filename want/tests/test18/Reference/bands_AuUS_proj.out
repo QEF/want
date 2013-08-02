@@ -9,9 +9,9 @@
 
 
   Program <bands>  v. 2.5.0alpha2  starts ...
-  Date  2Aug2013 at 15:19: 8 
+  Date  2Aug2013 at 16: 0:13 
 
-     Number of MPI processes:       1
+     Number of MPI processes:       6
 
 
 
@@ -94,9 +94,9 @@
  </LATTICE>
 
  <K-POINTS>
-         nproc =     1   (Parallelism over kpts)
+         nproc =     6   (Parallelism over kpts)
   global nkpts =    12
-   local nkpts =    12
+   local nkpts =     2
   Monkhorst-Pack grid:      nk = (   1   1  12 ),      shift = (   0   0   0 )
 
   K-point grid: (cart. coord. in Bohr^-1)
@@ -360,7 +360,7 @@
   ======================================================================
 
    <global routines>
-             clock number :    10
+             clock number :    11
 
                     bands :     0.00s CPU 
 
@@ -369,9 +369,10 @@
             postproc_init :     0.01s CPU
              want_dftread :     0.00s CPU
                 want_init :     0.00s CPU
+       para_get_poolindex :     0.00s CPU (      12 calls,   0.000 s avg)
              windows_read :     0.00s CPU
             subspace_read :     0.00s CPU
-                 do_bands :     0.02s CPU
-             compute_kham :     0.01s CPU (     200 calls,   0.000 s avg)
+                 do_bands :     0.05s CPU
+             compute_kham :     0.00s CPU (      34 calls,   0.000 s avg)
 
 

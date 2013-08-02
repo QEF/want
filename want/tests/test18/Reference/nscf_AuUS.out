@@ -1,5 +1,5 @@
 
-     Program PWSCF v.5.0.2 (svn rev. 10303M) starts on  2Aug2013 at 10:14:28 
+     Program PWSCF v.5.0.2 (svn rev. 10303M) starts on  2Aug2013 at 15:58:42 
 
      This program is part of the open-source Quantum ESPRESSO suite
      for quantum simulation of materials; please cite
@@ -12,7 +12,7 @@
      Number of MPI processes:                 6
      Threads/MPI process:                     1
      R & G space division:  proc/nbgrp/npool/nimage =       6
-     Reading input from /home/ferretti/want/tests/test18/nscf_AuUS.in
+     Reading input from /home/ferretti/devel/want/tests/test18/nscf_AuUS.in
 
      Current dimensions of program PWSCF are:
      Max number of different atomic species (ntypx) = 10
@@ -141,7 +141,7 @@
 
      ethr =  7.58E-12,  avg # of iterations =105.0
 
-     total cpu time spent up to now is       40.2 secs
+     total cpu time spent up to now is       39.5 secs
 
      End of band structure calculation
 
@@ -162,45 +162,45 @@
 
      Writing output data file gold_US.save
  
-     init_run     :      6.75s CPU      6.88s WALL (       1 calls)
-     electrons    :     32.80s CPU     33.10s WALL (       1 calls)
+     init_run     :      6.34s CPU      6.43s WALL (       1 calls)
+     electrons    :     32.57s CPU     32.86s WALL (       1 calls)
 
      Called by init_run:
      wfcinit      :      0.00s CPU      0.00s WALL (       1 calls)
-     potinit      :      0.91s CPU      0.98s WALL (       1 calls)
+     potinit      :      0.92s CPU      0.97s WALL (       1 calls)
 
      Called by electrons:
-     c_bands      :     32.80s CPU     33.09s WALL (       1 calls)
-     v_of_rho     :      0.62s CPU      0.68s WALL (       1 calls)
-     newd         :      4.91s CPU      4.92s WALL (       1 calls)
+     c_bands      :     32.57s CPU     32.85s WALL (       1 calls)
+     v_of_rho     :      0.65s CPU      0.68s WALL (       1 calls)
+     newd         :      4.45s CPU      4.48s WALL (       1 calls)
 
      Called by c_bands:
-     init_us_2    :      0.00s CPU      0.01s WALL (       1 calls)
-     regterg      :     31.40s CPU     31.68s WALL (       6 calls)
+     init_us_2    :      0.01s CPU      0.01s WALL (       1 calls)
+     regterg      :     31.16s CPU     31.45s WALL (       6 calls)
 
      Called by *egterg:
-     h_psi        :     23.42s CPU     23.55s WALL (     112 calls)
-     s_psi        :      1.46s CPU      1.50s WALL (     112 calls)
+     h_psi        :     23.27s CPU     23.36s WALL (     112 calls)
+     s_psi        :      1.54s CPU      1.49s WALL (     112 calls)
      g_psi        :      0.17s CPU      0.17s WALL (     105 calls)
-     rdiaghg      :      1.92s CPU      1.96s WALL (     106 calls)
+     rdiaghg      :      1.99s CPU      1.96s WALL (     106 calls)
 
      Called by h_psi:
-     add_vuspsi   :      1.57s CPU      1.53s WALL (     112 calls)
+     add_vuspsi   :      1.51s CPU      1.52s WALL (     112 calls)
 
      General routines
-     calbec       :      1.41s CPU      1.50s WALL (     112 calls)
-     fft          :      0.51s CPU      0.52s WALL (      12 calls)
+     calbec       :      1.46s CPU      1.50s WALL (     112 calls)
+     fft          :      0.50s CPU      0.51s WALL (      12 calls)
      ffts         :      0.01s CPU      0.01s WALL (       1 calls)
-     fftw         :     16.01s CPU     16.12s WALL (    2290 calls)
+     fftw         :     15.84s CPU     15.87s WALL (    2290 calls)
      interpolate  :      0.06s CPU      0.06s WALL (       1 calls)
  
      Parallel routines
-     fft_scatter  :      5.87s CPU      5.90s WALL (    2303 calls)
+     fft_scatter  :      5.04s CPU      5.00s WALL (    2303 calls)
  
-     PWSCF        :    39.98s CPU        40.55s WALL
+     PWSCF        :    39.43s CPU        39.87s WALL
 
  
-   This run was terminated on:  10:15: 9   2Aug2013            
+   This run was terminated on:  15:59:22   2Aug2013            
 
 =------------------------------------------------------------------------------=
    JOB DONE.

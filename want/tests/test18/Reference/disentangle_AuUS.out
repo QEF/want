@@ -9,7 +9,7 @@
 
 
   Program <disentangle>  v. 2.5.0alpha2  starts ...
-  Date  2Aug2013 at 10:15:20 
+  Date  2Aug2013 at 15:59:32 
 
      Number of MPI processes:       6
 
@@ -324,6 +324,21 @@
 
 
   Initializing global dft data
+
+ <WFC_BUFFERING>
+
+       dimwinx =     80
+   nwfc_buffer =     80
+    nkb_buffer =    216
+         nwfcx =     80
+          nkbx =    216
+
+    ik(   1 )  -->     1  step(s)
+
+    beta kb    -->     1  step(s)
+
+ </WFC_BUFFERING>
+
   Initializing US pseudopot. data
   Total number Nkb of beta functions:   216
 
@@ -351,11 +366,11 @@
 
     Matrix elements calculation for k-point:    1
     npw =  23962,    dimwin =   80
-                              Total time spent up to now :    28.17 secs
+                              Total time spent up to now :    26.68 secs
 
 
   Overlaps and projections written on file: gold_US_WanT.ovp
-                              Total time spent up to now :    28.21 secs
+                              Total time spent up to now :    26.71 secs
 
  <MEMORY_USAGE>
                  kpoints:          0.000 MB
@@ -398,7 +413,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):     260.246176        72.876293
    Avrg Omega_I                     :       3.614530         1.012171
 
-                              Total time spent up to now :    28.25 secs
+                              Total time spent up to now :    26.76 secs
 
 
   Subspace data written on file: gold_US_WanT.space
@@ -408,28 +423,28 @@
    <global routines>
              clock number :    43
 
-              disentangle :    28.00s CPU 
+              disentangle :    26.00s CPU 
 
-             want_dftread :     0.10s CPU
+             want_dftread :     0.09s CPU
          windows_read_ext :     0.01s CPU
-                want_init :     0.01s CPU
+                want_init :     0.00s CPU
        para_get_poolindex :     0.00s CPU
              bshells_init :     0.00s CPU
              windows_init :     0.00s CPU
-                  wfc_drv :    28.00s CPU
-          ggrids_read_ext :     0.22s CPU
+                  wfc_drv :    26.50s CPU
+          ggrids_read_ext :     0.23s CPU
       wfc_data_grids_read :     0.00s CPU
               struct_fact :     0.29s CPU
-                init_us_1 :     2.77s CPU
-                init_at_1 :     0.07s CPU
+                init_us_1 :     2.84s CPU
+                init_at_1 :     0.06s CPU
            wfc_data_kread :     0.54s CPU (       4 calls,   0.135 s avg)
                 init_us_2 :     0.67s CPU (       5 calls,   0.135 s avg)
-                  ccalbec :     0.90s CPU (       4 calls,   0.226 s avg)
-             overlap_calc :    15.01s CPU (       3 calls,   5.004 s avg)
-           overlap_setmap :     0.34s CPU (      12 calls,   0.029 s avg)
-          overlap_augment :     3.24s CPU (       3 calls,   1.081 s avg)
+                  ccalbec :     0.90s CPU (       4 calls,   0.225 s avg)
+             overlap_calc :    13.83s CPU (       3 calls,   4.609 s avg)
+           overlap_setmap :     0.34s CPU (      12 calls,   0.028 s avg)
+          overlap_augment :     2.93s CPU (       3 calls,   0.977 s avg)
                     s_psi :     0.57s CPU
-          projection_calc :     3.80s CPU
+          projection_calc :     3.72s CPU
        trial_center_setup :     0.21s CPU (      72 calls,   0.003 s avg)
                atomic_wfc :     0.18s CPU (      72 calls,   0.002 s avg)
             overlap_write :     0.01s CPU

@@ -9,9 +9,9 @@
 
 
   Program <unfold>  v. 2.5.0alpha2  starts ...
-  Date  2Aug2013 at 15:17:23 
+  Date  2Aug2013 at 16: 0:10 
 
-     Number of MPI processes:       1
+     Number of MPI processes:       6
 
 
 
@@ -44,6 +44,7 @@
                        prefix :     gold_US
                       postfix :     _WanT_PROJ
                 postfix_unfld :     _WanT_UNFLD_PROJ
+                  orb_mapping :     first_orbitals
                  datafile_dft :     ./SCRATCH/gold_US.save/atomic_proj.dat
               use ortho basis :     FALSE
                 atmproj shift :         2.000000
@@ -67,6 +68,12 @@
      atmproj_sh   :      2.000000
 
   ./SCRATCH/gold_US.save/atomic_proj.dat converted to internal fmt
+  WARNING from routine kpoints_allocate:
+  too many CPU used
+
+  WARNING from routine kpoints_allocate:
+  too many CPU used
+
   DFT-data read from file: gold_US.save/data-file.xml
 
       Windows data read from file: gold_US_WanT_PROJ.space
@@ -104,7 +111,7 @@
  </LATTICE>
 
  <K-POINTS>
-         nproc =     1   (Parallelism over kpts)
+         nproc =     6   (Parallelism over kpts)
   global nkpts =     1
    local nkpts =     1
   Monkhorst-Pack grid:      nk = (   1   1   1 ),      shift = (   0   0   0 )
@@ -147,6 +154,10 @@
   ATMPROJ algorithm used
 
 
+  Orbital Mapping: ( first_orbitals )
+    1    2    3    4    5    6    7    8
+    9
+
   ======================================================================
   =  Hamiltonian redefinition                                          =
   ======================================================================
@@ -159,20 +170,21 @@
   ======================================================================
 
    <global routines>
-             clock number :    16
+             clock number :    17
 
                    unfold :     0.00s CPU 
 
-             unfold_input :     0.09s CPU
+             unfold_input :     0.10s CPU
            datafiles_init :     0.09s CPU
-      atmproj_to_internal :     0.08s CPU
+      atmproj_to_internal :     0.09s CPU
              compute_rham :     0.00s CPU (      28 calls,   0.000 s avg)
-            postproc_init :     0.09s CPU
+            postproc_init :     0.14s CPU
              want_dftread :     0.09s CPU
                 want_init :     0.00s CPU
+       para_get_poolindex :     0.00s CPU
              bshells_init :     0.00s CPU
              windows_read :     0.00s CPU
-            subspace_read :     0.00s CPU
+            subspace_read :     0.04s CPU
                 do_unfold :     0.14s CPU
          translations_drv :     0.03s CPU
      translations_calc_at :     0.00s CPU

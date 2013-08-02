@@ -8,4 +8,5 @@
     ndiv(1) = 1
     ndiv(2) = 1
     ndiv(3) = 12
+!    orb_mapping = "automatic"
 /
