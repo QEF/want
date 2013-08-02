@@ -9,13 +9,13 @@
 
 
   Program <disentangle>  v. 2.5.0alpha2  starts ...
-  Date  4Dec2012 at 23:36:10 
+  Date  2Aug2013 at 10:15:20 
 
      Number of MPI processes:       6
 
 
 
-          BUILT :    Fri 30 Nov 2012 07:22:02 PM CET
+          BUILT :    Wed 31 Jul 2013 06:56:36 PM CEST
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    x86_64
              CC :    icc
@@ -71,7 +71,7 @@
  <CONTROL>
 
  <SUBSPACE>
-                      dimwann :           30
+                      dimwann :           72
                 subspace_init :     center_projections
                spin_component :     none
               disentangle_thr :       0.1000E-07
@@ -108,30 +108,72 @@
       4    atomic  Au     2   0    (   0.000000   0.000000   0.000000 )    0.00000
       5    atomic  Au     2   1    (   0.000000   0.000000   0.000000 )    0.00000
       6    atomic  Au     2   2    (   0.000000   0.000000   0.000000 )    0.00000
-      7    atomic  Au     0   0    (   0.000000   0.000000   4.724320 )    0.00000
-      8    atomic  Au     2  -2    (   0.000000   0.000000   4.724320 )    0.00000
-      9    atomic  Au     2  -1    (   0.000000   0.000000   4.724320 )    0.00000
-     10    atomic  Au     2   0    (   0.000000   0.000000   4.724320 )    0.00000
-     11    atomic  Au     2   1    (   0.000000   0.000000   4.724320 )    0.00000
-     12    atomic  Au     2   2    (   0.000000   0.000000   4.724320 )    0.00000
-     13    atomic  Au     0   0    (   0.000000   0.000000   9.448640 )    0.00000
-     14    atomic  Au     2  -2    (   0.000000   0.000000   9.448640 )    0.00000
-     15    atomic  Au     2  -1    (   0.000000   0.000000   9.448640 )    0.00000
-     16    atomic  Au     2   0    (   0.000000   0.000000   9.448640 )    0.00000
-     17    atomic  Au     2   1    (   0.000000   0.000000   9.448640 )    0.00000
-     18    atomic  Au     2   2    (   0.000000   0.000000   9.448640 )    0.00000
-     19    atomic  Au     0   0    (   0.000000   0.000000  14.172960 )    0.00000
-     20    atomic  Au     2  -2    (   0.000000   0.000000  14.172960 )    0.00000
-     21    atomic  Au     2  -1    (   0.000000   0.000000  14.172960 )    0.00000
-     22    atomic  Au     2   0    (   0.000000   0.000000  14.172960 )    0.00000
-     23    atomic  Au     2   1    (   0.000000   0.000000  14.172960 )    0.00000
-     24    atomic  Au     2   2    (   0.000000   0.000000  14.172960 )    0.00000
-     25    atomic  Au     0   0    (   0.000000   0.000000  18.897280 )    0.00000
-     26    atomic  Au     2  -2    (   0.000000   0.000000  18.897280 )    0.00000
-     27    atomic  Au     2  -1    (   0.000000   0.000000  18.897280 )    0.00000
-     28    atomic  Au     2   0    (   0.000000   0.000000  18.897280 )    0.00000
-     29    atomic  Au     2   1    (   0.000000   0.000000  18.897280 )    0.00000
-     30    atomic  Au     2   2    (   0.000000   0.000000  18.897280 )    0.00000
+      7    atomic  Au     0   0    (   0.000000   0.000000   4.724315 )    0.00000
+      8    atomic  Au     2  -2    (   0.000000   0.000000   4.724315 )    0.00000
+      9    atomic  Au     2  -1    (   0.000000   0.000000   4.724315 )    0.00000
+     10    atomic  Au     2   0    (   0.000000   0.000000   4.724315 )    0.00000
+     11    atomic  Au     2   1    (   0.000000   0.000000   4.724315 )    0.00000
+     12    atomic  Au     2   2    (   0.000000   0.000000   4.724315 )    0.00000
+     13    atomic  Au     0   0    (   0.000000   0.000000   9.448631 )    0.00000
+     14    atomic  Au     2  -2    (   0.000000   0.000000   9.448631 )    0.00000
+     15    atomic  Au     2  -1    (   0.000000   0.000000   9.448631 )    0.00000
+     16    atomic  Au     2   0    (   0.000000   0.000000   9.448631 )    0.00000
+     17    atomic  Au     2   1    (   0.000000   0.000000   9.448631 )    0.00000
+     18    atomic  Au     2   2    (   0.000000   0.000000   9.448631 )    0.00000
+     19    atomic  Au     0   0    (   0.000000   0.000000  14.172946 )    0.00000
+     20    atomic  Au     2  -2    (   0.000000   0.000000  14.172946 )    0.00000
+     21    atomic  Au     2  -1    (   0.000000   0.000000  14.172946 )    0.00000
+     22    atomic  Au     2   0    (   0.000000   0.000000  14.172946 )    0.00000
+     23    atomic  Au     2   1    (   0.000000   0.000000  14.172946 )    0.00000
+     24    atomic  Au     2   2    (   0.000000   0.000000  14.172946 )    0.00000
+     25    atomic  Au     0   0    (   0.000000   0.000000  18.897261 )    0.00000
+     26    atomic  Au     2  -2    (   0.000000   0.000000  18.897261 )    0.00000
+     27    atomic  Au     2  -1    (   0.000000   0.000000  18.897261 )    0.00000
+     28    atomic  Au     2   0    (   0.000000   0.000000  18.897261 )    0.00000
+     29    atomic  Au     2   1    (   0.000000   0.000000  18.897261 )    0.00000
+     30    atomic  Au     2   2    (   0.000000   0.000000  18.897261 )    0.00000
+     31    atomic  Au     0   0    (   0.000000   0.000000  23.621577 )    0.00000
+     32    atomic  Au     2  -2    (   0.000000   0.000000  23.621577 )    0.00000
+     33    atomic  Au     2  -1    (   0.000000   0.000000  23.621577 )    0.00000
+     34    atomic  Au     2   0    (   0.000000   0.000000  23.621577 )    0.00000
+     35    atomic  Au     2   1    (   0.000000   0.000000  23.621577 )    0.00000
+     36    atomic  Au     2   2    (   0.000000   0.000000  23.621577 )    0.00000
+     37    atomic  Au     0   0    (   0.000000   0.000000  28.345892 )    0.00000
+     38    atomic  Au     2  -2    (   0.000000   0.000000  28.345892 )    0.00000
+     39    atomic  Au     2  -1    (   0.000000   0.000000  28.345892 )    0.00000
+     40    atomic  Au     2   0    (   0.000000   0.000000  28.345892 )    0.00000
+     41    atomic  Au     2   1    (   0.000000   0.000000  28.345892 )    0.00000
+     42    atomic  Au     2   2    (   0.000000   0.000000  28.345892 )    0.00000
+     43    atomic  Au     0   0    (   0.000000   0.000000  33.070207 )    0.00000
+     44    atomic  Au     2  -2    (   0.000000   0.000000  33.070207 )    0.00000
+     45    atomic  Au     2  -1    (   0.000000   0.000000  33.070207 )    0.00000
+     46    atomic  Au     2   0    (   0.000000   0.000000  33.070207 )    0.00000
+     47    atomic  Au     2   1    (   0.000000   0.000000  33.070207 )    0.00000
+     48    atomic  Au     2   2    (   0.000000   0.000000  33.070207 )    0.00000
+     49    atomic  Au     0   0    (   0.000000   0.000000  37.794523 )    0.00000
+     50    atomic  Au     2  -2    (   0.000000   0.000000  37.794523 )    0.00000
+     51    atomic  Au     2  -1    (   0.000000   0.000000  37.794523 )    0.00000
+     52    atomic  Au     2   0    (   0.000000   0.000000  37.794523 )    0.00000
+     53    atomic  Au     2   1    (   0.000000   0.000000  37.794523 )    0.00000
+     54    atomic  Au     2   2    (   0.000000   0.000000  37.794523 )    0.00000
+     55    atomic  Au     0   0    (   0.000000   0.000000  42.518838 )    0.00000
+     56    atomic  Au     2  -2    (   0.000000   0.000000  42.518838 )    0.00000
+     57    atomic  Au     2  -1    (   0.000000   0.000000  42.518838 )    0.00000
+     58    atomic  Au     2   0    (   0.000000   0.000000  42.518838 )    0.00000
+     59    atomic  Au     2   1    (   0.000000   0.000000  42.518838 )    0.00000
+     60    atomic  Au     2   2    (   0.000000   0.000000  42.518838 )    0.00000
+     61    atomic  Au     0   0    (   0.000000   0.000000  47.243153 )    0.00000
+     62    atomic  Au     2  -2    (   0.000000   0.000000  47.243153 )    0.00000
+     63    atomic  Au     2  -1    (   0.000000   0.000000  47.243153 )    0.00000
+     64    atomic  Au     2   0    (   0.000000   0.000000  47.243153 )    0.00000
+     65    atomic  Au     2   1    (   0.000000   0.000000  47.243153 )    0.00000
+     66    atomic  Au     2   2    (   0.000000   0.000000  47.243153 )    0.00000
+     67    atomic  Au     0   0    (   0.000000   0.000000  51.967469 )    0.00000
+     68    atomic  Au     2  -2    (   0.000000   0.000000  51.967469 )    0.00000
+     69    atomic  Au     2  -1    (   0.000000   0.000000  51.967469 )    0.00000
+     70    atomic  Au     2   0    (   0.000000   0.000000  51.967469 )    0.00000
+     71    atomic  Au     2   1    (   0.000000   0.000000  51.967469 )    0.00000
+     72    atomic  Au     2   2    (   0.000000   0.000000  51.967469 )    0.00000
 
  </TRIAL_CENTERS>
 
@@ -143,24 +185,24 @@
  <LATTICE>
   Alat  =      20.0000000 (Bohr)
   Alat  =      10.5835400 (Ang )
-  Omega =    9448.6400000 (Bohr^3)
-  Omega =    1400.1423181 (Ang^3 )
+  Omega =   22676.7225333 (Bohr^3)
+  Omega =    3360.3395679 (Ang^3 )
 
   Crystal axes:
                 in Bohr units                           in Alat units
     a(1) = (   20.00000    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
     a(2) = (    0.00000   20.00000    0.00000 )    (    0.00000    1.00000    0.00000 )
-    a(3) = (    0.00000    0.00000   23.62160 )    (    0.00000    0.00000    1.18108 )
+    a(3) = (    0.00000    0.00000   56.69181 )    (    0.00000    0.00000    2.83459 )
                 in Ang units
     a(1) = (   10.58354    0.00000    0.00000 )
     a(2) = (    0.00000   10.58354    0.00000 )
-    a(3) = (    0.00000    0.00000   12.50001 )
+    a(3) = (    0.00000    0.00000   30.00000 )
 
    Reciprocal lattice vectors:
                 in Bohr^-1 units                        in 2Pi/Alat units
     b(1) = (    0.31416    0.00000    0.00000 )    (    1.00000    0.00000    0.00000 )
     b(2) = (    0.00000    0.31416    0.00000 )    (    0.00000    1.00000    0.00000 )
-    b(3) = (    0.00000    0.00000    0.26599 )    (    0.00000    0.00000    0.84668 )
+    b(3) = (    0.00000    0.00000    0.11083 )    (    0.00000    0.00000    0.35278 )
  </LATTICE>
 
  <IONS>
@@ -184,10 +226,17 @@
 
   Atomic positions: (cart. coord. in Bohr)
      Au   tau(   1 ) = (   0.0000000   0.0000000   0.0000000 )
-     Au   tau(   2 ) = (   0.0000000   0.0000000   4.7243200 )
-     Au   tau(   3 ) = (   0.0000000   0.0000000   9.4486400 )
-     Au   tau(   4 ) = (   0.0000000   0.0000000  14.1729600 )
-     Au   tau(   5 ) = (   0.0000000   0.0000000  18.8972800 )
+     Au   tau(   2 ) = (   0.0000000   0.0000000   4.7243153 )
+     Au   tau(   3 ) = (   0.0000000   0.0000000   9.4486307 )
+     Au   tau(   4 ) = (   0.0000000   0.0000000  14.1729460 )
+     Au   tau(   5 ) = (   0.0000000   0.0000000  18.8972613 )
+     Au   tau(   6 ) = (   0.0000000   0.0000000  23.6215767 )
+     Au   tau(   7 ) = (   0.0000000   0.0000000  28.3458920 )
+     Au   tau(   8 ) = (   0.0000000   0.0000000  33.0702073 )
+     Au   tau(   9 ) = (   0.0000000   0.0000000  37.7945227 )
+     Au   tau(  10 ) = (   0.0000000   0.0000000  42.5188380 )
+     Au   tau(  11 ) = (   0.0000000   0.0000000  47.2431533 )
+     Au   tau(  12 ) = (   0.0000000   0.0000000  51.9674687 )
  </IONS>
 
  <K-POINTS>
@@ -210,44 +259,47 @@
 
  <B-SHELL>
   List of the  6 b-vectors : (Bohr^-1) 
-    b (    1) =    (   -0.3141593   0.0000000   0.0000000 ),   weight =      5.0660592
+    b (    1) =    (    0.3141593   0.0000000   0.0000000 ),   weight =      5.0660592
     b (    2) =    (    0.0000000   0.3141593   0.0000000 ),   weight =      5.0660592
-    b (    3) =    (    0.0000000   0.0000000  -0.2659932 ),   weight =      7.0668991
-    b (    4) =    (    0.3141593   0.0000000   0.0000000 ),   weight =      5.0660592
+    b (    3) =    (    0.0000000   0.0000000   0.1108306 ),   weight =     40.7052904
+    b (    4) =    (   -0.3141593   0.0000000   0.0000000 ),   weight =      5.0660592
     b (    5) =    (    0.0000000  -0.3141593   0.0000000 ),   weight =      5.0660592
-    b (    6) =    (    0.0000000   0.0000000   0.2659932 ),   weight =      7.0668991
+    b (    6) =    (    0.0000000   0.0000000  -0.1108306 ),   weight =     40.7052904
 
-  Total weight =      34.3980349
+  Total weight =     101.6748175
  </B-SHELL>
 
  <WINDOWS>
   Definition of energy windows: [eV]
 
     outer window: E  = (  -inf ,    1.8000 )
-    Max number of bands in the outer window (dimwinx) =    37
+    Max number of bands in the outer window (dimwinx) =    80
 
   Electronic Structure from DFT calculation:
-    nkpts =   1,     nbnd =  50,
+    nkpts =   1,     nbnd =  80,
     nspin =   1
-    Fermi energy =   -5.318472269 eV
+    Fermi energy =   -5.247932769 eV
  !
- !    kpt =     1 (   0.00000  0.00000  0.00000 )    dimwin =   37
- !                                       imin =     1  imax =   37
+ !    kpt =     1 (   0.00000  0.00000  0.00000 )    dimwin =   80
+ !                                       imin =     1  imax =   80
  !   Eigenvalues:
- !   -11.0426  -9.0402  -9.0401  -8.4602  -8.4602  -8.4596  -8.4596  -6.9702
- !    -6.9701  -6.8550  -6.8550  -6.8550  -6.8550  -6.7475  -6.7474  -6.7468
- !    -6.7466  -6.6154  -6.3691  -6.3684  -6.3679  -6.3673  -6.0235  -6.0234
- !    -5.8423  -5.8416  -5.3834  -5.3834  -2.8216  -2.8215  -1.2462  -1.2462
- !     0.2899   0.2899   0.2901   0.2901   1.0166   1.9563   1.9565   1.9775
- !     2.7524   2.7524   2.7580   2.8150   2.9190   2.9200   3.3816   3.3816
- !     3.3818   3.3818
+ !   -10.8681 -10.5043 -10.5042  -9.4520  -9.4518  -8.5619  -8.5619  -8.4032
+ !    -8.4032  -8.4030  -8.4030  -7.9415  -7.9415  -7.9415  -7.9415  -7.8686
+ !    -7.8686  -7.2316  -7.2316  -7.2316  -7.2316  -6.8979  -6.8979  -6.8548
+ !    -6.8547  -6.8547  -6.8546  -6.7368  -6.7367  -6.7358  -6.7358  -6.5721
+ !    -6.5721  -6.5711  -6.5711  -6.5608  -6.4584  -6.4583  -6.4027  -6.4026
+ !    -6.4013  -6.4012  -6.3832  -6.3832  -6.3832  -6.3832  -6.3440  -6.3438
+ !    -6.2740  -6.2739  -6.2730  -6.2729  -6.2253  -6.2244  -6.1526  -6.1526
+ !    -5.6353  -5.6353  -5.6068  -5.6068  -5.6009  -5.6009  -5.6008  -5.6008
+ !    -5.4413  -5.2507  -5.2507  -4.4445  -4.4444  -2.2305  -2.2304  -1.2229
+ !    -1.2229  -0.8887  -0.8887  -0.8887  -0.8887  -0.3485  -0.0870  -0.0870
 
     inner window:
 
        froz_min = -inf
        froz_max =  -2.0000
 
-    k(    1 )  -->    30  frozen states
+    k(    1 )  -->    71  frozen states
 
  </WINDOWS>
 
@@ -261,19 +313,19 @@
 
 
           Energy cut-off for rho  =        200.00 (Ry)
-      Total number of PW for rho  =     225590
-                    (smooth grid) =      79844
-        FFT grid components (rho) =  (    96   96  108 )
-                    (smooth grid) =  (    64   64   75 )
+      Total number of PW for rho  =     541536
+                    (smooth grid) =     191449
+        FFT grid components (rho) =  (    96   96  256 )
+                    (smooth grid) =  (    64   64  192 )
              Use gamma-only trick =       .TRUE.
 
           Energy cut-off for wfcs =         25.00 (Ry)
-        Max number of PW for wfc  =      10003
+        Max number of PW for wfc  =      23962
 
 
   Initializing global dft data
   Initializing US pseudopot. data
-  Total number Nkb of beta functions:    90
+  Total number Nkb of beta functions:   216
 
   Initializing atomic wfc
 
@@ -283,27 +335,27 @@
                  bshells:          0.000 MB
                     ions:          0.003 MB
                  windows:          0.001 MB
-                subspace:          0.018 MB
-                 overlap:          0.149 MB
-                  ggrids:          9.926 MB
-                wfc_data:         11.885 MB
-            trial_center:          0.004 MB
-             struct_fact:          3.658 MB
-           workspace_dis:          0.194 MB
+                subspace:          0.092 MB
+                 overlap:          0.707 MB
+                  ggrids:         23.828 MB
+                wfc_data:         61.441 MB
+            trial_center:          0.010 MB
+             struct_fact:          8.837 MB
+           workspace_dis:          1.007 MB
                       us:         21.186 MB
-                    uspp:         14.462 MB
+                    uspp:         82.900 MB
 
-     Total alloc. Memory:         61.485 MB
+     Total alloc. Memory:        200.012 MB
  </MEMORY_USAGE>
 
 
     Matrix elements calculation for k-point:    1
-    npw =  10003,    dimwin =   37
-                              Total time spent up to now :     5.20 secs
+    npw =  23962,    dimwin =   80
+                              Total time spent up to now :    28.17 secs
 
 
   Overlaps and projections written on file: gold_US_WanT.ovp
-                              Total time spent up to now :     5.22 secs
+                              Total time spent up to now :    28.21 secs
 
  <MEMORY_USAGE>
                  kpoints:          0.000 MB
@@ -311,15 +363,15 @@
                  bshells:          0.000 MB
                     ions:          0.003 MB
                  windows:          0.001 MB
-                subspace:          0.018 MB
-                 overlap:          0.149 MB
-            trial_center:          0.004 MB
-             struct_fact:          3.658 MB
-           workspace_dis:          0.194 MB
+                subspace:          0.092 MB
+                 overlap:          0.707 MB
+            trial_center:          0.010 MB
+             struct_fact:          8.837 MB
+           workspace_dis:          1.007 MB
                       us:         21.186 MB
-                    uspp:          0.056 MB
+                    uspp:          0.084 MB
 
-     Total alloc. Memory:         25.268 MB
+     Total alloc. Memory:         31.927 MB
  </MEMORY_USAGE>
 
 
@@ -330,18 +382,23 @@
   Initial trial subspace: projected localized orbitals
   There are frozen states
 
-  Iteration =     1     Omega_I =   98.731591      Error =      0.00000000
+  Iteration =     1     Omega_I =  260.246382      Error =      0.46159313
+  Iteration =     2     Omega_I =  260.246226      Error =      0.00000060
+  Iteration =     3     Omega_I =  260.246190      Error =      0.00000014
+  Iteration =     4     Omega_I =  260.246180      Error =      0.00000004
+  Iteration =     5     Omega_I =  260.246177      Error =      0.00000001
+  Iteration =     6     Omega_I =  260.246176      Error =      0.00000000
 
 
   ======================================================================
   =  Convergence Achieved                                              =
   ======================================================================
 
-  Iteration # :     1
-  Final Omega_I (Bohr^2, Angstrom^2):      98.731591        27.647639
-   Avrg Omega_I                     :       3.291053         0.921588
+  Iteration # :     6
+  Final Omega_I (Bohr^2, Angstrom^2):     260.246176        72.876293
+   Avrg Omega_I                     :       3.614530         1.012171
 
-                              Total time spent up to now :     5.22 secs
+                              Total time spent up to now :    28.25 secs
 
 
   Subspace data written on file: gold_US_WanT.space
@@ -349,49 +406,50 @@
   ======================================================================
 
    <global routines>
-             clock number :    42
+             clock number :    43
 
-              disentangle :     5.00s CPU 
+              disentangle :    28.00s CPU 
 
-             want_dftread :     0.09s CPU
+             want_dftread :     0.10s CPU
          windows_read_ext :     0.01s CPU
-                want_init :     0.00s CPU
+                want_init :     0.01s CPU
        para_get_poolindex :     0.00s CPU
              bshells_init :     0.00s CPU
              windows_init :     0.00s CPU
-                  wfc_drv :     5.02s CPU
-          ggrids_read_ext :     0.11s CPU
+                  wfc_drv :    28.00s CPU
+          ggrids_read_ext :     0.22s CPU
       wfc_data_grids_read :     0.00s CPU
-              struct_fact :     0.05s CPU
-                init_us_1 :     2.44s CPU
-                init_at_1 :     0.05s CPU
-           wfc_data_kread :     0.11s CPU (       4 calls,   0.028 s avg)
-                init_us_2 :     0.14s CPU (       5 calls,   0.028 s avg)
-                  ccalbec :     0.09s CPU (       4 calls,   0.022 s avg)
-             overlap_calc :     1.38s CPU (       3 calls,   0.460 s avg)
-           overlap_setmap :     0.13s CPU (      12 calls,   0.011 s avg)
-          overlap_augment :     0.26s CPU (       3 calls,   0.087 s avg)
-                    s_psi :     0.07s CPU
-          projection_calc :     0.33s CPU
-       trial_center_setup :     0.04s CPU (      30 calls,   0.001 s avg)
-               atomic_wfc :     0.03s CPU (      30 calls,   0.001 s avg)
-            overlap_write :     0.00s CPU
+              struct_fact :     0.29s CPU
+                init_us_1 :     2.77s CPU
+                init_at_1 :     0.07s CPU
+           wfc_data_kread :     0.54s CPU (       4 calls,   0.135 s avg)
+                init_us_2 :     0.67s CPU (       5 calls,   0.135 s avg)
+                  ccalbec :     0.90s CPU (       4 calls,   0.226 s avg)
+             overlap_calc :    15.01s CPU (       3 calls,   5.004 s avg)
+           overlap_setmap :     0.34s CPU (      12 calls,   0.029 s avg)
+          overlap_augment :     3.24s CPU (       3 calls,   1.081 s avg)
+                    s_psi :     0.57s CPU
+          projection_calc :     3.80s CPU
+       trial_center_setup :     0.21s CPU (      72 calls,   0.003 s avg)
+               atomic_wfc :     0.18s CPU (      72 calls,   0.002 s avg)
+            overlap_write :     0.01s CPU
                mp_get_ovp :     0.00s CPU (       2 calls,   0.000 s avg)
             overlap_bsymm :     0.00s CPU
                    mp_put :     0.00s CPU (       3 calls,   0.000 s avg)
-               iterations :     0.00s CPU
-            subspace_init :     0.00s CPU
+               iterations :     0.05s CPU
+            subspace_init :     0.01s CPU
         projection_frozen :     0.00s CPU
          para_poolrecover :     0.00s CPU (       3 calls,   0.000 s avg)
-                   mp_sum :     0.00s CPU (       3 calls,   0.001 s avg)
-              iterations1 :     0.00s CPU (       2 calls,   0.001 s avg)
-              iterations2 :     0.01s CPU (       2 calls,   0.003 s avg)
-                   omegai :     0.00s CPU (       2 calls,   0.000 s avg)
-             mp_sum_omega :     0.00s CPU (       2 calls,   0.001 s avg)
-              iterations3 :     0.00s CPU
-              iterations4 :     0.00s CPU
-              mp_sum_lamp :     0.00s CPU
-                mat_hdiag :     0.00s CPU
+                   mp_sum :     0.04s CPU (       3 calls,   0.012 s avg)
+              iterations1 :     0.03s CPU (       7 calls,   0.005 s avg)
+              iterations2 :     0.04s CPU (       7 calls,   0.006 s avg)
+                   omegai :     0.00s CPU (       7 calls,   0.000 s avg)
+             mp_sum_omega :     0.03s CPU (       7 calls,   0.004 s avg)
+                  zmatrix :     0.00s CPU (       6 calls,   0.000 s avg)
+              iterations3 :     0.00s CPU (       6 calls,   0.000 s avg)
+              iterations4 :     0.00s CPU (       6 calls,   0.000 s avg)
+                mat_hdiag :     0.00s CPU (       7 calls,   0.000 s avg)
+              mp_sum_lamp :     0.00s CPU (       6 calls,   0.000 s avg)
             windows_write :     0.00s CPU
            subspace_write :     0.00s CPU
 

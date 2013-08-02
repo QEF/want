@@ -6,7 +6,7 @@
 /
 
 &SUBSPACE
-   dimwann = 30   
+   dimwann = 72
    win_max = 1.800
    froz_max = -2.0
 /
@@ -48,3 +48,46 @@ atomic   5  2 -1
 atomic   5  2  0
 atomic   5  2  1
 atomic   5  2  2
+atomic   6  0  0
+atomic   6  2 -2
+atomic   6  2 -1
+atomic   6  2  0
+atomic   6  2  1
+atomic   6  2  2
+atomic   7  0  0
+atomic   7  2 -2
+atomic   7  2 -1
+atomic   7  2  0
+atomic   7  2  1
+atomic   7  2  2
+atomic   8  0  0
+atomic   8  2 -2
+atomic   8  2 -1
+atomic   8  2  0
+atomic   8  2  1
+atomic   8  2  2
+atomic   9  0  0
+atomic   9  2 -2
+atomic   9  2 -1
+atomic   9  2  0
+atomic   9  2  1
+atomic   9  2  2
+atomic  10  0  0
+atomic  10  2 -2
+atomic  10  2 -1
+atomic  10  2  0
+atomic  10  2  1
+atomic  10  2  2
+atomic  11  0  0
+atomic  11  2 -2
+atomic  11  2 -1
+atomic  11  2  0
+atomic  11  2  1
+atomic  11  2  2
+atomic  12  0  0
+atomic  12  2 -2
+atomic  12  2 -1
+atomic  12  2  0
+atomic  12  2  1
+atomic  12  2  2
+
