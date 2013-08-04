@@ -10,18 +10,19 @@
    MODULE atmproj_tools_module
 !*********************************************
    !
-   USE kinds,              ONLY : dbl
-   USE constants,          ONLY : BOHR => bohr_radius_angs, ZERO, ONE, TWO, &
-                                  RYD, EPS_m8, TPI
-   USE parameters,         ONLY : nstrx
-   USE timing_module,      ONLY : timing
-   USE log_module,         ONLY : log_push, log_pop
-   USE io_global_module,   ONLY : stdout
-   USE converters_module,  ONLY : cart2cry, cry2cart
-   USE parser_module,      ONLY : change_case
-   USE util_module,        ONLY : mat_is_herm, mat_mul
-   USE grids_module,       ONLY : grids_get_rgrid
-   USE files_module,       ONLY : file_exist
+   USE kinds,               ONLY : dbl
+   USE constants,           ONLY : BOHR => bohr_radius_angs, ZERO, ONE, TWO, &
+                                   RYD, EPS_m8, TPI
+   USE parameters,          ONLY : nstrx
+   USE timing_module,       ONLY : timing
+   USE log_module,          ONLY : log_push, log_pop
+   USE io_global_module,    ONLY : stdout
+   USE converters_module,   ONLY : cart2cry, cry2cart
+   USE parser_module,       ONLY : change_case
+   USE util_module,         ONLY : mat_is_herm, mat_mul
+   USE grids_module,        ONLY : grids_get_rgrid
+   USE files_module,        ONLY : file_exist
+   USE pseudo_types_module, ONLY : pseudo_upf 
    USE iotk_module
    USE qexml_module
    !
@@ -46,13 +47,17 @@
    INTEGER            :: atmproj_nbnd = 0
    CHARACTER(256)     :: spin_component = "all"
 
-
    ! contains:
    ! SUBROUTINE  atmproj_to_internal( filein, fileham, filespace, filewan, do_orthoovp )
    ! FUNCTION    file_is_atmproj( filein )
+   ! SUBROUTINE  atmproj_get_natomwfc( nsp, psfile, natomwfc )
+   ! FUNCTION    atmproj_get_index( i, ia, natomwfc(:) )
    !
    PUBLIC :: atmproj_to_internal
    PUBLIC :: file_is_atmproj
+   PUBLIC :: atmproj_get_index
+   PUBLIC :: atmproj_get_natomwfc
+   !
    PUBLIC :: atmproj_sh
    PUBLIC :: atmproj_thr
    PUBLIC :: atmproj_nbnd
@@ -1076,6 +1081,57 @@ SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
    RETURN
    !
 END SUBROUTINE atmproj_read_ext
+
+
+!************************************************************
+INTEGER FUNCTION atmproj_get_index( i, ia, ityp, natomwfc )
+   !************************************************************
+   !
+   IMPLICIT NONE
+   !
+   INTEGER       :: i, ia, ityp(*), natomwfc(*)
+   !
+   INTEGER       :: ind, iatm, nt
+   CHARACTER(17) :: subname="atmproj_get_index"
+   !
+   IF ( i > natomwfc( ityp(ia)) ) CALL errore(subname,"invalid i",i)
+   !
+   ind = i
+   DO iatm = 1, ia-1
+       !
+       nt = ityp(iatm)
+       ind = ind + natomwfc(nt)
+       !
+   ENDDO
+   !
+   atmproj_get_index = ind
+   !
+END FUNCTION atmproj_get_index
+
+
+!************************************************************
+SUBROUTINE  atmproj_get_natomwfc( nsp, psfile, natomwfc )
+   !************************************************************
+   !
+   IMPLICIT NONE
+   !
+   INTEGER,           INTENT(IN)  :: nsp
+   TYPE(pseudo_upf),  INTENT(IN)  :: psfile(nsp)
+   INTEGER,           INTENT(OUT) :: natomwfc(nsp)
+   !
+   INTEGER :: nt, nb, il
+   !
+   DO nt = 1, nsp
+       !
+       natomwfc(nt) = 0
+       DO nb = 1, psfile(nt)%nwfc
+           il = psfile(nt)%lchi(nb)
+           IF ( psfile(nt)%oc(nb) >= 0.0d0 ) natomwfc(nt) = natomwfc(nt) + 2 * il + 1
+       ENDDO
+       !
+   ENDDO
+   !
+END SUBROUTINE atmproj_get_natomwfc
 
 
 END MODULE atmproj_tools_module

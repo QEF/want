@@ -9,13 +9,13 @@
 
 
   Program <unfold>  v. 2.5.0alpha2  starts ...
-  Date  2Aug2013 at 16: 0:10 
+  Date  4Aug2013 at 22: 7:10 
 
      Number of MPI processes:       6
 
 
 
-          BUILT :    Wed 31 Jul 2013 06:56:36 PM CEST
+          BUILT :    Sun 04 Aug 2013 04:35:33 PM CEST
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    x86_64
              CC :    icc
@@ -44,7 +44,7 @@
                        prefix :     gold_US
                       postfix :     _WanT_PROJ
                 postfix_unfld :     _WanT_UNFLD_PROJ
-                  orb_mapping :     first_orbitals
+                  orb_mapping :     automatic
                  datafile_dft :     ./SCRATCH/gold_US.save/atomic_proj.dat
               use ortho basis :     FALSE
                 atmproj shift :         2.000000
@@ -154,9 +154,9 @@
   ATMPROJ algorithm used
 
 
-  Orbital Mapping: ( first_orbitals )
-    1    2    3    4    5    6    7    8
-    9
+  Orbital Mapping: ( automatic )
+    1    8    9    3    2    5    4    6
+    7
 
   ======================================================================
   =  Hamiltonian redefinition                                          =
@@ -174,21 +174,21 @@
 
                    unfold :     0.00s CPU 
 
-             unfold_input :     0.10s CPU
+             unfold_input :     0.09s CPU
            datafiles_init :     0.09s CPU
       atmproj_to_internal :     0.09s CPU
              compute_rham :     0.00s CPU (      28 calls,   0.000 s avg)
-            postproc_init :     0.14s CPU
+            postproc_init :     0.15s CPU
              want_dftread :     0.09s CPU
                 want_init :     0.00s CPU
        para_get_poolindex :     0.00s CPU
              bshells_init :     0.00s CPU
              windows_read :     0.00s CPU
             subspace_read :     0.04s CPU
-                do_unfold :     0.14s CPU
+                do_unfold :     0.22s CPU
          translations_drv :     0.03s CPU
      translations_calc_at :     0.00s CPU
-       translations_write :     0.14s CPU
+       translations_write :     0.22s CPU
              compute_kham :     0.00s CPU (      24 calls,   0.000 s avg)
 
 

@@ -4,6 +4,9 @@
 =======================================================
 
 
+04 Aug 2013     positions of the atmproj orbitals reconstructed in unfold.f90
+		for the sake of determining the orb_mapping. (AF)
+
 02 Aug 2013     unfold.x utility further tested and debugged (especially when
 		working with ATMPROJ basis). Test18 updated. (AF)
 

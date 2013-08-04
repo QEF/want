@@ -21,6 +21,7 @@ atmproj_tools.o : ../baselib/timing.o
 atmproj_tools.o : ../baselib/util.o
 atmproj_tools.o : converters.o
 atmproj_tools.o : get_rgrid.o
+atmproj_tools.o : pseudo_types.o
 atomic_wfc.o : ../baselib/constants.o
 atomic_wfc.o : ../baselib/kind.o
 atomic_wfc.o : ../baselib/log_module.o
@@ -774,6 +775,7 @@ symmetry.o : ../baselib/parameters.o
 symmetry.o : ../baselib/qexml.o
 symmetry.o : ../baselib/qexpt.o
 symmetry.o : etsf_io_data.o
+translations_calc_atmproj.o : atmproj_tools.o
 translations_calc_atmproj.o : ../baselib/constants.o
 translations_calc_atmproj.o : ../baselib/kind.o
 translations_calc_atmproj.o : ../baselib/log_module.o

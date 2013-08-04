@@ -302,7 +302,8 @@ END PROGRAM unfold
    USE files_module,         ONLY : file_open, file_close
    USE util_module,          ONLY : mat_hdiag, mat_herm, mat_mul
    USE converters_module,    ONLY : cry2cart
-   USE lattice_module,       ONLY : avec, bvec
+   USE lattice_module,       ONLY : avec, bvec, alat
+   USE ions_module,          ONLY : nsp, nat, tau, ityp
    USE windows_module,       ONLY : nbnd, imin, imax, dimwin, dimwinx, nspin
    USE kpoints_module,       ONLY : nrtot, nkpts_g
    USE subspace_module,      ONLY : eamp
@@ -311,6 +312,9 @@ END PROGRAM unfold
    USE translations_module,  ONLY : transl
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
+   USE atmproj_tools_module, ONLY : atmproj_get_index, atmproj_get_natomwfc
+   USE uspp_param,           ONLY : upf
+   USE datafiles_module,     ONLY : datafiles_fmt
    USE operator_module
    !
    IMPLICIT NONE
@@ -349,12 +353,13 @@ END PROGRAM unfold
       INTEGER,      ALLOCATABLE :: orb_map(:), orb_map_tmp(:)
       REAL(dbl),    ALLOCATABLE :: rtmp(:)
       INTEGER,      ALLOCATABLE :: indx(:)
+      INTEGER,      ALLOCATABLE :: natomwfc(:)
       REAL(dbl),      PARAMETER :: toll_dist = 5.0d0 * EPS_m2
       !
       CHARACTER(nstrx)  :: fileham, filespace
       CHARACTER(1)      :: op
       !
-      INTEGER           :: i, j, k, ir, ik
+      INTEGER           :: i, j, k, ir, ik, ia, ind
       INTEGER           :: ierr
       !
       ! end of declarations
@@ -475,6 +480,33 @@ END PROGRAM unfold
           !
           ALLOCATE( indx(dimwann), STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname,"allocating indx",ABS(ierr))
+          !
+          ! reconstruct center positions (rave) for atmproj orbitals 
+          !
+          IF ( datafiles_fmt == "atmproj" ) THEN
+              !
+              ALLOCATE( natomwfc(nsp), STAT=ierr )
+              IF ( ierr/=0 ) CALL errore(subname,"allocating natomwfc",ABS(ierr))
+              !
+              CALL atmproj_get_natomwfc( nsp, upf(1:nsp), natomwfc )
+              !
+              DO ia = 1, nat
+                  !
+                  DO i = 1, natomwfc( ityp(ia) )
+                      !
+                      ind = atmproj_get_index( i, ia, ityp, natomwfc )
+                      !
+                      rave( 1:3, ind) = tau(1:3,ia) * alat
+                      !
+                  ENDDO
+                  !
+              ENDDO
+              !
+              DEALLOCATE( natomwfc, STAT=ierr)
+              IF (ierr/=0) CALL errore(subname,"deallocating natomwfc",ABS(ierr))
+              !
+          ENDIF
+
           !
           ! take first wannier function ( wf )
           orb_map(1)=1
