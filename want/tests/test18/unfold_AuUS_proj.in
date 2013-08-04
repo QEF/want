@@ -12,5 +12,5 @@
     do_orthoovp = .FALSE.
     atmproj_sh = 2.0
     atmproj_thr = 0.3
-!    orb_mapping = "automatic"
+    orb_mapping = "automatic"
 /

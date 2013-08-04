@@ -15,14 +15,15 @@
    !
    !
    USE kinds
-   USE constants,         ONLY : CZERO, EPS_m6, EPS_m8
-   USE timing_module,     ONLY : timing
-   USE log_module,        ONLY : log_push, log_pop
-   USE converters_module, ONLY : cart2cry
-   USE ions_module,       ONLY : ions_alloc => alloc, nat, nsp, tau, ityp, symb
-   USE lattice_module,    ONLY : lattice_alloc => alloc, avec, alat
-   USE kpoints_module,    ONLY : kpoints_alloc, nkpts_g
-   USE uspp_param,        ONLY : upf
+   USE constants,              ONLY : CZERO, EPS_m6, EPS_m8
+   USE timing_module,          ONLY : timing
+   USE log_module,             ONLY : log_push, log_pop
+   USE converters_module,      ONLY : cart2cry
+   USE ions_module,            ONLY : ions_alloc => alloc, nat, nsp, tau, ityp, symb
+   USE lattice_module,         ONLY : lattice_alloc => alloc, avec, alat
+   USE kpoints_module,         ONLY : kpoints_alloc, nkpts_g
+   USE uspp_param,             ONLY : upf
+   USE atmproj_tools_module,   ONLY : atmproj_get_index, atmproj_get_natomwfc
    !
    IMPLICIT NONE
       !
@@ -36,19 +37,19 @@
       !
       ! ... Local Variables
       !
+      CHARACTER(25)  :: subname='translations_calc_atmproj'
+      !
       INTEGER        :: ierr
       INTEGER        :: i, j, ia, ib, ic
       INTEGER        :: ia_trasl, ma, mb, ma_tr
-      INTEGER        :: nt, nb, il
+      INTEGER        :: nt, nb
       LOGICAL        :: lfound
       !
       REAL(dbl)      :: raux
       REAL(dbl)      :: rvect_cry(3), vaux(3)
-      REAL(dbl), ALLOCATABLE :: tau_cry(:,:)
       !
-      CHARACTER(25)  :: subname='translations_calc_atmproj'
+      REAL(dbl), ALLOCATABLE :: tau_cry(:,:)
       INTEGER,   ALLOCATABLE :: natomwfc(:)
-      INTEGER,      EXTERNAL :: atmproj_index
       !
       ! ... end declarations
       !
@@ -98,15 +99,7 @@
       ALLOCATE( natomwfc(nsp), STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"allocating natomwfc",ABS(ierr))
       !
-      DO nt = 1, nsp
-          !
-          natomwfc(nt) = 0
-          DO nb = 1, upf(nt)%nwfc
-              il = upf(nt)%lchi(nb)
-              IF ( upf(nt)%oc(nb) >= 0.0d0 ) natomwfc(nt) = natomwfc(nt) + 2 * il + 1
-          ENDDO
-          !
-      ENDDO
+      CALL atmproj_get_natomwfc( nsp, upf(1:nsp), natomwfc )
  
 
       !
@@ -152,9 +145,9 @@
               DO j = 1, natomwfc( ityp(ia) )
               DO i = 1, natomwfc( ityp(ib) )
                   !
-                  ma    = atmproj_index( j, ia, natomwfc )
-                  ma_tr = atmproj_index( j, ia_trasl, natomwfc )
-                  mb    = atmproj_index( i, ib, natomwfc )
+                  ma    = atmproj_get_index( j, ia, ityp, natomwfc )
+                  ma_tr = atmproj_get_index( j, ia_trasl, ityp, natomwfc )
+                  mb    = atmproj_get_index( i, ib, ityp, natomwfc )
                   !
                   transl(mb,ma) = rovp(mb,ma_tr)
                   !
@@ -170,38 +163,13 @@
       !
       DEALLOCATE( tau_cry, STAT=ierr )
       IF ( ierr/=0 ) CALL errore(subname,"deallocating tau_cry",ABS(ierr))
+      DEALLOCATE( natomwfc, STAT=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,"deallocating natomwfc",ABS(ierr))
                
       !
       CALL timing(subname,OPR='stop')
       CALL log_pop(subname)
       !
    END SUBROUTINE translations_calc_atmproj
-
-
-!************************************************************
-INTEGER FUNCTION atmproj_index( i, ia, natomwfc )
-   !************************************************************
-   !
-   USE ions_module,     ONLY : ityp, nat, nsp
-   !
-   IMPLICIT NONE
-   INTEGER :: i, ia, natomwfc(nsp)
-   INTEGER :: ind, iatm, nt
-   CHARACTER(13) :: subname="atmproj_index"
-   !
-   IF ( ia > nat )               CALL errore(subname,"invalid ia",ia)
-   IF ( i > natomwfc(ityp(ia)) ) CALL errore(subname,"invalid i",i)
-   !
-   ind = i
-   DO iatm = 1, ia-1 
-       !
-       nt = ityp(iatm)
-       ind = ind + natomwfc(nt)
-       !
-   ENDDO
-   !
-   atmproj_index = ind
-   !
-END FUNCTION atmproj_index
 
 
