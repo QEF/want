@@ -369,9 +369,9 @@ END SUBROUTINE atmproj_tools_init
    ! meant to set the zero of the energy scale (where we may have
    ! spurious 0 eigenvalues) far from any physical energy region of interest
    !
-   eig    = eig    -atmproj_sh
-   efermi = efermi -atmproj_sh
-
+   !eig    = eig    -atmproj_sh                                        !Luis
+   !efermi = efermi -atmproj_sh                                        !Luis
+   eig    = eig  -efermi                                               !Luis
 
 
    ! 
@@ -430,7 +430,10 @@ END SUBROUTINE atmproj_tools_init
                    DO i = 1, dimwann
                        !
                        kham(i,j,ik) = kham(i,j,ik) + &
-                                                ( ztmp(i,ib) ) * eig(ib,ik,isp) * CONJG( ztmp(j,ib) )
+                       !                         ( ztmp(i,ib) ) * eig(ib,ik,isp) * CONJG( ztmp(j,ib) )
+                                                                       !Luis
+                                                ( ztmp(i,ib) ) * (eig(ib,ik,isp)-atmproj_sh) * CONJG( ztmp(j,ib) )
+                                                                       !Luis
                        !
                    ENDDO
                    ENDDO
@@ -505,14 +508,18 @@ END SUBROUTINE atmproj_tools_init
                    !
                    DO j = 1, dimwann
                    DO i = 1, dimwann
-                       kham(i,j,ik) = kham(i,j,ik) -efermi * kovp(i,j,ik,isp)
+                       !kham(i,j,ik) = kham(i,j,ik) -efermi * kovp(i,j,ik,isp)
+                                                                       !Luis
+                       kham(i,j,ik) = kham(i,j,ik) + atmproj_sh * kovp(i,j,ik,isp)
+                                                                       !Luis
                    ENDDO
                    ENDDO
                    !
                ELSE
                    !
                    DO i = 1, dimwann
-                       kham(i,i,ik) = kham(i,i,ik) -efermi
+                       !kham(i,i,ik) = kham(i,i,ik) -efermi            !Luis
+                       kham(i,i,ik) = kham(i,i,ik) + atmproj_sh        !Luis
                    ENDDO
                    !
                ENDIF
@@ -1040,7 +1047,12 @@ SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
    IF ( PRESENT( kovp ) ) THEN
        !
        CALL iotk_scan_begin( iunit, "OVERLAPS", IERR=ierr )
-       IF ( ierr/=0 ) RETURN
+       !IF ( ierr/=0 ) RETURN                                          !Luis
+
+       IF ( ierr/=0 ) THEN                                             !Luis
+         write(*,*) 'OVERLAPS data not found in file. Crashing ...'    !Luis
+         RETURN                                                        !Luis
+       ENDIF                                                           !Luis
        !
        !
        DO ik = 1, nkpt_
