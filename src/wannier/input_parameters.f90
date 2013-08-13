@@ -385,18 +385,19 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE read_namelist_control(unit)
+   SUBROUTINE read_namelist_control(iunit)
    !**********************************************************
    !
    ! reads CONTROL namelist
    !
    IMPLICIT NONE
-      INTEGER, INTENT(in)   :: unit
+      INTEGER, INTENT(IN)   :: iunit
 
       CHARACTER(21) :: subname='read_namelist_control'
       INTEGER :: ios, ierr
 
-      IF ( ionode ) READ(unit, CONTROL, IOSTAT=ios )
+      ios = 0
+      IF ( ionode ) READ(iunit, CONTROL, IOSTAT=ios )
       !
       CALL mp_bcast( ios,     ionode_id )
       IF (ios/=0) CALL errore(subname,'reading CONTROL namelist',ABS(ios))
@@ -460,18 +461,19 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE read_namelist_subspace(unit)
+   SUBROUTINE read_namelist_subspace(iunit)
    !**********************************************************
    !
    ! reads SUBSPACE namelist
    !
    IMPLICIT NONE
-      INTEGER, INTENT(in)   :: unit
+      INTEGER, INTENT(IN)   :: iunit
 
       CHARACTER(22) :: subname='read_namelist_subspace'
       INTEGER :: ios, ierr
 
-      IF ( ionode ) READ(unit, SUBSPACE, IOSTAT=ios )
+      ios = 0
+      IF ( ionode ) READ(iunit, SUBSPACE, IOSTAT=ios )
       !
       CALL mp_bcast( ios,     ionode_id )
       IF (ios/=0) CALL errore(subname,'reading SUBSPACE namelist',ABS(ios))
@@ -544,18 +546,19 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE read_namelist_localization(unit)
+   SUBROUTINE read_namelist_localization(iunit)
    !**********************************************************
    !
    ! reads LOCALIZATION namelist
    !
    IMPLICIT NONE
-      INTEGER, INTENT(in)   :: unit
+      INTEGER, INTENT(IN)   :: iunit
 
       CHARACTER(26) :: subname='read_namelist_localization'
       INTEGER :: ios, ierr
 
-      IF ( ionode ) READ(unit, LOCALIZATION, IOSTAT=ios )
+      ios = 0
+      IF ( ionode ) READ(iunit, LOCALIZATION, IOSTAT=ios )
       !
       CALL mp_bcast( ios,     ionode_id )
       IF (ios/=0) CALL errore(subname,'reading LOCALIZATION namelist',ABS(ios))
