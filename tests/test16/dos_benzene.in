@@ -6,7 +6,7 @@
    fileout = 'dos_benzene.dat'
    datafile_dft = "./SCRATCH/benzene.save/atomic_proj.xml"
    atmproj_sh = 5.0
-   atmproj_thr = 0.0
+   atmproj_thr = 0.9
    do_orthoovp = .TRUE.
    nk(1) = 1
    nk(2) = 1
