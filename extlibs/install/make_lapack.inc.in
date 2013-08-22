@@ -24,7 +24,9 @@ FORTRAN  = @f77@
 OPTS     = @fflags@
 DRVOPTS  = @fflags@
 NOOPT    = @fflags_noopt@
-LOADER   = @ld@
+#LOADER   = @ld@
+#LOADOPTS = @ldflags@
+LOADER   = @f77@
 LOADOPTS = @ldflags@
 #
 # Timer for the SECOND and DSECND routines

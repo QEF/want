@@ -602,14 +602,14 @@ ia32:path* | ia64:path* | x86_64:path* )
 	have_cpp=0
 	;;
 *:g95 )
-	try_fflags="-O3 -cpp"
+	try_fflags="-O2 -cpp"
 	try_f90flags="\$(FFLAGS)"
 	try_fflags_noopt="-O0 -cpp"
 	try_ldflags=""
 	try_ldflags_static="-static"
 	;;
 *:gfortran )
-	try_fflags="-O3 -g"
+	try_fflags="-O2 -g"
 	try_fflags_openmp="-fopenmp"
 	try_f90flags="\$(FFLAGS) -x f95-cpp-input"
 	try_fflags_noopt="-O0 -g"

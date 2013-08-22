@@ -1,50 +1,55 @@
 !
-! Copyright (C) 2002-2003 PWSCF-FPMD-CP90 group
+! Copyright (C) 2002-2013 Quantum ESPRESSO group
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file `License'
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 
+#if defined __HPM
+#  include "/cineca/prod/hpm/include/f_hpm.h"
+#endif
+!
+! This module contains interfaces to most low-level MPI operations:
+! initialization and stopping, broadcast, parallel sum, etc.
+!
 !------------------------------------------------------------------------------!
     MODULE mp
 !------------------------------------------------------------------------------!
-      USE kinds,            ONLY : dbl, i4b
-      USE io_global_module, ONLY : stdout
+      USE kinds,             ONLY : DP
+      USE io_global_module,  ONLY : stdout
       USE parallel_include
-      IMPLICIT NONE
       !
+      IMPLICIT NONE
 
-!      PRIVATE
-      PUBLIC :: mp_start, mp_end, mp_env, mp_group, mp_cart_create,   &
-        mp_bcast, mp_stop, mp_sum, mp_max, mp_min, mp_rank, mp_size,  &
-        mp_excng, mp_gather, mp_allgather, mp_get, mp_put,            &
-        mp_barrier, mp_report
+      PUBLIC :: mp_start, mp_abort, mp_end, mp_env, &
+        mp_bcast, mp_sum, mp_max, mp_min, mp_rank, mp_size, &
+        mp_gather, mp_get, mp_put, mp_barrier, mp_report, mp_group_free, &
+        mp_root_sum, mp_comm_free, mp_comm_create, mp_comm_group, &
+        mp_group_create, mp_comm_split, mp_set_displs
 !
-      INTERFACE mp_excng    ! Carlo Cavazzoni
-        MODULE PROCEDURE mp_excng_i
-      END INTERFACE
-
       INTERFACE mp_bcast
         MODULE PROCEDURE mp_bcast_i1, mp_bcast_r1, mp_bcast_c1, &
           mp_bcast_z, mp_bcast_zv, &
           mp_bcast_iv, mp_bcast_rv, mp_bcast_cv, mp_bcast_l, mp_bcast_rm, &
-#if defined __T3E
-          mp_bcast_i4b, &
-#endif
           mp_bcast_cm, mp_bcast_im, mp_bcast_it, mp_bcast_rt, mp_bcast_lv, &
-          mp_bcast_lm, mp_bcast_r4d, mp_bcast_ct,  mp_bcast_c4d
+          mp_bcast_lm, mp_bcast_r4d, mp_bcast_r5d, mp_bcast_ct,  mp_bcast_c4d,&
+          mp_bcast_c5d
       END INTERFACE
 
       INTERFACE mp_sum
-        MODULE PROCEDURE mp_sum_i1, mp_sum_iv, mp_sum_im, mp_sum_it, & 
-          mp_sum_r1, mp_sum_rv, mp_sum_rm, mp_sum_rt, &
+        MODULE PROCEDURE mp_sum_i1, mp_sum_iv, mp_sum_im, mp_sum_it, &
+          mp_sum_r1, mp_sum_rv, mp_sum_rm, mp_sum_rt, mp_sum_r4d, &
           mp_sum_c1, mp_sum_cv, mp_sum_cm, mp_sum_ct, mp_sum_c4d, &
-          mp_sum_rmm, mp_sum_cmm
+          mp_sum_c5d, mp_sum_c6d, mp_sum_rmm, mp_sum_cmm, mp_sum_r5d
+      END INTERFACE
+
+      INTERFACE mp_root_sum
+        MODULE PROCEDURE mp_root_sum_rm, mp_root_sum_cm
       END INTERFACE
 
       INTERFACE mp_get
-        MODULE PROCEDURE mp_get_rv, mp_get_cv, mp_get_i1, mp_get_iv, &
+        MODULE PROCEDURE mp_get_r1, mp_get_rv, mp_get_cv, mp_get_i1, mp_get_iv, &
           mp_get_rm, mp_get_cm, mp_get_ct
       END INTERFACE
 
@@ -60,19 +65,20 @@
         MODULE PROCEDURE mp_min_i, mp_min_r, mp_min_rv, mp_min_iv
       END INTERFACE
       INTERFACE mp_gather
-        MODULE PROCEDURE mp_gather_iv, mp_gather_cvv, mp_gather_rvv, &
-                         mp_gather_ctt
+        MODULE PROCEDURE mp_gather_i1, mp_gather_iv, mp_gatherv_rv, mp_gatherv_iv, &
+          mp_gatherv_rm, mp_gatherv_im, mp_gatherv_cv
       END INTERFACE
-      INTERFACE mp_allgather
-        MODULE PROCEDURE mp_allgatherv_ctt
-#ifdef MPI_IN_PLACE
-        MODULE PROCEDURE mp_allgatherv_rmm_ip
-        MODULE PROCEDURE mp_allgatherv_ctt_ip
-#endif
+      INTERFACE mp_alltoall
+        MODULE PROCEDURE mp_alltoall_c3d, mp_alltoall_i3d
+      END INTERFACE
+      INTERFACE mp_circular_shift_left
+        MODULE PROCEDURE mp_circular_shift_left_d2d_int,mp_circular_shift_left_d2d_double,mp_circular_shift_left_d2d_complex
       END INTERFACE
 
-      INTEGER, PRIVATE, SAVE :: mp_high_watermark = 0
 
+      CHARACTER(LEN=80),  PRIVATE :: err_msg = ' '
+
+      INTEGER, PRIVATE,      SAVE :: mp_high_watermark = 0
       INTEGER, PRIVATE, PARAMETER :: mp_msgsiz_max = 200000000
 
 !------------------------------------------------------------------------------!
@@ -82,40 +88,26 @@
 !------------------------------------------------------------------------------!
 !
 !------------------------------------------------------------------------------!
-!..mp_excng
-!..Carlo Cavazzoni
-!     THIS SUBROUTINE performs the following operation :
-!
-!               ARRAY                      ARRAY
-!     P0   [D0][  ][  ][  ]           [D0][D1][D2][D3]
-!     P1   [  ][D1][  ][  ]    --\    [D0][D1][D2][D3]
-!     P2   [  ][  ][D2][  ]    --/    [D0][D1][D2][D3]
-!     P3   [  ][  ][  ][D3]           [D0][D1][D2][D3]
-
-      SUBROUTINE mp_excng_i(mydata, alldata, gid)
+!..mp_gather_i1
+      SUBROUTINE mp_gather_i1(mydata, alldata, root, gid)
         IMPLICIT NONE
-        INTEGER, INTENT(IN) :: mydata
+        INTEGER, INTENT(IN) :: mydata, root
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
         INTEGER, INTENT(OUT) :: alldata(:)
-        INTEGER :: taskid, ierr
-        INTEGER :: msglen = 1
+        INTEGER :: ierr
+
 
 #if defined (__MPI)
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8900)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_comm_rank(group, taskid, ierr)
-        IF (ierr/=0) CALL mp_stop(8001)
-        alldata(taskid+1) = mydata
-        CALL MPI_ALLGATHER(mydata, 1, MPI_INTEGER, alldata, 1, MPI_INTEGER, group, IERR)
-        IF (ierr/=0) CALL mp_stop(8001)
+        CALL MPI_GATHER(mydata, 1, MPI_INTEGER, alldata, 1, MPI_INTEGER, root, group, IERR)
+        IF (ierr/=0) CALL mp_stop( 8001 )
 #else
         alldata(1) = mydata
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
         RETURN
-      END SUBROUTINE mp_excng_i
+      END SUBROUTINE mp_gather_i1
 
 !------------------------------------------------------------------------------!
 !..mp_gather_iv
@@ -131,192 +123,55 @@
 
 #if defined (__MPI)
         msglen = SIZE(mydata)
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8901)
-        IF( msglen .NE. SIZE(alldata, 1) ) CALL mp_stop(8002)
+        IF( msglen .NE. SIZE(alldata, 1) ) CALL mp_stop( 8000 )
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
         CALL MPI_GATHER(mydata, msglen, MPI_INTEGER, alldata, msglen, MPI_INTEGER, root, group, IERR)
-        IF (ierr/=0) CALL mp_stop(8001)
+        IF (ierr/=0) CALL mp_stop( 8001 )
 #else
         msglen = SIZE(mydata)
-        IF( msglen .NE. SIZE(alldata, 1) ) CALL mp_stop(8002)
+        IF( msglen .NE. SIZE(alldata, 1) ) CALL mp_stop( 8002 )
         alldata(:,1) = mydata(:)
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
         RETURN
       END SUBROUTINE mp_gather_iv
 
-!------------------------------------------------------------------------------!
-!..mp_gather_cvv
-!..Carlo Cavazzoni
-      SUBROUTINE mp_gather_cvv(mydata, alldata, root, gid)
-        IMPLICIT NONE
-        COMPLEX(dbl), INTENT(IN) :: mydata(:)
-        COMPLEX(dbl), INTENT(OUT) :: alldata(:)
-        INTEGER, INTENT(IN) :: root
-        INTEGER, OPTIONAL, INTENT(IN) :: gid
-        INTEGER :: group
-        INTEGER :: msglen, ierr
-#if defined (__MPI)
-        group = MPI_COMM_WORLD
-        msglen = SIZE(mydata)
-        IF( msglen*16 > mp_msgsiz_max ) CALL mp_stop(8902)
-        IF( PRESENT( gid ) ) group = gid
-        CALL MPI_GATHER(mydata, msglen, MPI_DOUBLE_COMPLEX, alldata, msglen, &
-          MPI_DOUBLE_COMPLEX, root, group, IERR)
-        IF (ierr/=0) CALL mp_stop(8001)
-#else
-        msglen = SIZE(mydata)
-        alldata = mydata
-#endif
-        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen ) 
-        RETURN
-      END SUBROUTINE mp_gather_cvv
-
-!------------------------------------------------------------------------------!
-!..mp_gather_rvv
-!..Carlo Cavazzoni
-      SUBROUTINE mp_gather_rvv(mydata, alldata, root, gid)
-        IMPLICIT NONE
-        REAL(dbl), INTENT(IN) :: mydata(:)
-        REAL(dbl), INTENT(OUT) :: alldata(:)
-        INTEGER, INTENT(IN) :: root
-        INTEGER, OPTIONAL, INTENT(IN) :: gid
-        INTEGER :: group
-        INTEGER :: msglen, ierr
-#if defined (__MPI)
-        group = mpi_comm_world
-        msglen = SIZE(mydata)
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8903)
-        IF( PRESENT( gid ) ) group = gid
-        CALL MPI_GATHER(mydata, msglen, MPI_DOUBLE_PRECISION, alldata, msglen, &
-          MPI_DOUBLE_PRECISION, root, group, IERR)
-        IF (ierr/=0) CALL mp_stop(8001)
-#else
-        msglen = SIZE(mydata)
-        alldata = mydata
-#endif
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
-        return
-      END SUBROUTINE mp_gather_rvv
-
-!------------------------------------------------------------------------------!
-!..mp_gather_ctt
-!..Andrea Ferretti
-      SUBROUTINE mp_gather_ctt(mydata, alldata, root, gid)
-        IMPLICIT NONE
-        COMPLEX(dbl), INTENT(IN) :: mydata(:,:,:)
-        COMPLEX(dbl), INTENT(OUT) :: alldata(:,:,:)
-        INTEGER, INTENT(IN) :: root
-        INTEGER, OPTIONAL, INTENT(IN) :: gid
-        INTEGER :: group
-        INTEGER :: msglen, ierr
-#if defined (__MPI)
-        group = MPI_COMM_WORLD
-        msglen = SIZE(mydata)
-        IF( msglen*16 > mp_msgsiz_max ) CALL mp_stop(8902)
-        IF( PRESENT( gid ) ) group = gid
-        CALL MPI_GATHER(mydata, msglen, MPI_DOUBLE_COMPLEX, alldata, msglen, &
-          MPI_DOUBLE_COMPLEX, root, group, IERR)
-        IF (ierr/=0) CALL mp_stop(8001)
-#else
-        msglen = SIZE(mydata)
-        alldata = mydata
-#endif
-        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen ) 
-        RETURN
-      END SUBROUTINE mp_gather_ctt
-
-#ifdef MPI_IN_PLACE
-!------------------------------------------------------------------------------!
-!..mp_allgatherv_rmm_ip  (in_place)
-!..Andrea Ferretti
-      SUBROUTINE mp_allgatherv_rmm_ip(alldata, displs, msglen, gid)
-        IMPLICIT NONE
-        REAL(dbl),    INTENT(INOUT)   :: alldata(:,:)
-        INTEGER,      INTENT(IN)      :: displs(:)
-        INTEGER,      INTENT(IN)      :: msglen(:)
-        INTEGER, OPTIONAL, INTENT(IN) :: gid
-        !
-        INTEGER :: group
-        INTEGER :: msglen_, ierr
-#if defined (__MPI)
-        group = MPI_COMM_WORLD
-        !msglen_ = SIZE( alldata )
-        !IF( msglen_*16 > mp_msgsiz_max ) CALL mp_stop(8902)
-        IF( PRESENT( gid ) ) group = gid
-        CALL MPI_ALLGATHERV(MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, alldata, msglen, &
-                            displs, MPI_DOUBLE_PRECISION, group, IERR)
-        IF (ierr/=0) CALL mp_stop(8001)
-#else
-        !msglen_ = SIZE( alldata )
-#endif
-        !mp_high_watermark = MAX( mp_high_watermark, 16 * msglen_ ) 
-        RETURN
-      END SUBROUTINE mp_allgatherv_rmm_ip
-#endif
-
-!------------------------------------------------------------------------------!
-!..mp_allgatherv_ctt
-!..Andrea Ferretti
-      SUBROUTINE mp_allgatherv_ctt(mydata, alldata, displs, msglen, gid)
-        IMPLICIT NONE
-        COMPLEX(dbl), INTENT(IN)  :: mydata(:,:,:)
-        COMPLEX(dbl), INTENT(OUT) :: alldata(:,:,:)
-        INTEGER,      INTENT(IN)  :: displs(:)
-        INTEGER,      INTENT(IN)  :: msglen(:)
-        INTEGER, OPTIONAL, INTENT(IN) :: gid
-        !
-        INTEGER :: group
-        INTEGER :: msglen_, ierr
-#if defined (__MPI)
-        group = MPI_COMM_WORLD
-        msglen_ = SIZE( mydata )
-        IF( msglen_*16 > mp_msgsiz_max ) CALL mp_stop(8902)
-        IF( PRESENT( gid ) ) group = gid
-        CALL MPI_ALLGATHERV(mydata, msglen_, MPI_DOUBLE_COMPLEX, alldata, msglen, &
-                            displs, MPI_DOUBLE_COMPLEX, group, IERR)
-        IF (ierr/=0) CALL mp_stop(8001)
-#else
-        msglen_ = SIZE( mydata )
-        alldata = mydata
-#endif
-        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen_ ) 
-        RETURN
-      END SUBROUTINE mp_allgatherv_ctt
-
-#ifdef MPI_IN_PLACE
-!------------------------------------------------------------------------------!
-!..mp_allgatherv_ctt_ip  (in_place)
-!..Andrea Ferretti
-      SUBROUTINE mp_allgatherv_ctt_ip(alldata, displs, msglen, gid)
-        IMPLICIT NONE
-        COMPLEX(dbl), INTENT(INOUT)   :: alldata(:,:,:)
-        INTEGER,      INTENT(IN)      :: displs(:)
-        INTEGER,      INTENT(IN)      :: msglen(:)
-        INTEGER, OPTIONAL, INTENT(IN) :: gid
-        !
-        INTEGER :: group
-        INTEGER :: msglen_, ierr
-#if defined (__MPI)
-        group = MPI_COMM_WORLD
-        !msglen_ = SIZE( alldata )
-        !IF( msglen_*16 > mp_msgsiz_max ) CALL mp_stop(8902)
-        IF( PRESENT( gid ) ) group = gid
-        CALL MPI_ALLGATHERV(MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, alldata, msglen, &
-                            displs, MPI_DOUBLE_COMPLEX, group, IERR)
-        IF (ierr/=0) CALL mp_stop(8001)
-#else
-        !msglen_ = SIZE( alldata )
-#endif
-        !mp_high_watermark = MAX( mp_high_watermark, 16 * msglen_ ) 
-        RETURN
-      END SUBROUTINE mp_allgatherv_ctt_ip
-#endif
-
+!!
+!!------------------------------------------------------------------------------!
+!!..mp_start
+!      SUBROUTINE mp_start(numtask, taskid, groupid)
 !
-!------------------------------------------------------------------------------!
-!..mp_start
+!! ...
+!        IMPLICIT NONE
+!        INTEGER, INTENT (OUT) :: numtask, taskid, groupid
+!        INTEGER :: ierr
+!! ...
+!        ierr = 0
+!        numtask = 1
+!        taskid = 0
+!        groupid = 0
+!
+!#  if defined(__MPI)
+!        CALL mpi_init(ierr)
+!        IF (ierr/=0) CALL mp_stop( 8003 )
+!        CALL mpi_comm_rank(mpi_comm_world,taskid,ierr)
+!        IF (ierr/=0) CALL mp_stop( 8005 )
+!#if defined __HPM
+!        !   initialize the IBM Harware performance monitor
+!        CALL f_hpminit( taskid, 'profiling' )
+!#endif
+!        CALL mpi_comm_size(mpi_comm_world,numtask,ierr)
+!        groupid = mpi_comm_world
+!        IF (ierr/=0) CALL mp_stop( 8006 )
+!#  endif
+!
+!#if defined(__CUDA) || defined(__PHIGEMM )
+!        CALL InitCudaEnv()
+!#endif
+!
+!        RETURN
+!      END SUBROUTINE mp_start
+
       SUBROUTINE mp_start
 
 ! ...
@@ -333,6 +188,25 @@
 
 
       END SUBROUTINE mp_start
+
+!------------------------------------------------------------------------------!
+!..mp_abort
+
+      SUBROUTINE mp_abort(errorcode)
+        IMPLICIT NONE
+        INTEGER :: ierr
+        INTEGER, OPTIONAL :: errorcode
+        INTEGER :: errcode_internal
+#ifdef __MPI
+        IF (PRESENT(errorcode)) THEN
+           errcode_internal = errorcode
+        ELSE
+           errcode_internal = 1
+        ENDIF
+        CALL mpi_abort(mpi_comm_world, errcode_internal, ierr)
+        CALL mpi_finalize(ierr)
+#endif
+      END SUBROUTINE mp_abort
 !
 !------------------------------------------------------------------------------!
 !..mp_end
@@ -344,12 +218,23 @@
         ierr = 0
         taskid = 0
 
+#if defined(__CUDA) || defined(__PHIGEMM )
+           CALL CloseCudaEnv()
+#endif
+
 #if defined(__MPI)
+        CALL mpi_comm_rank( mpi_comm_world, taskid, ierr)
+#if defined __HPM
+        !   terminate the IBM Harware performance monitor
+        CALL f_hpmterminate( taskid )
+#endif
+
         CALL mpi_finalize(ierr)
-        IF (ierr/=0) CALL mp_stop(8904)
+        IF (ierr/=0) CALL mp_stop( 8004 )
 #endif
         RETURN
       END SUBROUTINE mp_end
+
 !
 !------------------------------------------------------------------------------!
 !..mp_env
@@ -376,96 +261,115 @@
 
         RETURN
       END SUBROUTINE mp_env
+
+
 !------------------------------------------------------------------------------!
 !..mp_group
-      SUBROUTINE mp_group(group_list, group_size, base_group, groupid)
+
+      SUBROUTINE mp_comm_group( comm, group )
+         IMPLICIT NONE
+         INTEGER, INTENT (IN) :: comm
+         INTEGER, INTENT (OUT) :: group
+         INTEGER :: ierr
+         ierr = 0
+#if defined(__MPI)
+         CALL mpi_comm_group( comm, group, ierr )
+         IF (ierr/=0) CALL mp_stop( 8007 )
+#else
+         group = 0
+#endif
+      END SUBROUTINE  mp_comm_group
+
+      SUBROUTINE mp_comm_split( old_comm, color, key, new_comm )
+         IMPLICIT NONE
+         INTEGER, INTENT (IN) :: old_comm
+         INTEGER, INTENT (IN) :: color, key
+         INTEGER, INTENT (OUT) :: new_comm
+         INTEGER :: ierr
+         ierr = 0
+#if defined(__MPI)
+         CALL MPI_COMM_SPLIT( old_comm, color, key, new_comm, ierr )
+         IF (ierr/=0) CALL mp_stop( 8008 )
+#else
+         new_comm = old_comm
+#endif
+      END SUBROUTINE  mp_comm_split
+
+
+      SUBROUTINE mp_group_create( group_list, group_size, old_grp, new_grp )
         IMPLICIT NONE
-        INTEGER, INTENT (IN) :: group_list(:), group_size, base_group
-        INTEGER, INTENT (OUT) :: groupid
-        INTEGER :: base, newgroup, ierr
+        INTEGER, INTENT (IN) :: group_list(:), group_size, old_grp
+        INTEGER, INTENT (OUT) :: new_grp
+        INTEGER :: ierr
 
         ierr = 0
-        groupid = base_group
+        new_grp = old_grp
 #if defined(__MPI)
-        CALL mpi_comm_group(base_group,base,ierr)
-        IF (ierr/=0) CALL mp_stop(8010)
-        CALL mpi_group_incl(base,group_size,group_list,newgroup,ierr)
-        IF (ierr/=0) CALL mp_stop(8011)
-        CALL mpi_comm_create(base_group,newgroup,groupid,ierr)
-        IF (ierr/=0) CALL mp_stop(8012)
+        CALL mpi_group_incl( old_grp, group_size, group_list, new_grp, ierr )
+        IF (ierr/=0) CALL mp_stop( 8009 )
 #endif
-      END SUBROUTINE mp_group
+      END SUBROUTINE mp_group_create
+
 !------------------------------------------------------------------------------!
-!..mp_cart_create
-      SUBROUTINE mp_cart_create(comm_old,ndims,dims,pos,comm_cart)
+      SUBROUTINE mp_comm_create( old_comm, new_grp, new_comm )
         IMPLICIT NONE
-        INTEGER, INTENT (IN) :: comm_old, ndims
-        INTEGER, INTENT (OUT) :: dims(:), pos(:), comm_cart
-        INTEGER :: ierr, nodes
-        LOGICAL :: period(1:ndims), reorder
+        INTEGER, INTENT (IN) :: old_comm
+        INTEGER, INTENT (IN) :: new_grp
+        INTEGER, INTENT (OUT) :: new_comm
+        INTEGER :: ierr
 
         ierr = 0
-        dims(1:ndims) = 1
-        pos(1:ndims) = 1
-        comm_cart = comm_old
+        new_comm = old_comm
 #if defined(__MPI)
-        dims(1:ndims) = 0
-        CALL mpi_comm_size(comm_old,nodes,ierr)
-        IF (ierr/=0) CALL mp_stop(8020)
-        CALL mpi_dims_create(nodes,ndims,dims,ierr)
-        IF (ierr/=0) CALL mp_stop(8021)
-        reorder = .TRUE.
-        period = .TRUE.
-        CALL mpi_cart_create(comm_old,ndims,dims,period,reorder,comm_cart, ierr)
-        IF (ierr/=0) CALL mp_stop(8022)
-        CALL mpi_cart_get(comm_cart,ndims,dims,period,pos,ierr)
-        IF (ierr/=0) CALL mp_stop(8023)
+        CALL mpi_comm_create( old_comm, new_grp, new_comm, ierr )
+        IF (ierr/=0) CALL mp_stop( 8010 )
 #endif
-      END SUBROUTINE mp_cart_create
+      END SUBROUTINE mp_comm_create
+
+!------------------------------------------------------------------------------!
+!..mp_group_free
+      SUBROUTINE mp_group_free( group )
+        IMPLICIT NONE
+        INTEGER, INTENT (INOUT) :: group
+        INTEGER :: ierr
+        ierr = 0
+#if defined(__MPI)
+        CALL mpi_group_free( group, ierr )
+        IF (ierr/=0) CALL mp_stop( 8011 )
+#endif
+      END SUBROUTINE mp_group_free
+!------------------------------------------------------------------------------!
+
+      SUBROUTINE mp_comm_free( comm )
+         IMPLICIT NONE
+         INTEGER, INTENT (INOUT) :: comm
+         INTEGER :: ierr
+         ierr = 0
+#if defined(__MPI)
+         IF( comm /= MPI_COMM_NULL ) THEN
+            CALL mpi_comm_free( comm, ierr )
+            IF (ierr/=0) CALL mp_stop( 8012 )
+         END IF
+#endif
+         RETURN
+      END SUBROUTINE mp_comm_free
+
 !------------------------------------------------------------------------------!
 !..mp_bcast
-      SUBROUTINE mp_bcast_i4b(msg,source,gid)
-        IMPLICIT NONE
-        INTEGER(i4b) :: msg
-        INTEGER, OPTIONAL, INTENT(IN) :: gid
-        INTEGER :: group
-        INTEGER :: source
-        INTEGER :: msglen, ierr, imsg
 
-#if defined(__MPI)
-        ierr = 0
-        msglen = 1
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8905)
-        group = mpi_comm_world
-        IF( PRESENT( gid ) ) group = gid
-        imsg = msg
-        CALL mpi_bcast(imsg, msglen, mpi_integer, source, group, ierr)
-        msg = imsg
-        IF (ierr/=0) CALL mp_stop(8101)
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
-#endif
-      END SUBROUTINE mp_bcast_i4b
-
-
-!------------------------------------------------------------------------------!
-!..mp_bcast
       SUBROUTINE mp_bcast_i1(msg,source,gid)
         IMPLICIT NONE
         INTEGER :: msg
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 
 #if defined(__MPI)
-        ierr = 0
         msglen = 1
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8906)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_bcast(msg,msglen,mpi_integer,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8101)
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+        CALL bcast_integer( msg, msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_i1
 !
@@ -476,36 +380,28 @@
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 #if defined(__MPI)
-        ierr = 0
         msglen = size(msg)
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8907)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_bcast(msg,msglen,mpi_integer,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8102)
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+        CALL bcast_integer( msg, msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_iv
 !
 !------------------------------------------------------------------------------!
-      SUBROUTINE mp_bcast_im(msg,source,gid)
+      SUBROUTINE mp_bcast_im( msg, source, gid )
         IMPLICIT NONE
         INTEGER :: msg(:,:)
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 #if defined(__MPI)
-        ierr = 0
         msglen = size(msg)
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8908)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_bcast(msg,msglen,mpi_integer,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8102)
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+        CALL bcast_integer( msg, msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_im
 !
@@ -519,16 +415,12 @@
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 #if defined(__MPI)
-        ierr = 0
         msglen = size(msg)
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8909)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_bcast(msg,msglen,mpi_integer,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8102)
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+        CALL bcast_integer( msg, msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_it
 !
@@ -536,20 +428,15 @@
 !
       SUBROUTINE mp_bcast_r1(msg,source,gid)
         IMPLICIT NONE
-        REAL (dbl) :: msg
+        REAL (DP) :: msg
         INTEGER :: msglen, source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: ierr
 #if defined(__MPI)
-        ierr = 0
         msglen = 1
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8910)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_bcast(msg,msglen,mpi_double_precision,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8111)
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL bcast_real( msg, msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_r1
 !
@@ -557,21 +444,17 @@
 !
       SUBROUTINE mp_bcast_rv(msg,source,gid)
         IMPLICIT NONE
-        REAL (dbl) :: msg(:)
+        REAL (DP) :: msg(:)
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 
 #if defined(__MPI)
-        ierr = 0
         msglen = size(msg)
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8911)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_bcast(msg,msglen,mpi_double_precision,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8112)
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL bcast_real( msg, msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_rv
 !
@@ -579,20 +462,16 @@
 !
       SUBROUTINE mp_bcast_rm(msg,source,gid)
         IMPLICIT NONE
-        REAL (dbl) :: msg(:,:)
+        REAL (DP) :: msg(:,:)
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 #if defined(__MPI)
-        ierr = 0
         msglen = size(msg)
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8912)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_bcast(msg,msglen,mpi_double_precision,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8113)
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL bcast_real( msg, msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_rm
 !
@@ -602,20 +481,16 @@
 !
       SUBROUTINE mp_bcast_rt(msg,source,gid)
         IMPLICIT NONE
-        REAL (dbl) :: msg(:,:,:)
+        REAL (DP) :: msg(:,:,:)
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 #if defined(__MPI)
-        ierr = 0
         msglen = size(msg)
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8913)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_bcast(msg,msglen,mpi_double_precision,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8113)
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL bcast_real( msg, msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_rt
 !
@@ -625,100 +500,101 @@
 !
       SUBROUTINE mp_bcast_r4d(msg, source, gid)
         IMPLICIT NONE
-        REAL (dbl) :: msg(:,:,:,:)
+        REAL (DP) :: msg(:,:,:,:)
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 #if defined(__MPI)
-        ierr = 0
         msglen = size(msg)
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8914)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_bcast(msg, msglen, mpi_double_precision, source, group, ierr)
-        IF (ierr/=0) CALL mp_stop(8113)
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL bcast_real( msg, msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_r4d
+
+!
+!------------------------------------------------------------------------------!
+!
+! Carlo Cavazzoni
+!
+      SUBROUTINE mp_bcast_r5d(msg, source, gid)
+        IMPLICIT NONE
+        REAL (DP) :: msg(:,:,:,:,:)
+        INTEGER :: source
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+        INTEGER :: msglen
+#if defined(__MPI)
+        msglen = size(msg)
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+        CALL bcast_real( msg, msglen, source, group )
+#endif
+      END SUBROUTINE mp_bcast_r5d
 
 !------------------------------------------------------------------------------!
 !
       SUBROUTINE mp_bcast_c1(msg,source,gid)
         IMPLICIT NONE
-        COMPLEX (dbl) :: msg
+        COMPLEX (DP) :: msg
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 #if defined(__MPI)
-        ierr = 0
         msglen = 1
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_bcast(msg,msglen,mpi_double_complex,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8121)
-        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen ) 
+        CALL bcast_real( msg, 2 * msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_c1
 !
 !------------------------------------------------------------------------------!
       SUBROUTINE mp_bcast_cv(msg,source,gid)
         IMPLICIT NONE
-        COMPLEX (dbl) :: msg(:)
+        COMPLEX (DP) :: msg(:)
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 #if defined(__MPI)
-        ierr = 0
         msglen = size(msg)
-        IF( msglen*16 > mp_msgsiz_max ) CALL mp_stop(8916)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_bcast(msg,msglen,mpi_double_complex,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8122)
-        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen ) 
+        CALL bcast_real( msg, 2 * msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_cv
 !
 !------------------------------------------------------------------------------!
       SUBROUTINE mp_bcast_cm(msg,source,gid)
         IMPLICIT NONE
-        COMPLEX (dbl) :: msg(:,:)
+        COMPLEX (DP) :: msg(:,:)
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 #if defined(__MPI)
-        ierr = 0
         msglen = size(msg)
-        IF( msglen*16 > mp_msgsiz_max ) CALL mp_stop(8915)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_bcast(msg,msglen,mpi_double_complex,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8123)
-        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen )
+        CALL bcast_real( msg, 2 * msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_cm
 !
 !------------------------------------------------------------------------------!
       SUBROUTINE mp_bcast_ct(msg,source,gid)
         IMPLICIT NONE
-        COMPLEX (dbl) :: msg(:,:,:)
+        COMPLEX (DP) :: msg(:,:,:)
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 #if defined(__MPI)
-        ierr = 0
         msglen = size(msg)
-        IF( msglen*16 > mp_msgsiz_max ) CALL mp_stop(8915)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_bcast(msg,msglen,mpi_double_complex,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8123)
-        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen )
+        CALL bcast_real( msg, 2 * msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_ct
 
@@ -726,22 +602,33 @@
 !------------------------------------------------------------------------------!
       SUBROUTINE mp_bcast_c4d(msg,source,gid)
         IMPLICIT NONE
-        COMPLEX (dbl) :: msg(:,:,:,:)
+        COMPLEX (DP) :: msg(:,:,:,:)
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 #if defined(__MPI)
-        ierr = 0
         msglen = size(msg)
-        IF( msglen*16 > mp_msgsiz_max ) CALL mp_stop(8915)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_bcast(msg,msglen,mpi_double_complex,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8123)
-        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen ) 
+        CALL bcast_real( msg, 2 * msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_c4d
+
+      SUBROUTINE mp_bcast_c5d(msg,source,gid)
+        IMPLICIT NONE
+        COMPLEX (DP) :: msg(:,:,:,:,:)
+        INTEGER :: source
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+        INTEGER :: msglen
+#if defined(__MPI)
+        msglen = size(msg)
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+        CALL bcast_real( msg, 2 * msglen, source, group )
+#endif
+      END SUBROUTINE mp_bcast_c5d
 
 !
 !------------------------------------------------------------------------------!
@@ -752,15 +639,12 @@
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 #if defined(__MPI)
-        ierr = 0
         msglen = 1
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_bcast(msg,msglen,mpi_logical,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8130)
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+        CALL bcast_logical( msg, msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_l
 !
@@ -774,16 +658,12 @@
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 #if defined(__MPI)
-        ierr = 0
         msglen = size(msg)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8916)
-        CALL mpi_bcast(msg,msglen,mpi_logical,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8130)
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+        CALL bcast_logical( msg, msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_lv
 
@@ -797,16 +677,12 @@
         INTEGER :: source
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
+        INTEGER :: msglen
 #if defined(__MPI)
-        ierr = 0
         msglen = size(msg)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8916)
-        CALL mpi_bcast(msg,msglen,mpi_logical,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8130)
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen )
+        CALL bcast_logical( msg, msglen, source, group )
 #endif
       END SUBROUTINE mp_bcast_lm
 
@@ -825,28 +701,20 @@
 #if defined(__MPI)
         ierr = 0
         msglen = len(msg)
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8917)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-! this is a workaround to avoid problems on the T3E
-! at the moment we have a data alignment error when trying to
-! broadcast characters on the T3E (not always!)
-! JH 3/19/99 on galileo
-!       CALL mpi_bcast(msg,msglen,mpi_character,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8140)
+        IF (ierr/=0) CALL mp_stop( 8014 )
         ALLOCATE (imsg(1:msglen), STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8140)
+        IF (ierr/=0) CALL mp_stop( 8015 )
         DO i = 1, msglen
           imsg(i) = ichar(msg(i:i))
         END DO
-        CALL mpi_bcast(imsg,msglen,mpi_integer,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8140)
+        CALL bcast_integer( imsg, msglen, source, group )
         DO i = 1, msglen
           msg(i:i) = char(imsg(i))
         END DO
         DEALLOCATE (imsg, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8140)
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+        IF (ierr/=0) CALL mp_stop( 8016 )
 #endif
       END SUBROUTINE mp_bcast_z
 !
@@ -867,28 +735,23 @@
         m1 = LEN(msg)
         m2 = SIZE(msg)
         msglen = LEN(msg)*SIZE(msg)
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8917)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-! ...      CALL mpi_bcast(msg,msglen,mpi_character,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8140)
         ALLOCATE (imsg(1:m1,1:m2), STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8140)
+        IF (ierr/=0) CALL mp_stop( 8017 )
         DO j = 1, m2
           DO i = 1, m1
             imsg(i,j) = ichar(msg(j)(i:i))
           END DO
         END DO
-        CALL mpi_bcast(imsg,msglen,mpi_integer,source,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8140)
+        CALL bcast_integer( imsg, msglen, source, group )
         DO j = 1, m2
           DO i = 1, m1
             msg(j)(i:i) = char(imsg(i,j))
           END DO
         END DO
         DEALLOCATE (imsg, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8140)
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen )
+        IF (ierr/=0) CALL mp_stop( 8018 )
 #endif
       END SUBROUTINE mp_bcast_zv
 !
@@ -912,31 +775,37 @@
         IF( PRESENT( gid ) ) group = gid
 #endif
 
+        ! processors not taking part in the communication have 0 length message
+
+        msglen = 0
+
         IF(dest .NE. sour) THEN
 #if defined(__MPI)
-        IF(mpime .EQ. sour) THEN
-          CALL MPI_SEND( msg_sour, msglen, MPI_INTEGER, dest, ip, group, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-        END IF
-        IF(mpime .EQ. dest) THEN
-          CALL MPI_RECV( msg_dest, msglen, MPI_INTEGER, sour, ip, group, istatus, IERR )
-          IF (ierr/=0) CALL mp_stop(8140)
-          CALL MPI_GET_COUNT(istatus, MPI_INTEGER, nrcv, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-        END IF
+           IF(mpime .EQ. sour) THEN
+             msglen=1
+             CALL MPI_SEND( msg_sour, msglen, MPI_INTEGER, dest, ip, group, ierr)
+             IF (ierr/=0) CALL mp_stop( 8019 )
+           ELSE IF(mpime .EQ. dest) THEN
+             msglen=1
+             CALL MPI_RECV( msg_dest, msglen, MPI_INTEGER, sour, ip, group, istatus, IERR )
+             IF (ierr/=0) CALL mp_stop( 8020 )
+             CALL MPI_GET_COUNT(istatus, MPI_INTEGER, nrcv, ierr)
+             IF (ierr/=0) CALL mp_stop( 8021 )
+           END IF
 #endif
-        ELSE
+        ELSEIF(mpime .EQ. sour)THEN
           msg_dest = msg_sour
+          msglen = 1
         END IF
 
 #if defined(__MPI)
         CALL MPI_BARRIER(group, IERR)
-        IF (ierr/=0) CALL mp_stop(8140)
+        IF (ierr/=0) CALL mp_stop( 8022 )
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+
 
         RETURN
-      END SUBROUTINE
+      END SUBROUTINE mp_get_i1
 
 !------------------------------------------------------------------------------!
 !
@@ -951,47 +820,95 @@
         INTEGER :: istatus(MPI_STATUS_SIZE)
 #endif
         INTEGER :: ierr, nrcv
-        INTEGER :: msglen = 0
+        INTEGER :: msglen
 
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
 #endif
 
+        ! processors not taking part in the communication have 0 length message
+
+        msglen = 0
+
         IF(sour .NE. dest) THEN
 #if defined(__MPI)
-        IF(mpime .EQ. sour) THEN
-          msglen = SIZE(msg_sour)
-          CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_INTEGER, dest, ip, group, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-        END IF
-        IF(mpime .EQ. dest) THEN
-          CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_INTEGER, sour, ip, group, istatus, IERR )
-          IF (ierr/=0) CALL mp_stop(8140)
-          CALL MPI_GET_COUNT(istatus, MPI_INTEGER, nrcv, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = nrcv
-        END IF
+           IF(mpime .EQ. sour) THEN
+             msglen = SIZE(msg_sour)
+             CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_INTEGER, dest, ip, group, ierr)
+             IF (ierr/=0) CALL mp_stop( 8023 )
+           ELSE IF(mpime .EQ. dest) THEN
+             CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_INTEGER, sour, ip, group, istatus, IERR )
+             IF (ierr/=0) CALL mp_stop( 8024 )
+             CALL MPI_GET_COUNT(istatus, MPI_INTEGER, nrcv, ierr)
+             IF (ierr/=0) CALL mp_stop( 8025 )
+             msglen = nrcv
+           END IF
 #endif
-        ELSE
+        ELSEIF(mpime .EQ. sour)THEN
           msg_dest(1:SIZE(msg_sour)) = msg_sour(:)
           msglen = SIZE(msg_sour)
         END IF
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8918)
 #if defined(__MPI)
         CALL MPI_BARRIER(group, IERR)
-        IF (ierr/=0) CALL mp_stop(8140)
+        IF (ierr/=0) CALL mp_stop( 8026 )
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
         RETURN
-      END SUBROUTINE
+      END SUBROUTINE mp_get_iv
+
+!------------------------------------------------------------------------------!
+
+      SUBROUTINE mp_get_r1(msg_dest, msg_sour, mpime, dest, sour, ip, gid)
+        REAL (DP) :: msg_dest, msg_sour
+        INTEGER, INTENT(IN) :: dest, sour, ip, mpime
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+#if defined(__MPI)
+        INTEGER :: istatus(MPI_STATUS_SIZE)
+#endif
+        INTEGER :: ierr, nrcv
+        INTEGER :: msglen
+
+#if defined(__MPI)
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+#endif
+
+        ! processors not taking part in the communication have 0 length message
+
+        msglen = 0
+
+        IF(sour .NE. dest) THEN
+#if defined(__MPI)
+           IF(mpime .EQ. sour) THEN
+             msglen = 1
+             CALL MPI_SEND( msg_sour, msglen, MPI_DOUBLE_PRECISION, dest, ip, group, ierr)
+             IF (ierr/=0) CALL mp_stop( 8027 )
+           ELSE IF(mpime .EQ. dest) THEN
+             CALL MPI_RECV( msg_dest, msglen, MPI_DOUBLE_PRECISION, sour, ip, group, istatus, IERR )
+             IF (ierr/=0) CALL mp_stop( 8028 )
+             CALL MPI_GET_COUNT(istatus, MPI_DOUBLE_PRECISION, nrcv, ierr)
+             IF (ierr/=0) CALL mp_stop( 8029 )
+             msglen = nrcv
+           END IF
+#endif
+        ELSEIF(mpime .EQ. sour)THEN
+          msg_dest = msg_sour
+          msglen = 1
+        END IF
+#if defined(__MPI)
+        CALL MPI_BARRIER(group, IERR)
+        IF (ierr/=0) CALL mp_stop( 8030 )
+#endif
+        RETURN
+      END SUBROUTINE mp_get_r1
 
 !------------------------------------------------------------------------------!
 !
 ! Carlo Cavazzoni
 !
       SUBROUTINE mp_get_rv(msg_dest, msg_sour, mpime, dest, sour, ip, gid)
-        REAL (dbl) :: msg_dest(:), msg_sour(:)
+        REAL (DP) :: msg_dest(:), msg_sour(:)
         INTEGER, INTENT(IN) :: dest, sour, ip, mpime
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
@@ -999,47 +916,48 @@
         INTEGER :: istatus(MPI_STATUS_SIZE)
 #endif
         INTEGER :: ierr, nrcv
-        INTEGER :: msglen = 0
+        INTEGER :: msglen
 
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
 #endif
 
+        ! processors not taking part in the communication have 0 length message
+
+        msglen = 0
+
         IF(sour .NE. dest) THEN
 #if defined(__MPI)
-        IF(mpime .EQ. sour) THEN
-          msglen = SIZE(msg_sour) 
-          CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_DOUBLE_PRECISION, dest, ip, group, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-        END IF
-        IF(mpime .EQ. dest) THEN
-          CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_DOUBLE_PRECISION, sour, ip, group, istatus, IERR )
-          IF (ierr/=0) CALL mp_stop(8140)
-          CALL MPI_GET_COUNT(istatus, MPI_DOUBLE_PRECISION, nrcv, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = nrcv
-        END IF
+           IF(mpime .EQ. sour) THEN
+             msglen = SIZE(msg_sour)
+             CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_DOUBLE_PRECISION, dest, ip, group, ierr)
+             IF (ierr/=0) CALL mp_stop( 8027 )
+           ELSE IF(mpime .EQ. dest) THEN
+             CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_DOUBLE_PRECISION, sour, ip, group, istatus, IERR )
+             IF (ierr/=0) CALL mp_stop( 8028 )
+             CALL MPI_GET_COUNT(istatus, MPI_DOUBLE_PRECISION, nrcv, ierr)
+             IF (ierr/=0) CALL mp_stop( 8029 )
+             msglen = nrcv
+           END IF
 #endif
-        ELSE
+        ELSEIF(mpime .EQ. sour)THEN
           msg_dest(1:SIZE(msg_sour)) = msg_sour(:)
           msglen = SIZE(msg_sour)
         END IF
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8919)
 #if defined(__MPI)
         CALL MPI_BARRIER(group, IERR)
-        IF (ierr/=0) CALL mp_stop(8140)
+        IF (ierr/=0) CALL mp_stop( 8030 )
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
         RETURN
-      END SUBROUTINE
+      END SUBROUTINE mp_get_rv
 
 !------------------------------------------------------------------------------!
 !
 ! Carlo Cavazzoni
 !
       SUBROUTINE mp_get_rm(msg_dest, msg_sour, mpime, dest, sour, ip, gid)
-        REAL (dbl) :: msg_dest(:,:), msg_sour(:,:)
+        REAL (DP) :: msg_dest(:,:), msg_sour(:,:)
         INTEGER, INTENT(IN) :: dest, sour, ip, mpime
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
@@ -1047,40 +965,41 @@
         INTEGER :: istatus(MPI_STATUS_SIZE)
 #endif
         INTEGER :: ierr, nrcv
-        INTEGER :: msglen = 0
+        INTEGER :: msglen
 
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
 #endif
 
+        ! processors not taking part in the communication have 0 length message
+
+        msglen = 0
+
         IF(sour .NE. dest) THEN
 #if defined(__MPI)
-        IF(mpime .EQ. sour) THEN
-          CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_DOUBLE_PRECISION, dest, ip, group, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = SIZE(msg_sour)
-        END IF
-        IF(mpime .EQ. dest) THEN
-          CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_DOUBLE_PRECISION, sour, ip, group, istatus, IERR )
-          IF (ierr/=0) CALL mp_stop(8140)
-          CALL MPI_GET_COUNT(istatus, MPI_DOUBLE_PRECISION, nrcv, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = nrcv
-        END IF
+           IF(mpime .EQ. sour) THEN
+             CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_DOUBLE_PRECISION, dest, ip, group, ierr)
+             IF (ierr/=0) CALL mp_stop( 8031 )
+             msglen = SIZE(msg_sour)
+           ELSE IF(mpime .EQ. dest) THEN
+             CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_DOUBLE_PRECISION, sour, ip, group, istatus, IERR )
+             IF (ierr/=0) CALL mp_stop( 8032 )
+             CALL MPI_GET_COUNT(istatus, MPI_DOUBLE_PRECISION, nrcv, ierr)
+             IF (ierr/=0) CALL mp_stop( 8033 )
+             msglen = nrcv
+           END IF
 #endif
-        ELSE
+        ELSEIF(mpime .EQ. sour)THEN
           msg_dest(1:SIZE(msg_sour,1), 1:SIZE(msg_sour,2)) = msg_sour(:,:)
           msglen = SIZE( msg_sour )
         END IF
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8920)
 #if defined(__MPI)
         CALL MPI_BARRIER(group, IERR)
-        IF (ierr/=0) CALL mp_stop(8140)
+        IF (ierr/=0) CALL mp_stop( 8034 )
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
         RETURN
-      END SUBROUTINE
+      END SUBROUTINE mp_get_rm
 
 
 !------------------------------------------------------------------------------!
@@ -1088,7 +1007,7 @@
 ! Carlo Cavazzoni
 !
       SUBROUTINE mp_get_cv(msg_dest, msg_sour, mpime, dest, sour, ip, gid)
-        COMPLEX (dbl) :: msg_dest(:), msg_sour(:)
+        COMPLEX (DP) :: msg_dest(:), msg_sour(:)
         INTEGER, INTENT(IN) :: dest, sour, ip, mpime
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
@@ -1096,41 +1015,42 @@
         INTEGER :: istatus(MPI_STATUS_SIZE)
 #endif
         INTEGER :: ierr, nrcv
-        INTEGER :: msglen = 0
+        INTEGER :: msglen
 
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
 #endif
 
+        ! processors not taking part in the communication have 0 length message
+
+        msglen = 0
+
         IF( dest .NE. sour ) THEN
 #if defined(__MPI)
-        IF(mpime .EQ. sour) THEN
-          CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_DOUBLE_COMPLEX, dest, ip, group, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = SIZE(msg_sour)
-        END IF
-        IF(mpime .EQ. dest) THEN
-          CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_DOUBLE_COMPLEX, sour, ip, group, istatus, IERR )
-          IF (ierr/=0) CALL mp_stop(8140)
-          CALL MPI_GET_COUNT(istatus, MPI_DOUBLE_COMPLEX, nrcv, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = nrcv
-        END IF
+           IF(mpime .EQ. sour) THEN
+             CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_DOUBLE_COMPLEX, dest, ip, group, ierr)
+             IF (ierr/=0) CALL mp_stop( 8035 )
+             msglen = SIZE(msg_sour)
+           ELSE IF(mpime .EQ. dest) THEN
+             CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_DOUBLE_COMPLEX, sour, ip, group, istatus, IERR )
+             IF (ierr/=0) CALL mp_stop( 8036 )
+             CALL MPI_GET_COUNT(istatus, MPI_DOUBLE_COMPLEX, nrcv, ierr)
+             IF (ierr/=0) CALL mp_stop( 8037 )
+             msglen = nrcv
+           END IF
 #endif
-        ELSE
+        ELSEIF(mpime .EQ. sour)THEN
           msg_dest(1:SIZE(msg_sour)) = msg_sour(:)
           msglen = SIZE(msg_sour)
         END IF
-        IF( msglen*16 > mp_msgsiz_max ) CALL mp_stop(8921)
 #if defined(__MPI)
         CALL MPI_BARRIER(group, IERR)
-        IF (ierr/=0) CALL mp_stop(8140)
+        IF (ierr/=0) CALL mp_stop( 8038 )
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen ) 
         RETURN
-      END SUBROUTINE
-
+      END SUBROUTINE mp_get_cv
+!
 !------------------------------------------------------------------------------!
 !
 ! Andrea Ferretti
@@ -1175,7 +1095,7 @@
         CALL MPI_BARRIER(group, IERR)
         IF (ierr/=0) CALL mp_stop(8140)
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen ) 
+        !mp_high_watermark = MAX( mp_high_watermark, 16 * msglen ) 
         RETURN
       END SUBROUTINE
 
@@ -1222,12 +1142,10 @@
         CALL MPI_BARRIER(group, IERR)
         IF (ierr/=0) CALL mp_stop(8140)
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen ) 
+        !mp_high_watermark = MAX( mp_high_watermark, 16 * msglen ) 
         RETURN
       END SUBROUTINE
 
-!------------------------------------------------------------------------------!
-!
 !
 !------------------------------------------------------------------------------!
 
@@ -1241,40 +1159,41 @@
         INTEGER :: istatus(MPI_STATUS_SIZE)
 #endif
         INTEGER :: ierr, nrcv
-        INTEGER :: msglen = 0
+        INTEGER :: msglen
 
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
 #endif
 
+        ! processors not taking part in the communication have 0 length message
+
+        msglen = 0
+
         IF(dest .NE. sour) THEN
 #if defined(__MPI)
-        IF(mpime .EQ. sour) THEN
-          CALL MPI_SEND( msg_sour, 1, MPI_INTEGER, dest, ip, group, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = 1
-        END IF
-        IF(mpime .EQ. dest) THEN
-          CALL MPI_RECV( msg_dest, 1, MPI_INTEGER, sour, ip, group, istatus, IERR )
-          IF (ierr/=0) CALL mp_stop(8140)
-          CALL MPI_GET_COUNT(istatus, MPI_INTEGER, nrcv, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = 1
-        END IF
+           IF(mpime .EQ. sour) THEN
+             CALL MPI_SEND( msg_sour, 1, MPI_INTEGER, dest, ip, group, ierr)
+             IF (ierr/=0) CALL mp_stop( 8039 )
+             msglen = 1
+           ELSE IF(mpime .EQ. dest) THEN
+             CALL MPI_RECV( msg_dest, 1, MPI_INTEGER, sour, ip, group, istatus, IERR )
+             IF (ierr/=0) CALL mp_stop( 8040 )
+             CALL MPI_GET_COUNT(istatus, MPI_INTEGER, nrcv, ierr)
+             IF (ierr/=0) CALL mp_stop( 8041 )
+             msglen = 1
+           END IF
 #endif
-        ELSE
+        ELSEIF(mpime .EQ. sour)THEN
           msg_dest = msg_sour
           msglen = 1
         END IF
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8922)
 #if defined(__MPI)
         CALL MPI_BARRIER(group, IERR)
-        IF (ierr/=0) CALL mp_stop(8140)
+        IF (ierr/=0) CALL mp_stop( 8042 )
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
         RETURN
-      END SUBROUTINE
+      END SUBROUTINE mp_put_i1
 
 !------------------------------------------------------------------------------!
 !
@@ -1288,44 +1207,45 @@
         INTEGER :: istatus(MPI_STATUS_SIZE)
 #endif
         INTEGER :: ierr, nrcv
-        INTEGER :: msglen = 0
+        INTEGER :: msglen
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
 #endif
+        ! processors not taking part in the communication have 0 length message
+
+        msglen = 0
+
         IF(sour .NE. dest) THEN
 #if defined(__MPI)
-        IF(mpime .EQ. sour) THEN
-          CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_INTEGER, dest, ip, group, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = SIZE(msg_sour)
-        END IF
-        IF(mpime .EQ. dest) THEN
-          CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_INTEGER, sour, ip, group, istatus, IERR )
-          IF (ierr/=0) CALL mp_stop(8140)
-          CALL MPI_GET_COUNT(istatus, MPI_INTEGER, nrcv, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = nrcv
-        END IF
+           IF(mpime .EQ. sour) THEN
+             CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_INTEGER, dest, ip, group, ierr)
+             IF (ierr/=0) CALL mp_stop( 8043 )
+             msglen = SIZE(msg_sour)
+           ELSE IF(mpime .EQ. dest) THEN
+             CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_INTEGER, sour, ip, group, istatus, IERR )
+             IF (ierr/=0) CALL mp_stop( 8044 )
+             CALL MPI_GET_COUNT(istatus, MPI_INTEGER, nrcv, ierr)
+             IF (ierr/=0) CALL mp_stop( 8045 )
+             msglen = nrcv
+           END IF
 #endif
-        ELSE
+        ELSEIF(mpime .EQ. sour)THEN
           msg_dest(1:SIZE(msg_sour)) = msg_sour(:)
           msglen = SIZE(msg_sour)
         END IF
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8923)
 #if defined(__MPI)
         CALL MPI_BARRIER(group, IERR)
-        IF (ierr/=0) CALL mp_stop(8140)
+        IF (ierr/=0) CALL mp_stop( 8046 )
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
         RETURN
-      END SUBROUTINE
+      END SUBROUTINE mp_put_iv
 
 !------------------------------------------------------------------------------!
 !
 !
       SUBROUTINE mp_put_rv(msg_dest, msg_sour, mpime, sour, dest, ip, gid)
-        REAL (dbl) :: msg_dest(:), msg_sour(:)
+        REAL (DP) :: msg_dest(:), msg_sour(:)
         INTEGER, INTENT(IN) :: dest, sour, ip, mpime
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
@@ -1333,44 +1253,45 @@
         INTEGER :: istatus(MPI_STATUS_SIZE)
 #endif
         INTEGER :: ierr, nrcv
-        INTEGER :: msglen = 0
+        INTEGER :: msglen
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
 #endif
+        ! processors not taking part in the communication have 0 length message
+
+        msglen = 0
+
         IF(sour .NE. dest) THEN
 #if defined(__MPI)
-        IF(mpime .EQ. sour) THEN
-          CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_DOUBLE_PRECISION, dest, ip, group, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = SIZE(msg_sour)
-        END IF
-        IF(mpime .EQ. dest) THEN
-          CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_DOUBLE_PRECISION, sour, ip, group, istatus, IERR )
-          IF (ierr/=0) CALL mp_stop(8140)
-          CALL MPI_GET_COUNT(istatus, MPI_DOUBLE_PRECISION, nrcv, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = nrcv
-        END IF
+           IF(mpime .EQ. sour) THEN
+             CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_DOUBLE_PRECISION, dest, ip, group, ierr)
+             IF (ierr/=0) CALL mp_stop( 8047 )
+             msglen = SIZE(msg_sour)
+           ELSE IF(mpime .EQ. dest) THEN
+             CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_DOUBLE_PRECISION, sour, ip, group, istatus, IERR )
+             IF (ierr/=0) CALL mp_stop( 8048 )
+             CALL MPI_GET_COUNT(istatus, MPI_DOUBLE_PRECISION, nrcv, ierr)
+             IF (ierr/=0) CALL mp_stop( 8049 )
+             msglen = nrcv
+           END IF
 #endif
-        ELSE
+        ELSEIF(mpime .EQ. sour)THEN
           msg_dest(1:SIZE(msg_sour)) = msg_sour(:)
           msglen = SIZE(msg_sour)
         END IF
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8924)
 #if defined(__MPI)
         CALL MPI_BARRIER(group, IERR)
-        IF (ierr/=0) CALL mp_stop(8140)
+        IF (ierr/=0) CALL mp_stop( 8050 )
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
         RETURN
-      END SUBROUTINE
+      END SUBROUTINE mp_put_rv
 
 !------------------------------------------------------------------------------!
 !
 !
       SUBROUTINE mp_put_rm(msg_dest, msg_sour, mpime, sour, dest, ip, gid)
-        REAL (dbl) :: msg_dest(:,:), msg_sour(:,:)
+        REAL (DP) :: msg_dest(:,:), msg_sour(:,:)
         INTEGER, INTENT(IN) :: dest, sour, ip, mpime
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
@@ -1378,84 +1299,40 @@
         INTEGER :: istatus(MPI_STATUS_SIZE)
 #endif
         INTEGER :: ierr, nrcv
-        INTEGER :: msglen = 0
+        INTEGER :: msglen
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
 #endif
+        ! processors not taking part in the communication have 0 length message
+
+        msglen = 0
+
         IF(sour .NE. dest) THEN
 #if defined(__MPI)
-        IF(mpime .EQ. sour) THEN
-          CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_DOUBLE_PRECISION, dest, ip, group, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = SIZE(msg_sour)
-        END IF
-        IF(mpime .EQ. dest) THEN
-          CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_DOUBLE_PRECISION, sour, ip, group, istatus, IERR )
-          IF (ierr/=0) CALL mp_stop(8140)
-          CALL MPI_GET_COUNT(istatus, MPI_DOUBLE_PRECISION, nrcv, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = nrcv
-        END IF
+           IF(mpime .EQ. sour) THEN
+             CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_DOUBLE_PRECISION, dest, ip, group, ierr)
+             IF (ierr/=0) CALL mp_stop( 8051 )
+             msglen = SIZE(msg_sour)
+           ELSE IF(mpime .EQ. dest) THEN
+             CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_DOUBLE_PRECISION, sour, ip, group, istatus, IERR )
+             IF (ierr/=0) CALL mp_stop( 8052 )
+             CALL MPI_GET_COUNT(istatus, MPI_DOUBLE_PRECISION, nrcv, ierr)
+             IF (ierr/=0) CALL mp_stop( 8053 )
+             msglen = nrcv
+           END IF
 #endif
-        ELSE
+        ELSEIF(mpime .EQ. sour)THEN
           msg_dest(1:SIZE(msg_sour,1),1:SIZE(msg_sour,2)) = msg_sour(:,:)
           msglen = SIZE(msg_sour)
         END IF
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8925)
 #if defined(__MPI)
         CALL MPI_BARRIER(group, IERR)
-        IF (ierr/=0) CALL mp_stop(8140)
+        IF (ierr/=0) CALL mp_stop( 8054 )
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
         RETURN
-      END SUBROUTINE
+      END SUBROUTINE mp_put_rm
 
-
-!------------------------------------------------------------------------------!
-!
-!
-      SUBROUTINE mp_put_cv(msg_dest, msg_sour, mpime, sour, dest, ip, gid)
-        COMPLEX (dbl) :: msg_dest(:), msg_sour(:)
-        INTEGER, INTENT(IN) :: dest, sour, ip, mpime
-        INTEGER, OPTIONAL, INTENT(IN) :: gid
-        INTEGER :: group
-#if defined(__MPI)
-        INTEGER :: istatus(MPI_STATUS_SIZE)
-#endif
-        INTEGER :: ierr, nrcv
-        INTEGER :: msglen = 0
-#if defined(__MPI)
-        group = mpi_comm_world
-        IF( PRESENT( gid ) ) group = gid
-#endif
-        IF( dest .NE. sour ) THEN
-#if defined(__MPI)
-        IF(mpime .EQ. sour) THEN
-          CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_DOUBLE_COMPLEX, dest, ip, group, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = SIZE(msg_sour)
-        END IF
-        IF(mpime .EQ. dest) THEN
-          CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_DOUBLE_COMPLEX, sour, ip, group, istatus, IERR )
-          IF (ierr/=0) CALL mp_stop(8140)
-          CALL MPI_GET_COUNT(istatus, MPI_DOUBLE_COMPLEX, nrcv, ierr)
-          IF (ierr/=0) CALL mp_stop(8140)
-          msglen = nrcv
-        END IF
-#endif
-        ELSE
-          msg_dest(1:SIZE(msg_sour)) = msg_sour(:)
-          msglen = SIZE(msg_sour)
-        END IF
-        IF( msglen*16 > mp_msgsiz_max ) CALL mp_stop(8926)
-#if defined(__MPI)
-        CALL MPI_BARRIER(group, IERR)
-        IF (ierr/=0) CALL mp_stop(8140)
-#endif
-        mp_high_watermark = MAX( mp_high_watermark, 16 * msglen ) 
-        RETURN
-      END SUBROUTINE
 
 !------------------------------------------------------------------------------!
 !
@@ -1502,6 +1379,53 @@
         RETURN
       END SUBROUTINE
 
+
+!------------------------------------------------------------------------------!
+!
+!
+      SUBROUTINE mp_put_cv(msg_dest, msg_sour, mpime, sour, dest, ip, gid)
+        COMPLEX (DP) :: msg_dest(:), msg_sour(:)
+        INTEGER, INTENT(IN) :: dest, sour, ip, mpime
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+#if defined(__MPI)
+        INTEGER :: istatus(MPI_STATUS_SIZE)
+#endif
+        INTEGER :: ierr, nrcv
+        INTEGER :: msglen
+#if defined(__MPI)
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+#endif
+        ! processors not taking part in the communication have 0 length message
+
+        msglen = 0
+
+        IF( dest .NE. sour ) THEN
+#if defined(__MPI)
+           IF(mpime .EQ. sour) THEN
+             CALL MPI_SEND( msg_sour, SIZE(msg_sour), MPI_DOUBLE_COMPLEX, dest, ip, group, ierr)
+             IF (ierr/=0) CALL mp_stop( 8055 )
+             msglen = SIZE(msg_sour)
+           ELSE IF(mpime .EQ. dest) THEN
+             CALL MPI_RECV( msg_dest, SIZE(msg_dest), MPI_DOUBLE_COMPLEX, sour, ip, group, istatus, IERR )
+             IF (ierr/=0) CALL mp_stop( 8056 )
+             CALL MPI_GET_COUNT(istatus, MPI_DOUBLE_COMPLEX, nrcv, ierr)
+             IF (ierr/=0) CALL mp_stop( 8057 )
+             msglen = nrcv
+           END IF
+#endif
+        ELSEIF(mpime .EQ. sour)THEN
+          msg_dest(1:SIZE(msg_sour)) = msg_sour(:)
+          msglen = SIZE(msg_sour)
+        END IF
+#if defined(__MPI)
+        CALL MPI_BARRIER(group, IERR)
+        IF (ierr/=0) CALL mp_stop( 8058 )
+#endif
+        RETURN
+      END SUBROUTINE mp_put_cv
+
 !
 !------------------------------------------------------------------------------!
 !
@@ -1510,10 +1434,12 @@
       SUBROUTINE mp_stop(code)
         IMPLICIT NONE
         INTEGER, INTENT (IN) :: code
+        INTEGER :: ierr
         WRITE( stdout, fmt='( "*** error in Message Passing (mp) module ***")' )
+        WRITE( stdout, fmt='( "*** error msg:  ",A60)' ) TRIM( err_msg )
         WRITE( stdout, fmt='( "*** error code: ",I5)' ) code
 #if defined(__MPI)
-        CALL mpi_abort(mpi_comm_world,code)
+        CALL mpi_abort(mpi_comm_world,code,ierr)
 #endif
         STOP
       END SUBROUTINE mp_stop
@@ -1525,16 +1451,12 @@
         INTEGER, INTENT (INOUT) :: msg
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, res, ierr
-
-        msglen = 1
+        INTEGER :: msglen
 #if defined(__MPI)
+        msglen = 1
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_allreduce(msg,res,msglen,mpi_integer,mpi_sum,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8200)
-        msg = res
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+        CALL reduce_base_integer( msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_sum_i1
 !
@@ -1544,21 +1466,12 @@
         INTEGER, INTENT (INOUT) :: msg(:)
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
-        INTEGER, ALLOCATABLE :: res(:)
+        INTEGER :: msglen
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
         msglen = size(msg)
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8927)
-        ALLOCATE (res(1:msglen),STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8201)
-        CALL mpi_allreduce(msg,res,msglen,mpi_integer,mpi_sum,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8200)
-        msg = res
-        DEALLOCATE (res, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8202)
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+        CALL reduce_base_integer( msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_sum_iv
 !
@@ -1569,23 +1482,12 @@
         INTEGER, INTENT (INOUT) :: msg(:,:)
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, m1, m2, ierr
-        INTEGER, ALLOCATABLE :: res(:,:)
+        INTEGER :: msglen
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
         msglen = size(msg)
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8928)
-        m1 = size(msg(:,1))
-        m2 = size(msg(1,:))
-        ALLOCATE (res(m1,m2),STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8204)
-        CALL mpi_allreduce(msg,res,msglen,mpi_integer,mpi_sum,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8205)
-        msg = res
-        DEALLOCATE (res, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8205)
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+        CALL reduce_base_integer( msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_sum_im
 !
@@ -1596,24 +1498,12 @@
         INTEGER, INTENT (INOUT) :: msg(:,:,:)
         INTEGER, OPTIONAL, INTENT (IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, m1, m2, m3, ierr
-        INTEGER, ALLOCATABLE :: res(:,:,:)
+        INTEGER :: msglen
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
         msglen = size(msg)
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8929)
-        m1 = size(msg,1)
-        m2 = size(msg,2)
-        m3 = size(msg,3)
-        ALLOCATE (res(m1,m2,m3),STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8204)
-        CALL mpi_allreduce(msg,res,msglen,mpi_integer,mpi_sum,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8205)
-        msg = res
-        DEALLOCATE (res, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8205)
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+        CALL reduce_base_integer( msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_sum_it
 
@@ -1621,19 +1511,15 @@
 
       SUBROUTINE mp_sum_r1(msg,gid)
         IMPLICIT NONE
-        REAL (dbl), INTENT (INOUT) :: msg
+        REAL (DP), INTENT (INOUT) :: msg
         INTEGER, OPTIONAL, INTENT (IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
-        REAL (dbl) :: res
+        INTEGER :: msglen
 #if defined(__MPI)
         msglen = 1
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_allreduce(msg,res,msglen,mpi_double_precision,mpi_sum,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8203)
-        msg = res
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL reduce_base_real( msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_sum_r1
 
@@ -1642,24 +1528,15 @@
 
       SUBROUTINE mp_sum_rv(msg,gid)
         IMPLICIT NONE
-        REAL (dbl), INTENT (INOUT) :: msg(:)
+        REAL (DP), INTENT (INOUT) :: msg(:)
         INTEGER, OPTIONAL, INTENT (IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
-        REAL (dbl), ALLOCATABLE :: res(:)
+        INTEGER :: msglen
 #if defined(__MPI)
         msglen = size(msg)
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8930)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        ALLOCATE (res(1:msglen),STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8204)
-        CALL mpi_allreduce(msg,res,msglen,mpi_double_precision,mpi_sum,group, ierr)
-        IF (ierr/=0) CALL mp_stop(8205)
-        msg = res
-        DEALLOCATE (res, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8205)
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL reduce_base_real( msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_sum_rv
 !
@@ -1668,44 +1545,103 @@
 
       SUBROUTINE mp_sum_rm(msg, gid)
         IMPLICIT NONE
-        REAL (dbl), INTENT (INOUT) :: msg(:,:)
+        REAL (DP), INTENT (INOUT) :: msg(:,:)
         INTEGER, OPTIONAL, INTENT (IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, m1, m2, ierr, i, j, k
-        REAL (dbl), ALLOCATABLE :: res(:,:)
-        REAL (dbl), ALLOCATABLE :: resv(:)
+        INTEGER :: msglen
 #if defined(__MPI)
         msglen = size(msg)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
+        CALL reduce_base_real( msglen, msg, group, -1 )
+#endif
+      END SUBROUTINE mp_sum_rm
 
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8931)
-        m1 = size(msg(:,1))
-        m2 = size(msg(1,:))
-        ALLOCATE (res(m1,m2),STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8204)
-        CALL mpi_allreduce(msg, res, msglen, mpi_double_precision, mpi_sum, group, ierr)
-        IF (ierr/=0) CALL mp_stop(8205)
-        msg = res
-        DEALLOCATE (res, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8205)
 
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+      SUBROUTINE mp_root_sum_rm( msg, res, root, gid )
+        IMPLICIT NONE
+        REAL (DP), INTENT (IN)  :: msg(:,:)
+        REAL (DP), INTENT (OUT) :: res(:,:)
+        INTEGER,   INTENT (IN)  :: root
+        INTEGER, OPTIONAL, INTENT (IN) :: gid
+        INTEGER :: group
+        INTEGER :: msglen, ierr, taskid
+
+#if defined(__MPI)
+
+        msglen = size(msg)
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+
+        CALL mpi_comm_rank( group, taskid, ierr)
+        IF( ierr /= 0 ) CALL mp_stop( 8059 )
+        !
+        IF( taskid == root ) THEN
+           IF( msglen > size(res) ) CALL mp_stop( 8060 )
+        END IF
+
+        CALL reduce_base_real_to( msglen, msg, res, group, root )
+
+
+#else
+
+        res = msg
 
 #endif
 
-      END SUBROUTINE mp_sum_rm
+      END SUBROUTINE mp_root_sum_rm
+
+
+      SUBROUTINE mp_root_sum_cm( msg, res, root, gid )
+        IMPLICIT NONE
+        COMPLEX (DP), INTENT (IN)  :: msg(:,:)
+        COMPLEX (DP), INTENT (OUT) :: res(:,:)
+        INTEGER,   INTENT (IN)  :: root
+        INTEGER, OPTIONAL, INTENT (IN) :: gid
+        INTEGER :: group
+        INTEGER :: msglen, ierr, taskid
+
+#if defined(__MPI)
+
+        msglen = size(msg)
+
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+
+        CALL mpi_comm_rank( group, taskid, ierr)
+        IF( ierr /= 0 ) CALL mp_stop( 8061 )
+
+        IF( taskid == root ) THEN
+           IF( msglen > size(res) ) CALL mp_stop( 8062 )
+        END IF
+
+        CALL reduce_base_real_to( 2 * msglen, msg, res, group, root )
+
+
+#else
+
+        res = msg
+
+#endif
+
+      END SUBROUTINE mp_root_sum_cm
+
 !
 !------------------------------------------------------------------------------!
 
-      SUBROUTINE mp_sum_rmm(msg, res, root, gid)
+
+!------------------------------------------------------------------------------!
+!
+
+      SUBROUTINE mp_sum_rmm( msg, res, root, gid )
         IMPLICIT NONE
-        REAL (dbl), INTENT (IN) :: msg(:,:)
-        REAL (dbl), INTENT (OUT) :: res(:,:)
+        REAL (DP), INTENT (IN) :: msg(:,:)
+        REAL (DP), INTENT (OUT) :: res(:,:)
         INTEGER, OPTIONAL, INTENT (IN) :: root
         INTEGER, OPTIONAL, INTENT (IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr, j
+        INTEGER :: msglen
+        INTEGER :: taskid, ierr
 
         msglen = size(msg)
 
@@ -1714,19 +1650,29 @@
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
 
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8932)
-
         IF( PRESENT( root ) ) THEN
-          CALL mpi_reduce(msg, res, msglen, mpi_double_precision, mpi_sum, root, group, ierr)
+           !
+           CALL mpi_comm_rank( group, taskid, ierr)
+           IF( ierr /= 0 ) CALL mp_stop( 8063 )
+
+           IF( taskid == root ) THEN
+              IF( msglen > size(res) ) CALL mp_stop( 8064 )
+           END IF
+           !
+           CALL reduce_base_real_to( msglen, msg, res, group, root )
+           !
         ELSE
-          CALL mpi_allreduce(msg, res, msglen, mpi_double_precision, mpi_sum, group, ierr)
+           !
+           IF( msglen > size(res) ) CALL mp_stop( 8065 )
+           !
+           CALL reduce_base_real_to( msglen, msg, res, group, -1 )
+           !
         END IF
-        IF (ierr/=0) CALL mp_stop(8205)
+
 
 #else
         res = msg
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
 
       END SUBROUTINE mp_sum_rmm
 
@@ -1735,50 +1681,55 @@
 !------------------------------------------------------------------------------!
 
 
-      SUBROUTINE mp_sum_rt(msg,gid)
+      SUBROUTINE mp_sum_rt( msg, gid )
         IMPLICIT NONE
-        REAL (dbl), INTENT (INOUT) :: msg(:,:,:)
+        REAL (DP), INTENT (INOUT) :: msg(:,:,:)
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, m1, m2, m3, ierr
-        REAL (dbl), ALLOCATABLE :: res(:,:,:)
+        INTEGER :: msglen
 #if defined(__MPI)
+        msglen = size(msg)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        msglen = size(msg)
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8933)
-        m1 = size(msg,1)
-        m2 = size(msg,2)
-        m3 = size(msg,3)
-        ALLOCATE (res(m1,m2,m3),STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8204)
-        CALL mpi_allreduce(msg,res,msglen,mpi_double_precision,mpi_sum,group, ierr)
-        IF (ierr/=0) CALL mp_stop(8205)
-        msg = res
-        DEALLOCATE (res, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8205)
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL reduce_base_real( msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_sum_rt
+
+!
+!------------------------------------------------------------------------------!
+!
+! Carlo Cavazzoni
+!
+      SUBROUTINE mp_sum_r4d(msg,gid)
+        IMPLICIT NONE
+        REAL (DP), INTENT (INOUT) :: msg(:,:,:,:)
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+        INTEGER :: msglen
+#if defined(__MPI)
+        msglen = size(msg)
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+        CALL reduce_base_real( msglen, msg, group, -1 )
+#endif
+      END SUBROUTINE mp_sum_r4d
+
+
 
 !------------------------------------------------------------------------------!
 
       SUBROUTINE mp_sum_c1(msg,gid)
         IMPLICIT NONE
-        COMPLEX (dbl), INTENT (INOUT) :: msg
+        COMPLEX (DP), INTENT (INOUT) :: msg
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
-        COMPLEX (dbl) :: res
+        INTEGER :: msglen
 
 #if defined(__MPI)
-        msglen = 2
+        msglen = 1
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_allreduce(msg,res,msglen,mpi_double_precision,mpi_sum,group,ierr)
-        msg = res
-        IF (ierr/=0) CALL mp_stop(8205)
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL reduce_base_real( 2 * msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_sum_c1
 !
@@ -1786,24 +1737,15 @@
 
       SUBROUTINE mp_sum_cv(msg,gid)
         IMPLICIT NONE
-        COMPLEX (dbl), INTENT (INOUT) :: msg(:)
+        COMPLEX (DP), INTENT (INOUT) :: msg(:)
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
-        COMPLEX (dbl), ALLOCATABLE :: res(:)
+        INTEGER :: msglen
 #if defined(__MPI)
-        msglen = 2*size(msg)
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8934)
+        msglen = size(msg)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        ALLOCATE (res(1:size(msg)),STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8206)
-        CALL mpi_allreduce(msg(1),res(1),msglen,mpi_double_precision,mpi_sum,group, ierr)
-        IF (ierr/=0) CALL mp_stop(8207)
-        msg = res
-        DEALLOCATE (res, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8207)
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL reduce_base_real( 2 * msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_sum_cv
 !
@@ -1811,26 +1753,15 @@
 
       SUBROUTINE mp_sum_cm(msg, gid)
         IMPLICIT NONE
-        COMPLEX (dbl), INTENT (INOUT) :: msg(:,:)
+        COMPLEX (DP), INTENT (INOUT) :: msg(:,:)
         INTEGER, OPTIONAL, INTENT (IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, m1, m2, ierr
-        COMPLEX (dbl), ALLOCATABLE :: res(:,:)
+        INTEGER :: msglen
 #if defined(__MPI)
-        msglen = 2*size(msg)
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8935)
+        msglen = size(msg)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        m1 = size(msg(:,1))
-        m2 = size(msg(1,:))
-        ALLOCATE (res(m1,m2),STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8204)
-        CALL mpi_allreduce(msg,res,msglen,mpi_double_precision,mpi_sum,group, ierr)
-        IF (ierr/=0) CALL mp_stop(8208)
-        msg = res
-        DEALLOCATE (res, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8208)
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL reduce_base_real( 2 * msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_sum_cm
 !
@@ -1839,22 +1770,19 @@
 
       SUBROUTINE mp_sum_cmm(msg, res, gid)
         IMPLICIT NONE
-        COMPLEX (dbl), INTENT (IN) :: msg(:,:)
-        COMPLEX (dbl), INTENT (OUT) :: res(:,:)
+        COMPLEX (DP), INTENT (IN) :: msg(:,:)
+        COMPLEX (DP), INTENT (OUT) :: res(:,:)
         INTEGER, OPTIONAL, INTENT (IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
-        msglen = 2*size(msg)
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8936)
+        INTEGER :: msglen
 #if defined(__MPI)
+        msglen = size(msg)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        CALL mpi_allreduce(msg, res, msglen, mpi_double_precision, mpi_sum, group, ierr)
-        IF (ierr/=0) CALL mp_stop(8208)
+        CALL reduce_base_real_to( 2 * msglen, msg, res, group, -1 )
 #else
         res = msg
 #endif
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
       END SUBROUTINE mp_sum_cmm
 
 
@@ -1865,24 +1793,15 @@
 !
       SUBROUTINE mp_sum_ct(msg,gid)
         IMPLICIT NONE
-        COMPLEX (dbl), INTENT (INOUT) :: msg(:,:,:)
+        COMPLEX (DP), INTENT (INOUT) :: msg(:,:,:)
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: i, msglen, ierr
-        COMPLEX (dbl), ALLOCATABLE :: res(:,:,:)
+        INTEGER :: msglen
 #if defined(__MPI)
-        msglen = 2 * SIZE(msg)
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8937)
+        msglen = SIZE(msg)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        ALLOCATE (res(size(msg,1),size(msg,2),size(msg,3)),STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8204)
-        CALL mpi_allreduce(msg,res,msglen,mpi_double_precision,mpi_sum,group,ierr)
-        IF (ierr/=0) CALL mp_stop(8208)
-        msg = res
-        DEALLOCATE (res, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8208)
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL reduce_base_real( 2 * msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_sum_ct
 
@@ -1893,26 +1812,75 @@
 !
       SUBROUTINE mp_sum_c4d(msg,gid)
         IMPLICIT NONE
-        COMPLEX (dbl), INTENT (INOUT) :: msg(:,:,:,:)
+        COMPLEX (DP), INTENT (INOUT) :: msg(:,:,:,:)
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: i, msglen, ierr
-        COMPLEX (dbl), ALLOCATABLE :: res(:,:,:,:)
+        INTEGER :: msglen
 #if defined(__MPI)
-        msglen = 2*size(msg)
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8938)
+        msglen = size(msg)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        ALLOCATE (res(size(msg,1),size(msg,2),size(msg,3),size(msg,4)), STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8204)
-        CALL mpi_allreduce(msg,res,msglen,mpi_double_precision,mpi_sum,group, ierr)
-        IF (ierr/=0) CALL mp_stop(8208)
-        msg = res
-        DEALLOCATE (res, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8208)
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL reduce_base_real( 2 * msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_sum_c4d
+!
+!------------------------------------------------------------------------------!
+!
+! Carlo Cavazzoni
+!
+      SUBROUTINE mp_sum_c5d(msg,gid)
+        IMPLICIT NONE
+        COMPLEX (DP), INTENT (INOUT) :: msg(:,:,:,:,:)
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+        INTEGER :: msglen
+#if defined(__MPI)
+        msglen = size(msg)
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+        CALL reduce_base_real( 2 * msglen, msg, group, -1 )
+#endif
+      END SUBROUTINE mp_sum_c5d
+
+!------------------------------------------------------------------------------!
+!
+! Carlo Cavazzoni
+!
+      SUBROUTINE mp_sum_r5d(msg,gid)
+        IMPLICIT NONE
+        REAL (DP), INTENT (INOUT) :: msg(:,:,:,:,:)
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+        INTEGER :: msglen
+#if defined(__MPI)
+        msglen = size(msg)
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+        CALL reduce_base_real( msglen, msg, group, -1 )
+#endif
+      END SUBROUTINE mp_sum_r5d
+
+
+
+!
+!------------------------------------------------------------------------------!
+!
+! Carlo Cavazzoni
+!
+      SUBROUTINE mp_sum_c6d(msg,gid)
+        IMPLICIT NONE
+        COMPLEX (DP), INTENT (INOUT) :: msg(:,:,:,:,:,:)
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+        INTEGER :: msglen
+#if defined(__MPI)
+        msglen = size(msg)
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+        CALL reduce_base_real( 2 * msglen, msg, group, -1 )
+#endif
+      END SUBROUTINE mp_sum_c6d
+
 
 
 !------------------------------------------------------------------------------!
@@ -1921,16 +1889,12 @@
         INTEGER, INTENT (INOUT) :: msg
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
-        INTEGER :: res
+        INTEGER :: msglen
 #if defined(__MPI)
+        msglen = 1
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
-        msglen = 1
-        CALL MPI_ALLREDUCE(MSG,res,msglen,MPI_INTEGER,MPI_MAX,group,IERR)
-        IF (ierr/=0) CALL mp_stop(8300)
-        msg = res
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+        CALL parallel_max_integer( msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_max_i
 !
@@ -1944,21 +1908,12 @@
         INTEGER, INTENT (INOUT) :: msg(:)
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
-        INTEGER, ALLOCATABLE :: res(:)
+        INTEGER :: msglen
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
         msglen = size(msg)
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8939)
-        ALLOCATE (res(1:msglen),STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8302)
-        CALL MPI_ALLREDUCE(MSG,res,msglen,MPI_INTEGER, MPI_MAX,group,IERR)
-        IF (ierr/=0) CALL mp_stop(8303)
-        msg = res
-        DEALLOCATE (res, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8303)
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+        CALL parallel_max_integer( msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_max_iv
 !
@@ -1966,43 +1921,30 @@
 
       SUBROUTINE mp_max_r(msg,gid)
         IMPLICIT NONE
-        REAL (dbl), INTENT (INOUT) :: msg
+        REAL (DP), INTENT (INOUT) :: msg
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
-        REAL (dbl) :: res
+        INTEGER :: msglen
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
         msglen = 1
-        CALL MPI_ALLREDUCE(MSG,res,msglen,MPI_DOUBLE_PRECISION, MPI_MAX,group,IERR)
-        IF (ierr/=0) CALL mp_stop(8301)
-        msg = res
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL parallel_max_real( msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_max_r
 !
 !------------------------------------------------------------------------------!
       SUBROUTINE mp_max_rv(msg,gid)
         IMPLICIT NONE
-        REAL (dbl), INTENT (INOUT) :: msg(:)
+        REAL (DP), INTENT (INOUT) :: msg(:)
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
-        REAL (dbl), ALLOCATABLE :: res(:)
+        INTEGER :: msglen
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
         msglen = size(msg)
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8940)
-        ALLOCATE (res(1:msglen),STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8302)
-        CALL MPI_ALLREDUCE(MSG,res,msglen,MPI_DOUBLE_PRECISION, MPI_MAX,group,IERR)
-        IF (ierr/=0) CALL mp_stop(8303)
-        msg = res
-        DEALLOCATE (res, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8303)
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL parallel_max_real( msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_max_rv
 !------------------------------------------------------------------------------!
@@ -2011,16 +1953,12 @@
         INTEGER, INTENT (INOUT) :: msg
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
-        INTEGER :: res
+        INTEGER :: msglen
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
         msglen = 1
-        CALL MPI_ALLREDUCE(MSG,res,msglen,MPI_INTEGER,MPI_MIN,group,IERR)
-        IF (ierr/=0) CALL mp_stop(8310)
-        msg = res
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+        CALL parallel_min_integer( msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_min_i
 !------------------------------------------------------------------------------!
@@ -2029,63 +1967,41 @@
         INTEGER, INTENT (INOUT) :: msg(:)
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
-        INTEGER, ALLOCATABLE :: res(:)
+        INTEGER :: msglen
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
         msglen = SIZE(msg)
-        IF( msglen*4 > mp_msgsiz_max ) CALL mp_stop(8941)
-        ALLOCATE (res(1:msglen),STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8312)
-        CALL MPI_ALLREDUCE(MSG,res,msglen,MPI_INTEGER,MPI_MIN,group,IERR)
-        IF (ierr/=0) CALL mp_stop(8313)
-        msg = res
-        DEALLOCATE (res, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8313)
-        mp_high_watermark = MAX( mp_high_watermark, 4 * msglen ) 
+        CALL parallel_min_integer( msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_min_iv
 !------------------------------------------------------------------------------!
       SUBROUTINE mp_min_r(msg,gid)
         IMPLICIT NONE
-        REAL (dbl), INTENT (INOUT) :: msg
+        REAL (DP), INTENT (INOUT) :: msg
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
-        REAL (dbl) :: res
+        INTEGER :: msglen
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
         msglen = 1
-        CALL MPI_ALLREDUCE(MSG,res,msglen,MPI_DOUBLE_PRECISION, MPI_MIN,group,IERR)
-        IF (ierr/=0) CALL mp_stop(8311)
-        msg = res
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL parallel_min_real( msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_min_r
 !
 !------------------------------------------------------------------------------!
       SUBROUTINE mp_min_rv(msg,gid)
         IMPLICIT NONE
-        REAL (dbl), INTENT (INOUT) :: msg(:)
+        REAL (DP), INTENT (INOUT) :: msg(:)
         INTEGER, OPTIONAL, INTENT(IN) :: gid
         INTEGER :: group
-        INTEGER :: msglen, ierr
-        REAL (dbl), ALLOCATABLE :: res(:)
+        INTEGER :: msglen
 #if defined(__MPI)
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
         msglen = size(msg)
-        IF( msglen*8 > mp_msgsiz_max ) CALL mp_stop(8942)
-        ALLOCATE (res(1:msglen),STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8312)
-        CALL MPI_ALLREDUCE(MSG,res,msglen,MPI_DOUBLE_PRECISION, MPI_MIN,group,IERR)
-        IF (ierr/=0) CALL mp_stop(8313)
-        msg = res
-        DEALLOCATE (res, STAT=ierr)
-        IF (ierr/=0) CALL mp_stop(8313)
-        mp_high_watermark = MAX( mp_high_watermark, 8 * msglen ) 
+        CALL parallel_min_real( msglen, msg, group, -1 )
 #endif
       END SUBROUTINE mp_min_rv
 
@@ -2100,23 +2016,28 @@
         group = mpi_comm_world
         IF( PRESENT( gid ) ) group = gid
         CALL MPI_BARRIER(group,IERR)
-        IF (ierr/=0) CALL mp_stop(8313)
+        IF (ierr/=0) CALL mp_stop( 8066 )
 #endif
       END SUBROUTINE mp_barrier
 
 !------------------------------------------------------------------------------!
 !.. Carlo Cavazzoni
 !..mp_rank
-      FUNCTION mp_rank()
+      FUNCTION mp_rank( comm )
         IMPLICIT NONE
         INTEGER :: mp_rank
+        INTEGER, OPTIONAL, INTENT(IN) :: comm
         INTEGER :: ierr, taskid
 
         ierr = 0
         taskid = 0
 #if defined(__MPI)
-        CALL mpi_comm_rank(mpi_comm_world,taskid,ierr)
-        IF (ierr/=0) CALL mp_stop(8003)
+        IF( PRESENT( comm ) ) THEN
+           CALL mpi_comm_rank(comm,taskid,ierr)
+        ELSE
+           CALL mpi_comm_rank(mpi_comm_world,taskid,ierr)
+        END IF
+        IF (ierr/=0) CALL mp_stop( 8067 )
 #endif
         mp_rank = taskid
       END FUNCTION mp_rank
@@ -2124,27 +2045,491 @@
 !------------------------------------------------------------------------------!
 !.. Carlo Cavazzoni
 !..mp_size
-      FUNCTION mp_size()
+      FUNCTION mp_size( comm )
         IMPLICIT NONE
         INTEGER :: mp_size
+        INTEGER, OPTIONAL, INTENT(IN) :: comm
         INTEGER :: ierr, numtask
 
         ierr = 0
         numtask = 1
 #if defined(__MPI)
-        CALL mpi_comm_size(mpi_comm_world,numtask,ierr)
-        IF (ierr/=0) CALL mp_stop(8004)
+        IF( PRESENT( comm ) ) THEN
+           CALL mpi_comm_size(comm,numtask,ierr)
+        ELSE
+           CALL mpi_comm_size(mpi_comm_world,numtask,ierr)
+        END IF
+        IF (ierr/=0) CALL mp_stop( 8068 )
 #endif
         mp_size = numtask
       END FUNCTION mp_size
 
       SUBROUTINE mp_report
-        WRITE( stdout, *) 
-        WRITE( stdout, *) '  mp: high_watermark (bytes): ', mp_high_watermark
+        INTEGER :: i
+        WRITE( stdout, *)
+#if defined(__MPI)
+#  if defined (__MP_STAT)
+        WRITE( stdout, 20 )
+#  endif
+20      FORMAT(3X,'please use an MPI profiler to analisy communications ')
+#else
+        WRITE( stdout, *)
+#endif
         RETURN
       END SUBROUTINE mp_report
 
 
 !------------------------------------------------------------------------------!
+!..mp_gatherv_rv
+!..Carlo Cavazzoni
+
+      SUBROUTINE mp_gatherv_rv( mydata, alldata, recvcount, displs, root, gid)
+        IMPLICIT NONE
+        REAL(DP) :: mydata(:)
+        REAL(DP) :: alldata(:)
+        INTEGER, INTENT(IN) :: recvcount(:), displs(:), root
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+        INTEGER :: ierr, npe, myid
+
+#if defined (__MPI)
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+        CALL mpi_comm_size( group, npe, ierr )
+        IF (ierr/=0) CALL mp_stop( 8069 )
+        CALL mpi_comm_rank( group, myid, ierr )
+        IF (ierr/=0) CALL mp_stop( 8070 )
+        !
+        IF ( SIZE( recvcount ) < npe .OR. SIZE( displs ) < npe ) CALL mp_stop( 8071 )
+        IF ( myid == root ) THEN
+           IF ( SIZE( alldata ) < displs( npe ) + recvcount( npe ) ) CALL mp_stop( 8072 )
+        END IF
+        IF ( SIZE( mydata ) < recvcount( myid + 1 ) ) CALL mp_stop( 8073 )
+        !
+        CALL MPI_GATHERV( mydata, recvcount( myid + 1 ), MPI_DOUBLE_PRECISION, &
+                         alldata, recvcount, displs, MPI_DOUBLE_PRECISION, root, group, ierr )
+        IF (ierr/=0) CALL mp_stop( 8074 )
+#else
+        IF ( SIZE( alldata ) < recvcount( 1 ) ) CALL mp_stop( 8075 )
+        IF ( SIZE( mydata  ) < recvcount( 1 ) ) CALL mp_stop( 8076 )
+        !
+        alldata( 1:recvcount( 1 ) ) = mydata( 1:recvcount( 1 ) )
+#endif
+        RETURN
+      END SUBROUTINE mp_gatherv_rv
+
+!------------------------------------------------------------------------------!
+!..mp_gatherv_cv
+!..Carlo Cavazzoni
+
+      SUBROUTINE mp_gatherv_cv( mydata, alldata, recvcount, displs, root, gid)
+        IMPLICIT NONE
+        COMPLEX(DP) :: mydata(:)
+        COMPLEX(DP) :: alldata(:)
+        INTEGER, INTENT(IN) :: recvcount(:), displs(:), root
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+        INTEGER :: ierr, npe, myid
+
+#if defined (__MPI)
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+        CALL mpi_comm_size( group, npe, ierr )
+        IF (ierr/=0) CALL mp_stop( 8069 )
+        CALL mpi_comm_rank( group, myid, ierr )
+        IF (ierr/=0) CALL mp_stop( 8070 )
+        !
+        IF ( SIZE( recvcount ) < npe .OR. SIZE( displs ) < npe ) CALL mp_stop( 8071 )
+        IF ( myid == root ) THEN
+           IF ( SIZE( alldata ) < displs( npe ) + recvcount( npe ) ) CALL mp_stop( 8072 )
+        END IF
+        IF ( SIZE( mydata ) < recvcount( myid + 1 ) ) CALL mp_stop( 8073 )
+        !
+        CALL MPI_GATHERV( mydata, recvcount( myid + 1 ), MPI_DOUBLE_COMPLEX, &
+                         alldata, recvcount, displs, MPI_DOUBLE_COMPLEX, root, group, ierr )
+        IF (ierr/=0) CALL mp_stop( 8074 )
+#else
+        IF ( SIZE( alldata ) < recvcount( 1 ) ) CALL mp_stop( 8075 )
+        IF ( SIZE( mydata  ) < recvcount( 1 ) ) CALL mp_stop( 8076 )
+        !
+        alldata( 1:recvcount( 1 ) ) = mydata( 1:recvcount( 1 ) )
+#endif
+        RETURN
+      END SUBROUTINE mp_gatherv_cv
+
+!------------------------------------------------------------------------------!
+!..mp_gatherv_rv
+!..Carlo Cavazzoni
+
+      SUBROUTINE mp_gatherv_iv( mydata, alldata, recvcount, displs, root, gid)
+        IMPLICIT NONE
+        INTEGER :: mydata(:)
+        INTEGER :: alldata(:)
+        INTEGER, INTENT(IN) :: recvcount(:), displs(:), root
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+        INTEGER :: ierr, npe, myid
+
+#if defined (__MPI)
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+        CALL mpi_comm_size( group, npe, ierr )
+        IF (ierr/=0) CALL mp_stop( 8069 )
+        CALL mpi_comm_rank( group, myid, ierr )
+        IF (ierr/=0) CALL mp_stop( 8070 )
+        !
+        IF ( SIZE( recvcount ) < npe .OR. SIZE( displs ) < npe ) CALL mp_stop( 8071 )
+        IF ( myid == root ) THEN
+           IF ( SIZE( alldata ) < displs( npe ) + recvcount( npe ) ) CALL mp_stop( 8072 )
+        END IF
+        IF ( SIZE( mydata ) < recvcount( myid + 1 ) ) CALL mp_stop( 8073 )
+        !
+        CALL MPI_GATHERV( mydata, recvcount( myid + 1 ), MPI_INTEGER, &
+                         alldata, recvcount, displs, MPI_INTEGER, root, group, ierr )
+        IF (ierr/=0) CALL mp_stop( 8074 )
+#else
+        IF ( SIZE( alldata ) < recvcount( 1 ) ) CALL mp_stop( 8075 )
+        IF ( SIZE( mydata  ) < recvcount( 1 ) ) CALL mp_stop( 8076 )
+        !
+        alldata( 1:recvcount( 1 ) ) = mydata( 1:recvcount( 1 ) )
+#endif
+        RETURN
+      END SUBROUTINE mp_gatherv_iv
+
+
+!------------------------------------------------------------------------------!
+!..mp_gatherv_rm
+!..Carlo Cavazzoni
+
+      SUBROUTINE mp_gatherv_rm( mydata, alldata, recvcount, displs, root, gid)
+        IMPLICIT NONE
+        REAL(DP) :: mydata(:,:)  ! Warning first dimension is supposed constant!
+        REAL(DP) :: alldata(:,:)
+        INTEGER, INTENT(IN) :: recvcount(:), displs(:), root
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+        INTEGER :: ierr, npe, myid, nsiz
+        INTEGER, ALLOCATABLE :: nrecv(:), ndisp(:)
+
+
+#if defined (__MPI)
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+        CALL mpi_comm_size( group, npe, ierr )
+        IF (ierr/=0) CALL mp_stop( 8069 )
+        CALL mpi_comm_rank( group, myid, ierr )
+        IF (ierr/=0) CALL mp_stop( 8070 )
+        !
+        IF ( SIZE( recvcount ) < npe .OR. SIZE( displs ) < npe ) CALL mp_stop( 8071 )
+        IF ( myid == root ) THEN
+           IF ( SIZE( alldata, 2 ) < displs( npe ) + recvcount( npe ) ) CALL mp_stop( 8072 )
+           IF ( SIZE( alldata, 1 ) /= SIZE( mydata, 1 ) ) CALL mp_stop( 8072 )
+        END IF
+        IF ( SIZE( mydata, 2 ) < recvcount( myid + 1 ) ) CALL mp_stop( 8073 )
+        !
+        ALLOCATE( nrecv( npe ), ndisp( npe ) )
+        !
+        nrecv( 1:npe ) = recvcount( 1:npe ) * SIZE( mydata, 1 )
+        ndisp( 1:npe ) = displs( 1:npe ) * SIZE( mydata, 1 )
+        !
+        CALL MPI_GATHERV( mydata, nrecv( myid + 1 ), MPI_DOUBLE_PRECISION, &
+                         alldata, nrecv, ndisp, MPI_DOUBLE_PRECISION, root, group, ierr )
+        IF (ierr/=0) CALL mp_stop( 8074 )
+        !
+        DEALLOCATE( nrecv, ndisp )
+        !
+#else
+        IF ( SIZE( alldata, 1 ) /= SIZE( mydata, 1 ) ) CALL mp_stop( 8075 )
+        IF ( SIZE( alldata, 2 ) < recvcount( 1 ) ) CALL mp_stop( 8075 )
+        IF ( SIZE( mydata, 2  ) < recvcount( 1 ) ) CALL mp_stop( 8076 )
+        !
+        alldata( :, 1:recvcount( 1 ) ) = mydata( :, 1:recvcount( 1 ) )
+#endif
+        RETURN
+      END SUBROUTINE mp_gatherv_rm
+
+!------------------------------------------------------------------------------!
+!..mp_gatherv_im
+!..Carlo Cavazzoni
+
+      SUBROUTINE mp_gatherv_im( mydata, alldata, recvcount, displs, root, gid)
+        IMPLICIT NONE
+        INTEGER :: mydata(:,:)  ! Warning first dimension is supposed constant!
+        INTEGER :: alldata(:,:)
+        INTEGER, INTENT(IN) :: recvcount(:), displs(:), root
+        INTEGER, OPTIONAL, INTENT(IN) :: gid
+        INTEGER :: group
+        INTEGER :: ierr, npe, myid, nsiz
+        INTEGER, ALLOCATABLE :: nrecv(:), ndisp(:)
+
+
+#if defined (__MPI)
+        group = mpi_comm_world
+        IF( PRESENT( gid ) ) group = gid
+        CALL mpi_comm_size( group, npe, ierr )
+        IF (ierr/=0) CALL mp_stop( 8069 )
+        CALL mpi_comm_rank( group, myid, ierr )
+        IF (ierr/=0) CALL mp_stop( 8070 )
+        !
+        IF ( SIZE( recvcount ) < npe .OR. SIZE( displs ) < npe ) CALL mp_stop( 8071 )
+        IF ( myid == root ) THEN
+           IF ( SIZE( alldata, 2 ) < displs( npe ) + recvcount( npe ) ) CALL mp_stop( 8072 )
+           IF ( SIZE( alldata, 1 ) /= SIZE( mydata, 1 ) ) CALL mp_stop( 8072 )
+        END IF
+        IF ( SIZE( mydata, 2 ) < recvcount( myid + 1 ) ) CALL mp_stop( 8073 )
+        !
+        ALLOCATE( nrecv( npe ), ndisp( npe ) )
+        !
+        nrecv( 1:npe ) = recvcount( 1:npe ) * SIZE( mydata, 1 )
+        ndisp( 1:npe ) = displs( 1:npe ) * SIZE( mydata, 1 )
+        !
+        CALL MPI_GATHERV( mydata, nrecv( myid + 1 ), MPI_INTEGER, &
+                         alldata, nrecv, ndisp, MPI_INTEGER, root, group, ierr )
+        IF (ierr/=0) CALL mp_stop( 8074 )
+        !
+        DEALLOCATE( nrecv, ndisp )
+        !
+#else
+        IF ( SIZE( alldata, 1 ) /= SIZE( mydata, 1 ) ) CALL mp_stop( 8075 )
+        IF ( SIZE( alldata, 2 ) < recvcount( 1 ) ) CALL mp_stop( 8075 )
+        IF ( SIZE( mydata, 2  ) < recvcount( 1 ) ) CALL mp_stop( 8076 )
+        !
+        alldata( :, 1:recvcount( 1 ) ) = mydata( :, 1:recvcount( 1 ) )
+#endif
+        RETURN
+      END SUBROUTINE mp_gatherv_im
+
+
+!------------------------------------------------------------------------------!
+
+      SUBROUTINE mp_set_displs( recvcount, displs, ntot, nproc )
+        !  Given the number of elements on each processor (recvcount), this subroutine
+        !  sets the correct offsets (displs) to collect them on a single
+        !  array with contiguous elemets
+        IMPLICIT NONE
+        INTEGER, INTENT(IN) :: recvcount(:) ! number of elements on each processor
+        INTEGER, INTENT(OUT) :: displs(:)   ! offsets/displacements
+        INTEGER, INTENT(OUT) :: ntot
+        INTEGER, INTENT(IN) :: nproc
+        INTEGER :: i
+
+        displs( 1 ) = 0
+        !
+#if defined (__MPI)
+        IF( nproc < 1 ) CALL mp_stop( 8090 )
+        DO i = 2, nproc
+           displs( i ) = displs( i - 1 ) + recvcount( i - 1 )
+        END DO
+        ntot = displs( nproc ) + recvcount( nproc )
+#else
+        ntot = recvcount( 1 )
+#endif
+        RETURN
+      END SUBROUTINE mp_set_displs
+
+!------------------------------------------------------------------------------!
+
+
+SUBROUTINE mp_alltoall_c3d( sndbuf, rcvbuf, gid )
+   IMPLICIT NONE
+   COMPLEX(DP) :: sndbuf( :, :, : )
+   COMPLEX(DP) :: rcvbuf( :, :, : )
+   INTEGER, OPTIONAL, INTENT(IN) :: gid
+   INTEGER :: nsiz, group, ierr, npe
+
+#if defined (__MPI)
+
+   group = mpi_comm_world
+   IF( PRESENT( gid ) ) group = gid
+
+   CALL mpi_comm_size( group, npe, ierr )
+   IF (ierr/=0) CALL mp_stop( 8069 )
+
+   IF ( SIZE( sndbuf, 3 ) < npe ) CALL mp_stop( 8069 )
+   IF ( SIZE( rcvbuf, 3 ) < npe ) CALL mp_stop( 8069 )
+
+   nsiz = SIZE( sndbuf, 1 ) * SIZE( sndbuf, 2 )
+
+   CALL MPI_ALLTOALL( sndbuf, nsiz, MPI_DOUBLE_COMPLEX, &
+                      rcvbuf, nsiz, MPI_DOUBLE_COMPLEX, group, ierr )
+
+   IF (ierr/=0) CALL mp_stop( 8074 )
+
+#else
+
+   rcvbuf = sndbuf
+
+#endif
+
+   RETURN
+END SUBROUTINE mp_alltoall_c3d
+
+
+!------------------------------------------------------------------------------!
+
+SUBROUTINE mp_alltoall_i3d( sndbuf, rcvbuf, gid )
+   IMPLICIT NONE
+   INTEGER :: sndbuf( :, :, : )
+   INTEGER :: rcvbuf( :, :, : )
+   INTEGER, OPTIONAL, INTENT(IN) :: gid
+   INTEGER :: nsiz, group, ierr, npe
+
+#if defined (__MPI)
+
+   group = mpi_comm_world
+   IF( PRESENT( gid ) ) group = gid
+
+   CALL mpi_comm_size( group, npe, ierr )
+   IF (ierr/=0) CALL mp_stop( 8069 )
+
+   IF ( SIZE( sndbuf, 3 ) < npe ) CALL mp_stop( 8069 )
+   IF ( SIZE( rcvbuf, 3 ) < npe ) CALL mp_stop( 8069 )
+
+   nsiz = SIZE( sndbuf, 1 ) * SIZE( sndbuf, 2 )
+
+   CALL MPI_ALLTOALL( sndbuf, nsiz, MPI_INTEGER, &
+                      rcvbuf, nsiz, MPI_INTEGER, group, ierr )
+
+   IF (ierr/=0) CALL mp_stop( 8074 )
+
+#else
+
+   rcvbuf = sndbuf
+
+#endif
+
+   RETURN
+END SUBROUTINE mp_alltoall_i3d
+
+SUBROUTINE mp_circular_shift_left_d2d_int( buf, itag, gid )
+   IMPLICIT NONE
+   INTEGER :: buf
+   INTEGER, INTENT(IN) :: itag
+   INTEGER, OPTIONAL, INTENT(IN) :: gid
+   INTEGER :: nsiz, group, ierr, npe, sour, dest, mype
+
+#if defined (__MPI)
+
+   INTEGER :: istatus( mpi_status_size )
+   !
+   group = mpi_comm_world
+   IF( PRESENT( gid ) ) group = gid
+   !
+   CALL mpi_comm_size( group, npe, ierr )
+   IF (ierr/=0) CALL mp_stop( 8100 )
+   CALL mpi_comm_rank( group, mype, ierr )
+   IF (ierr/=0) CALL mp_stop( 8101 )
+   !
+   sour = mype + 1
+   IF( sour == npe ) sour = 0
+   dest = mype - 1
+   IF( dest == -1 ) dest = npe - 1
+   !
+   CALL MPI_Sendrecv_replace( buf, 1, MPI_INTEGER, &
+        dest, itag, sour, itag, group, istatus, ierr)
+   !
+   IF (ierr/=0) CALL mp_stop( 8102 )
+   !
+#else
+   ! do nothing
+#endif
+   RETURN
+END SUBROUTINE mp_circular_shift_left_d2d_int
+
+
+
+SUBROUTINE mp_circular_shift_left_d2d_double( buf, itag, gid )
+   IMPLICIT NONE
+   REAL(DP) :: buf( :, : )
+   INTEGER, INTENT(IN) :: itag
+   INTEGER, OPTIONAL, INTENT(IN) :: gid
+   INTEGER :: nsiz, group, ierr, npe, sour, dest, mype
+
+#if defined (__MPI)
+
+   INTEGER :: istatus( mpi_status_size )
+   !
+   group = mpi_comm_world
+   IF( PRESENT( gid ) ) group = gid
+   !
+   CALL mpi_comm_size( group, npe, ierr )
+   IF (ierr/=0) CALL mp_stop( 8100 )
+   CALL mpi_comm_rank( group, mype, ierr )
+   IF (ierr/=0) CALL mp_stop( 8101 )
+   !
+   sour = mype + 1
+   IF( sour == npe ) sour = 0
+   dest = mype - 1
+   IF( dest == -1 ) dest = npe - 1
+   !
+   CALL MPI_Sendrecv_replace( buf, SIZE(buf), MPI_DOUBLE_PRECISION, &
+        dest, itag, sour, itag, group, istatus, ierr)
+   !
+   IF (ierr/=0) CALL mp_stop( 8102 )
+   !
+#else
+   ! do nothing
+#endif
+   RETURN
+END SUBROUTINE mp_circular_shift_left_d2d_double
+
+SUBROUTINE mp_circular_shift_left_d2d_complex( buf, itag, gid )
+   IMPLICIT NONE
+   COMPLEX(DP) :: buf( :, : )
+   INTEGER, INTENT(IN) :: itag
+   INTEGER, OPTIONAL, INTENT(IN) :: gid
+   INTEGER :: nsiz, group, ierr, npe, sour, dest, mype
+
+#if defined (__MPI)
+
+   INTEGER :: istatus( mpi_status_size )
+   !
+   group = mpi_comm_world
+   IF( PRESENT( gid ) ) group = gid
+   !
+   CALL mpi_comm_size( group, npe, ierr )
+   IF (ierr/=0) CALL mp_stop( 8100 )
+   CALL mpi_comm_rank( group, mype, ierr )
+   IF (ierr/=0) CALL mp_stop( 8101 )
+   !
+   sour = mype + 1
+   IF( sour == npe ) sour = 0
+   dest = mype - 1
+   IF( dest == -1 ) dest = npe - 1
+   !
+   CALL MPI_Sendrecv_replace( buf, SIZE(buf), MPI_DOUBLE_COMPLEX, &
+        dest, itag, sour, itag, group, istatus, ierr)
+   !
+   IF (ierr/=0) CALL mp_stop( 8102 )
+   !
+#else
+   ! do nothing
+#endif
+   RETURN
+END SUBROUTINE mp_circular_shift_left_d2d_complex
+
+
+      FUNCTION mp_get_comm_null( )
+        IMPLICIT NONE
+        INTEGER :: mp_get_comm_null
+#if defined(__MPI)
+           mp_get_comm_null = MPI_COMM_NULL
+#else
+           mp_get_comm_null = 0
+#endif
+      END FUNCTION mp_get_comm_null
+
+      FUNCTION mp_get_comm_self( )
+        IMPLICIT NONE
+        INTEGER :: mp_get_comm_self
+#if defined(__MPI)
+           mp_get_comm_self = MPI_COMM_SELF
+#else
+           mp_get_comm_self = 0
+#endif
+      END FUNCTION mp_get_comm_self
+
+!------------------------------------------------------------------------------!
     END MODULE mp
 !------------------------------------------------------------------------------!
+

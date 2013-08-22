@@ -12,7 +12,7 @@
    !
    USE kinds,          ONLY : dbl
    USE mp_global,      ONLY : nproc, mpime
-   USE mp,             ONLY : mp_sum, mp_allgather
+   USE mp,             ONLY : mp_sum !, mp_allgather
    USE timing_module,  ONLY : timing
    USE log_module,     ONLY : log_push, log_pop
    !

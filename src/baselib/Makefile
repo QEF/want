@@ -29,6 +29,7 @@ kind.o \
 locate.o \
 log_module.o \
 mp.o \
+mp_base.o \
 mp_global.o \
 parallel_include.o \
 parameters.o \
