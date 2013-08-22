@@ -4,6 +4,10 @@
 =======================================================
 
 
+22 Aug 2013     updates on modules concerning low-level parallelism (from QE),
+		configuration, ext lib (eg lapack) management in order to avoid
+		problems with gfortran. (AF) 
+
 04 Aug 2013     positions of the atmproj orbitals reconstructed in unfold.f90
 		for the sake of determining the orb_mapping. (AF)
 
