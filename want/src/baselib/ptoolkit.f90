@@ -9,7 +9,7 @@
     MODULE parallel_toolkit
 !==----------------------------------------------==!
 
-    USE kinds,            ONLY : DP => dbl
+    USE kinds,            ONLY : dbl
     USE io_global_module, ONLY : stdout
     USE parallel_include
 
@@ -32,19 +32,19 @@ SUBROUTINE dsqmdst( n, ar, ldar, a, lda, desc )
   !  This sub. take a replicated square matrix "ar" and distribute it
   !  across processors as described by descriptor "desc"
   !
-  USE kinds,            ONLY : DP => dbl
+  USE kinds,            ONLY : dbl
   USE descriptors
   !
   implicit none
   !
   INTEGER, INTENT(IN) :: n
   INTEGER, INTENT(IN) :: ldar
-  REAL(DP)            :: ar(ldar,*)  !  matrix to be splitted, replicated on all proc
+  REAL(dbl)            :: ar(ldar,*)  !  matrix to be splitted, replicated on all proc
   INTEGER, INTENT(IN) :: lda
-  REAL(DP)            :: a(lda,*)
+  REAL(dbl)            :: a(lda,*)
   TYPE(la_descriptor), INTENT(IN) :: desc
   !
-  REAL(DP), PARAMETER :: zero = 0_DP
+  REAL(dbl), PARAMETER :: zero = 0_dbl
   !
   INTEGER :: i, j, nr, nc, ic, ir, nx
   !
@@ -88,19 +88,19 @@ SUBROUTINE zsqmdst( n, ar, ldar, a, lda, desc )
   !  This sub. take a replicated square matrix "ar" and distribute it
   !  across processors as described by descriptor "desc"
   !
-  USE kinds,            ONLY : DP => dbl
+  USE kinds,            ONLY : dbl
   USE descriptors
   !
   implicit none
   !
   INTEGER, INTENT(IN) :: n
   INTEGER, INTENT(IN) :: ldar
-  COMPLEX(DP)         :: ar(ldar,*)  !  matrix to be splitted, replicated on all proc
+  COMPLEX(dbl)         :: ar(ldar,*)  !  matrix to be splitted, replicated on all proc
   INTEGER, INTENT(IN) :: lda
-  COMPLEX(DP)         :: a(lda,*)
+  COMPLEX(dbl)         :: a(lda,*)
   TYPE(la_descriptor), INTENT(IN) :: desc
   !
-  COMPLEX(DP), PARAMETER :: zero = ( 0_DP , 0_DP )
+  COMPLEX(dbl), PARAMETER :: zero = ( 0_dbl , 0_dbl )
   !
   INTEGER :: i, j, nr, nc, ic, ir, nx
   !
@@ -146,16 +146,16 @@ SUBROUTINE dsqmcll( n, a, lda, ar, ldar, desc, comm )
   !  the block assigned to processors into a replicated matrix "ar",
   !  matrix is distributed as described by descriptor desc
   !
-  USE kinds,            ONLY : DP => dbl
+  USE kinds,            ONLY : dbl
   USE descriptors
   !
   implicit none
   !
   INTEGER, INTENT(IN) :: n
   INTEGER, INTENT(IN) :: ldar
-  REAL(DP)            :: ar(ldar,*)  !  matrix to be merged, replicated on all proc
+  REAL(dbl)            :: ar(ldar,*)  !  matrix to be merged, replicated on all proc
   INTEGER, INTENT(IN) :: lda
-  REAL(DP)            :: a(lda,*)
+  REAL(dbl)            :: a(lda,*)
   TYPE(la_descriptor), INTENT(IN) :: desc
   INTEGER, INTENT(IN) :: comm
   !
@@ -166,7 +166,7 @@ SUBROUTINE dsqmcll( n, a, lda, ar, ldar, desc, comm )
   INTEGER :: np, nx, ipc, ipr, npr, npc, noff
   INTEGER :: ierr, ir, ic, nr, nc
 
-  REAL(DP), ALLOCATABLE :: buf(:,:)
+  REAL(dbl), ALLOCATABLE :: buf(:,:)
   !
   IF( desc%active_node > 0 ) THEN
      !
@@ -238,16 +238,16 @@ SUBROUTINE zsqmcll( n, a, lda, ar, ldar, desc, comm )
   !  the block assigned to processors into a replicated matrix "ar",
   !  matrix is distributed as described by descriptor desc
   !
-  USE kinds,            ONLY : DP => dbl
+  USE kinds,            ONLY : dbl
   USE descriptors
   !
   implicit none
   !
   INTEGER, INTENT(IN) :: n
   INTEGER, INTENT(IN) :: ldar
-  COMPLEX(DP)         :: ar(ldar,*)  !  matrix to be merged, replicated on all proc
+  COMPLEX(dbl)         :: ar(ldar,*)  !  matrix to be merged, replicated on all proc
   INTEGER, INTENT(IN) :: lda
-  COMPLEX(DP)         :: a(lda,*)
+  COMPLEX(dbl)         :: a(lda,*)
   TYPE(la_descriptor), INTENT(IN) :: desc
   INTEGER, INTENT(IN) :: comm
   !
@@ -258,7 +258,7 @@ SUBROUTINE zsqmcll( n, a, lda, ar, ldar, desc, comm )
   INTEGER :: np, nx, ipc, ipr, npr, npc, noff
   INTEGER :: ierr, ir, ic, nr, nc
 
-  COMPLEX(DP), ALLOCATABLE :: buf(:,:)
+  COMPLEX(dbl), ALLOCATABLE :: buf(:,:)
   !
   IF( desc%active_node > 0 ) THEN
      !
@@ -329,26 +329,26 @@ SUBROUTINE dsqmwpb( n, a, lda, desc )
    !
    ! Double precision SQuare Matrix WiPe Border subroutine
    !
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    !
    IMPLICIT NONE
    !
    INTEGER, INTENT(IN) :: n
    INTEGER, INTENT(IN) :: lda
-   REAL(DP)            :: a(lda,*)  !  matrix to be redistributed into b
+   REAL(dbl)            :: a(lda,*)  !  matrix to be redistributed into b
    TYPE(la_descriptor), INTENT(IN) :: desc
    !
    INTEGER :: i, j
    !
    DO j = 1, desc%nc
       DO i = desc%nr + 1, desc%nrcx
-         a( i, j ) = 0_DP
+         a( i, j ) = 0_dbl
       END DO
    END DO
    DO j = desc%nc + 1, desc%nrcx
       DO i = 1, desc%nrcx
-         a( i, j ) = 0_DP
+         a( i, j ) = 0_dbl
       END DO
    END DO
    !
@@ -361,14 +361,14 @@ SUBROUTINE dsqmsym( n, a, lda, desc )
    !
    ! Double precision SQuare Matrix SYMmetrization
    !
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    !
    IMPLICIT NONE
    !
    INTEGER, INTENT(IN) :: n
    INTEGER, INTENT(IN) :: lda
-   REAL(DP)            :: a(lda,*) 
+   REAL(dbl)            :: a(lda,*) 
    TYPE(la_descriptor), INTENT(IN) :: desc
 #if defined __MPI
    INTEGER :: istatus( MPI_STATUS_SIZE )
@@ -376,7 +376,7 @@ SUBROUTINE dsqmsym( n, a, lda, desc )
    INTEGER :: i, j
    INTEGER :: comm 
    INTEGER :: nr, nc, dest, sreq, ierr, sour
-   REAL(DP) :: atmp
+   REAL(dbl) :: atmp
 
 #if defined __MPI
 
@@ -467,14 +467,14 @@ SUBROUTINE zsqmher( n, a, lda, desc )
    !
    ! double complex (Z) SQuare Matrix HERmitianize
    !
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    !
    IMPLICIT NONE
    !
    INTEGER, INTENT(IN) :: n
    INTEGER, INTENT(IN) :: lda
-   COMPLEX(DP)         :: a(lda,lda) 
+   COMPLEX(dbl)         :: a(lda,lda) 
    TYPE(la_descriptor), INTENT(IN) :: desc
 #if defined __MPI
    INTEGER :: istatus( MPI_STATUS_SIZE )
@@ -482,9 +482,9 @@ SUBROUTINE zsqmher( n, a, lda, desc )
    INTEGER :: i, j
    INTEGER :: comm, myid
    INTEGER :: nr, nc, dest, sreq, ierr, sour
-   COMPLEX(DP) :: atmp
-   COMPLEX(DP), ALLOCATABLE :: tst1(:,:)
-   COMPLEX(DP), ALLOCATABLE :: tst2(:,:)
+   COMPLEX(dbl) :: atmp
+   COMPLEX(dbl), ALLOCATABLE :: tst1(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: tst2(:,:)
 
 #if defined __MPI
 
@@ -506,7 +506,7 @@ SUBROUTINE zsqmher( n, a, lda, desc )
       !  diagonal block, procs work locally
       !
       DO j = 1, nc
-         a(j,j) = CMPLX( DBLE( a(j,j) ), 0_DP, KIND=DP )
+         a(j,j) = CMPLX( DBLE( a(j,j) ), 0_dbl, KIND=dbl )
          DO i = j + 1, nr
             a(i,j) = CONJG( a(j,i) )
          END DO
@@ -574,7 +574,7 @@ SUBROUTINE zsqmher( n, a, lda, desc )
    IF( myid == 0 ) THEN
    DO j = 1, n
       !
-      IF( tst2(j,j) /=  CMPLX( DBLE( tst2(j,j) ), 0_DP, KIND=DP ) ) &
+      IF( tst2(j,j) /=  CMPLX( DBLE( tst2(j,j) ), 0_dbl, KIND=dbl ) ) &
         WRITE( 4000, * ) j, tst2(j,j)
       !
       DO i = j + 1, n
@@ -594,7 +594,7 @@ SUBROUTINE zsqmher( n, a, lda, desc )
 
    DO j = 1, n
       !
-      a(j,j) = CMPLX( DBLE( a(j,j) ), 0_DP, KIND=DP )
+      a(j,j) = CMPLX( DBLE( a(j,j) ), 0_dbl, KIND=dbl )
       !
       DO i = j + 1, n
          !
@@ -625,18 +625,18 @@ SUBROUTINE dsqmred( na, a, lda, desca, nb, b, ldb, descb )
    ! If you want to read, get prepared for an headache!
    ! Written struggling by Carlo Cavazzoni.
    !
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    !
    IMPLICIT NONE
    !
    INTEGER, INTENT(IN) :: na
    INTEGER, INTENT(IN) :: lda
-   REAL(DP)            :: a(lda,lda)  !  matrix to be redistributed into b
+   REAL(dbl)            :: a(lda,lda)  !  matrix to be redistributed into b
    TYPE(la_descriptor), INTENT(IN) :: desca
    INTEGER, INTENT(IN) :: nb
    INTEGER, INTENT(IN) :: ldb
-   REAL(DP)            :: b(ldb,ldb)
+   REAL(dbl)            :: b(ldb,ldb)
    TYPE(la_descriptor), INTENT(IN) :: descb
 
    INTEGER :: ipc, ipr, npc, npr
@@ -654,10 +654,10 @@ SUBROUTINE dsqmred( na, a, lda, desca, nb, b, ldb, descb )
    INTEGER :: ire_new( desca%npr )
    INTEGER :: icb_new( desca%npr )
    INTEGER :: ice_new( desca%npr )
-   REAL(DP), ALLOCATABLE :: buf(:)
-   REAL(DP), ALLOCATABLE :: ab(:,:)
-   REAL(DP), ALLOCATABLE :: tst1(:,:)
-   REAL(DP), ALLOCATABLE :: tst2(:,:)
+   REAL(dbl), ALLOCATABLE :: buf(:)
+   REAL(dbl), ALLOCATABLE :: ab(:,:)
+   REAL(dbl), ALLOCATABLE :: tst1(:,:)
+   REAL(dbl), ALLOCATABLE :: tst2(:,:)
 #if defined __MPI
     INTEGER :: istatus( MPI_STATUS_SIZE )
 #endif
@@ -1015,18 +1015,18 @@ SUBROUTINE zsqmred( na, a, lda, desca, nb, b, ldb, descb )
    ! If you want to read, get prepared for an headache!
    ! Written struggling by Carlo Cavazzoni.
    !
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    !
    IMPLICIT NONE
    !
    INTEGER, INTENT(IN) :: na
    INTEGER, INTENT(IN) :: lda
-   COMPLEX(DP)         :: a(lda,lda)  !  matrix to be redistributed into b
+   COMPLEX(dbl)         :: a(lda,lda)  !  matrix to be redistributed into b
    TYPE(la_descriptor), INTENT(IN) :: desca
    INTEGER, INTENT(IN) :: nb
    INTEGER, INTENT(IN) :: ldb
-   COMPLEX(DP)         :: b(ldb,ldb)
+   COMPLEX(dbl)         :: b(ldb,ldb)
    TYPE(la_descriptor), INTENT(IN) :: descb
 
    INTEGER :: ipc, ipr, npc, npr
@@ -1044,10 +1044,10 @@ SUBROUTINE zsqmred( na, a, lda, desca, nb, b, ldb, descb )
    INTEGER :: ire_new( desca%npr )
    INTEGER :: icb_new( desca%npr )
    INTEGER :: ice_new( desca%npr )
-   COMPLEX(DP), ALLOCATABLE :: buf(:)
-   COMPLEX(DP), ALLOCATABLE :: ab(:,:)
-   COMPLEX(DP), ALLOCATABLE :: tst1(:,:)
-   COMPLEX(DP), ALLOCATABLE :: tst2(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: buf(:)
+   COMPLEX(dbl), ALLOCATABLE :: ab(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: tst1(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: tst2(:,:)
 #if defined __MPI
     INTEGER :: istatus( MPI_STATUS_SIZE )
 #endif
@@ -1108,11 +1108,11 @@ SUBROUTINE zsqmred( na, a, lda, desca, nb, b, ldb, descb )
 
    DO j = 1, descb%nc
       DO i = 1, descb%nr
-         b( i, j ) = ( 0_DP , 0_DP )
+         b( i, j ) = ( 0_dbl , 0_dbl )
       END DO
    END DO
 
-   ab = ( 0_DP , 0_DP )
+   ab = ( 0_dbl , 0_dbl )
 
    ! first redistribute rows, column groups work in parallel
 
@@ -1385,9 +1385,9 @@ SUBROUTINE rep_matmul_drv( TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB, BETA,
   !
   CHARACTER(LEN=1), INTENT(IN) :: transa, transb
   INTEGER, INTENT(IN) :: m, n, k
-  REAL(DP), INTENT(IN) :: alpha, beta
+  REAL(dbl), INTENT(IN) :: alpha, beta
   INTEGER, INTENT(IN) :: lda, ldb, ldc
-  REAL(DP) :: a(lda,*), b(ldb,*), c(ldc,*)
+  REAL(dbl) :: a(lda,*), b(ldb,*), c(ldc,*)
   INTEGER, INTENT(IN) :: comm
   !
   !  DGEMM  PERFORMS ONE OF THE MATRIX-MATRIX OPERATIONS
@@ -1412,8 +1412,8 @@ SUBROUTINE rep_matmul_drv( TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB, BETA,
   INTEGER :: NB, IB_S, NB_SOUR, IB_SOUR, IBUF
   INTEGER :: nproc, mpime, q, r
 
-  REAL(DP), ALLOCATABLE :: auxa( : )
-  REAL(DP), ALLOCATABLE :: auxc( : )
+  REAL(dbl), ALLOCATABLE :: auxa( : )
+  REAL(dbl), ALLOCATABLE :: auxc( : )
 
   !
   ! ... BODY
@@ -1477,7 +1477,7 @@ SUBROUTINE rep_matmul_drv( TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB, BETA,
      !call mytranspose( A( 1, ioff + 1 ), lda, auxa(1), ldx, m, nb)
   END IF
 
-  IF( beta /= 0.0_DP ) THEN
+  IF( beta /= 0.0_dbl ) THEN
      ibuf = 0
      ioff = ib_s - 1
      DO J = 1, n
@@ -1549,9 +1549,9 @@ SUBROUTINE zrep_matmul_drv( TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB, BETA
   !
   CHARACTER(LEN=1), INTENT(IN) :: transa, transb
   INTEGER, INTENT(IN) :: m, n, k
-  COMPLEX(DP), INTENT(IN) :: alpha, beta
+  COMPLEX(dbl), INTENT(IN) :: alpha, beta
   INTEGER, INTENT(IN) :: lda, ldb, ldc
-  COMPLEX(DP) :: a(lda,*), b(ldb,*), c(ldc,*)
+  COMPLEX(dbl) :: a(lda,*), b(ldb,*), c(ldc,*)
   INTEGER, INTENT(IN) :: comm
   !
   !  DGEMM  PERFORMS ONE OF THE MATRIX-MATRIX OPERATIONS
@@ -1576,8 +1576,8 @@ SUBROUTINE zrep_matmul_drv( TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB, BETA
   INTEGER :: NB, IB_S, NB_SOUR, IB_SOUR, IBUF
   INTEGER :: nproc, mpime, q, r
 
-  COMPLEX(DP), ALLOCATABLE :: auxa( : )
-  COMPLEX(DP), ALLOCATABLE :: auxc( : )
+  COMPLEX(dbl), ALLOCATABLE :: auxa( : )
+  COMPLEX(dbl), ALLOCATABLE :: auxc( : )
 
   !
   ! ... BODY
@@ -1641,7 +1641,7 @@ SUBROUTINE zrep_matmul_drv( TRANSA, TRANSB, M, N, K, ALPHA, A, LDA, B, LDB, BETA
      !call mytranspose( A( 1, ioff + 1 ), lda, auxa(1), ldx, m, nb)
   END IF
 
-  IF( beta /= 0.0_DP ) THEN
+  IF( beta /= 0.0_dbl ) THEN
      ibuf = 0
      ioff = ib_s - 1
      DO J = 1, n
@@ -1723,16 +1723,16 @@ SUBROUTINE sqr_mm_cannon( transa, transb, n, alpha, a, lda, b, ldb, beta, c, ldc
    !
    !  Parallel square matrix multiplication with Cannon's algorithm
    !
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    !
    IMPLICIT NONE
    !
    CHARACTER(LEN=1), INTENT(IN) :: transa, transb
    INTEGER, INTENT(IN) :: n
-   REAL(DP), INTENT(IN) :: alpha, beta
+   REAL(dbl), INTENT(IN) :: alpha, beta
    INTEGER, INTENT(IN) :: lda, ldb, ldc
-   REAL(DP) :: a(lda,*), b(ldb,*), c(ldc,*)
+   REAL(dbl) :: a(lda,*), b(ldb,*), c(ldc,*)
    TYPE(la_descriptor), INTENT(IN) :: desc
    !
    !  performs one of the matrix-matrix operations
@@ -1758,7 +1758,7 @@ SUBROUTINE sqr_mm_cannon( transa, transb, n, alpha, a, lda, b, ldb, beta, c, ldc
    INTEGER :: comm
    !
    !
-   real(DP), allocatable :: bblk(:,:), ablk(:,:)
+   real(dbl), allocatable :: bblk(:,:), ablk(:,:)
    !
 #if defined (__MPI)
    !
@@ -1821,12 +1821,12 @@ SUBROUTINE sqr_mm_cannon( transa, transb, n, alpha, a, lda, b, ldb, beta, c, ldc
    !
    DO j = nc+1, nb
       DO i = 1, nb
-         ablk( i, j ) = 0.0_DP
+         ablk( i, j ) = 0.0_dbl
       END DO
    END DO
    DO j = 1, nb
       DO i = nr+1, nb
-         ablk( i, j ) = 0.0_DP
+         ablk( i, j ) = 0.0_dbl
       END DO
    END DO
    !
@@ -1842,12 +1842,12 @@ SUBROUTINE sqr_mm_cannon( transa, transb, n, alpha, a, lda, b, ldb, beta, c, ldc
    !
    DO j = nc+1, nb
       DO i = 1, nb
-         bblk( i, j ) = 0.0_DP
+         bblk( i, j ) = 0.0_dbl
       END DO
    END DO
    DO j = 1, nb
       DO i = nr+1, nb
-         bblk( i, j ) = 0.0_DP
+         bblk( i, j ) = 0.0_dbl
       END DO
    END DO
    !
@@ -1887,7 +1887,7 @@ SUBROUTINE sqr_mm_cannon( transa, transb, n, alpha, a, lda, b, ldb, beta, c, ldc
       !
       !  Accumulate on C
       !
-      CALL dgemm( TRANSA, TRANSB, nr, nc, nb, alpha, ablk, nb, bblk, nb, 1.0_DP, c, ldc)
+      CALL dgemm( TRANSA, TRANSB, nr, nc, nb, alpha, ablk, nb, bblk, nb, 1.0_dbl, c, ldc)
       !
    END DO
 
@@ -1902,7 +1902,7 @@ CONTAINS
       !   Block shift 
       !
       IMPLICIT NONE
-      REAL(DP) :: blk( :, : )
+      REAL(dbl) :: blk( :, : )
       CHARACTER(LEN=1), INTENT(IN) :: dir      ! shift direction
       INTEGER,          INTENT(IN) :: ln       ! shift length
       INTEGER,          INTENT(IN) :: tag      ! communication tag
@@ -1963,7 +1963,7 @@ CONTAINS
       !   only used for the first step
       !
       IMPLICIT NONE
-      REAL(DP) :: blk( :, : )
+      REAL(dbl) :: blk( :, : )
       CHARACTER(LEN=1), INTENT(IN) :: dir
       INTEGER,          INTENT(IN) :: tag
       !
@@ -2027,16 +2027,16 @@ SUBROUTINE sqr_zmm_cannon( transa, transb, n, alpha, a, lda, b, ldb, beta, c, ld
    !
    !  Parallel square matrix multiplication with Cannon's algorithm
    !
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    !
    IMPLICIT NONE
    !
    CHARACTER(LEN=1), INTENT(IN) :: transa, transb
    INTEGER, INTENT(IN) :: n
-   COMPLEX(DP), INTENT(IN) :: alpha, beta
+   COMPLEX(dbl), INTENT(IN) :: alpha, beta
    INTEGER, INTENT(IN) :: lda, ldb, ldc
-   COMPLEX(DP) :: a(lda,*), b(ldb,*), c(ldc,*)
+   COMPLEX(dbl) :: a(lda,*), b(ldb,*), c(ldc,*)
    TYPE(la_descriptor), INTENT(IN) :: desc
    !
    !  performs one of the matrix-matrix operations
@@ -2062,9 +2062,9 @@ SUBROUTINE sqr_zmm_cannon( transa, transb, n, alpha, a, lda, b, ldb, beta, c, ld
    INTEGER :: comm
    !
    !
-   COMPLEX(DP), ALLOCATABLE :: bblk(:,:), ablk(:,:)
-   COMPLEX(DP) :: zone = ( 1.0_DP, 0.0_DP )
-   COMPLEX(DP) :: zzero = ( 0.0_DP, 0.0_DP )
+   COMPLEX(dbl), ALLOCATABLE :: bblk(:,:), ablk(:,:)
+   COMPLEX(dbl) :: zone = ( 1.0_dbl, 0.0_dbl )
+   COMPLEX(dbl) :: zzero = ( 0.0_dbl, 0.0_dbl )
    !
 #if defined (__MPI)
    !
@@ -2208,7 +2208,7 @@ CONTAINS
       !   Block shift 
       !
       IMPLICIT NONE
-      COMPLEX(DP) :: blk( :, : )
+      COMPLEX(dbl) :: blk( :, : )
       CHARACTER(LEN=1), INTENT(IN) :: dir      ! shift direction
       INTEGER,          INTENT(IN) :: ln       ! shift length
       INTEGER,          INTENT(IN) :: tag      ! communication tag
@@ -2269,7 +2269,7 @@ CONTAINS
       !   only used for the first step
       !
       IMPLICIT NONE
-      COMPLEX(DP) :: blk( :, : )
+      COMPLEX(dbl) :: blk( :, : )
       CHARACTER(LEN=1), INTENT(IN) :: dir
       INTEGER,          INTENT(IN) :: tag
       !
@@ -2335,14 +2335,14 @@ SUBROUTINE sqr_tr_cannon( n, a, lda, b, ldb, desc )
    !
    !  Parallel square matrix transposition with Cannon's algorithm
    !
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    !
    IMPLICIT NONE
    !
    INTEGER, INTENT(IN) :: n
    INTEGER, INTENT(IN) :: lda, ldb
-   REAL(DP)            :: a(lda,*), b(ldb,*)
+   REAL(dbl)            :: a(lda,*), b(ldb,*)
    TYPE(la_descriptor), INTENT(IN) :: desc
    !
 #if defined (__MPI)
@@ -2356,7 +2356,7 @@ SUBROUTINE sqr_tr_cannon( n, a, lda, b, ldb, desc )
    INTEGER :: i, j, nr, nc, nb
    INTEGER :: comm
    !
-   REAL(DP), ALLOCATABLE :: ablk(:,:)
+   REAL(dbl), ALLOCATABLE :: ablk(:,:)
    !
 #if defined (__MPI)
    !
@@ -2406,12 +2406,12 @@ SUBROUTINE sqr_tr_cannon( n, a, lda, b, ldb, desc )
    END DO
    DO j = nc+1, nb
       DO i = 1, nb
-         ablk( i, j ) = 0.0_DP
+         ablk( i, j ) = 0.0_dbl
       END DO
    END DO
    DO j = 1, nb
       DO i = nr+1, nb
-         ablk( i, j ) = 0.0_DP
+         ablk( i, j ) = 0.0_dbl
       END DO
    END DO
    !
@@ -2440,7 +2440,7 @@ CONTAINS
       !   Block exchange ( transpose )
       !
       IMPLICIT NONE
-      REAL(DP) :: blk( :, : )
+      REAL(dbl) :: blk( :, : )
       !
       INTEGER :: icdst, irdst, icsrc, irsrc, idest, isour
       !
@@ -2474,14 +2474,14 @@ SUBROUTINE redist_row2col( n, a, b, ldx, nx, desc )
    !  redistribute a, array whose second dimension is distributed over processor row,
    !  to obtain b, with the second dim. distributed over processor clolumn 
    !
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    !
    IMPLICIT NONE
    !
    INTEGER, INTENT(IN) :: n
    INTEGER, INTENT(IN) :: ldx, nx
-   REAL(DP)            :: a(ldx,nx), b(ldx,nx)
+   REAL(dbl)            :: a(ldx,nx), b(ldx,nx)
    TYPE(la_descriptor), INTENT(IN) :: desc
    !
 #if defined (__MPI)
@@ -2564,14 +2564,14 @@ SUBROUTINE cyc2blk_redist( n, a, lda, nca, b, ldb, ncb, desc )
    !  A (input) is cyclically distributed by rows across processors
    !  B (output) is distributed by block across 2D processors grid
    !
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    !
    IMPLICIT NONE
    !
    INTEGER, INTENT(IN) :: n
    INTEGER, INTENT(IN) :: lda, nca, ldb, ncb
-   REAL(DP) :: a( lda, nca ), b( ldb, ncb )
+   REAL(dbl) :: a( lda, nca ), b( ldb, ncb )
    TYPE(la_descriptor), INTENT(IN) :: desc
    !
 #if defined (__MPI)
@@ -2586,8 +2586,8 @@ SUBROUTINE cyc2blk_redist( n, a, lda, nca, b, ldb, ncb, desc )
    integer :: i, ii, j, jj, nr, nc, nb, nrl, irl, ir, ic
    INTEGER :: me_ortho(2), np_ortho(2)
    !
-   real(DP), allocatable :: rcvbuf(:,:,:)
-   real(DP), allocatable :: sndbuf(:,:)
+   real(dbl), allocatable :: rcvbuf(:,:,:)
+   real(dbl), allocatable :: sndbuf(:,:)
    TYPE(la_descriptor) :: ip_desc
    !
    character(len=256) :: msg
@@ -2729,14 +2729,14 @@ SUBROUTINE cyc2blk_zredist( n, a, lda, nca, b, ldb, ncb, desc )
    !  A (input) is cyclically distributed by rows across processors
    !  B (output) is distributed by block across 2D processors grid
    !
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    !
    IMPLICIT NONE
    !
    INTEGER, INTENT(IN) :: n
    INTEGER, INTENT(IN) :: lda, nca, ldb, ncb
-   COMPLEX(DP) :: a( lda, nca ), b( ldb, ncb )
+   COMPLEX(dbl) :: a( lda, nca ), b( ldb, ncb )
    TYPE(la_descriptor), INTENT(IN) :: desc
    !
 #if defined (__MPI)
@@ -2751,8 +2751,8 @@ SUBROUTINE cyc2blk_zredist( n, a, lda, nca, b, ldb, ncb, desc )
    integer :: i, ii, j, jj, nr, nc, nb, nrl, irl, ir, ic
    INTEGER :: me_ortho(2), np_ortho(2)
    !
-   COMPLEX(DP), allocatable :: rcvbuf(:,:,:)
-   COMPLEX(DP), allocatable :: sndbuf(:,:)
+   COMPLEX(dbl), allocatable :: rcvbuf(:,:,:)
+   COMPLEX(dbl), allocatable :: sndbuf(:,:)
    TYPE(la_descriptor) :: ip_desc
    !
    character(len=256) :: msg
@@ -2888,14 +2888,14 @@ SUBROUTINE blk2cyc_redist( n, a, lda, nca, b, ldb, ncb, desc )
    !  A (output) is cyclically distributed by rows across processors
    !  B (input) is distributed by block across 2D processors grid
    !
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    !
    IMPLICIT NONE
    !
    INTEGER, INTENT(IN) :: n
    INTEGER, INTENT(IN) :: lda, nca, ldb, ncb
-   REAL(DP) :: a( lda, nca ), b( ldb, ncb )
+   REAL(dbl) :: a( lda, nca ), b( ldb, ncb )
    TYPE(la_descriptor), INTENT(IN) :: desc
    !
 #if defined (__MPI)
@@ -2910,8 +2910,8 @@ SUBROUTINE blk2cyc_redist( n, a, lda, nca, b, ldb, ncb, desc )
    integer :: i, ii, j, jj, nr, nc, nb, nrl, irl, ir, ic
    INTEGER :: me_ortho(2), np_ortho(2)
    !
-   REAL(DP), allocatable :: rcvbuf(:,:,:)
-   REAL(DP), allocatable :: sndbuf(:,:)
+   REAL(dbl), allocatable :: rcvbuf(:,:,:)
+   REAL(dbl), allocatable :: sndbuf(:,:)
    TYPE(la_descriptor) :: ip_desc
    !
    character(len=256) :: msg
@@ -3018,14 +3018,14 @@ SUBROUTINE blk2cyc_zredist( n, a, lda, nca, b, ldb, ncb, desc )
    !  A (output) is cyclically distributed by rows across processors
    !  B (input) is distributed by block across 2D processors grid
    !
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    !
    IMPLICIT NONE
    !
    INTEGER, INTENT(IN) :: n
    INTEGER, INTENT(IN) :: lda, nca, ldb, ncb
-   COMPLEX(DP) :: a( lda, nca ), b( ldb, ncb )
+   COMPLEX(dbl) :: a( lda, nca ), b( ldb, ncb )
    TYPE(la_descriptor), INTENT(IN) :: desc
    !
 #if defined (__MPI)
@@ -3040,8 +3040,8 @@ SUBROUTINE blk2cyc_zredist( n, a, lda, nca, b, ldb, ncb, desc )
    integer :: i, ii, j, jj, nr, nc, nb, nrl, irl, ir, ic
    INTEGER :: me_ortho(2), np_ortho(2)
    !
-   COMPLEX(DP), allocatable :: rcvbuf(:,:,:)
-   COMPLEX(DP), allocatable :: sndbuf(:,:)
+   COMPLEX(dbl), allocatable :: rcvbuf(:,:,:)
+   COMPLEX(dbl), allocatable :: sndbuf(:,:)
    TYPE(la_descriptor) :: ip_desc
    !
    character(len=256) :: msg
@@ -3153,14 +3153,14 @@ SUBROUTINE qe_pzpotrf( sll, ldx, n, desc )
    !
    use descriptors
    use parallel_include
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    !
    implicit none
    !
    integer :: n, ldx
    TYPE(la_descriptor), INTENT(IN) :: desc
-   real(DP)  :: one, zero
-   complex(DP) :: sll( ldx, ldx ), cone, czero
+   real(dbl)  :: one, zero
+   complex(dbl) :: sll( ldx, ldx ), cone, czero
    integer :: myrow, mycol, ierr
    integer :: jb, info, ib, kb
    integer :: jnr, jir, jic, jnc
@@ -3168,12 +3168,12 @@ SUBROUTINE qe_pzpotrf( sll, ldx, n, desc )
    integer :: knr, kir, kic, knc
    integer :: nr, nc
    integer :: rcomm, ccomm, color, key, myid, np
-   complex(DP), allocatable :: ssnd( :, : ), srcv( :, : )
+   complex(dbl), allocatable :: ssnd( :, : ), srcv( :, : )
 
-   one   = 1.0_DP
-   cone  = 1.0_DP
-   zero  = 0.0_DP
-   czero = 0.0_DP
+   one   = 1.0_dbl
+   cone  = 1.0_dbl
+   zero  = 0.0_dbl
+   czero = 0.0_dbl
 
 #if defined __MPI
 
@@ -3241,7 +3241,7 @@ SUBROUTINE qe_pzpotrf( sll, ldx, n, desc )
                !
                !  this is because only the lover triangle of ssnd will be set to 0 by ZHERK
                !
-               ssnd = 0.0_DP  
+               ssnd = 0.0_dbl  
                !
                !  remember: matrix ssnd is nr*nr, and procs on the diagonale have nr == nc 
                !
@@ -3383,14 +3383,14 @@ SUBROUTINE qe_pdpotrf( sll, ldx, n, desc )
    !
    use descriptors
    use parallel_include
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    !
    implicit none
    !
    integer  :: n, ldx
    TYPE(la_descriptor), INTENT(IN) :: desc
-   REAL(DP) :: one, zero
-   REAL(DP) :: sll( ldx, ldx )
+   REAL(dbl) :: one, zero
+   REAL(dbl) :: sll( ldx, ldx )
    integer  :: myrow, mycol, ierr
    integer  :: jb, info, ib, kb
    integer  :: jnr, jir, jic, jnc
@@ -3398,10 +3398,10 @@ SUBROUTINE qe_pdpotrf( sll, ldx, n, desc )
    integer  :: knr, kir, kic, knc
    integer  :: nr, nc
    integer  :: rcomm, ccomm, color, key, myid, np
-   REAL(DP), ALLOCATABLE :: ssnd( :, : ), srcv( :, : )
+   REAL(dbl), ALLOCATABLE :: ssnd( :, : ), srcv( :, : )
 
-   one   = 1.0_DP
-   zero  = 0.0_DP
+   one   = 1.0_dbl
+   zero  = 0.0_dbl
 
 #if defined __MPI
 
@@ -3469,7 +3469,7 @@ SUBROUTINE qe_pdpotrf( sll, ldx, n, desc )
                !
                !  this is because only the lover triangle of ssnd will be set to 0 by ZHERK
                !
-               ssnd = 0_DP
+               ssnd = 0_dbl
                !
                !  remember: matrix ssnd is nr*nr, and procs on the diagonale have nr == nc 
                !
@@ -3636,7 +3636,7 @@ SUBROUTINE qe_pztrtri ( sll, ldx, n, desc )
     !  written by Ivan Girotto
     !
 
-    USE kinds,            ONLY : DP => dbl
+    USE kinds,            ONLY : dbl
     USE parallel_include
     USE descriptors
 
@@ -3644,10 +3644,10 @@ SUBROUTINE qe_pztrtri ( sll, ldx, n, desc )
 
     INTEGER, INTENT( IN ) :: n, ldx
     TYPE(la_descriptor), INTENT(IN) :: desc
-    COMPLEX(DP), INTENT( INOUT ) :: sll( ldx, ldx )
+    COMPLEX(dbl), INTENT( INOUT ) :: sll( ldx, ldx )
 
-    COMPLEX(DP), PARAMETER :: ONE = (1.0_DP, 0.0_DP)
-    COMPLEX(DP), PARAMETER :: ZERO = (0.0_DP, 0.0_DP)
+    COMPLEX(dbl), PARAMETER :: ONE = (1.0_dbl, 0.0_dbl)
+    COMPLEX(dbl), PARAMETER :: ZERO = (0.0_dbl, 0.0_dbl)
 
 #if defined __MPI
     INTEGER :: status(MPI_STATUS_SIZE)
@@ -3664,8 +3664,8 @@ SUBROUTINE qe_pztrtri ( sll, ldx, n, desc )
     INTEGER :: idrowref, idcolref, idref, idrecv 
 
     ! B and BUF_RECV are used to overload the computation of matrix multiplication and the shift of the blocks
-    COMPLEX(DP), ALLOCATABLE, DIMENSION( :, : ) :: B, C, BUF_RECV 
-    COMPLEX(DP) :: first
+    COMPLEX(dbl), ALLOCATABLE, DIMENSION( :, : ) :: B, C, BUF_RECV 
+    COMPLEX(dbl) :: first
 
     myrow = desc%myr
     mycol = desc%myc
@@ -3997,7 +3997,7 @@ SUBROUTINE qe_pdtrtri ( sll, ldx, n, desc )
     !  written by Ivan Girotto
     !
 
-    USE kinds,            ONLY : DP => dbl
+    USE kinds,            ONLY : dbl
     USE parallel_include
     USE descriptors
 
@@ -4005,10 +4005,10 @@ SUBROUTINE qe_pdtrtri ( sll, ldx, n, desc )
 
     INTEGER, INTENT( IN ) :: n, ldx
     TYPE(la_descriptor), INTENT(IN) :: desc
-    REAL(DP), INTENT( INOUT ) :: sll( ldx, ldx )
+    REAL(dbl), INTENT( INOUT ) :: sll( ldx, ldx )
 
-    REAL(DP), PARAMETER :: ONE = 1.0_DP
-    REAL(DP), PARAMETER :: ZERO = 0.0_DP
+    REAL(dbl), PARAMETER :: ONE = 1.0_dbl
+    REAL(dbl), PARAMETER :: ZERO = 0.0_dbl
 
 #if defined __MPI
     INTEGER :: status(MPI_STATUS_SIZE)
@@ -4025,8 +4025,8 @@ SUBROUTINE qe_pdtrtri ( sll, ldx, n, desc )
     INTEGER :: idrowref, idcolref, idref, idrecv 
 
     ! B and BUF_RECV are used to overload the computation of matrix multiplication and the shift of the blocks
-    REAL(DP), ALLOCATABLE, DIMENSION( :, : ) :: B, C, BUF_RECV 
-    REAL(DP) :: first
+    REAL(dbl), ALLOCATABLE, DIMENSION( :, : ) :: B, C, BUF_RECV 
+    REAL(dbl) :: first
 
     myrow = desc%myr
     mycol = desc%myc
@@ -4334,7 +4334,7 @@ END SUBROUTINE qe_pdtrtri
 
 
 SUBROUTINE qe_pdsyevd( tv, n, desc, hh, ldh, e )
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    USE dspev_module,     ONLY : pdspev_drv
    IMPLICIT NONE
@@ -4344,13 +4344,13 @@ SUBROUTINE qe_pdsyevd( tv, n, desc, hh, ldh, e )
        ! n = matrix size, ldh = leading dimension of hh
    TYPE(la_descriptor), INTENT(IN) :: desc
        ! desc = descrittore della matrice 
-   REAL(DP) :: hh( ldh, ldh )
+   REAL(dbl) :: hh( ldh, ldh )
        ! input:  hh = matrix to be diagonalized
-   REAL(DP) :: e( n )
+   REAL(dbl) :: e( n )
        ! output: hh = eigenvectors, e = eigenvalues
 
    INTEGER :: nrlx, nrl
-   REAL(DP), ALLOCATABLE :: diag(:,:), vv(:,:)
+   REAL(dbl), ALLOCATABLE :: diag(:,:), vv(:,:)
    CHARACTER :: jobv
 
    nrl  = desc%nrl
@@ -4380,7 +4380,7 @@ END SUBROUTINE
 
 
 SUBROUTINE qe_pzheevd( tv, n, desc, hh, ldh, e )
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    USE zhpev_module,     ONLY : pzhpev_drv
    IMPLICIT NONE
@@ -4390,13 +4390,13 @@ SUBROUTINE qe_pzheevd( tv, n, desc, hh, ldh, e )
        ! n = matrix size, ldh = leading dimension of hh
    TYPE(la_descriptor), INTENT(IN) :: desc
        ! desc = descrittore della matrice 
-   COMPLEX(DP) :: hh( ldh, ldh )
+   COMPLEX(dbl) :: hh( ldh, ldh )
        ! input:  hh = matrix to be diagonalized
-   REAL(DP) :: e( n )
+   REAL(dbl) :: e( n )
        ! output: hh = eigenvectors, e = eigenvalues
 
    INTEGER :: nrlx, nrl
-   COMPLEX(DP), ALLOCATABLE :: diag(:,:), vv(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: diag(:,:), vv(:,:)
    CHARACTER :: jobv
 
    nrl  = desc%nrl
@@ -4427,7 +4427,7 @@ SUBROUTINE sqr_dsetmat( what, n, alpha, a, lda, desc )
    !
    !  Set the values of a square distributed matrix 
    !
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    !
    IMPLICIT NONE
@@ -4439,11 +4439,11 @@ SUBROUTINE sqr_dsetmat( what, n, alpha, a, lda, desc )
      ! what = 'D' set the values in the diagonal of "a" equal to alpha
    INTEGER, INTENT(IN) :: n
      ! dimension of the matrix
-   REAL(DP), INTENT(IN) :: alpha
+   REAL(dbl), INTENT(IN) :: alpha
      ! value to be assigned to elements of "a"
    INTEGER, INTENT(IN) :: lda
      ! leading dimension of a
-   REAL(DP) :: a(lda,*)
+   REAL(dbl) :: a(lda,*)
      ! matrix whose values have to be set
    TYPE(la_descriptor), INTENT(IN) :: desc
      ! descriptor of matrix a
@@ -4509,7 +4509,7 @@ SUBROUTINE sqr_zsetmat( what, n, alpha, a, lda, desc )
    !
    !  Set the values of a square distributed matrix 
    !
-   USE kinds,            ONLY : DP => dbl
+   USE kinds,            ONLY : dbl
    USE descriptors
    !
    IMPLICIT NONE
@@ -4522,11 +4522,11 @@ SUBROUTINE sqr_zsetmat( what, n, alpha, a, lda, desc )
      ! what = 'H' clear the imaginary part of the diagonal of "a" 
    INTEGER, INTENT(IN) :: n
      ! dimension of the matrix
-   COMPLEX(DP), INTENT(IN) :: alpha
+   COMPLEX(dbl), INTENT(IN) :: alpha
      ! value to be assigned to elements of "a"
    INTEGER, INTENT(IN) :: lda
      ! leading dimension of a
-   COMPLEX(DP) :: a(lda,*)
+   COMPLEX(dbl) :: a(lda,*)
      ! matrix whose values have to be set
    TYPE(la_descriptor), INTENT(IN) :: desc
      ! descriptor of matrix a
@@ -4579,7 +4579,7 @@ SUBROUTINE sqr_zsetmat( what, n, alpha, a, lda, desc )
      CASE( 'H', 'h' )
         IF( desc%myc == desc%myr ) THEN
            DO i = 1, desc%nr
-              a( i, i ) = CMPLX( DBLE( a(i,i) ), 0_DP, KIND=DP )
+              a( i, i ) = CMPLX( DBLE( a(i,i) ), 0_dbl, KIND=dbl )
            END DO
         END IF
      CASE DEFAULT
