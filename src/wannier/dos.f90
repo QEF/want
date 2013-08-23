@@ -20,7 +20,6 @@
    USE parameters,           ONLY : nstrx
    USE io_module,            ONLY : stdout, stdin
    USE io_module,            ONLY : prefix, postfix, work_dir
-   USE io_module,            ONLY : datafile_dft => dftdata_file, datafile_sgm
    USE control_module,       ONLY : debug_level, use_debug_mode, verbosity
    USE correlation_module,   ONLY : lhave_sgm
    USE timing_module,        ONLY : timing
@@ -45,6 +44,8 @@
    REAL(dbl)        :: scale         ! scale resulting dos
    CHARACTER(nstrx) :: smearing_type
    CHARACTER(nstrx) :: fileout       ! output filename
+   CHARACTER(nstrx) :: datafile_dft  !
+   CHARACTER(nstrx) :: datafile_sgm  !
    LOGICAL          :: projdos       ! whether to write WF projected DOS
    INTEGER          :: ircut(3)      ! real space curoff in terms of unit cells
                                      ! for directions i=1,2,3  (0 means no cutoff)
@@ -121,6 +122,7 @@ CONTAINS
    !
    USE mp,                   ONLY : mp_bcast
    USE io_module,            ONLY : io_init, ionode, ionode_id
+   USE io_module,            ONLY : datafile_dft_ => dftdata_file, datafile_sgm_ => datafile_sgm
    USE atmproj_tools_module, ONLY : atmproj_sh_ => atmproj_sh, &
                                     atmproj_thr_ => atmproj_thr, &
                                     atmproj_nbnd_ => atmproj_nbnd, &
@@ -170,6 +172,8 @@ CONTAINS
       
       CALL input_from_file ( stdin )
       !
+      ierr = 0
+      !
       IF ( ionode ) READ(stdin, INPUT, IOSTAT=ierr)
       !
       CALL mp_bcast( ierr, ionode_id )
@@ -204,6 +208,13 @@ CONTAINS
       CALL mp_bcast( atmproj_nbnd,    ionode_id )      
       CALL mp_bcast( spin_component,  ionode_id )
       CALL mp_bcast( do_fermisurf,    ionode_id )
+
+      !
+      ! passing input vars to vars in io_module
+      ! (this is done explicitly as a fix to a problem with gfortran)
+      !
+      datafile_dft_ = TRIM( datafile_dft )
+      datafile_sgm_ = TRIM( datafile_sgm )
 
       !
       ! Init

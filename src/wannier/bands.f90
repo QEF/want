@@ -18,7 +18,6 @@
    USE parameters,           ONLY : nstrx, nkpts_inx
    USE io_module,            ONLY : stdout, stdin
    USE io_module,            ONLY : work_dir, prefix, postfix
-   USE io_module,            ONLY : datafile_dft => dftdata_file, datafile_sgm
    USE control_module,       ONLY : debug_level, use_debug_mode, verbosity
    USE datafiles_module,     ONLY : datafiles_init
    USE timing_module,        ONLY : timing
@@ -38,6 +37,8 @@
    INTEGER            :: ircut(3)       ! real space curoff in terms of unit cells
                                         ! for directions i=1,2,3  (0 means no cutoff)
    CHARACTER(nstrx)   :: fileout        ! output filename
+   CHARACTER(nstrx)   :: datafile_dft   !
+   CHARACTER(nstrx)   :: datafile_sgm   !
    REAL(dbl)          :: atmproj_sh     ! shifthing: energy shift when computing the proj Hamiltonian
    REAL(dbl)          :: atmproj_thr    ! filtering: thr on projections 
    INTEGER            :: atmproj_nbnd   ! filtering: # of bands
@@ -105,6 +106,7 @@ CONTAINS
    !
    USE mp,                   ONLY : mp_bcast
    USE io_module,            ONLY : io_init, ionode, ionode_id
+   USE io_module,            ONLY : datafile_dft_ => dftdata_file, datafile_sgm_ => datafile_sgm
    USE atmproj_tools_module, ONLY : atmproj_sh_ => atmproj_sh, &
                                     atmproj_thr_ => atmproj_thr, &
                                     atmproj_nbnd_ => atmproj_nbnd, &
@@ -143,6 +145,8 @@ CONTAINS
       
       CALL input_from_file ( stdin )
       !
+      ierr = 0
+      !
       IF ( ionode ) READ(stdin, INPUT, IOSTAT=ierr)
       !
       CALL mp_bcast( ierr, ionode_id )
@@ -167,6 +171,13 @@ CONTAINS
       CALL mp_bcast( atmproj_thr,     ionode_id )
       CALL mp_bcast( atmproj_nbnd,    ionode_id )
       CALL mp_bcast( spin_component,  ionode_id )
+
+      !
+      ! passing input vars to vars in io_module
+      ! (this is done explicitly as a fix to a problem with gfortran)
+      !
+      datafile_dft_ = TRIM( datafile_dft )
+      datafile_sgm_ = TRIM( datafile_sgm )
 
       !
       ! init

@@ -5,7 +5,8 @@
 
 
 23 Aug 2013     workaround for gfortran introduced in overlap_calc (problems
-		with ZDOTC). (AF)
+		with ZDOTC). Another fix related to gfortran iostat in
+		namelists added to postprocs. (AF)
 
 22 Aug 2013     updates on modules concerning low-level parallelism (from QE),
 		configuration, ext lib (eg lapack) management in order to avoid
