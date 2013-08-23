@@ -5,12 +5,10 @@
    work_dir       = './SCRATCH'
    datafile_dft   = './SCRATCH/gold1.save/atomic_proj.xml'
    fileout        = './dos_Au1_PROJ.dat'
-   !
    do_orthoovp    = .FALSE.
    atmproj_sh     = 2.0
    atmproj_thr    = 0.5
    atmproj_nbnd   = 6
-   !
    nk(1) = 1
    nk(2) = 1
    nk(3) = 400
