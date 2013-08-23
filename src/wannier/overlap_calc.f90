@@ -6,6 +6,12 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
+#ifndef __WORKAROUND_ZDOTC
+#ifdef __GFORTRAN
+#   define __WORKAROUND_ZDOTC
+#endif
+#endif
+!
 !************************************************************
    SUBROUTINE overlap_calc( ik1, ik2, dimw1, dimw2, imin1, imin2, dimwinx, &
                             evc, evc_info, igsort, lnncell, Mkb )
