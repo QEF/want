@@ -19,7 +19,6 @@
    USE parameters,                 ONLY : nstrx
    USE io_module,                  ONLY : stdout, stdin
    USE io_module,                  ONLY : work_dir, prefix, postfix
-   USE io_module,                  ONLY : datafile_dft => dftdata_file, datafile_sgm
    USE control_module,             ONLY : debug_level, use_debug_mode, verbosity, read_pseudo
    USE control_module,             ONLY : nwfc_buffer, nkb_buffer
    USE datafiles_module,           ONLY : datafiles_init
@@ -43,6 +42,7 @@
    CHARACTER(nstrx)   :: postfix_unfld   ! postfix to describe the unfolded data
    CHARACTER(nstrx)   :: datafile_transl ! specifies the name of the file with the translations
    CHARACTER(nstrx)   :: orb_mapping     ! ("automatic","first_orbitals")
+   CHARACTER(nstrx)   :: datafile_dft
                                          ! 
    REAL(dbl)          :: atmproj_sh      ! shifthing: energy shift when computing the proj Hamiltonian
    REAL(dbl)          :: atmproj_thr     ! filtering: thr on projections 
@@ -120,6 +120,7 @@ CONTAINS
    !
    USE mp,                   ONLY : mp_bcast
    USE io_module,            ONLY : io_init, ionode, ionode_id
+   USE io_module,            ONLY : datafile_dft_ => dftdata_file
    USE control_module,       ONLY : read_pseudo, use_pseudo
    USE atmproj_tools_module, ONLY : atmproj_sh_ => atmproj_sh, &
                                     atmproj_thr_ => atmproj_thr, &
@@ -161,6 +162,8 @@ CONTAINS
       
       CALL input_from_file ( stdin )
       !
+      ierr = 0
+      !
       IF ( ionode ) READ(stdin, INPUT, IOSTAT=ierr)
       !
       CALL mp_bcast( ierr, ionode_id )
@@ -187,6 +190,13 @@ CONTAINS
       CALL mp_bcast( atmproj_nbnd,    ionode_id )
       CALL mp_bcast( do_orthoovp,     ionode_id )
       CALL mp_bcast( orb_mapping,     ionode_id )
+
+      !
+      ! passing input vars to vars in io_module
+      ! (this is done explicitly as a fix to a problem with gfortran)
+      !
+      datafile_dft_ = TRIM( datafile_dft )
+      !datafile_sgm_ = TRIM( datafile_sgm )
 
       !
       ! init

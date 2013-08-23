@@ -153,6 +153,8 @@ CONTAINS
       
       CALL input_from_file ( stdin )
       !
+      ierr = 0
+      !
       IF ( ionode ) READ(stdin, INPUT, IOSTAT=ierr)
       !
       CALL mp_bcast( ierr, ionode_id )
