@@ -1122,7 +1122,7 @@ END PROGRAM dos_main
           !
           efermi = 0.0d0
           !
-          icount = 0   !Luis
+          icount = 0
           DO ib = 1, dimwann
               !
               IF ( MINVAL( eig_coll(:,ib) ) <  efermi .AND. &
