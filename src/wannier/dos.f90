@@ -1122,11 +1122,12 @@ END PROGRAM dos_main
           !
           efermi = 0.0d0
           !
+          icount = 0   !Luis
           DO ib = 1, dimwann
               !
               IF ( MINVAL( eig_coll(:,ib) ) <  efermi .AND. &
                    MAXVAL( eig_coll(:,ib) ) >= efermi ) THEN
-                  ! 
+                  !
                   icount = icount+1
                   IF ( icount > nbndx_plot ) CALL errore(subname,"too many bands contributing",10)
                   !
