@@ -215,6 +215,8 @@ CONTAINS
             !
        CASE ( 'pw_export' )
             !
+            gamma_only = .FALSE.
+            !
             IF ( ionode ) &
             CALL qexpt_read_planewaves( ECUTWFC=ecutwfc, ECUTRHO=ecutrho, CUTOFF_UNITS=units, &
                                         NR1=nfft(1), NR2=nfft(2), NR3=nfft(3),              &
