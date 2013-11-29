@@ -351,7 +351,6 @@ END PROGRAM conductor
           !
           CALL hamiltonian_setup( ik, ie_g, ie_buff )
 
- 
           ! 
           !=================================== 
           ! construct leads self-energies 
