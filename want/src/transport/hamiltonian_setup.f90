@@ -42,6 +42,7 @@
    !
    CHARACTER(17) :: subname="hamiltonian_setup"
    REAL(dbl)     :: omg
+   INTEGER       :: i,j,dim1,dim2
    INTEGER       :: ie_bl
 
    !
@@ -79,7 +80,15 @@
    ENDIF
    ! 
    IF ( blc_00C%alloc ) THEN
-       blc_00C%aux(:,:)  =  (omg -shift_C) * blc_00C%S(:,:,ik) -blc_00C%H(:,:,ik)
+       !blc_00C%aux(:,:)  =  (omg -shift_C) * blc_00C%S(:,:,ik) -blc_00C%H(:,:,ik)
+       dim1=blc_00C%dim1
+       dim2=blc_00C%dim2
+       DO j = 1,blc_00C%dim2 
+       DO i = 1,blc_00C%dim1
+           blc_00C%aux(i,j)  =  (omg -shift_C) * blc_00C%S(i,j,ik) -blc_00C%H(i,j,ik)
+       ENDDO
+       ENDDO
+       !
    ENDIF
    IF ( blc_LC%alloc ) THEN
        blc_LC%aux(:,:)   =  (omg -shift_C) * blc_LC%S(:,:,ik) -blc_LC%H(:,:,ik)
@@ -101,7 +110,7 @@
    IF ( blc_00R%alloc .AND. ASSOCIATED( blc_00R%sgm ) ) THEN
        blc_00R%aux(:,:) = blc_00R%aux(:,:) -blc_00R%sgm(:,:,ik, ie_bl)
    ENDIF
-   IF ( blc_01L%alloc .AND. ASSOCIATED( blc_01L%sgm ) ) THEN
+   IF ( blc_01R%alloc .AND. ASSOCIATED( blc_01R%sgm ) ) THEN
        blc_01R%aux(:,:) = blc_01R%aux(:,:) -blc_01R%sgm(:,:,ik, ie_bl)
    ENDIF
    !
