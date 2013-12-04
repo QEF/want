@@ -66,23 +66,47 @@
    ! hamiltonian and overlap
    !
    IF ( blc_00L%alloc ) THEN
-       blc_00L%aux(:,:)  =  (omg -shift_L) * blc_00L%S(:,:,ik) -blc_00L%H(:,:,ik)
+       !blc_00L%aux(:,:)  =  (omg -shift_L) * blc_00L%S(:,:,ik) -blc_00L%H(:,:,ik)
+       DO j = 1,blc_00L%dim2
+       DO i = 1,blc_00L%dim1
+           blc_00L%aux(i,j)  =  (omg -shift_L) * blc_00L%S(i,j,ik)-blc_00L%H(i,j,ik)
+       ENDDO
+       ENDDO
+       !
    ENDIF
+   !
    IF ( blc_01L%alloc ) THEN
-       blc_01L%aux(:,:)  =  (omg -shift_L) * blc_01L%S(:,:,ik) -blc_01L%H(:,:,ik)
+      !blc_01L%aux(:,:)  =  (omg -shift_L) * blc_01L%S(:,:,ik) -blc_01L%H(:,:,ik)
+       DO j = 1,blc_01L%dim2
+       DO i = 1,blc_01L%dim1
+           blc_01L%aux(i,j)  =  (omg -shift_L) * blc_01L%S(i,j,ik)-blc_01L%H(i,j,ik)
+       ENDDO
+       ENDDO
+       !
    ENDIF
    !
    IF ( blc_00R%alloc ) THEN
-       blc_00R%aux(:,:)  =  (omg -shift_R) * blc_00R%S(:,:,ik) -blc_00R%H(:,:,ik)
+       !blc_00R%aux(:,:)  =  (omg -shift_R) * blc_00R%S(:,:,ik) -blc_00R%H(:,:,ik)
+       DO j = 1,blc_00R%dim2
+       DO i = 1,blc_00R%dim1
+           blc_00R%aux(i,j)  =  (omg -shift_R) *blc_00R%S(i,j,ik)-blc_00R%H(i,j,ik)
+       ENDDO
+       ENDDO
+       !
    ENDIF
+   !
    IF ( blc_01R%alloc ) THEN
-       blc_01R%aux(:,:)  =  (omg -shift_R) * blc_01R%S(:,:,ik) -blc_01R%H(:,:,ik)
+       !blc_01R%aux(:,:)  =  (omg -shift_R) * blc_01R%S(:,:,ik) -blc_01R%H(:,:,ik)
+       DO j = 1,blc_01R%dim2
+       DO i = 1,blc_01R%dim1
+           blc_01R%aux(i,j)  =  (omg -shift_R) *blc_01R%S(i,j,ik)-blc_01R%H(i,j,ik)
+       ENDDO
+       ENDDO
+       !
    ENDIF
    ! 
    IF ( blc_00C%alloc ) THEN
        !blc_00C%aux(:,:)  =  (omg -shift_C) * blc_00C%S(:,:,ik) -blc_00C%H(:,:,ik)
-       dim1=blc_00C%dim1
-       dim2=blc_00C%dim2
        DO j = 1,blc_00C%dim2 
        DO i = 1,blc_00C%dim1
            blc_00C%aux(i,j)  =  (omg -shift_C) * blc_00C%S(i,j,ik) -blc_00C%H(i,j,ik)
@@ -90,11 +114,25 @@
        ENDDO
        !
    ENDIF
+   !
    IF ( blc_LC%alloc ) THEN
-       blc_LC%aux(:,:)   =  (omg -shift_C) * blc_LC%S(:,:,ik) -blc_LC%H(:,:,ik)
+       !blc_LC%aux(:,:)   =  (omg -shift_C) * blc_LC%S(:,:,ik) -blc_LC%H(:,:,ik)
+       DO j = 1,blc_LC%dim2
+       DO i = 1,blc_LC%dim1
+           blc_LC%aux(i,j)  =  (omg -shift_C) *blc_LC%S(i,j,ik)-blc_LC%H(i,j,ik)
+       ENDDO
+       ENDDO
+       !
    ENDIF
+   !
    IF ( blc_CR%alloc ) THEN
-       blc_CR%aux(:,:)   =  (omg -shift_C) * blc_CR%S(:,:,ik) -blc_CR%H(:,:,ik)
+       !blc_CR%aux(:,:)   =  (omg -shift_C) * blc_CR%S(:,:,ik) -blc_CR%H(:,:,ik)
+       DO j = 1,blc_CR%dim2
+       DO i = 1,blc_CR%dim1
+           blc_CR%aux(i,j)  =  (omg -shift_C) *blc_CR%S(i,j,ik)-blc_CR%H(i,j,ik)
+       ENDDO
+       ENDDO
+       !
    ENDIF
 
    !
