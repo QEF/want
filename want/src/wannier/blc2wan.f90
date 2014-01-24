@@ -32,17 +32,24 @@
    !
    CHARACTER(nstrx)          :: filein, fileout
    CHARACTER(nstrx)          :: datafile_urot
+   CHARACTER(nstrx)          :: datafile_dft  
    CHARACTER(10)             :: spin_component
    LOGICAL                   :: binary
    LOGICAL                   :: do_extrapolation
    LOGICAL                   :: do_cmplxconjg
+   LOGICAL                   :: do_orthoovp
    REAL(dbl)                 :: energy_ref
    INTEGER                   :: nprint
+   REAL(dbl)                 :: atmproj_sh    ! shifthing: energy shift when computing the proj Hamiltonian
+   REAL(dbl)                 :: atmproj_thr   ! filtering: thr on projections 
+   INTEGER                   :: atmproj_nbnd  ! filtering: # of bands
+
 
    !
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, filein, fileout, datafile_urot, &
+                    datafile_dft, do_orthoovp, atmproj_sh, atmproj_thr, atmproj_nbnd, &
                     binary, energy_ref, spin_component, nprint, &
                     debug_level, do_extrapolation, do_cmplxconjg, verbosity
    !
@@ -66,7 +73,7 @@
       !
       CALL write_header( stdout, "Post Processing Init" )
       !
-      CALL datafiles_init( )
+      CALL datafiles_init( do_orthoovp )
       !
       CALL postproc_init ( WANNIER=.TRUE., SUBSPACE=.TRUE. )
 
@@ -100,8 +107,12 @@ CONTAINS
    !
    ! Read INPUT namelist from stdin
    !
-   USE mp,            ONLY : mp_bcast
-   USE io_module,     ONLY : io_init, ionode, ionode_id
+   USE mp,                   ONLY : mp_bcast
+   USE io_module,            ONLY : io_init, ionode, ionode_id
+   USE io_module,            ONLY : datafile_dft_ => dftdata_file
+   USE atmproj_tools_module, ONLY : atmproj_sh_ => atmproj_sh, &
+                                    atmproj_thr_ => atmproj_thr, &
+                                    atmproj_nbnd_ => atmproj_nbnd
    !
    IMPLICIT NONE
 
@@ -123,6 +134,7 @@ CONTAINS
       filein                      = ' '
       fileout                     = ' '
       datafile_urot               = ' '
+      datafile_dft                = ' '
       binary                      = .TRUE.
       spin_component              = 'none'
       energy_ref                  = 0.0
@@ -131,6 +143,11 @@ CONTAINS
       debug_level                 = 0
       do_extrapolation            = .FALSE.
       do_cmplxconjg               = .FALSE.
+      do_orthoovp                 = .FALSE.
+      atmproj_sh                  = 5.0d0
+      atmproj_thr                 = 0.9d0
+      atmproj_nbnd                = 0
+
 
 
       CALL input_from_file ( stdin )
@@ -151,6 +168,7 @@ CONTAINS
       CALL mp_bcast( filein,            ionode_id )
       CALL mp_bcast( fileout,           ionode_id )
       CALL mp_bcast( datafile_urot,     ionode_id )
+      CALL mp_bcast( datafile_dft,      ionode_id )
       CALL mp_bcast( binary,            ionode_id )
       CALL mp_bcast( energy_ref,        ionode_id )
       CALL mp_bcast( spin_component,    ionode_id )
@@ -159,6 +177,17 @@ CONTAINS
       CALL mp_bcast( do_extrapolation,  ionode_id )
       CALL mp_bcast( do_cmplxconjg,     ionode_id )
       CALL mp_bcast( verbosity,         ionode_id )
+      CALL mp_bcast( do_orthoovp,       ionode_id )
+      CALL mp_bcast( atmproj_sh,        ionode_id )
+      CALL mp_bcast( atmproj_thr,       ionode_id )
+      CALL mp_bcast( atmproj_nbnd,      ionode_id )
+
+
+      !
+      ! passing input vars to vars in io_module
+      ! (this is done explicitly as a fix to a problem with gfortran)
+      !
+      datafile_dft_  = TRIM( datafile_dft )
 
       !
       ! Init
@@ -194,6 +223,19 @@ CONTAINS
       IF ( LEN_TRIM(datafile_urot) /= 0 ) lhave_extra_urot = .TRUE.
 
 
+      IF ( atmproj_thr > 1.0d0 .OR. atmproj_thr < 0.0d0) &
+                                  CALL errore(subname, 'invalid atmproj_thr', 10 )
+      IF ( atmproj_nbnd < 0)      CALL errore(subname, 'invalid atmproj_nbnd', 10 )
+
+      !
+      ! in case we need this
+      ! pass atmproj_ vars to atmproj_tools_module
+      !
+      atmproj_sh_ = atmproj_sh
+      atmproj_thr_ = atmproj_thr
+      atmproj_nbnd_ = atmproj_nbnd
+
+
       !
       ! input summary
       !
@@ -219,6 +261,14 @@ CONTAINS
           !
           IF ( lhave_extra_urot ) &
              WRITE(stdout,"(2x,'  U-rot datafile :',3x,a)") TRIM(datafile_urot)
+          !
+          IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
+              WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
+              WRITE( stdout,"(7x,'       use ortho basis :',5x,   a)") TRIM( log2char(do_orthoovp) )
+              WRITE( stdout,"(7x,'         atmproj shift :',5x,  f12.6)") atmproj_sh
+              WRITE( stdout,"(7x,'          atmproj nbnd :',5x,   i5)") atmproj_nbnd
+              WRITE( stdout,"(7x,'           atmproj thr :',5x,  f12.6)") atmproj_thr
+          ENDIF
           !
       ENDIF
       !

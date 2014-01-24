@@ -137,7 +137,7 @@ CONTAINS
       debug_level                 = 0
       verbosity                   = 'medium'
       do_orthoovp                 = .FALSE.
-      atmproj_sh                  = 10.0d0
+      atmproj_sh                  = 5.0d0
       atmproj_thr                 = 0.9d0
       atmproj_nbnd                = 0
       spin_component              = 'all'
