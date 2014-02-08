@@ -1204,7 +1204,7 @@ END PROGRAM plot_main
 ! Fix the global phase of WFs
 !
       !
-      ! WFs are made be almost real by setting the phase
+      ! WFs are made to be almost real by setting the phase
       ! at the point where they have max modulus
       ! WF square moduli are written in units of bohr^-3 
       !
