@@ -1283,18 +1283,18 @@
 !=----------------------------------------------------------------------=!
 !
 
-   SUBROUTINE cfft3d( f, nx, ny, nz, ldx, ldy, ldz, isign )
+SUBROUTINE cfft3d( f, nx, ny, nz, ldx, ldy, ldz, isign )
 
-  !     driver routine for 3d complex fft of lengths nx, ny, nz
-  !     input  :  f(ldx*ldy*ldz)  complex, transform is in-place
-  !     ldx >= nx, ldy >= ny, ldz >= nz are the physical dimensions 
-  !     of the equivalent 3d array: f3d(ldx,ldy,ldz)
-  !     (ldx>nx, ldy>ny, ldz>nz may be used on some architectures
-  !      to reduce memory conflicts - not implemented for FFTW)
-  !     isign > 0 : f(G) => f(R)   ; isign < 0 : f(R) => f(G)
-  !
-  !     Up to "ndims" initializations (for different combinations of input
-  !     parameters nx,ny,nz) are stored and re-used if available
+!     driver routine for 3d complex fft of lengths nx, ny, nz
+!     input  :  f(ldx*ldy*ldz)  complex, transform is in-place
+!     ldx >= nx, ldy >= ny, ldz >= nz are the physical dimensions 
+!     of the equivalent 3d array: f3d(ldx,ldy,ldz)
+!     (ldx>nx, ldy>ny, ldz>nz may be used on some architectures
+!      to reduce memory conflicts - not implemented for FFTW)
+!     isign > 0 : f(G) => f(R)   ; isign < 0 : f(R) => f(G)
+!
+!     Up to "ndims" initializations (for different combinations of input
+!     parameters nx,ny,nz) are stored and re-used if available
 
      IMPLICIT NONE
 
