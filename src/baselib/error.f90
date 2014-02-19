@@ -50,7 +50,7 @@ SUBROUTINE errore( calling_routine, message, ierr )
   !
   WRITE( UNIT = *, FMT = '(/,1X,78("%"))' )
   WRITE( UNIT = *, &
-         FMT = '(5X,"from ",A," : error #",I10)' ) calling_routine, ierr
+         FMT = '(5X,"from ",A," : error #",I10)' ) TRIM(calling_routine), ierr
   WRITE( UNIT = *, FMT = '(5X,A)' ) message
   WRITE( UNIT = *, FMT = '(1X,78("%"),/)' )
   !
@@ -61,7 +61,7 @@ SUBROUTINE errore( calling_routine, message, ierr )
   !
   WRITE( UNIT = 0, FMT = '(/,1X,78("%"))')
   WRITE( UNIT = 0, &
-         FMT = '(5X,"from ",A," : error #",I10)' ) calling_routine, ierr
+         FMT = '(5X,"from ",A," : error #",I10)' ) TRIM(calling_routine), ierr
   WRITE( UNIT = 0, FMT = '(5X,A)' ) message
   WRITE( UNIT = 0, FMT = '(1X,78("%"),/)' )
   !
@@ -88,7 +88,7 @@ SUBROUTINE errore( calling_routine, message, ierr )
   WRITE( UNIT = crashunit, FMT = '(/,1X,78("%"))' )
   WRITE( UNIT = crashunit, FMT = '(5X,"task #",I10)' ) mpime
   WRITE( UNIT = crashunit, &
-         FMT = '(5X,"from ",A," : error #",I10)' ) calling_routine, ierr
+         FMT = '(5X,"from ",A," : error #",I10)' ) TRIM(calling_routine), ierr
   WRITE( UNIT = crashunit, FMT = '(5X,A)' ) message
   WRITE( UNIT = crashunit, FMT = '(1X,78("%"),/)' )
   !

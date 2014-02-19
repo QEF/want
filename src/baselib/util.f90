@@ -46,7 +46,7 @@
 ! SUBROUTINE  zmat_unpack( z, zp, n)
 ! SUBROUTINE   mat_bnd_pack( zb, z, n, kl, ku)
 ! SUBROUTINE   mat_bnd_unpack( z, zb, n, kl, ku)
-! SUBROUTINE   mat_bnd_getdims( z, n, kl, ku)
+! SUBROUTINE   mat_bnd_getdims( z, thr, n, kl, ku)
 ! SUBROUTINE   mat_herm( z, n)
 ! SUBROUTINE   mat_antiherm( z, n)
 ! SUBROUTINE   mat_svd( m, n, a, s, u, vt)
@@ -100,7 +100,9 @@ END INTERFACE
 ! matrix multiplication
 INTERFACE mat_mul
    MODULE PROCEDURE zmat_mul
+   !MODULE PROCEDURE zmat_mul_1
    MODULE PROCEDURE dmat_mul
+   MODULE PROCEDURE dmat_mul_1
 END INTERFACE
 !
 ! singular value decomposition
@@ -1411,6 +1413,35 @@ END SUBROUTINE zmat_mul
    IF ( ierr/=0 ) CALL errore('dmat_mul','deallocating c_', ABS(ierr))
    !
 END SUBROUTINE dmat_mul
+
+
+!**********************************************************
+   SUBROUTINE dmat_mul_1( c, a, opa, b, m, k )
+   !**********************************************************
+   IMPLICIT NONE
+   REAL(dbl), INTENT(IN)  :: a(:,:)
+   REAL(dbl), INTENT(IN)  :: b(:)
+   REAL(dbl), INTENT(OUT) :: c(:)
+   CHARACTER, INTENT(IN)  :: opa
+   INTEGER,   INTENT(IN)  :: m, k
+   !
+   INTEGER :: ierr
+   REAL(dbl), ALLOCATABLE :: b_(:,:), c_(:,:)
+   
+   ALLOCATE( b_(SIZE(b),1), c_(SIZE(c),1), STAT=ierr ) 
+   IF ( ierr/=0 ) CALL errore('dmat_mul_1', 'allocating b_, c_', ABS(ierr))
+   !
+   b_(:,1) = b(:)
+   c_(:,1) = c(:)
+   !
+   CALL mat_mul( c_, a, opa, b_, "N", m, 1, k )
+   !
+   c(:) = c_(:,1)
+   !
+   DEALLOCATE( b_, c_, STAT=ierr ) 
+   IF ( ierr/=0 ) CALL errore('dmat_mul_1', 'deallocating b_, c_', ABS(ierr))
+   !
+END SUBROUTINE dmat_mul_1
 
 
 !**********************************************************

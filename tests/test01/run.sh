@@ -16,7 +16,7 @@ MANUAL=" Usage
  nscf            DFT non-self-consistent calculation
  pwexport        export DFT data to WanT package using IOTK fmt
  dft_bands       compute Silicon bands 
- dft             perform SCF, NSCF, PWEXPORT all together
+ dft             perform SCF, NSCF, all together
  disentangle     select the optimal subspace on which perform
                  the wannier minimization
  wannier         perform the above cited minimization
@@ -48,7 +48,7 @@ SUFFIX=
 
 SCF=
 NSCF=
-PWEXPORT=
+#PWEXPORT=
 DFT_BANDS=
 DISENTANGLE=
 WANNIER=
@@ -64,7 +64,7 @@ case $INPUT in
    (nscf)           NSCF=yes ;;
    (pwexport)       PWEXPORT=yes ;;
    (dft_bands)      DFT_BANDS=yes ;;
-   (dft)            SCF=yes ; NSCF=yes ; PWEXPORT=yes ;; 
+   (dft)            SCF=yes ; NSCF=yes ;; #PWEXPORT=yes ;; 
    (disentangle)    DISENTANGLE=yes ;;
    (wannier)        WANNIER=yes ;;
    (bands)          BANDS=yes ;;
