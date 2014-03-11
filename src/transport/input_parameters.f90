@@ -207,7 +207,7 @@
        ! if a non-orthogonal set is used, it is lowdin-orthogonalized
        ! during conversion
 
-   REAL(dbl) :: atmproj_sh = 10.0d0
+   REAL(dbl) :: atmproj_sh = 5.0d0
        ! atmproj shifthing: energy shift when computing the proj Hamiltonian
 
    REAL(dbl) :: atmproj_thr = 0.9d0
