@@ -250,7 +250,7 @@ END SUBROUTINE atmproj_tools_init
    dimwann = natomwfc
    !
    atmproj_nbnd_ = nbnd
-   IF ( atmproj_nbnd > 0 ) atmproj_nbnd_ = atmproj_nbnd
+   IF ( atmproj_nbnd > 0 ) atmproj_nbnd_ = MIN(atmproj_nbnd, nbnd)
 
    !
    ! quick report
