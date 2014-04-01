@@ -16,7 +16,7 @@
    emax  =  5.0
    ne    = 1200
    smearing_type = 'gaussian'
-   projdos = .FALSE.
+   projdos = .TRUE.
  /
 
 
