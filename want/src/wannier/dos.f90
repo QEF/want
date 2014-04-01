@@ -375,7 +375,7 @@ END PROGRAM dos_main
       INTEGER      :: nrtot_nn
       LOGICAL      :: lhave_nn(3)
       REAL(dbl)    :: arg, cost, raux, efermi, x0(3)
-      COMPLEX(dbl) :: caux, ze
+      COMPLEX(dbl) :: ze
       !
       INTEGER,      ALLOCATABLE :: r_index(:), ind_plot(:)
       COMPLEX(dbl), ALLOCATABLE :: kham(:,:), rham_nn(:,:,:)
@@ -971,11 +971,8 @@ END PROGRAM dos_main
                   !
                   DO i  = 1, dimwann 
                       !
-                      caux = CZERO
-                      DO j = 1, dimwann
-                           caux = caux + z(j, i, ik) * CONJG( z( j, i, ik) )
-                      ENDDO
-                      z( :, i, ik) = z( :, i, ik) / SQRT(REAL( caux, dbl))
+                      raux = REAL( DOT_PRODUCT( z(:,i,ik), z(:,i,ik) ) )
+                      z( :, i, ik) = z( :, i, ik) / SQRT(raux)
                       !
                   ENDDO
                   ! 
@@ -987,17 +984,14 @@ END PROGRAM dos_main
                   !
                   CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn,  &
                                      vkpt_int(:,ik_g), kovp(:,:) )
-                  ! zc = z * S
+                  ! zc = S * z
                   !
-                  CALL mat_mul( zc(:,:,ik),  z(:,:,ik), 'N', kovp(:,:), 'C', dimwann, dimwann, dimwann )
+                  CALL mat_mul( zc(:,:,ik),  kovp(:,:), 'N', z(:,:,ik), 'N', dimwann, dimwann, dimwann )
                   !
                   DO i  = 1, dimwann 
                       !
-                      caux = CZERO
-                      DO j = 1, dimwann
-                           caux = caux + z(j, i, ik) * CONJG( zc( j, i, ik) )
-                      ENDDO
-                      z( :, i, ik) = z( :, i, ik) / SQRT(REAL( caux, dbl))
+                      raux = REAL( DOT_PRODUCT( z(:,i,ik), zc(:,i,ik) ) )
+                      z( :, i, ik) = z( :, i, ik) / SQRT(raux)
                       !
                   ENDDO
                   !

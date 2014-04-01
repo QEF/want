@@ -4,6 +4,9 @@
 =======================================================
 
 
+01 Apr 2014     bug fixed in the calculation of projdos when using non-orthogonal
+		orbitals. (AF)
+
 23 Aug 2013     workaround for gfortran introduced in overlap_calc (problems
 		with ZDOTC). Another fix related to gfortran iostat in
 		namelists added to postprocs. (AF)
