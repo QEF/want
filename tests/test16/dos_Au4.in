@@ -1,11 +1,11 @@
 
  &INPUT
-   prefix         = 'gold1'
+   prefix         = 'gold4'
    postfix        = '_WanT'
    work_dir       = './SCRATCH'
-   datafile_dft   = './SCRATCH/gold1.save/atomic_proj.xml'
-   fileout        = './dos_Au1_PROJ.dat'
-   do_orthoovp    = .FALSE.
+   datafile_dft   = './SCRATCH/gold4.save/atomic_proj.xml'
+   fileout        = './dos_Au4_PROJ.dat'
+   do_orthoovp    = .TRUE.
    atmproj_sh     = 5.0
    atmproj_thr    = 0.9
    nk(1) = 1

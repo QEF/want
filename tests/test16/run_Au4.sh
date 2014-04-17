@@ -1,6 +1,6 @@
 #! /bin/bash
 #
-# Au chain, atomic interpolation
+# Au chain, 4 atoms
 #
 #================================================================
 #
@@ -15,11 +15,10 @@ MANUAL=" Usage
  scf             DFT self-consistent calculation
  nscf            DFT non-self-consistent calculation
  proj            atomic projections
- bands_dft       DFT bands
- dft             perform SCF, NSCF, PROJ, BANDS_DFT all together
+ dft             perform SCF, NSCF, PROJ, all together
 
- bands           interpolate the band structure using atmproj wfcs
  dos             compute DOS using atmproj wfcs
+ conductor       compute COND using atmproj wfcs
  want            all WANT calculations
  all             perform all the above described steps
 
@@ -39,7 +38,7 @@ MANUAL=" Usage
 
 #
 # macros
-SUFFIX="_Au1"
+SUFFIX="_Au4"
 
 #
 # evaluate the starting choice about what is to run 
@@ -47,8 +46,6 @@ SUFFIX="_Au1"
 SCF=
 NSCF=
 PROJ=
-BANDS_DFT=
-BANDS=
 DOS=
 CONDUCTOR=
 CHECK=
@@ -61,14 +58,12 @@ case $INPUT in
    (scf)            SCF=yes ;;
    (nscf)           NSCF=yes ;;
    (proj)           PROJ=yes ;;
-   (bands_dft)      BANDS_DFT=yes ;;
    (dft)            SCF=yes ; NSCF=yes ; PROJ=yes ;;
-   (bands)          BANDS=yes ;;
    (dos)            DOS=yes ;;
-#   (conductor)      CONDUCTOR=yes ;;
-   (want)           BANDS=yes ; DOS=yes ;;
+   (conductor)      CONDUCTOR=yes ;;
+   (want)           DOS=yes ; CONDUCTOR=yes ;;
    (all)            SCF=yes ; NSCF=yes ; PROJ=yes ;
-                    BANDS=yes ; DOS=yes ;;
+                    DOS=yes ; CONDUCTOR=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
    (*)              echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
@@ -126,10 +121,10 @@ run_bands  SUFFIX=$SUFFIX  RUN=$BANDS
 #
 run_dos  SUFFIX=$SUFFIX  RUN=$DOS
 
-##
-## running CONDUCTOR
-##
-#run_conductor SUFFIX=$SUFFIX  RUN=$CONDUCTOR
+#
+# running CONDUCTOR
+#
+run_conductor SUFFIX=$SUFFIX  RUN=$CONDUCTOR
 
 
 #
