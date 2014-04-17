@@ -14,8 +14,10 @@ MANUAL=" Usage
  
  scf             DFT self-consistent calculation
  nscf            DFT non-self-consistent calculation
+ proj            DFT atomic projections
  scf_bulk        DFT self-consistent calculation for Au bulk (4atoms)
  nscf_bulk       DFT non-self-consistent calculation for Au bulk (4atoms)
+ proj            DFT atomic projections
  dft             perform all the above together
 
  disentangle     select the optimal subspace on which perform
@@ -29,6 +31,9 @@ MANUAL=" Usage
 
  conductor_bulk  evaluate the bulk transmittance for the leads
  conductor       evaluate the transmittance across the junction
+ conductor_bulk_proj  evaluate the bulk transmittance for the leads using projections
+ conductor       evaluate the transmittance across the junction
+ conductor_proj       evaluate the transmittance across the junction using projections
  conductor_sgm   as before, but including a correlation sgm on the molecule
  plot_eigchn     plot eigenchannels in real space
  plot_eigchn_sgm eigenchannels for the sgm corrected case
@@ -57,8 +62,10 @@ SUFFIX=
 
 SCF=
 NSCF=
+PROJ=
 SCF_BULK=
 NSCF_BULK=
+PROJ_BULK=
 
 DISENTANGLE=
 WANNIER=
@@ -69,8 +76,10 @@ WANNIER_BULK=
 DOS_BULK=
 
 CONDUCTOR=
+CONDUCTOR_PROJ=
 CONDUCTOR_sgm=
 CONDUCTOR_BULK=
+CONDUCTOR_BULK_PROJ=
 PLOT_EIGCHN=
 PLOT_EIGCHN_SGM=
 
@@ -83,8 +92,10 @@ INPUT=`echo $1 | tr [:upper:] [:lower:]`
 case $INPUT in 
    (scf)            SCF=yes ;;
    (nscf)           NSCF=yes ;;
+   (proj)           PROJ=yes ;;
    (scf_bulk)       SCF_BULK=yes ;;
    (nscf_bulk)      NSCF_BULK=yes ;;
+   (proj_bulk)      PROJ_BULK=yes ;;
 
    (dft)            SCF=yes ; NSCF=yes ; 
                     SCF_BULK=yes ; NSCF_BULK=yes ;;
@@ -98,21 +109,25 @@ case $INPUT in
    (dos_bulk)            DOS_BULK=yes ;;
 
    (conductor)      CONDUCTOR=yes ;;
+   (conductor_proj) CONDUCTOR_PROJ=yes ;;
    (conductor_sgm)  CONDUCTOR_SGM=yes ;;
    (conductor_bulk) CONDUCTOR_BULK=yes ;;
+   (conductor_bulk_proj) CONDUCTOR_BULK_PROJ=yes ;;
    (plot_eigchn)    PLOT_EIGCHN=yes ;;
    (plot_eigchn_sgm)     PLOT_EIGCHN_SGM=yes ;;
 
    (want)           DISENTANGLE=yes ; WANNIER=yes ; DOS=yes ; 
                     DISENTANGLE_BULK=yes ; WANNIER_BULK=yes ; DOS_BULK=yes ;
-                    CONDUCTOR=yes ; CONDUCTOR_BULK=yes ; PLOT_EIGCHN=yes ;;
+                    CONDUCTOR=yes ; CONDUCTOR_BULK=yes ; PLOT_EIGCHN=yes ;
+                    CONDUCTOR_PROJ=yes ; CONDUCTOR_BULK_PROJ=yes ;;
 
    (all)            SCF=yes ; NSCF=yes ; 
                     SCF_BULK=yes ; NSCF_BULK=yes ;
                     DISENTANGLE=yes ; WANNIER=yes ; DOS=yes ;
                     DISENTANGLE_BULK=yes ; WANNIER_BULK=yes ; 
                     DOS_BULK=yes ; 
-                    CONDUCTOR=yes ; CONDUCTOR_BULK=yes ; PLOT_EIGCHN=yes ;; 
+                    CONDUCTOR=yes ; CONDUCTOR_BULK=yes ; PLOT_EIGCHN=yes ;
+                    CONDUCTOR_PROJ=yes ; CONDUCTOR_BULK_PROJ=yes ;;
 
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
@@ -148,6 +163,12 @@ run_dft  NAME=SCF   SUFFIX=$SUFFIX  RUN=$SCF
 #
 run_dft  NAME=NSCF  SUFFIX=$SUFFIX  RUN=$NSCF
 
+#
+# running DFT PROJ
+#
+run_proj  NAME=PROJ SUFFIX=$SUFFIX  RUN=$PROJ
+
+
 
 #
 # running DFT SCF BULK
@@ -159,6 +180,10 @@ run_dft  NAME=SCF_BULK   SUFFIX=${SUFFIX}  RUN=$SCF_BULK
 #
 run_dft  NAME=NSCF_BULK   SUFFIX=${SUFFIX}  RUN=$NSCF_BULK
 
+#
+# running DFT PROJ BULK
+#
+run_proj  NAME=PROJ_BULK  SUFFIX=$SUFFIX  RUN=$PROJ_BULK
 
 
 #
@@ -208,10 +233,21 @@ run_dos  NAME=DOS_BULK  SUFFIX=${SUFFIX}_bulk  RUN=$DOS_BULK
 run_conductor NAME=CONDUCTOR_BULK  SUFFIX=${SUFFIX}_bulk  RUN=$CONDUCTOR_BULK
 
 #
+# running CONDUCTOR BULK_PROJ
+#
+run_conductor NAME=CONDUCTOR_BULK_PROJ  SUFFIX=${SUFFIX}_bulk_proj  RUN=$CONDUCTOR_BULK_PROJ
+
+
+#
 # running CONDUCTOR
 #
 run_conductor NAME=CONDUCTOR  SUFFIX=${SUFFIX}  RUN=$CONDUCTOR
 if [ -e eigchn.dat ] ; then mv eigchn.dat ./SCRATCH ; fi
+
+#
+# running CONDUCTOR_PROJ
+#
+run_conductor NAME=CONDUCTOR_PROJ  SUFFIX=${SUFFIX}_proj  RUN=$CONDUCTOR_PROJ
 
 #
 # running CONDUCTOR_SGM
