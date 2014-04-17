@@ -9,6 +9,9 @@
   the electronic structure of few selected systems. Bands, dos, and transmittance
   are computed and compared with direct calculations.
 
+  A number of systems are tested: bulk Silicon, poly-acethylene chains, gold chains,
+  and the benzene molecule
+
   RESULTS discussion:
 
 
