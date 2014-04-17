@@ -1,0 +1,22 @@
+
+ &INPUT
+   prefix         = 'gold8'
+   postfix        = '_WanT'
+   work_dir       = './SCRATCH'
+   datafile_dft   = './SCRATCH/gold8.save/atomic_proj.xml'
+   fileout        = './dos_Au8_PROJ.dat'
+   do_orthoovp    = .TRUE.
+   atmproj_sh     = 5.0
+   atmproj_thr    = 0.9
+   nk(1) = 1
+   nk(2) = 1
+   nk(3) = 400
+   delta = 0.05
+   emin  = -12.0
+   emax  =  4.0
+   ne    =  800
+   smearing_type = 'gaussian'
+   projdos = .FALSE.
+ /
+
+
