@@ -1,0 +1,7 @@
+&projwfc
+  prefix='au_bulk'
+  outdir='./SCRATCH'
+  filpdos='./SCRATCH/au_bulk'
+  lwrite_overlaps = .TRUE.
+  lbinary_data = .TRUE.
+/

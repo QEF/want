@@ -1,0 +1,32 @@
+
+&INPUT_CONDUCTOR
+   postfix="_PROJ"
+   dimL = 36
+   dimC = 121
+   dimR = 36
+   ne = 1200
+   emin = -8.0
+   emax =  4.0
+   datafile_L = "./SCRATCH/au_bulk.save/atomic_proj.dat"
+   datafile_C = "./SCRATCH/au_bda.save/atomic_proj.dat"
+   datafile_R = "./SCRATCH/au_bulk.save/atomic_proj.dat"
+   transport_dir = 3
+   delta = 0.0001
+   work_dir = './SCRATCH'
+   atmproj_sh = 5.0
+   atmproj_thr = 0.9
+   do_orthoovp = .TRUE.
+/
+
+<HAMILTONIAN_DATA>
+
+   <H00_C   rows="ALL"    cols="ALL"  />
+   <H_CR    rows="ALL"    cols="1-36" />
+   <H_LC    rows="86-121" cols="ALL"  />
+   <H00_L   rows="ALL"    cols="ALL"  />
+   <H01_L   rows="ALL"    cols="ALL"  />
+   <H00_R   rows="ALL"    cols="ALL"  />
+   <H01_R   rows="ALL"    cols="ALL"  />
+
+</HAMILTONIAN_DATA>
+
