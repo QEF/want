@@ -28,6 +28,9 @@ nstep 3000                    # Maximum number of SCF cycles
 # global IO options
 accesswff 3
 
+# avoid kpt checks
+chksymbreak 0
+
 # Step 1: determine the ground state
 iscf1    3                    # Algorithm: Anderson mixing of the potential
 nband1  10                    # Number of bands
