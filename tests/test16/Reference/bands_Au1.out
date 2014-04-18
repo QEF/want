@@ -9,13 +9,13 @@
 
 
   Program <bands>  v. 2.5.0alpha2  starts ...
-  Date  1Aug2013 at 11:31: 9 
+  Date 17Apr2014 at 20:19:18 
 
      Number of MPI processes:       6
 
 
 
-          BUILT :    Wed 31 Jul 2013 06:56:36 PM CEST
+          BUILT :    Thu 17 Apr 2014 06:13:20 PM CEST
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    x86_64
              CC :    icc
@@ -1164,17 +1164,17 @@
 
                     bands :     0.00s CPU 
 
-              bands_input :     0.05s CPU
-           datafiles_init :     0.08s CPU
-      atmproj_to_internal :     0.07s CPU
+              bands_input :     0.06s CPU
+           datafiles_init :     0.10s CPU
+      atmproj_to_internal :     0.08s CPU
              compute_rham :     0.00s CPU (      18 calls,   0.000 s avg)
-            postproc_init :     0.03s CPU
+            postproc_init :     0.10s CPU
              want_dftread :     0.03s CPU
                 want_init :     0.00s CPU
        para_get_poolindex :     0.00s CPU (       8 calls,   0.000 s avg)
-             windows_read :     0.00s CPU
+             windows_read :     0.07s CPU
             subspace_read :     0.00s CPU
-                 do_bands :     0.06s CPU
+                 do_bands :     0.13s CPU
              compute_kham :     0.00s CPU (     168 calls,   0.000 s avg)
 
 

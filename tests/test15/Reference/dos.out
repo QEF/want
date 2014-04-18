@@ -8,19 +8,21 @@
   ======================================================================
 
 
-  Program <dos>  v. 2.4.0alpha2  starts ...
-  Date  8Oct2010 at 20:11:29 
+  Program <dos>  v. 2.5.0alpha2  starts ...
+  Date 17Apr2014 at 20:12: 1 
 
-     Parallel run, # proc:    6
+     Number of MPI processes:       6
 
-          BUILT :    Tue Oct  5 05:18:51 2010
+
+
+          BUILT :    Thu 17 Apr 2014 06:13:20 PM CEST
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    x86_64
              CC :    icc
             CPP :    cpp
             F90 :    mpif90
             F77 :    ifort
-         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA -D__ETSF_IO -D__NETCDF
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA
       BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
     LAPACK LIBS :    
        FFT LIBS :    
@@ -40,6 +42,7 @@
 
                       fileout :     dos.dat
                          type :     gaussian
+               spin component :     all
                         delta :     0.15000 eV
                            nk :      1   1 100
                             s :      0   0   0
@@ -47,8 +50,11 @@
                          emin :    -10.000
                          emax :     10.000
                            ne :     1000
+                        shift :      0.000
+                        scale :      1.000
                        nprint :       50
               compute projdos :     TRUE
+           compute fermi surf :     FALSE
                    have sigma :     FALSE
 
   ======================================================================
@@ -237,67 +243,67 @@
   ======================================================================
 
   Computing E(     1 ) =    -10.00000 eV
-                              Total time spent up to now :     0.48 secs
+                              Total time spent up to now :     0.21 secs
 
   Computing E(    50 ) =     -9.01902 eV
-                              Total time spent up to now :     0.59 secs
+                              Total time spent up to now :     0.27 secs
 
   Computing E(   100 ) =     -8.01802 eV
-                              Total time spent up to now :     0.67 secs
+                              Total time spent up to now :     0.33 secs
 
   Computing E(   150 ) =     -7.01702 eV
-                              Total time spent up to now :     0.80 secs
+                              Total time spent up to now :     0.39 secs
 
   Computing E(   200 ) =     -6.01602 eV
-                              Total time spent up to now :     0.87 secs
+                              Total time spent up to now :     0.45 secs
 
   Computing E(   250 ) =     -5.01502 eV
-                              Total time spent up to now :     1.01 secs
+                              Total time spent up to now :     0.52 secs
 
   Computing E(   300 ) =     -4.01401 eV
-                              Total time spent up to now :     1.12 secs
+                              Total time spent up to now :     0.58 secs
 
   Computing E(   350 ) =     -3.01301 eV
-                              Total time spent up to now :     1.20 secs
+                              Total time spent up to now :     0.64 secs
 
   Computing E(   400 ) =     -2.01201 eV
-                              Total time spent up to now :     1.27 secs
+                              Total time spent up to now :     0.70 secs
 
   Computing E(   450 ) =     -1.01101 eV
-                              Total time spent up to now :     1.44 secs
+                              Total time spent up to now :     0.76 secs
 
   Computing E(   500 ) =     -0.01001 eV
-                              Total time spent up to now :     1.51 secs
+                              Total time spent up to now :     0.82 secs
 
   Computing E(   550 ) =      0.99099 eV
-                              Total time spent up to now :     1.64 secs
+                              Total time spent up to now :     0.88 secs
 
   Computing E(   600 ) =      1.99199 eV
-                              Total time spent up to now :     1.76 secs
+                              Total time spent up to now :     0.95 secs
 
   Computing E(   650 ) =      2.99299 eV
-                              Total time spent up to now :     1.84 secs
+                              Total time spent up to now :     1.01 secs
 
   Computing E(   700 ) =      3.99399 eV
-                              Total time spent up to now :     1.96 secs
+                              Total time spent up to now :     1.07 secs
 
   Computing E(   750 ) =      4.99499 eV
-                              Total time spent up to now :     2.13 secs
+                              Total time spent up to now :     1.13 secs
 
   Computing E(   800 ) =      5.99600 eV
-                              Total time spent up to now :     2.21 secs
+                              Total time spent up to now :     1.19 secs
 
   Computing E(   850 ) =      6.99700 eV
-                              Total time spent up to now :     2.28 secs
+                              Total time spent up to now :     1.25 secs
 
   Computing E(   900 ) =      7.99800 eV
-                              Total time spent up to now :     2.44 secs
+                              Total time spent up to now :     1.31 secs
 
   Computing E(   950 ) =      8.99900 eV
-                              Total time spent up to now :     2.51 secs
+                              Total time spent up to now :     1.37 secs
 
   Computing E(  1000 ) =     10.00000 eV
-                              Total time spent up to now :     2.59 secs
+                              Total time spent up to now :     1.43 secs
 
 
   Computing projected-DOS...
@@ -310,16 +316,16 @@
    <global routines>
              clock number :    10
 
-                      dos :    16.00s CPU 
+                      dos :     3.00s CPU 
 
-                dos_input :     0.08s CPU
-            postproc_init :     0.27s CPU
+                dos_input :     0.04s CPU
+            postproc_init :     0.10s CPU
              want_dftread :     0.02s CPU
                 want_init :     0.00s CPU
        para_get_poolindex :     0.00s CPU (       4 calls,   0.000 s avg)
-             windows_read :     0.00s CPU
+             windows_read :     0.07s CPU
             subspace_read :     0.00s CPU
-                   do_dos :    16.17s CPU
-             compute_kham :     0.01s CPU (      17 calls,   0.000 s avg)
+                   do_dos :     3.35s CPU
+             compute_kham :     0.00s CPU (      17 calls,   0.000 s avg)
 
 
