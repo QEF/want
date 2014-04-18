@@ -13,7 +13,7 @@
    nk(3) = 200
    delta = 0.05
    emin  = -20.0
-   emax  =  5.0
+   emax  =  3.5
    ne    = 1200
    smearing_type = 'gaussian'
    projdos = .TRUE.
