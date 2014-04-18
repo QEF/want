@@ -650,7 +650,8 @@ CONTAINS
       IF ( PRESENT(e_units) )  CALL iotk_write_dat( ounit, "ENERGY_UNITS", TRIM(e_units) )
       !
       attr=""
-      IF ( PRESENT( energy_ref_type) ) CALL iotk_write_attr( attr, "energy_ref_type", energy_ref_type, FIRST=.TRUE.)
+      IF ( PRESENT( energy_ref_type) ) &
+           CALL iotk_write_attr( attr, "energy_ref_type", energy_ref_type, FIRST=.TRUE.)
       !
       IF ( PRESENT( energy_ref ) )  CALL iotk_write_dat( ounit, "FERMI_ENERGY", energy_ref, ATTR=attr )
       !
@@ -1431,14 +1432,15 @@ CONTAINS
       INTEGER,                 INTENT(OUT) :: ierr
       !
       INTEGER         :: i, isp, ik
-      INTEGER         :: nspin_, nbnd_, nkpts_
+      INTEGER         :: nspin_, nbnd_, nkpts_, num_of_atomic_orbitals_
       REAL(dbl)       :: energy_ref_
       LOGICAL         :: lfound
-      !CHARACTER(25)   :: energy_ref_allowed(3)
-      !DATA energy_ref_allowed / "FERMI_ENERGY", "TOP_OF_VALENCE_BANDS", "HOMO" /
+      CHARACTER(25)   :: energy_ref_allowed(3)
+      DATA energy_ref_allowed / "FERMI_ENERGY", "TOP_OF_VALENCE_BANDS", "HOMO" /
       
       ierr = 0 
       !
+
       CALL iotk_scan_begin( iunit, "ELECTRONIC_STRUCTURE", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
       !
@@ -1447,31 +1449,55 @@ CONTAINS
          IF (ierr/=0 ) RETURN
       ENDIF
       !
-      IF ( PRESENT( nspin ) .OR. PRESENT(EIG) ) THEN
+      IF ( PRESENT( nspin ) .OR. PRESENT(eig) ) THEN
          CALL iotk_scan_dat( iunit, "NUMBER_OF_SPIN_COMPONENTS", nspin_, IERR=ierr)
          IF (ierr/=0 ) RETURN
+         IF ( PRESENT( nspin ) ) nspin = nspin_
       ENDIF
       ! 
-      IF ( PRESENT( num_of_atomic_orbitals ) ) THEN
-         CALL iotk_scan_dat( iunit, "NUMBER_OF_ATOMIC_ORBITALS", &
-                                    num_of_atomic_orbitals, IERR=ierr)
+      IF ( PRESENT( num_of_atomic_orbitals ) .OR. PRESENT(nbnd) ) THEN
+         CALL iotk_scan_dat( iunit, "TOTAL_NUMBER_OF_ATOMIC_ORBITALS", &
+                                    num_of_atomic_orbitals_, IERR=ierr)
          IF (ierr/=0 ) RETURN
+         IF ( PRESENT(num_of_atomic_orbitals) ) num_of_atomic_orbitals=num_of_atomic_orbitals_
       ENDIF
       ! 
-      IF ( PRESENT( nbnd ) ) THEN
-         CALL iotk_scan_dat( iunit, "NUMBER_OF_BANDS", nbnd, IERR=ierr)
-         IF (ierr/=0 ) RETURN
-      ENDIF
+      ! in the following I've implemented a workaround due to the  fact
+      ! that CRYSTAL is not yet writing eigs and their dimensions
       !
       IF ( PRESENT( nbnd ) ) THEN
+#ifdef __CRYSTAL_TO_BE
+         CALL iotk_scan_dat( iunit, "NUMBER_OF_BANDS", nbnd, IERR=ierr)
+         IF (ierr/=0 ) RETURN
+#endif
+         IF ( PRESENT(nbnd) ) nbnd=num_of_atomic_orbitals_
+      ENDIF
+      !
+      IF ( PRESENT( nkpts ) .OR. PRESENT(eig) ) THEN
+#ifdef __CRYSTAL_TO_BE
          CALL iotk_scan_dat( iunit, "NUMBER_OF_K_VECTORS", nkpts_, IERR=ierr)
          IF (ierr/=0 ) RETURN
+#else
+         nkpts_=0
+#endif
+         IF ( PRESENT( nkpts ) ) nkpts = nkpts_
       ENDIF
       ! 
       IF ( PRESENT( energy_ref ) .OR. PRESENT( e_units ) ) THEN
           !
-          CALL iotk_scan_dat( iunit, "FERMI_ENERGY", energy_ref_, ATTR=attr, IERR=ierr )
-          IF ( ierr/=0 ) RETURN
+          lfound=.FALSE.
+          DO i = 1, SIZE(energy_ref_allowed)
+              !
+              CALL iotk_scan_dat( iunit, TRIM(energy_ref_allowed(i)), &
+                                  energy_ref_, ATTR=attr, FOUND=lfound, IERR=ierr )
+              IF ( ierr/=0 ) RETURN
+              !
+              IF ( lfound ) EXIT
+              !
+          ENDDO
+          !
+          IF ( .NOT. lfound ) RETURN
+          IF ( PRESENT( energy_ref ) ) energy_ref = energy_ref_
           !
           IF ( PRESENT(e_units) ) THEN
               CALL iotk_scan_attr( attr, "unit", e_units, IERR=ierr)
@@ -1486,6 +1512,12 @@ CONTAINS
       ENDIF
       ! 
       IF ( PRESENT( eig ) ) THEN
+          !
+          ! bad workaround due to some missing implementation in crystal
+          !
+          eig=0.0
+          !
+#ifdef __CRYSTAL_TO_BE
           !
           CALL iotk_scan_begin( iunit, "EIGENVALUES", IERR=ierr )
           IF ( ierr /= 0 ) RETURN
@@ -1511,16 +1543,12 @@ CONTAINS
           !
           CALL iotk_scan_end( iunit, "EIGENVALUES", IERR=ierr )
           IF ( ierr /= 0 ) RETURN
+#endif
           !
       ENDIF
       !
       CALL iotk_scan_end( iunit, "ELECTRONIC_STRUCTURE", IERR=ierr )
       IF ( ierr /= 0 ) RETURN
-      !
-      !
-      IF ( PRESENT( energy_ref ) )     energy_ref = energy_ref_
-      IF ( PRESENT( nspin ) )               nspin = nspin_
-      IF ( PRESENT( nkpts ) )               nkpts = nkpts_
       !
     END SUBROUTINE crio_read_elec_structure
     ! 
@@ -1547,8 +1575,6 @@ CONTAINS
       !
 
       ierr=0
-
-!XXXX
       !
       SELECT CASE( TRIM(objname) ) 
       CASE( "overlaps", "OVERLAPS" )
