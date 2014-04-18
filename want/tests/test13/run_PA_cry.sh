@@ -15,7 +15,6 @@ MANUAL=" Usage
  
  bands           interpolate the band structure from CRYSTAL datafile (LDA xc)
  dos             interpolate DOS from CRYSTAL datafile (LDA xc)
- conductor       evaluate the transmittance, for the bulk case (LDA xc)
 
  all             perform all the above described steps
 
@@ -25,6 +24,7 @@ MANUAL=" Usage
 #
 #================================================================
 #
+# conductor       evaluate the transmittance, for the bulk case (LDA xc)
 
 #
 # source common enviroment
@@ -53,10 +53,10 @@ INPUT=`echo $1 | tr [:upper:] [:lower:]`
 case $INPUT in 
    (bands)      BANDS=yes ;;
    (dos)        DOS=yes ;;
-   (conductor)  CONDUCTOR=yes ;;
-   (want)       BANDS=yes ; DOS=yes ; CONDUCTOR=yes ;;
+   #(conductor)  CONDUCTOR=yes ;;
+   (want)       BANDS=yes ; DOS=yes ;;  # CONDUCTOR=yes ;;
                 
-   (all)        BANDS=yes ; DOS=yes ; CONDUCTOR=yes ;;
+   (all)        BANDS=yes ; DOS=yes ;;  # CONDUCTOR=yes ;;
    (check)      CHECK=yes ;;
    (clean)      CLEAN=yes ;;
    (*)          echo " Invalid input FLAG, type ./run.sh for help" ; exit 1 ;;
