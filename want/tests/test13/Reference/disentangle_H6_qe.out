@@ -8,12 +8,14 @@
   ======================================================================
 
 
-  Program <disentangle>  v. 2.3.0  starts ...
-  Date  8Apr2010 at 15:11: 3 
+  Program <disentangle>  v. 2.5.0alpha2  starts ...
+  Date 18Apr2014 at 13:17:52 
 
-     Parallel run, # proc:    6
+     Number of MPI processes:       6
 
-          BUILT :    Thu Apr  8 11:15:56 2010
+
+
+          BUILT :    Fri 18 Apr 2014 01:14:48 PM CEST
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    x86_64
              CC :    icc
@@ -27,6 +29,7 @@
       MASS LIBS :    
 
 
+  checking for fmt internal... no
   checking for fmt wannier90... no
   checking for fmt crystal... no
   checking for fmt qexml... ok
@@ -166,12 +169,24 @@
    local nkpts =     1
   Monkhorst-Pack grid:      nk = (   1   1   4 ),      shift = (   0   0   0 )
 
-  K-point calculation: (cart. coord. in Bohr^-1)
+  K-point grid: (cart. coord. in Bohr^-1)
     k (    1) =    (    0.0000000   0.0000000  -0.1645361 ),   weight =      0.2500000
     k (    2) =    (    0.0000000   0.0000000  -0.0822680 ),   weight =      0.2500000
     k (    3) =    (    0.0000000   0.0000000   0.0000000 ),   weight =      0.2500000
     k (    4) =    (    0.0000000   0.0000000   0.0822680 ),   weight =      0.2500000
  </K-POINTS>
+
+ <R-GRID>
+         nrtot =     5
+  R-grid generators:      nr = (   1   1   4 )
+
+  R-grid vectors:         (crystal units)
+    R (    1) =    (       0      0     -1 ),   wr =      1.0000000
+    R (    2) =    (       0      0      0 ),   wr =      1.0000000
+    R (    3) =    (       0      0      1 ),   wr =      1.0000000
+    R (    4) =    (       0      0      2 ),   wr =      0.5000000
+    R (    5) =    (       0      0     -2 ),   wr =      0.5000000
+ </R-GRID>
 
  <B-SHELL>
   List of the  6 b-vectors : (Bohr^-1) 
@@ -182,7 +197,7 @@
     b (    5) =    (    0.0000000   0.3141593   0.0000000 ),   weight =      5.0660592
     b (    6) =    (    0.0000000   0.0000000  -0.0822680 ),   weight =     73.8767505
 
-  Total weight =     168.0177378
+  Total weight =     168.0177377
  </B-SHELL>
 
  <WINDOWS>
@@ -197,22 +212,22 @@
     Fermi energy =   -6.396705722 eV
  !
  !    kpt =     1 (   0.00000  0.00000 -0.16454 )    dimwin =    6
- !                                       imin =    1  imax =    6
+ !                                       imin =     1  imax =    6
  !   Eigenvalues:
  !    -9.1125  -9.1125  -6.3967  -6.3967  -1.5913  -1.5913   0.2424
  !
  !    kpt =     2 (   0.00000  0.00000 -0.08227 )    dimwin =    7
- !                                       imin =    1  imax =    7
+ !                                       imin =     1  imax =    7
  !   Eigenvalues:
  !    -9.3717  -8.6823  -7.3186  -5.3282  -2.8588  -0.5399  -0.0329
  !
  !    kpt =     3 (   0.00000  0.00000  0.00000 )    dimwin =    7
- !                                       imin =    1  imax =    7
+ !                                       imin =     1  imax =    7
  !   Eigenvalues:
  !    -9.4581  -8.0827  -8.0827  -4.1345  -4.1345  -0.1247  -0.0978
  !
  !    kpt =     4 (   0.00000  0.00000  0.08227 )    dimwin =    7
- !                                       imin =    1  imax =    7
+ !                                       imin =     1  imax =    7
  !   Eigenvalues:
  !    -9.3717  -8.6823  -7.3186  -5.3282  -2.8588  -0.5399  -0.0329
 
@@ -248,6 +263,24 @@
 
 
   Initializing global dft data
+
+ <WFC_BUFFERING>
+
+       dimwinx =      7
+   nwfc_buffer =      7
+    nkb_buffer =     12
+         nwfcx =      7
+          nkbx =     12
+
+    ik(   1 )  -->     1  step(s)
+    ik(   2 )  -->     1  step(s)
+    ik(   3 )  -->     1  step(s)
+    ik(   4 )  -->     1  step(s)
+
+    beta kb    -->     1  step(s)
+
+ </WFC_BUFFERING>
+
   Initializing US pseudopot. data
   Total number Nkb of beta functions:    12
 
@@ -270,17 +303,16 @@
                     uspp:          3.100 MB
 
      Total alloc. Memory:         33.239 MB
-      Real alloc. Memory:         16.484 MB
  </MEMORY_USAGE>
 
 
-    Overlaps or Projections calculation for k-point:    1
+    Matrix elements calculation for k-point:    1
     npw =  16142,    dimwin =    6
-                              Total time spent up to now :     0.55 secs
+                              Total time spent up to now :     0.74 secs
 
 
   Overlaps and projections written on file: hydrogen_H6_WanT.ovp
-                              Total time spent up to now :     0.58 secs
+                              Total time spent up to now :     0.77 secs
 
  <MEMORY_USAGE>
                  kpoints:          0.000 MB
@@ -297,7 +329,6 @@
                     uspp:          0.001 MB
 
      Total alloc. Memory:         10.214 MB
-      Real alloc. Memory:          9.916 MB
  </MEMORY_USAGE>
 
 
@@ -319,7 +350,7 @@
   Final Omega_I (Bohr^2, Angstrom^2):      19.294303         5.402951
    Avrg Omega_I                     :       3.215717         0.900492
 
-                              Total time spent up to now :     0.58 secs
+                              Total time spent up to now :     0.77 secs
 
 
   Subspace data written on file: hydrogen_H6_WanT.space
@@ -327,33 +358,33 @@
   ======================================================================
 
    <global routines>
-             clock number :    38
+             clock number :    42
 
               disentangle :     0.00s CPU 
 
-             want_dftread :     0.06s CPU
-         windows_read_ext :     0.00s CPU
-                want_init :     0.00s CPU
+             want_dftread :     0.08s CPU
+         windows_read_ext :     0.01s CPU
+                want_init :     0.01s CPU
        para_get_poolindex :     0.00s CPU (       4 calls,   0.000 s avg)
              bshells_init :     0.00s CPU
              windows_init :     0.00s CPU
-              wfc_manager :     0.42s CPU
-          ggrids_read_ext :     0.12s CPU
+                  wfc_drv :     0.57s CPU
+          ggrids_read_ext :     0.28s CPU
       wfc_data_grids_read :     0.01s CPU
-              struct_fact :     0.06s CPU
-                init_us_1 :     0.08s CPU
+              struct_fact :     0.07s CPU
+                init_us_1 :     0.07s CPU
                 init_at_1 :     0.01s CPU
            wfc_data_kread :     0.03s CPU (       4 calls,   0.008 s avg)
-                init_us_2 :     0.02s CPU (       5 calls,   0.003 s avg)
-                  ccalbec :     0.01s CPU (       4 calls,   0.003 s avg)
-                  overlap :     0.03s CPU (       3 calls,   0.010 s avg)
+                init_us_2 :     0.02s CPU (       5 calls,   0.004 s avg)
+                  ccalbec :     0.01s CPU (       4 calls,   0.002 s avg)
+             overlap_calc :     0.03s CPU (       3 calls,   0.010 s avg)
            overlap_setmap :     0.02s CPU (       3 calls,   0.005 s avg)
           overlap_augment :     0.00s CPU (       3 calls,   0.000 s avg)
                     s_psi :     0.01s CPU
-               projection :     0.01s CPU
+          projection_calc :     0.01s CPU
        trial_center_setup :     0.00s CPU (       6 calls,   0.001 s avg)
                atomic_wfc :     0.00s CPU (       6 calls,   0.001 s avg)
-            overlap_write :     0.00s CPU
+            overlap_write :     0.01s CPU
                mp_get_ovp :     0.00s CPU (       8 calls,   0.000 s avg)
             overlap_bsymm :     0.00s CPU
                    mp_put :     0.00s CPU (      12 calls,   0.000 s avg)
@@ -362,8 +393,12 @@
         projection_frozen :     0.00s CPU
          para_poolrecover :     0.00s CPU (       3 calls,   0.000 s avg)
                    mp_sum :     0.00s CPU (       3 calls,   0.000 s avg)
+              iterations1 :     0.00s CPU (       2 calls,   0.000 s avg)
+              iterations2 :     0.00s CPU (       2 calls,   0.001 s avg)
                    omegai :     0.00s CPU (       2 calls,   0.000 s avg)
              mp_sum_omega :     0.00s CPU (       2 calls,   0.000 s avg)
+              iterations3 :     0.00s CPU
+              iterations4 :     0.00s CPU
               mp_sum_lamp :     0.00s CPU
                 mat_hdiag :     0.00s CPU
             windows_write :     0.00s CPU

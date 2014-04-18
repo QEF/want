@@ -8,19 +8,21 @@
   ======================================================================
 
 
-  Program <plot>  v. 2.4.0alpha2  starts ...
-  Date  8Oct2010 at 20:35:34 
+  Program <plot>  v. 2.5.0alpha2  starts ...
+  Date 17Apr2014 at 20:12:33 
 
-     Parallel run, # proc:    6
+     Number of MPI processes:       6
 
-          BUILT :    Tue Oct  5 05:18:51 2010
+
+
+          BUILT :    Thu 17 Apr 2014 06:13:20 PM CEST
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    x86_64
              CC :    icc
             CPP :    cpp
             F90 :    mpif90
             F77 :    ifort
-         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA -D__ETSF_IO -D__NETCDF
+         DFLAGS :    -D__INTEL -D__FFTW -D__MPI -D__PARA
       BLAS LIBS :    -L/home/ferretti/want/install -lmkl_em64t_nothread
     LAPACK LIBS :    
        FFT LIBS :    
@@ -187,14 +189,14 @@
 
 
     Wfc Fourier Transf. for k-point    1
-                              Total time spent up to now :   347.75 secs
+                              Total time spent up to now :   376.31 secs
 
 
   States normalization:
     Index              Max value     Normaliz.
   ---------------------------------------------
-    Wf(   1 )   -->     1.000000      0.804802
-    Wf(   2 )   -->     1.000000      0.668128
+    Wf(   1 )   -->     1.000000      0.804831
+    Wf(   2 )   -->     1.000000      0.668127
 
 
   writing STATE(   1) plot on file: ./SCRATCH//au_bda_WanT_EIGCHN001.cube
@@ -210,7 +212,7 @@ Coordinate file (in CHARMM 'crd' format): './SCRATCH//au_bda_WanT_EIGCHN001.crd'
  plot output - cube format
 Number of atoms: 25, x-, y-, z-origin (in Angstrom): -4.057025,-4.057025,-14.369990
 Min value: 0.000000
-Max value: 0.017138
+Max value: 0.017134
 Job done ...
 **********************************************************
   deleting tmp files: ./SCRATCH//au_bda_WanT_EIGCHN001.cube
@@ -230,7 +232,7 @@ Coordinate file (in CHARMM 'crd' format): './SCRATCH//au_bda_WanT_EIGCHN002.crd'
  plot output - cube format
 Number of atoms: 25, x-, y-, z-origin (in Angstrom): -4.057025,-4.057025,-14.369990
 Min value: 0.000000
-Max value: 0.038814
+Max value: 0.038815
 Job done ...
 **********************************************************
   deleting tmp files: ./SCRATCH//au_bda_WanT_EIGCHN002.cube
@@ -244,23 +246,23 @@ Job done ...
    <global routines>
              clock number :    17
 
-                     plot :  7m36.00s CPU 
+                     plot :  6m18.00s CPU 
 
-               plot_input :     0.00s CPU
-            postproc_init :     0.22s CPU
-             want_dftread :     0.13s CPU
-                want_init :     0.00s CPU
+               plot_input :     0.01s CPU
+            postproc_init :     0.27s CPU
+             want_dftread :     0.12s CPU
+                want_init :     0.01s CPU
        para_get_poolindex :     0.00s CPU (       4 calls,   0.000 s avg)
              bshells_init :     0.00s CPU
-             windows_read :     0.00s CPU
-            subspace_read :     0.00s CPU
-                  do_plot :   455.83s CPU
-          ggrids_read_ext :     0.11s CPU
-      wfc_data_grids_read :     0.03s CPU
-           wfc_data_kread :     0.14s CPU
-             kstates_calc :   347.16s CPU (       2 calls, 173.578 s avg)
-                   cfft3d :     0.03s CPU (       2 calls,   0.016 s avg)
-             cstates_calc :     0.05s CPU (       2 calls,   0.024 s avg)
-                 gcubeplt :     0.22s CPU (       2 calls,   0.111 s avg)
+             windows_read :     0.04s CPU
+            subspace_read :     0.01s CPU
+                  do_plot :   377.92s CPU
+          ggrids_read_ext :     0.15s CPU
+      wfc_data_grids_read :     0.01s CPU
+           wfc_data_kread :     0.22s CPU
+             kstates_calc :   375.58s CPU (       2 calls, 187.788 s avg)
+                   cfft3d :     0.04s CPU (       2 calls,   0.018 s avg)
+             cstates_calc :     0.03s CPU (       2 calls,   0.016 s avg)
+                 gcubeplt :     0.34s CPU (       2 calls,   0.170 s avg)
 
 

@@ -9,13 +9,13 @@
 
 
   Program <dos>  v. 2.5.0alpha2  starts ...
-  Date  1Aug2013 at 11:31:10 
+  Date 17Apr2014 at 20:19:20 
 
      Number of MPI processes:       6
 
 
 
-          BUILT :    Wed 31 Jul 2013 06:56:36 PM CEST
+          BUILT :    Thu 17 Apr 2014 06:13:20 PM CEST
            HOST :    x86_64-unknown-linux-gnu
            ARCH :    x86_64
              CC :    icc
@@ -47,9 +47,9 @@
                            nk :      1   1 400
                             s :      0   0   0
                         nktot :        400
-                         emin :    -20.000
-                         emax :      5.000
-                           ne :     1200
+                         emin :    -12.000
+                         emax :      4.000
+                           ne :      800
                         shift :      0.000
                         scale :      1.000
                        nprint :       50
@@ -57,9 +57,9 @@
            compute fermi surf :     FALSE
                  DFT datafile :     ./SCRATCH/gold1.save/atomic_proj.xml
               use ortho basis :     FALSE
-                atmproj shift :         2.000000
-                 atmproj nbnd :         6
-                  atmproj thr :         0.500000
+                atmproj shift :         5.000000
+                 atmproj nbnd :         0
+                  atmproj thr :         0.900000
                    have sigma :     FALSE
 
   ======================================================================
@@ -68,9 +68,9 @@
 
    file fmt: atmproj
    ATMPROJ conversion to be done using: 
-     atmproj_nbnd :      6
-     atmproj_thr  :      0.500000
-     atmproj_sh   :      2.000000
+     atmproj_nbnd :     10
+     atmproj_thr  :      0.900000
+     atmproj_sh   :      5.000000
 
   ./SCRATCH/gold1.save/atomic_proj.xml converted to internal fmt
   DFT-data read from file: gold1.save/data-file.xml
@@ -556,80 +556,56 @@
   =  Loop over energies                                                =
   ======================================================================
 
-  Computing E(     1 ) =    -20.00000 eV
-                              Total time spent up to now :     0.22 secs
+  Computing E(     1 ) =    -12.00000 eV
+                              Total time spent up to now :     0.26 secs
 
-  Computing E(    50 ) =    -18.97832 eV
-                              Total time spent up to now :     0.25 secs
+  Computing E(    50 ) =    -11.01877 eV
+                              Total time spent up to now :     0.29 secs
 
-  Computing E(   100 ) =    -17.93578 eV
-                              Total time spent up to now :     0.28 secs
+  Computing E(   100 ) =    -10.01752 eV
+                              Total time spent up to now :     0.32 secs
 
-  Computing E(   150 ) =    -16.89324 eV
-                              Total time spent up to now :     0.31 secs
+  Computing E(   150 ) =     -9.01627 eV
+                              Total time spent up to now :     0.35 secs
 
-  Computing E(   200 ) =    -15.85071 eV
-                              Total time spent up to now :     0.33 secs
+  Computing E(   200 ) =     -8.01502 eV
+                              Total time spent up to now :     0.38 secs
 
-  Computing E(   250 ) =    -14.80817 eV
-                              Total time spent up to now :     0.36 secs
+  Computing E(   250 ) =     -7.01377 eV
+                              Total time spent up to now :     0.40 secs
 
-  Computing E(   300 ) =    -13.76564 eV
-                              Total time spent up to now :     0.39 secs
+  Computing E(   300 ) =     -6.01252 eV
+                              Total time spent up to now :     0.43 secs
 
-  Computing E(   350 ) =    -12.72310 eV
-                              Total time spent up to now :     0.42 secs
+  Computing E(   350 ) =     -5.01126 eV
+                              Total time spent up to now :     0.46 secs
 
-  Computing E(   400 ) =    -11.68057 eV
-                              Total time spent up to now :     0.45 secs
+  Computing E(   400 ) =     -4.01001 eV
+                              Total time spent up to now :     0.49 secs
 
-  Computing E(   450 ) =    -10.63803 eV
-                              Total time spent up to now :     0.48 secs
+  Computing E(   450 ) =     -3.00876 eV
+                              Total time spent up to now :     0.52 secs
 
-  Computing E(   500 ) =     -9.59550 eV
-                              Total time spent up to now :     0.50 secs
+  Computing E(   500 ) =     -2.00751 eV
+                              Total time spent up to now :     0.54 secs
 
-  Computing E(   550 ) =     -8.55296 eV
-                              Total time spent up to now :     0.53 secs
+  Computing E(   550 ) =     -1.00626 eV
+                              Total time spent up to now :     0.57 secs
 
-  Computing E(   600 ) =     -7.51043 eV
-                              Total time spent up to now :     0.56 secs
+  Computing E(   600 ) =     -0.00501 eV
+                              Total time spent up to now :     0.60 secs
 
-  Computing E(   650 ) =     -6.46789 eV
-                              Total time spent up to now :     0.59 secs
+  Computing E(   650 ) =      0.99625 eV
+                              Total time spent up to now :     0.63 secs
 
-  Computing E(   700 ) =     -5.42535 eV
-                              Total time spent up to now :     0.62 secs
+  Computing E(   700 ) =      1.99750 eV
+                              Total time spent up to now :     0.66 secs
 
-  Computing E(   750 ) =     -4.38282 eV
-                              Total time spent up to now :     0.65 secs
+  Computing E(   750 ) =      2.99875 eV
+                              Total time spent up to now :     0.69 secs
 
-  Computing E(   800 ) =     -3.34028 eV
-                              Total time spent up to now :     0.67 secs
-
-  Computing E(   850 ) =     -2.29775 eV
-                              Total time spent up to now :     0.70 secs
-
-  Computing E(   900 ) =     -1.25521 eV
-                              Total time spent up to now :     0.73 secs
-
-  Computing E(   950 ) =     -0.21268 eV
-                              Total time spent up to now :     0.76 secs
-
-  Computing E(  1000 ) =      0.82986 eV
-                              Total time spent up to now :     0.79 secs
-
-  Computing E(  1050 ) =      1.87239 eV
-                              Total time spent up to now :     0.82 secs
-
-  Computing E(  1100 ) =      2.91493 eV
-                              Total time spent up to now :     0.84 secs
-
-  Computing E(  1150 ) =      3.95746 eV
-                              Total time spent up to now :     0.87 secs
-
-  Computing E(  1200 ) =      5.00000 eV
-                              Total time spent up to now :     0.90 secs
+  Computing E(   800 ) =      4.00000 eV
+                              Total time spent up to now :     0.71 secs
 
 
   Total DOS written on file:    ./dos_Au1_PROJ.dat
@@ -642,16 +618,16 @@
                       dos :     0.00s CPU 
 
                 dos_input :     0.08s CPU
-           datafiles_init :     0.08s CPU
-      atmproj_to_internal :     0.07s CPU
+           datafiles_init :     0.09s CPU
+      atmproj_to_internal :     0.08s CPU
              compute_rham :     0.00s CPU (      18 calls,   0.000 s avg)
-            postproc_init :     0.03s CPU
+            postproc_init :     0.08s CPU
              want_dftread :     0.03s CPU
                 want_init :     0.00s CPU
        para_get_poolindex :     0.00s CPU (       8 calls,   0.000 s avg)
-             windows_read :     0.00s CPU
+             windows_read :     0.05s CPU
             subspace_read :     0.00s CPU
-                   do_dos :     0.74s CPU
+                   do_dos :     0.48s CPU
              compute_kham :     0.00s CPU (     134 calls,   0.000 s avg)
 
 
