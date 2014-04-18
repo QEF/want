@@ -171,8 +171,11 @@ END SUBROUTINE atmproj_tools_init
    COMPLEX(dbl),   ALLOCATABLE :: zaux(:,:), ztmp(:,:)
    COMPLEX(dbl),   ALLOCATABLE :: kovp_sq(:,:)
    REAL(dbl),      ALLOCATABLE :: w(:)
- 
-!
+#if defined __WRITE_ASCIIHAM
+   CHARACTER(100)    :: kham_file
+   INTEGER           :: iw,jw
+#endif
+   !
 !------------------------------
 ! main body
 !------------------------------
@@ -525,6 +528,47 @@ END SUBROUTINE atmproj_tools_init
                ENDIF
                !
            ENDDO kpt_loop
+
+#if defined __WRITE_ASCIIHAM
+           ! 
+           if (isp == 1 .and. nspin==1) kham_file = "kham.txt"
+           if (isp == 1 .and. nspin==2) kham_file = "kham_up.txt"
+           if (isp == 2) kham_file = "kham_down.txt"
+
+           IF (isp ==1) THEN !
+              OPEN (unit = 14, file = "k.txt")
+              DO ik =1, nkpts
+                 WRITE(14,"(3f20.13)") vkpt_cry(1,ik), vkpt_cry(2,ik), vkpt_cry(3,ik)
+              ENDDO
+              CLOSE(14)
+
+              OPEN (unit = 14, file = "wk.txt")
+              DO ik =1, nkpts
+                 WRITE(14,"(f20.13)") wk(ik)
+              ENDDO
+              CLOSE(14)
+
+              OPEN (unit = 14, file = "kovp.txt")
+              DO ik =1, nkpts
+                  DO iw=1,dimwann
+                     DO jw=1,dimwann
+                        WRITE(14,"(2f20.13)") real(kovp(iw,jw,ik,isp)),aimag(kovp(iw,jw,ik,isp))
+                     ENDDO
+                  ENDDO
+              ENDDO
+              CLOSE(14)
+           ENDIF
+
+           OPEN (unit = 14, file = trim(kham_file))
+           DO ik =1, nkpts
+               DO iw=1,dimwann
+                  DO jw=1,dimwann
+                     WRITE(14,"(2f20.13)") real(kham(iw,jw,ik)),aimag(kham(iw,jw,ik))
+                  ENDDO
+               ENDDO
+           ENDDO
+           CLOSE(14)
+#endif
 
 
            ! 
