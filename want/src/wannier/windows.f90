@@ -17,6 +17,7 @@
    USE log_module,               ONLY : log_push, log_pop
    USE parser_module,            ONLY : change_case
    USE kpoints_module,           ONLY : nkpts_g, kpoints_alloc
+   USE io_module,                ONLY : work_dir, prefix, etsf_io_version_min
    USE io_global_module,         ONLY : ionode, ionode_id
    USE control_module,           ONLY : read_efermi
    USE input_parameters_module,  ONLY : iwin_mink, iwin_maxk, ifroz_mink, ifroz_maxk
@@ -661,6 +662,8 @@ CONTAINS
        REAL(dbl), ALLOCATABLE :: leig(:,:,:)
        !
 #ifdef __ETSF_IO
+       INTEGER             :: ncid2
+       CHARACTER(256)      :: filename
        TYPE(etsf_electrons)                  :: electrons
        DOUBLE PRECISION,              TARGET :: fermi_energy
        DOUBLE PRECISION, ALLOCATABLE, TARGET :: eigenvalues(:,:,:)
@@ -812,12 +815,23 @@ CONTAINS
                                   dims%number_of_kpoints,    &   
                                   dims%number_of_spins )     )
             !
+            filename=TRIM(work_dir)//'/'//TRIM(prefix)//"_GRS.nc"
+            !
+            IF ( ionode ) THEN
+                !
+                CALL etsf_io_low_open_read(ncid2, filename, lstat, &
+                                           ERROR_DATA=error_data, &
+                                           VERSION_MIN=etsf_io_version_min )
+                IF ( .NOT. lstat ) CALL errore(subname,"unable to open "//TRIM(filename),10)
+                !
+            ENDIF
+            !
             fermi_energy = 0.0
             IF ( read_efermi ) electrons%fermi_energy  => fermi_energy 
             !
             electrons%eigenvalues%data3d      => eigenvalues
             !
-            IF ( ionode ) CALL etsf_io_electrons_get(ncid, electrons, lstat, error_data)
+            IF ( ionode ) CALL etsf_io_electrons_get(ncid2, electrons, lstat, error_data)
             !
             electrons%fermi_energy            => null() 
             electrons%eigenvalues%data3d      => null()
@@ -827,6 +841,11 @@ CONTAINS
             CALL mp_bcast( lstat,         ionode_id )
             !
             IF ( .NOT. lstat ) CALL etsf_error(error_data,subname,'ETSF_IO: reading bands',10)
+            ! 
+            IF ( ionode ) THEN
+                CALL etsf_io_low_close(ncid2, lstat, error_data)
+                IF ( .NOT. lstat ) CALL errore(subname,"closing "//TRIM(filename),10)
+            ENDIF
             !
             str = "Hartree"
             !

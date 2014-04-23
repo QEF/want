@@ -15,6 +15,7 @@
    USE parameters,               ONLY : nstrx
    USE log_module,               ONLY : log_push, log_pop
    USE parser_module,            ONLY : change_case
+   USE io_module,                ONLY : work_dir, prefix, etsf_io_version_min
    USE io_global_module,         ONLY : ionode, ionode_id
    USE mp,                       ONLY : mp_bcast
    USE qexml_module
@@ -100,6 +101,8 @@ CONTAINS
        INTEGER            :: ierr
        !
 #ifdef __ETSF_IO
+       INTEGER            :: ncid2
+       CHARACTER(256)     :: filename
        TYPE(etsf_geometry)                   :: geometry
        DOUBLE PRECISION, ALLOCATABLE, TARGET :: primitive_vectors(:,:)
 #endif
@@ -142,7 +145,18 @@ CONTAINS
            !
            geometry%primitive_vectors                 => primitive_vectors
            !
-           IF ( ionode ) CALL etsf_io_geometry_get(ncid, geometry, lstat, error_data)
+           filename=TRIM(work_dir)//'/'//TRIM(prefix)//"_DEN-etsf.nc"
+           !
+           IF ( ionode ) THEN
+               !
+               CALL etsf_io_low_open_read(ncid2, filename, lstat, &
+                                          ERROR_DATA=error_data, &
+                                          VERSION_MIN=etsf_io_version_min )
+               IF ( .NOT. lstat ) CALL errore(subname,"unable to open "//TRIM(filename),10)
+               !
+           ENDIF
+           !
+           IF ( ionode ) CALL etsf_io_geometry_get(ncid2, geometry, lstat, error_data)
            !
            geometry%primitive_vectors                 => null()
            !
@@ -150,6 +164,13 @@ CONTAINS
            CALL mp_bcast( lstat,  ionode_id )
            !
            IF ( .NOT. lstat ) CALL etsf_error(error_data,subname,'ETSF_IO: reading lattice',10)
+           !
+           !
+           IF ( ionode ) THEN
+               CALL etsf_io_low_close(ncid2, lstat, error_data)
+               IF ( .NOT. lstat ) CALL errore(subname,"closing "//TRIM(filename),10)
+           ENDIF
+
            ! 
            ! define internal quantities
            !
