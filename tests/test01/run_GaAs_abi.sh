@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/bash 
 #
 # GaAs bulk, Using Abinit
 # 
@@ -88,6 +88,15 @@ fi
 #
 run_abinit  NAME=DFT  SUFFIX=$SUFFIX  PARALLEL=no  RUN=$ABI  
 
+#
+# take care of some naming convention changes
+# occured with abinit 7.
+if [ "$DISENTANGLE" = "yes" ] ; then
+   if [ -e ./SCRATCH/gaas-o_DS2_WFK_0-etsf.nc ] ; then 
+      mv ./SCRATCH/gaas-o_DS2_WFK_0-etsf.nc ./SCRATCH/gaas-o_DS2_WFK-etsf.nc 
+      echo gaas-o_DS2_WFK_0-etsf.nc moved to gaas-o_DS2_WFK-etsf.nc
+   fi
+fi
 
 #
 # running DISENTANGLE
