@@ -91,11 +91,17 @@ run_abinit  NAME=DFT  SUFFIX=$SUFFIX  PARALLEL=no  RUN=$ABI
 #
 # take care of some naming convention changes
 # occured with abinit 7.
-if [ "$DISENTANGLE" = "yes" ] ; then
-   if [ -e ./SCRATCH/gaas-o_DS2_WFK_0-etsf.nc ] ; then 
-      mv ./SCRATCH/gaas-o_DS2_WFK_0-etsf.nc ./SCRATCH/gaas-o_DS2_WFK-etsf.nc 
-      echo gaas-o_DS2_WFK_0-etsf.nc moved to gaas-o_DS2_WFK-etsf.nc
-   fi
+
+#if [ "$DISENTANGLE" = "yes" ] ; then
+#   if [ -e ./SCRATCH/gaas-o_DS2_WFK_0-etsf.nc ] ; then 
+#      mv ./SCRATCH/gaas-o_DS2_WFK_0-etsf.nc ./SCRATCH/gaas-o_DS2_WFK-etsf.nc 
+#      echo gaas-o_DS2_WFK_0-etsf.nc moved to gaas-o_DS2_WFK-etsf.nc
+#   fi
+#fi
+if [ "$ABI" = "yes" ] ; then
+   if [ -e ./SCRATCH/gaas-o_DS2_WFK-etsf.nc ] ; then rm ./SCRATCH/gaas-o_DS2_WFK-etsf.nc ; fi
+   $WANT_BIN/wfk2etsf.x  ./SCRATCH/gaas-o_DS2_WFK
+   echo converting   gaas-o_DS2_WFK  --\>  gaas-o_DS2_WFK-etsf.nc
 fi
 
 #
