@@ -416,11 +416,9 @@ CONTAINS
        INTEGER             :: ierr
        !
 #ifdef __ETSF_IO
-       INTEGER             :: ncid2
        REAL(dbl)           :: volume
        TYPE(etsf_kpoints)  :: kpoints
        TYPE(etsf_geometry) :: geometry
-       CHARACTER(256)      :: filename
        !
        DOUBLE PRECISION, ALLOCATABLE, TARGET :: primitive_vectors(:,:)
        DOUBLE PRECISION, ALLOCATABLE, TARGET :: reduced_coordinates_of_kpoints(:,:)
@@ -472,19 +470,8 @@ CONTAINS
             ALLOCATE( primitive_vectors(dims%number_of_cartesian_directions, &
                                         dims%number_of_vectors) )
             !
-            filename=TRIM(work_dir)//'/'//TRIM(prefix)//"_DEN-etsf.nc"
-            !
-            IF ( ionode ) THEN
-                !
-                CALL etsf_io_low_open_read(ncid2, filename, lstat, &
-                                           ERROR_DATA=error_data, &
-                                           VERSION_MIN=etsf_io_version_min )
-                IF ( .NOT. lstat ) CALL errore(subname,"unable to open "//TRIM(filename),10)
-                !
-            ENDIF
-
             geometry%primitive_vectors                   => primitive_vectors
-            IF (ionode) CALL etsf_io_geometry_get(ncid2, geometry, lstat, error_data)
+            IF (ionode) CALL etsf_io_geometry_get(ncid, geometry, lstat, error_data)
             !
             geometry%primitive_vectors                   => null()
             !
@@ -610,7 +597,7 @@ CONTAINS
             !
             kpoints%reduced_coordinates_of_kpoints  => reduced_coordinates_of_kpoints
             kpoints%kpoint_weights                  => kpoint_weights
-            IF ( ionode ) CALL etsf_io_kpoints_get(ncid2, kpoints, lstat, error_data)
+            IF ( ionode ) CALL etsf_io_kpoints_get(ncid, kpoints, lstat, error_data)
             !
             kpoints%reduced_coordinates_of_kpoints  => null()
             kpoints%kpoint_weights                  => null()
@@ -621,11 +608,6 @@ CONTAINS
             !
             IF ( .NOT. lstat ) CALL etsf_error(error_data,subname,'ETSF_IO reading data',10)
             !
-            IF ( ionode ) THEN
-                CALL etsf_io_low_close(ncid2, lstat, error_data)
-                IF ( .NOT. lstat ) CALL errore(subname,"closing "//TRIM(filename),10)
-            ENDIF
-
             !
             vkpt_g  = reduced_coordinates_of_kpoints
             wk_g    = kpoint_weights

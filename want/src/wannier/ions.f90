@@ -236,13 +236,11 @@ CONTAINS
        LOGICAL                   :: found
        !   
 #ifdef __ETSF_IO
-       INTEGER                               :: ncid2
        TYPE(etsf_geometry)                   :: geometry
        DOUBLE PRECISION, ALLOCATABLE, TARGET :: primitive_vectors(:,:)
        INTEGER,          ALLOCATABLE, TARGET :: atom_species(:)
        DOUBLE PRECISION, ALLOCATABLE, TARGET :: reduced_atom_positions(:,:)
        CHARACTER(LEN=etsf_chemlen), ALLOCATABLE, TARGET :: chemical_symbols(:)
-       CHARACTER(256) :: filename
 #endif
 
        CALL log_push( subname )
@@ -404,7 +402,7 @@ CONTAINS
             !
             geometry%primitive_vectors         => primitive_vectors
             geometry%chemical_symbols          => chemical_symbols
-            !geometry%atom_species              => atom_species
+            geometry%atom_species              => atom_species
             geometry%reduced_atom_positions    => reduced_atom_positions
             !
             IF ( ionode ) THEN
@@ -422,34 +420,6 @@ CONTAINS
             CALL mp_bcast( primitive_vectors,       ionode_id )
             CALL mp_bcast( chemical_symbols,        ionode_id )
             CALL mp_bcast( reduced_atom_positions,  ionode_id )
-
-            !
-            !
-            ! workaround to get atom_species from the density file
-            !
-            geometry%atom_species              => atom_species
-            !
-            IF ( ionode ) THEN
-                !
-                filename=TRIM(work_dir)//'/'//TRIM(prefix)//"_DEN-etsf.nc"
-                !
-                CALL etsf_io_low_open_read(ncid2, filename, lstat, &
-                                           ERROR_DATA=error_data, &
-                                           VERSION_MIN=etsf_io_version_min )
-                IF ( .NOT. lstat ) CALL errore(subname,"unable to open "//TRIM(filename),10)
-                !
-                call etsf_io_low_read_var(ncid2, "atom_species", &
-                                & geometry%atom_species, &
-                                & lstat, error_data = error_data)
-                IF ( .NOT. lstat ) CALL errore(subname,"reading atom_species",10)
-                !
-                CALL etsf_io_low_close(ncid2, lstat, error_data)
-                IF ( .NOT. lstat ) CALL errore(subname,"closing "//TRIM(filename),10)
-                !
-            ENDIF
-            !
-            geometry%atom_species              => null()
-            !
             CALL mp_bcast( atom_species,            ionode_id )
 
             !
