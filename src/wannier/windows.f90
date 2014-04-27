@@ -17,6 +17,7 @@
    USE log_module,               ONLY : log_push, log_pop
    USE parser_module,            ONLY : change_case
    USE kpoints_module,           ONLY : nkpts_g, kpoints_alloc
+   USE io_module,                ONLY : work_dir, prefix, etsf_io_version_min
    USE io_global_module,         ONLY : ionode, ionode_id
    USE control_module,           ONLY : read_efermi
    USE input_parameters_module,  ONLY : iwin_mink, iwin_maxk, ifroz_mink, ifroz_maxk
@@ -827,7 +828,7 @@ CONTAINS
             CALL mp_bcast( lstat,         ionode_id )
             !
             IF ( .NOT. lstat ) CALL etsf_error(error_data,subname,'ETSF_IO: reading bands',10)
-            !
+            ! 
             str = "Hartree"
             !
             leig( 1:nbnd, 1:nkpts_g, 1:nspin) = eigenvalues(:,:,:)

@@ -4,6 +4,13 @@
 =======================================================
 
 
+-------------------------------------------------
+Date: 28 Apr 2014    Version: WanT-2.5.0
+-------------------------------------------------
+
+27 Apr 2014     wfk2etsf.x used to interface WanT and Abinit. Suggestion by
+		T. Rangel. (AF)
+
 17 Apr 2014     bugs fixed in the CRYSTAL to WanT interface. test16 and test13 updated.
 		polyacetylene case added to test13. All tests runned and checked.
 		References updated in tests 13,15,16 . (AF)

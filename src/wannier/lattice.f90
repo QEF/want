@@ -15,6 +15,7 @@
    USE parameters,               ONLY : nstrx
    USE log_module,               ONLY : log_push, log_pop
    USE parser_module,            ONLY : change_case
+   USE io_module,                ONLY : work_dir, prefix, etsf_io_version_min
    USE io_global_module,         ONLY : ionode, ionode_id
    USE mp,                       ONLY : mp_bcast
    USE qexml_module
@@ -150,6 +151,7 @@ CONTAINS
            CALL mp_bcast( lstat,  ionode_id )
            !
            IF ( .NOT. lstat ) CALL etsf_error(error_data,subname,'ETSF_IO: reading lattice',10)
+
            ! 
            ! define internal quantities
            !

@@ -14,7 +14,7 @@
    USE kinds,             ONLY : dbl
    USE constants,         ONLY : ZERO, ONE, TWO, TPI, EPS_m6, BOHR => bohr_radius_angs
    USE parameters,        ONLY : nstrx, nnx, nkptx => npkx
-   USE io_module,         ONLY : stdout
+   USE io_module,         ONLY : stdout, work_dir, prefix, etsf_io_version_min
    USE log_module,        ONLY : log_push, log_pop
    USE lattice_module,    ONLY : alat, avec, bvec, lattice_alloc => alloc
    USE parser_module,     ONLY : change_case
@@ -268,7 +268,7 @@ CONTAINS
           !
       ELSE
           !
-          CALL get_monkpack( nk, s, nkpts_g, vkpt_g,'CARTESIAN',bvec,ierr)
+          CALL get_monkpack( nk, s, nkpts_g, vkpt_g,'CARTESIAN', bvec, ierr)
           IF ( ierr /= 0) CALL errore(subname,'kpt grid not Monkhorst-Pack',ABS(ierr))
           !
       ENDIF
@@ -608,6 +608,7 @@ CONTAINS
             !
             IF ( .NOT. lstat ) CALL etsf_error(error_data,subname,'ETSF_IO reading data',10)
             !
+            !
             vkpt_g  = reduced_coordinates_of_kpoints
             wk_g    = kpoint_weights
             k_units = 'crystal'
@@ -732,8 +733,7 @@ CONTAINS
        !
        vkpt( :, 1:nkpts ) = vkpt_g(:, iks:ike )
        wk( 1:nkpts )      = wk_g( iks:ike )
-
-
+       !
        CALL log_pop ( subname )
        !
    END SUBROUTINE kpoints_read_ext

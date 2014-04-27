@@ -17,7 +17,7 @@
    USE kinds,             ONLY : dbl
    USE constants,         ONLY : ZERO, BOHR => bohr_radius_angs
    USE parameters,        ONLY : ntypx, natx, nstrx
-   USE io_module,         ONLY : pseudo_dir, prefix, work_dir
+   USE io_module,         ONLY : pseudo_dir, prefix, work_dir, etsf_io_version_min
    USE log_module,        ONLY : log_push, log_pop
    USE parser_module,     ONLY : change_case
    USE io_global_module,  ONLY : ionode, ionode_id
@@ -30,7 +30,7 @@
 #ifdef __ETSF_IO
    USE etsf_io
    USE etsf_io_tools
-   USE etsf_io_data_module
+   USE etsf_io_data_module,  ONLY : ncid, lstat, dims, error_data, etsf_io_bcast
 #endif
    !
    IMPLICIT NONE
@@ -405,28 +405,38 @@ CONTAINS
             geometry%atom_species              => atom_species
             geometry%reduced_atom_positions    => reduced_atom_positions
             !
-            IF ( ionode ) CALL etsf_io_geometry_get(ncid, geometry, lstat, error_data) 
+            IF ( ionode ) THEN
+                CALL etsf_io_geometry_get(ncid, geometry, lstat, error_data) 
+            ENDIF
+            !
+            CALL mp_bcast( lstat,                   ionode_id )
+            IF (.NOT. lstat) CALL etsf_error(error_data,subname,'ETSF_IO: reading data' , 11 )
             !
             geometry%primitive_vectors         => null()
             geometry%chemical_symbols          => null()
             geometry%atom_species              => null()
             geometry%reduced_atom_positions    => null()
-            !
+
             CALL mp_bcast( primitive_vectors,       ionode_id )
             CALL mp_bcast( chemical_symbols,        ionode_id )
-            CALL mp_bcast( atom_species,            ionode_id )
             CALL mp_bcast( reduced_atom_positions,  ionode_id )
-            CALL mp_bcast( lstat,                   ionode_id )
-            !
-            IF (.NOT. lstat) CALL etsf_error(error_data,subname,'ETSF_IO: reading data' , 11 )
+            CALL mp_bcast( atom_species,            ionode_id )
+
             !
             pseudo_dir  = " "
             psfile(:)   = " "
             !
             atm_symb( 1: nsp )  = chemical_symbols( 1: dims%number_of_atom_species )
             !
+            ! this is a workaround because atom_species seems not to be
+            ! set in the WFK etsf file. It is set in the density file instead.
+            !
             DO i = 1, nat
-                symb( i ) = chemical_symbols( atom_species( i ) )
+                IF ( atom_species( i ) > 0 .AND. atom_species( i ) <= nsp ) THEN
+                    symb( i ) = chemical_symbols( atom_species( i ) )
+                ELSE
+                    symb( i ) = "X"
+                ENDIF
             ENDDO
             !
             !
