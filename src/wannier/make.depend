@@ -60,6 +60,7 @@ bands.o : version.o
 bands.o : want_interfaces.o
 bands.o : windows.o
 becmod.o : ../baselib/kind.o
+blc2wan.o : atmproj_tools.o
 blc2wan.o : ../baselib/constants.o
 blc2wan.o : ../baselib/files.o
 blc2wan.o : ../baselib/kind.o
@@ -833,12 +834,14 @@ unfold.o : get_rgrid.o
 unfold.o : hamiltonian.o
 unfold.o : input_parameters.o
 unfold.o : io_module.o
+unfold.o : ions.o
 unfold.o : kpoints.o
 unfold.o : lattice.o
 unfold.o : localization.o
 unfold.o : operator.o
 unfold.o : subspace.o
 unfold.o : translations.o
+unfold.o : uspp.o
 unfold.o : version.o
 unfold.o : want_interfaces.o
 unfold.o : windows.o
@@ -992,6 +995,7 @@ windows.o : ../baselib/timing.o
 windows.o : control.o
 windows.o : etsf_io_data.o
 windows.o : input_parameters.o
+windows.o : io_module.o
 windows.o : kpoints.o
 workspace_dis.o : ../baselib/constants.o
 workspace_dis.o : ../baselib/kind.o

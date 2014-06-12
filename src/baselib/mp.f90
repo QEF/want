@@ -6,9 +6,6 @@
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
 
-#if defined __HPM
-#  include "/cineca/prod/hpm/include/f_hpm.h"
-#endif
 !
 ! This module contains interfaces to most low-level MPI operations:
 ! initialization and stopping, broadcast, parallel sum, etc.

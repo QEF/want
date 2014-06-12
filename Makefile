@@ -58,6 +58,10 @@ libclib:
 	if test -d src/clib ; then \
 	( cd src/clib ; $(MAKE) ) ; fi
 
+libfftqe:
+	if test -d src/fftqe ; then \
+	( cd src/fftqe ; $(MAKE) ) ; fi
+
 libwant: libextlibs libplugins
 	if test -d src/baselib ; then \
 	( cd src/baselib ; $(MAKE) ) ; fi
@@ -85,6 +89,7 @@ clean:
 	if test -d extlibs ;       then ( cd extlibs;       $(MAKE) clean ) ; fi
 	if test -d plugins ;       then ( cd plugins;       $(MAKE) clean ) ; fi
 	if test -d src/clib ;      then ( cd src/clib;      $(MAKE) clean ) ; fi
+	if test -d src/fftqe ;     then ( cd src/fftqe;     $(MAKE) clean ) ; fi
 	if test -d src/baselib ;   then ( cd src/baselib;   $(MAKE) clean ) ; fi
 	if test -d src/wannier ;   then ( cd src/wannier;   $(MAKE) clean ) ; fi
 	if test -d src/transport ; then ( cd src/transport; $(MAKE) clean ) ; fi
@@ -108,7 +113,7 @@ wash : wash_extlibs wash_plugins clean
 	- /bin/rm -rf make.sys ./config/configure.msg \
 		./config/config.log ./config/config.status \
 		./config/*.lineno \
-		./include/configure.h ./include/fft_defs.h \
+		./include/configure.h ./include/fftqe_defs.h \
 	        ./include/c_defs.h ./include/iotk_config.h \
 		*/dum1 */dum2 
 	- touch make.sys

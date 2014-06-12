@@ -17,7 +17,7 @@
 !----------------------------------------------------------------------!
 
 
-#include "fft_defs.h"
+#include "fftqe_defs.h"
 
 #if defined __FFTMKL8
 
@@ -376,7 +376,7 @@
      C_POINTER, SAVE :: bw_planz( ndims ) = 0
 
      !   Pointers to the "C" structures containing FFT factors ( PLAN )
-     !   C_POINTER is defined in include/fft_defs.h
+     !   C_POINTER is defined in include/fftqe_defs.h
      !   for 32bit executables, C_POINTER is integer(4)
      !   for 64bit executables, C_POINTER is integer(8)
 

@@ -9,7 +9,7 @@ cd ..
 TOPDIR=`pwd`
 BINDIR=$TOPDIR/config
 
-DIR_LIST="baselib wannier transport tools embed"
+DIR_LIST="fftqe baselib wannier transport tools embed"
 SPECIAL_MODULES="etsf_io  etsf_io_tools  etsf_io_low_level \
                  mkl_dfti.f90  iotk_module iotk_base  iotk_error_interf \
                  phigemm  magma  iso_c_binding \
@@ -20,11 +20,12 @@ for DIR in $DIR_LIST
 do
     # set inter-directory dependencies
     case $DIR in
-        baselib )   DEPENDS="../../include"            ;;
-        wannier )   DEPENDS="../../include ../baselib" ;;
-        transport ) DEPENDS="../../include ../baselib ../wannier " ;;
-        tools )     DEPENDS="../../include ../baselib ../wannier " ;;
-        embed )     DEPENDS="../../include ../baselib ../wannier ../transport" ;;
+        fftqe )     DEPENDS="../../include"            ;;
+        baselib )   DEPENDS="../../include ../fftqe"   ;;
+        wannier )   DEPENDS="../../include ../fftqe ../baselib" ;;
+        transport ) DEPENDS="../../include ../fftqe ../baselib ../wannier " ;;
+        tools )     DEPENDS="../../include ../fftqe ../baselib ../wannier " ;;
+        embed )     DEPENDS="../../include ../fftqe ../baselib ../wannier ../transport" ;;
     esac
 
     # generate dependencies file
@@ -36,10 +37,10 @@ do
     fi
 
     # handle special cases
-    if test "$DIR" = "baselib"
-    then
+    if [ "$DIR" = "baselib" -o "$DIR" = "fftqe" ] ; then
         mv make.depend make.depend.tmp
-        sed 's/@fftw.c@/fftw.c/' make.depend.tmp > make.depend
+        sed 's/@fftw.c@/fftw.c/
+             s/@fftw2.c@/fftw2.c/'  make.depend.tmp > make.depend
     fi
 
     # eliminate dependencies on special modules
