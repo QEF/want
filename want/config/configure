@@ -4519,7 +4519,7 @@ _ACEOF
 
 SIZEOF_INT_P=$ac_cv_sizeof_int_p
 
-ac_config_files="$ac_config_files include/fft_defs.h:include/fft_defs.h.in"
+ac_config_files="$ac_config_files include/fftqe_defs.h:include/fftqe_defs.h.in"
 
 
 # check if the structure mallinfo is present in malloc.h
@@ -9427,7 +9427,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
-    "include/fft_defs.h") CONFIG_FILES="$CONFIG_FILES include/fft_defs.h:include/fft_defs.h.in" ;;
+    "include/fftqe_defs.h") CONFIG_FILES="$CONFIG_FILES include/fftqe_defs.h:include/fftqe_defs.h.in" ;;
     "include/c_defs.h") CONFIG_HEADERS="$CONFIG_HEADERS include/c_defs.h:include/c_defs.h.in" ;;
     "include/configure.h") CONFIG_FILES="$CONFIG_FILES include/configure.h:include/configure.h.in" ;;
     "make.sys") CONFIG_FILES="$CONFIG_FILES make.sys" ;;

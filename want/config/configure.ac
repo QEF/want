@@ -538,7 +538,7 @@ echo setting CC... $cc
 AC_CHECK_SIZEOF([int *])
 SIZEOF_INT_P=$ac_cv_sizeof_int_p
 AC_SUBST(SIZEOF_INT_P)
-AC_CONFIG_FILES([include/fft_defs.h:include/fft_defs.h.in])
+AC_CONFIG_FILES([include/fftqe_defs.h:include/fftqe_defs.h.in])
 
 # check if the structure mallinfo is present in malloc.h
 AC_CHECK_HEADER(malloc.h,have_malloc_h=1,have_malloc_h=0, )
