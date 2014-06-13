@@ -61,9 +61,9 @@ SUBROUTINE tg_cft3s( f, dfft, isgn, use_task_groups )
   !
   USE fft_scalar, ONLY : cft_1z, cft_2xy
   USE fft_base,   ONLY : fft_scatter
-  USE kinds,      ONLY : DP
+  USE fft_kinds,  ONLY : DP
   USE fft_types,  ONLY : fft_dlay_descriptor
-  USE parallel_include
+  USE fft_parallel_include
 
   !
   IMPLICIT NONE

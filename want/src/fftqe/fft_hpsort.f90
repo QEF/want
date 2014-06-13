@@ -25,7 +25,7 @@ subroutine hpsort (n, ra, ind)
   !
   ! adapted from Numerical Recipes pg. 329 (new edition)
   !
-  use kinds, only : SP
+  use fft_kinds, only : SP
   implicit none  
   !-input/output variables
   integer :: n  

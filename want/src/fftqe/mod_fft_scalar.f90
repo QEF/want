@@ -20,7 +20,7 @@
 !=----------------------------------------------------------------------=!
    MODULE fft_scalar
 !=----------------------------------------------------------------------=!
-   USE kinds,    ONLY:DP
+   USE fft_kinds,    ONLY:DP
         IMPLICIT NONE
         SAVE
         PRIVATE
@@ -2015,7 +2015,7 @@ integer function good_fft_dimension (n)
   ! Determines the optimal maximum dimensions of fft arrays
   ! Useful on some machines to avoid memory conflicts
   !
-  USE kinds, only : DP
+  USE fft_kinds, only : DP
   IMPLICIT NONE
   INTEGER :: n, nx
   REAL(DP) :: log2n
@@ -2048,7 +2048,7 @@ function allowed (nr)
   ! a "bad one" is either not implemented (as on IBM with ESSL)
   ! or implemented but with awful performances (most other cases)
 
-  USE kinds
+  USE fft_kinds
 
   implicit none
   integer :: nr

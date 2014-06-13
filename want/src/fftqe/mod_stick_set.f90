@@ -17,8 +17,8 @@
 !  ... Most important dependencies: next three modules
       USE stick_base
 !
-      USE kinds, ONLY: DP
-      USE io_global, ONLY: ionode, stdout
+      USE fft_kinds, ONLY: DP
+      USE fft_io_global, ONLY: ionode, stdout
       USE fft_types, ONLY: fft_dlay_descriptor, fft_dlay_allocate, &
                            fft_dlay_set, fft_dlay_scalar
 
@@ -512,9 +512,8 @@
 
 SUBROUTINE task_groups_init( dffts )
 
-   USE parallel_include
-   !
-   USE io_global,      ONLY : stdout
+   USE fft_parallel_include
+   USE fft_io_global,  ONLY : stdout
    USE fft_types,      ONLY : fft_dlay_descriptor
 
    ! T.G.
@@ -612,8 +611,7 @@ END SUBROUTINE task_groups_init
   !
 SUBROUTINE task_groups_init_first( dffts )
 
-   USE parallel_include
-   !
+   USE fft_parallel_include
    USE fft_types,      ONLY : fft_dlay_descriptor
    !
    IMPLICIT NONE

@@ -9,7 +9,7 @@
 !
 MODULE fft_types
 
-  USE io_global,  ONLY :  stdout
+  USE fft_io_global,  ONLY :  stdout
 
   IMPLICIT NONE
   SAVE

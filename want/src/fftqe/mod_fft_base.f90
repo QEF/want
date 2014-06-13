@@ -16,8 +16,8 @@
    MODULE fft_base
 !=----------------------------------------------------------------------=!
 
-        USE kinds, ONLY: DP
-        USE parallel_include
+        USE fft_kinds, ONLY: DP
+        USE fft_parallel_include
 
         USE fft_types, ONLY: fft_dlay_descriptor
 
@@ -94,9 +94,9 @@ SUBROUTINE fft_scatter ( dfft, f_in, nr3x, nxx_, f_aux, ncp_, npp_, isgn, use_tg
   !  the trasposition using the Task Groups distribution
   !
 #ifdef __MPI
-  USE parallel_include
+  USE fft_parallel_include
 #endif
-  USE kinds,       ONLY : DP
+  USE fft_kinds,       ONLY : DP
 
   IMPLICIT NONE
 
@@ -392,8 +392,8 @@ SUBROUTINE grid_gather( f_in, f_out )
   ! ... REAL*8  f_in  = distributed variable (nxx)
   ! ... REAL*8  f_out = gathered variable (nr1x*nr2x*nr3x)
   !
-  USE kinds,     ONLY : DP
-  USE parallel_include
+  USE fft_kinds,     ONLY : DP
+  USE fft_parallel_include
   !
   IMPLICIT NONE
   !
@@ -456,8 +456,8 @@ SUBROUTINE grid_scatter( f_in, f_out )
   ! ... REAL*8  f_in  = gathered variable (nr1x*nr2x*nr3x)
   ! ... REAL*8  f_out = distributed variable (nxx)
   !
-  USE kinds,     ONLY : DP
-  USE parallel_include
+  USE fft_kinds,     ONLY : DP
+  USE fft_parallel_include
   !
   IMPLICIT NONE
   !
@@ -522,8 +522,8 @@ SUBROUTINE cgather_sym( f_in, f_out )
   ! ... COMPLEX*16  f_in  = distributed variable (nrxx)
   ! ... COMPLEX*16  f_out = gathered variable (nr1x*nr2x*nr3x)
   !
-  USE mp,        ONLY : mp_barrier
-  USE parallel_include
+  USE fft_mp,        ONLY : mp_barrier
+  USE fft_parallel_include
   !
   IMPLICIT NONE
   !
@@ -582,9 +582,9 @@ SUBROUTINE cgather_smooth ( f_in, f_out )
   ! ... COMPLEX*16  f_in  = distributed variable ( dffts%nnr )
   ! ... COMPLEX*16  f_out = gathered variable (nr1sx*nr2sx*nr3sx)
   !
-  USE mp,        ONLY : mp_barrier
-  USE kinds,     ONLY : DP
-  USE parallel_include
+  USE fft_mp,    ONLY : mp_barrier
+  USE fft_kinds, ONLY : DP
+  USE fft_parallel_include
   !
   IMPLICIT NONE
   !
@@ -641,9 +641,9 @@ SUBROUTINE cgather_custom ( f_in, f_out, dfftt )
   ! ... COMPLEX*16  f_in  = distributed variable ( dfftt%nnr )
   ! ... COMPLEX*16  f_out = gathered variable (nr1sx*nr2sx*nr3sx)
   !
-  USE mp,        ONLY : mp_barrier
-  USE kinds,     ONLY : DP
-  USE parallel_include
+  USE fft_mp,    ONLY : mp_barrier
+  USE fft_kinds, ONLY : DP
+  USE fft_parallel_include
   !
   IMPLICIT NONE
   !
@@ -701,9 +701,9 @@ SUBROUTINE cscatter_sym( f_in, f_out )
   ! ... COMPLEX*16  f_in  = gathered variable (nr1x*nr2x*nr3x)
   ! ... COMPLEX*16  f_out = distributed variable (nxx)
   !
-  USE mp,        ONLY : mp_barrier
-  USE kinds,     ONLY : DP
-  USE parallel_include
+  USE fft_mp,    ONLY : mp_barrier
+  USE fft_kinds, ONLY : DP
+  USE fft_parallel_include
   !
   IMPLICIT NONE
   !
@@ -761,9 +761,9 @@ SUBROUTINE cscatter_smooth( f_in, f_out )
   ! ... COMPLEX*16  f_in  = gathered variable (nr1sx*nr2sx*nr3sx)
   ! ... COMPLEX*16  f_out = distributed variable ( dffts%nnr)
   !
-  USE mp,        ONLY : mp_barrier
-  USE kinds,     ONLY : DP
-  USE parallel_include
+  USE fft_mp,    ONLY : mp_barrier
+  USE fft_kinds, ONLY : DP
+  USE fft_parallel_include
   !
   IMPLICIT NONE
   !
@@ -821,9 +821,9 @@ SUBROUTINE cscatter_custom( f_in, f_out, dfftt )
   ! ... COMPLEX*16  f_in  = gathered variable (nr1sx*nr2sx*nr3sx)
   ! ... COMPLEX*16  f_out = distributed variable ( dfftt%nnr)
   !
-  USE mp,        ONLY : mp_barrier
-  USE kinds,     ONLY : DP
-  USE parallel_include
+  USE fft_mp,    ONLY : mp_barrier
+  USE fft_kinds, ONLY : DP
+  USE fft_parallel_include
   !
   IMPLICIT NONE
   !
@@ -883,9 +883,9 @@ SUBROUTINE gather_smooth ( f_in, f_out )
   ! ... REAL*8      f_in  = distributed variable ( dffts%nnr )
   ! ... REAL*8      f_out = gathered variable (nr1sx*nr2sx*nr3sx)
   !
-  USE mp,        ONLY : mp_barrier
-  USE kinds,     ONLY : DP
-  USE parallel_include
+  USE fft_mp,    ONLY : mp_barrier
+  USE fft_kinds, ONLY : DP
+  USE fft_parallel_include
   !
   IMPLICIT NONE
   !
@@ -941,9 +941,9 @@ SUBROUTINE scatter_smooth( f_in, f_out )
   ! ... REAL*8      f_in  = gathered variable (nr1sx*nr2sx*nr3sx)
   ! ... REAL*8      f_out = distributed variable ( dffts%nnr)
   !
-  USE mp,        ONLY : mp_barrier
-  USE kinds,     ONLY : DP
-  USE parallel_include
+  USE fft_mp,    ONLY : mp_barrier
+  USE fft_kinds, ONLY : DP
+  USE fft_parallel_include
   !
   IMPLICIT NONE
   !
@@ -995,7 +995,7 @@ END SUBROUTINE scatter_smooth
 !
 SUBROUTINE tg_gather( dffts, v, tg_v )
    !
-   USE parallel_include
+   USE fft_parallel_include
    !
    USE fft_types,      ONLY : fft_dlay_descriptor
 
