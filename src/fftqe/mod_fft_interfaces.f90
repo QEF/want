@@ -21,7 +21,7 @@
    INTERFACE invfft
       SUBROUTINE invfft_x( grid_type, f, dfft, ia )
          USE fft_types,  only: fft_dlay_descriptor
-         USE kinds,      ONLY: DP
+         USE fft_kinds,  only: DP
          IMPLICIT NONE
          INTEGER, OPTIONAL, INTENT(IN) :: ia
          CHARACTER(LEN=*),  INTENT(IN) :: grid_type
@@ -33,7 +33,7 @@
    INTERFACE fwfft
       SUBROUTINE fwfft_x( grid_type, f, dfft )
          USE fft_types,  only: fft_dlay_descriptor
-         USE kinds,      ONLY: DP
+         USE fft_kinds,  ONLY: DP
          IMPLICIT NONE
          CHARACTER(LEN=*), INTENT(IN) :: grid_type
          TYPE(fft_dlay_descriptor), INTENT(IN) :: dfft
@@ -88,7 +88,7 @@
 !   is overwritten
 !
 !
-      USE kinds,         ONLY: DP
+      USE fft_kinds,     ONLY: DP
       use fft_base,      only: dfftp, dffts, dfftb
       use fft_scalar,    only: cfft3d, cfft3ds, cft_b, cft_b_omp
       use fft_parallel,  only: tg_cft3s
@@ -248,7 +248,7 @@
 !   on a custom defined grid specified by dfft. On output, f 
 !   is overwritten
 ! 
-      USE kinds,         ONLY: DP
+      USE fft_kinds,     ONLY: DP
       use fft_base,      only: dfftp, dffts
       use fft_scalar,    only: cfft3d, cfft3ds
       use fft_parallel,  only: tg_cft3s

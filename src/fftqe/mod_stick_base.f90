@@ -11,8 +11,8 @@
    MODULE stick_base
 !=----------------------------------------------------------------------=
 
-      USE kinds
-      USE io_global, ONLY: ionode
+      USE fft_kinds
+      USE fft_io_global, ONLY: ionode
 
         IMPLICIT NONE
         PRIVATE
@@ -32,7 +32,7 @@
 
       SUBROUTINE sticks_maps( tk, ub, lb, b1, b2, b3, gcut, gcutw, gcuts, st, stw, sts, me, nproc, comm )
 
-          USE mp, ONLY: mp_sum
+          USE fft_mp, ONLY: mp_sum
 
           LOGICAL, INTENT(in) :: tk    !  if true use the full space grid
           INTEGER, INTENT(in) :: ub(:) !  upper bounds for i-th grid dimension

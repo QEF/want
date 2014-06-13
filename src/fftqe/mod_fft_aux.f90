@@ -8,7 +8,7 @@
 #include "fftqe_defs.h"
 !
 !------------------------------------------------------------------------------!
-module kinds
+module fft_kinds
   !------------------------------------------------------------------------------!
   !
   implicit none
@@ -21,10 +21,10 @@ module kinds
   private
   public :: i4b, sgl, SP, DP
   !
-end module kinds
+end module fft_kinds
 
 !------------------------------------------------------------------------------!
-module io_global
+module fft_io_global
   !------------------------------------------------------------------------------!
   !
   implicit none
@@ -34,7 +34,7 @@ module io_global
   integer, parameter :: ionode_id = 0
   logical, parameter :: ionode = .FALSE.
   !
-end module io_global
+end module fft_io_global
 !
 !
 ! Copyright (C) 2003-2004 Carlo Cavazzoni
@@ -46,7 +46,7 @@ end module io_global
 !------------------------------------------------------------------------------!
 !   SISSA Code Interface -- Carlo Cavazzoni
 !------------------------------------------------------------------------------C
-MODULE parallel_include
+MODULE fft_parallel_include
 
 #if defined __MPI 
 !
@@ -61,15 +61,15 @@ MODULE parallel_include
          LOGICAL :: tparallel = .false.
 #endif
 
-END MODULE parallel_include
+END MODULE fft_parallel_include
 
 !------------------------------------------------------------------------------!
-module mp
+module fft_mp
   !------------------------------------------------------------------------------!
   !
-  use kinds,     only : DP
-  use io_global, only : stdout
-  use parallel_include
+  use fft_kinds, only : DP
+  use fft_io_global, only : stdout
+  use fft_parallel_include
   !
   implicit none
   save
@@ -152,7 +152,7 @@ contains
 #endif
    END SUBROUTINE mp_sum_im
   !
-end module mp
+end module fft_mp
 
 !------------------------------------------------------------------------------!
 subroutine start_clock( str )
@@ -179,9 +179,9 @@ SUBROUTINE reduce_base_integer( dim, ps, comm, root )
   ! ... sums a distributed variable ps(dim) over the processors.
   ! ... This version uses a fixed-length buffer of appropriate (?) dim
   !
-  USE kinds, ONLY : DP
-  USE parallel_include  
-  USE mp
+  USE fft_kinds, ONLY : DP
+  USE fft_parallel_include  
+  USE fft_mp
   !
   !  In some MPI implementation the communication subsystem
   !  crashes when message exceeds a given size, so we need

@@ -6,7 +6,7 @@
 include ../../make.sys
 
 OBJS= \
-fft_desc_init.o \
+fft_desc_init.o 
 
 
 #

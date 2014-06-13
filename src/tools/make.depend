@@ -30,7 +30,6 @@ q2trans.o : ../baselib/fft_scalar.o
 q2trans.o : ../baselib/kind.o
 q2trans.o : ../baselib/mp_global.o
 q2trans.o : ../baselib/mp.o
-q2trans.o : ../fftqe/mod_fft_aux.o
 sax2qexml.o : ../baselib/constants.o
 sax2qexml.o : ../baselib/kind.o
 sax2qexml.o : ../baselib/log_module.o
