@@ -37,7 +37,7 @@ libetsf_io_:
 #
 # cleaning
 #
-clean wash:
+clean clean_all:
 	 if test -d netcdf ;    then ( cd netcdf;    $(MAKE) $@ ) ; fi
 	 if test -d etsf_io ;   then ( cd etsf_io;   $(MAKE) $@ ) ; fi
 
