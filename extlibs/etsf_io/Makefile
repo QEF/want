@@ -13,11 +13,11 @@ TARBALL=$(tarball_etsf_io)
 #
 # redefinitions
 #
-INSTALL_DIR=$(TOPDIR)/plugins/etsf_io/tmp
+INSTALL_DIR=$(TOPDIR)/extlibs/etsf_io/tmp
 AUXFLAGS= --prefix=$(INSTALL_DIR) \
           --with-moduledir=$(INSTALL_DIR)/include \
-          --with-netcdf-module-path="$(TOPDIR)/plugins/netcdf/include" \
-          --with-netcdf-ldflags="-L$(TOPDIR)/plugins/netcdf/lib"
+          --with-netcdf-module-path="$(TOPDIR)/extlibs/netcdf/include" \
+          --with-netcdf-ldflags="-L$(TOPDIR)/extlibs/netcdf/lib"
 
 #
 # MAIN target
@@ -25,7 +25,7 @@ AUXFLAGS= --prefix=$(INSTALL_DIR) \
 all: package-ready-stamp
 
 uncompress-stamp:
-	( cd ../archive ; if ! test -e $(PACKAGE) ; then make $(PACKAGE) ; fi )
+	( cd ../archive ; if ! test -e $(TARBALL) ; then make $(TARBALL) ; fi )
 	gunzip < ../archive/$(TARBALL) | ../../config/missing --run tar xf -
 	test -d $(INSTALL_DIR) || mkdir $(INSTALL_DIR)
 	touch uncompress-stamp
@@ -54,7 +54,7 @@ package-ready-stamp: uncompress-stamp configure-stamp
 	-( mv $(INSTALL_DIR)/include/*/*.mod  $(INSTALL_DIR)/include )
 	mv $(INSTALL_DIR)/include .
 	#
-	- ( cd ../../bin ; ln -sf ../plugins/netcdf/bin/* . )
+	- ( cd ../../bin ; ln -sf ../extlibs/netcdf/bin/* . )
 	touch package-ready-stamp
 
 #

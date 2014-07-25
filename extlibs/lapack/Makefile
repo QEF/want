@@ -22,7 +22,7 @@ INSTALL_DIR=$(TOPDIR)/extlibs/lapack/tmp
 all: package-ready-stamp
 
 uncompress-stamp:
-	( cd ../archive ; if ! test -e $(PACKAGE) ; then make $(PACKAGE) ; fi )
+	( cd ../archive ; if ! test -e $(TARBALL) ; then make $(TARBALL) ; fi )
 	gunzip < ../archive/$(TARBALL) | ../../config/missing --run tar xf -
 	test -d $(INSTALL_DIR) || mkdir $(INSTALL_DIR)
 	touch uncompress-stamp
