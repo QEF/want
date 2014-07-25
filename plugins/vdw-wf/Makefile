@@ -4,15 +4,16 @@
 #===============================
 #
 include ../../make.sys
+include ../archive/package.list
 
 LIBNAME=libvdW-WF.a
-PACKAGE=vdW-WF_v1.0
-TARBALL=../archive/$(PACKAGE).tgz
+PACKAGE=$(pkgname_vdw_wf)
+TARBALL=$(tarball_vdw_wf)
 
 #
 # redefinitions
 #
-INSTALL_DIR=$(TOPDIR)/plugins/vdW-WF/tmp
+INSTALL_DIR=$(TOPDIR)/plugins/vdw-wf/tmp
 AUXFLAGS="--prefix=$(INSTALL_DIR)"
 
 
@@ -22,35 +23,23 @@ AUXFLAGS="--prefix=$(INSTALL_DIR)"
 all: package-ready-stamp
 
 uncompress-stamp:
-	gunzip < $(TARBALL) | ../../config/missing --run tar xf -
+	( cd ../archive ; if ! test -e $(TARBALL) ; then make $(TARBALL) ; fi )
+	gunzip < ../archive/$(TARBALL) | ../../config/missing --run tar xf -
 	test -d $(INSTALL_DIR) || mkdir $(INSTALL_DIR)
 	touch uncompress-stamp
 
-configure-stamp: uncompress-stamp
-	if test -d $(PACKAGE) ; then ( cd $(PACKAGE);  \
-	      ./configure $(AUXFLAGS) \
-	      FC=$(F90) \
-	      F77=$(F77) \
-	      FFLAGS="$(FFLAGS)" \
-	      FCFLAGS="$(F90FLAGS)" \
-	      INSTALL_DIR="$(INSTALL_DIR)" ); \
-	fi
-	touch configure-stamp
-
-package-ready-stamp: uncompress-stamp configure-stamp
+package-ready-stamp: uncompress-stamp
 	if test -d $(PACKAGE) ; then \
-	( cd $(PACKAGE);  $(MAKE) ; $(MAKE) install ) ; fi
+	( cd $(PACKAGE); $(F77) $(FFLAGS) -I. -o vdW-WF.x vdW-WF.f ) ; fi
 	#
 	if test -d ./bin      ; then rm -rf ./bin      ; fi
 	if test -d ./lib      ; then rm -rf ./lib      ; fi
 	if test -d ./include  ; then rm -rf ./include  ; fi
 	#
-	mv $(INSTALL_DIR)/lib .
-	mv $(INSTALL_DIR)/bin .
-	cp $(PACKAGE)/f90/*.mod $(INSTALL_DIR)/include
-	mv $(INSTALL_DIR)/include .
+	mkdir ./bin
+	cp $(PACKAGE)/*.x  ./bin/
 	#
-	- ( cd ../../bin ; ln -sf ../plugins/netcdf/bin/* . )
+	- ( cd ../../bin ; ln -sf ../plugins/vdw-wf/bin/vdW-WF.x . )
 	#	
 	touch package-ready-stamp
 	
@@ -59,7 +48,7 @@ package-ready-stamp: uncompress-stamp configure-stamp
 # cleaning
 #
 clean:
-	if test -d $(PACKAGE) ; then ( cd $(PACKAGE);  $(MAKE) clean ) ; fi
+	if test -d $(PACKAGE) ; then ( cd $(PACKAGE);  rm -rf *.x *.mod ) ; fi
 	- rm -rf ./bin ./lib ./include  package-ready-stamp configure-stamp
 
 clean_all: clean
