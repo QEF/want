@@ -30,7 +30,7 @@ default:
 	@echo  "     deps               update fortran90 dependencies "
 	@echo  "     clean              remove executables and objects"
 	@echo  "     clean_test         clean up the test examples"
-	@echo  "     wash               revert distribution to the original status"
+	@echo  "     clean_all          revert distribution to the original status"
 	@echo 
 
 #
@@ -108,14 +108,14 @@ clean_test:
 	if test -d tests ; then \
 	( cd tests ; ./run.sh -r clean ) ; fi
 
-wash_extlibs:
-	if test -d extlibs ;   then ( cd extlibs;   $(MAKE) wash ) ; fi
+clean_all_extlibs:
+	if test -d extlibs ;   then ( cd extlibs;   $(MAKE) clean_all ) ; fi
 	
-wash_plugins:
-	if test -d plugins ;   then ( cd plugins;   $(MAKE) wash ) ; fi
+clean_all_plugins:
+	if test -d plugins ;   then ( cd plugins;   $(MAKE) clean_all ) ; fi
 
 
-wash : wash_extlibs wash_plugins clean
+clean_all : clean_all_extlibs clean_all_plugins clean
 	- /bin/rm -rf make.sys ./config/configure.msg \
 		./config/config.log ./config/config.status \
 		./config/*.lineno \
