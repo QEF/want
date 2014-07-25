@@ -24,7 +24,7 @@ default:
 	@echo  "     libwant            compile the want internal library"
 	@echo  "     libclib            compile the intenral c-library"
 	@echo  "     libextlibs         compile internal versions of std libraries (blas, lapack, ...)"
-	@echo  "     libplugins         compile plugins"
+	@echo  "     vdW-WF             compile the vdW-WF plugin"
 	@echo 
 	@echo  "     all                all the above executables "
 	@echo  "     deps               update fortran90 dependencies "
@@ -51,9 +51,9 @@ libextlibs:
 	if test -d extlibs ; then \
 	( cd extlibs ; $(MAKE) ) ; fi
 
-libplugins: 
+vdW-WF: 
 	if test -d plugins ; then \
-	( cd plugins ; $(MAKE) ) ; fi
+	( cd plugins ; $(MAKE) $@ ) ; fi
 
 libclib:
 	if test -d src/clib ; then \
@@ -63,27 +63,27 @@ libfftqe:
 	if test -d src/fftqe ; then \
 	( cd src/fftqe ; $(MAKE) ) ; fi
 
-libwant: libextlibs libplugins
+libwant: libextlibs
 	if test -d src/baselib ; then \
 	( cd src/baselib ; $(MAKE) ) ; fi
 
-wannier: libextlibs libclib libwant libplugins
+wannier: libextlibs libclib libwant
 	if test -d src/wannier ; then \
 	( cd src/wannier ; $(MAKE) ) ; fi
 
-transport: libextlibs libclib libwant libplugins wannier
+transport: libextlibs libclib libwant wannier
 	if test -d src/transport ; then \
 	( cd src/transport ; $(MAKE) ) ; fi
 
-embed: libextlibs libclib libwant libplugins transport wannier
+embed: libextlibs libclib libwant transport wannier
 	if test -d src/embed ; then \
 	( cd src/embed ; $(MAKE) ) ; fi
 
-odd:   libextlibs libclib libfftqe libwant libplugins wannier
+odd:   libextlibs libclib libfftqe libwant wannier
 	if test -d src/odd ; then \
 	( cd src/odd ; $(MAKE) ) ; fi
 
-tools: libextlibs libclib libwant libplugins wannier
+tools: libextlibs libclib libwant wannier
 	if test -d src/tools ; then \
 	( cd src/tools ; $(MAKE) ) ; fi
 

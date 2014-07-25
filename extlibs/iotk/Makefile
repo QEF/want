@@ -4,10 +4,11 @@
 #===============================
 #
 include ../../make.sys
+include ../archive/package.list
 
 LIBNAME=libiotk.a
-PACKAGE=iotk
-TARBALL=../archive/iotk-1.2.1.tar.gz
+PACKAGE=$(pkgname_iotk)
+TARBALL=$(tarball_iotk)
 
 #
 # redefinitions
@@ -21,7 +22,8 @@ INSTALL_DIR=$(TOPDIR)/extlibs/iotk/tmp
 all: package-ready-stamp
 
 uncompress-stamp:
-	gunzip < $(TARBALL) | ../../config/missing --run tar xf -
+	( cd ../archive ; if ! test -e $(PACKAGE) ; then make $(PACKAGE) ; fi )
+	gunzip < ../archive/$(TARBALL) | ../../config/missing --run tar xf -
 	test -d $(INSTALL_DIR) || mkdir $(INSTALL_DIR)
 	touch uncompress-stamp
 
@@ -68,7 +70,7 @@ clean:
 	if test -d $(PACKAGE) ; then ( cd $(PACKAGE);  $(MAKE) clean ) ; fi
 	- rm -rf ./lib ./bin ./include  package-ready-stamp configure-stamp
 
-wash: clean
+clean_all: clean
 	if test -d $(PACKAGE) ; then ( rm -rf $(PACKAGE) ) ; fi 
 	- rm make.sys uncompress-stamp package-ready-stamp
 	- rm -rf $(INSTALL_DIR)
