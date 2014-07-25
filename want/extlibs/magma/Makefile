@@ -4,10 +4,11 @@
 #===============================
 #
 include ../../make.sys
+include ../archive/package.list
 
 LIBNAME=libmagma.a
-PACKAGE=magma
-TARBALL=../archive/$(PACKAGE)_1.1.Y.tar.gz
+PACKAGE=$(pkgname_magma)
+TARBALL=$(tarball_magma)
 
 #
 # redefinitions
@@ -23,7 +24,8 @@ all: package-ready-stamp
 
 
 uncompress-stamp:
-	gunzip < $(TARBALL) | ../../config/missing --run tar xf -
+	( cd ../archive ; if ! test -e $(PACKAGE) ; then make $(PACKAGE) ; fi )
+	gunzip < ../archive/$(TARBALL) | ../../config/missing --run tar xf -
 	test -d $(INSTALL_DIR) || mkdir $(INSTALL_DIR)
 	touch uncompress-stamp
 
@@ -66,7 +68,7 @@ clean:
 		$(MAKE) clean ) ; fi
 	- rm -rf ./lib ./include package-ready-stamp configure-stamp 
 
-wash: clean
+clean_all: clean
 	if test -d $(PACKAGE) ; then ( rm -rf $(PACKAGE) ) ; fi 
 	- rm uncompress-stamp
 	- rm -rf $(INSTALL_DIR)

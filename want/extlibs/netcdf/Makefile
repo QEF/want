@@ -6,15 +6,16 @@
 include ../../make.sys
 include ../archive/package.list
 
-LIBNAME=libblas.a
-PACKAGE=$(pkgname_blas)
-TARBALL=$(tarball_blas)
+LIBNAME=libnetcdf.a
+PACKAGE=$(pkgname_netcdf)
+TARBALL=$(tarball_netcdf)
 
 #
 # redefinitions
 #
-INSTALL_DIR=$(TOPDIR)/extlibs/blas/tmp
-#AUXFLAGS= --prefix=$(INSTALL_DIR)
+INSTALL_DIR=$(TOPDIR)/plugins/netcdf/tmp
+AUXFLAGS="--prefix=$(INSTALL_DIR)"
+
 
 #
 # MAIN target
@@ -29,38 +30,39 @@ uncompress-stamp:
 
 configure-stamp: uncompress-stamp
 	if test -d $(PACKAGE) ; then ( cd $(PACKAGE);  \
-		if test -e ./make.inc ; then rm ./make.inc ; fi ; \
-	        if test -e ../../install/make_blas.inc ; then \
-	           cp ../../install/make_blas.inc ./make.inc ; \
-	        fi ) ; \
+	      ./configure $(AUXFLAGS) \
+	      FC=$(F90) \
+	      F77=$(F77) \
+	      FFLAGS="$(FFLAGS)" \
+	      FCFLAGS="$(F90FLAGS)" \
+	      INSTALL_DIR="$(INSTALL_DIR)" ); \
 	fi
 	touch configure-stamp
-#	if test ./install ; then ( cd ./install ;  \
-#	        ./configure_blas $(AUXFLAGS)  \
-#	        FC=$(F90) \
-#	        F77=$(F77) \
-#	        FFLAGS="$(FFLAGS)" \
-#	        FCFLAGS="$(F90FLAGS)" \
-#	        INSTALL_DIR="$(INSTALL_DIR)" ); \
-#	fi
-	
-package-ready-stamp: uncompress-stamp configure-stamp 
+
+package-ready-stamp: uncompress-stamp configure-stamp
 	if test -d $(PACKAGE) ; then \
-	( cd $(PACKAGE);  $(MAKE) ) ; fi
+	( cd $(PACKAGE);  $(MAKE) ; $(MAKE) install ) ; fi
 	#
+	if test -d ./bin      ; then rm -rf ./bin      ; fi
 	if test -d ./lib      ; then rm -rf ./lib      ; fi
-	mkdir ./lib ;
-	mv $(PACKAGE)/*.a ./lib ;
+	if test -d ./include  ; then rm -rf ./include  ; fi
 	#
-	#rm configure-stamp
+	mv $(INSTALL_DIR)/lib .
+	mv $(INSTALL_DIR)/bin .
+	cp $(PACKAGE)/f90/*.mod $(INSTALL_DIR)/include
+	mv $(INSTALL_DIR)/include .
+	#
+	- ( cd ../../bin ; ln -sf ../plugins/netcdf/bin/* . )
+	#	
 	touch package-ready-stamp
+	
 
 #
 # cleaning
 #
 clean:
 	if test -d $(PACKAGE) ; then ( cd $(PACKAGE);  $(MAKE) clean ) ; fi
-	- rm -rf ./lib package-ready-stamp configure-stamp
+	- rm -rf ./bin ./lib ./include  package-ready-stamp configure-stamp
 
 clean_all: clean
 	if test -d $(PACKAGE) ; then ( rm -rf $(PACKAGE) ) ; fi 
