@@ -4,6 +4,9 @@
 =======================================================
 
 
+24 Jul 2014     The structure of extlibs and plugins has been deeply changed;
+		now most of the packages are directly downloaded from the web (qe-forge). (AF)
+
 -------------------------------------------------
 Date: 28 Apr 2014    Version: WanT-2.5.0
 -------------------------------------------------
