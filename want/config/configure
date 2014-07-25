@@ -8473,8 +8473,8 @@ if test "$etsf_io_libs" != "" ; then
 fi
 #
 if test "$use_etsf_io" = "1" -a "$etsf_io_libs" = "" ; then
-    etsf_io_libs="-L$topdir/plugins/etsf_io/lib -letsf_io"
-    etsf_io_include="${imod}$topdir/plugins/etsf_io/include"
+    etsf_io_libs="-L$topdir/extlibs/etsf_io/lib -letsf_io"
+    etsf_io_include="${imod}$topdir/extlibs/etsf_io/include"
     etsf_io_switch="internal"
 fi
 if test "$use_etsf_io" = "1" ; then try_dflags="$try_dflags -D__ETSF_IO" ; fi
@@ -8485,9 +8485,8 @@ if test "$netcdf_libs" != "" ; then
 fi
 #
 if test "$use_netcdf" = "1" -a "$netcdf_libs" = "" ; then
-    netcdf_libs="-L$topdir/plugins/netcdf/lib -lnetcdf"
-    netcdf_include="${imod}$topdir/plugins/netcdf/include"
-    #plugins_libs="$plugins_libs libnetcdf"
+    netcdf_libs="-L$topdir/extlibs/netcdf/lib -lnetcdf"
+    netcdf_include="${imod}$topdir/extlibs/netcdf/include"
     netcdf_switch="internal"
 fi
 if test "$use_netcdf" = "1" ; then try_dflags="$try_dflags -D__NETCDF" ; fi
@@ -10026,13 +10025,11 @@ fi
 if test "$use_phigemm" = "1" ; then
    test -e ./extlibs/phiGEMM/fconfigure-stamp && rm ./extlibs/phiGEMM/configure-stamp
 fi
-# setup for configuring plugins
-#
 if test "$use_etsf_io" = "1" ; then
-   test -e ./plugins/etsf_io/configure-stamp && rm ./plugins/etsf_io/configure-stamp
+   test -e ./extlibs/etsf_io/configure-stamp && rm ./extlibs/etsf_io/configure-stamp
 fi
 if test "$use_netcdf" = "1" ; then
-   test -e ./plugins/netcdf/configure-stamp && rm ./plugins/netcdf/configure-stamp
+   test -e ./extlibs/netcdf/configure-stamp && rm ./extlibs/netcdf/configure-stamp
 fi
 
 

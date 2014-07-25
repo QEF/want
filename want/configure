@@ -50,8 +50,8 @@ test -e ./config/configure.msg   && rm ./config/configure.msg
 # and final clean up
 #
 test -e config/make.sys     && mv config/make.sys    .
-test -e config.log          && mv config.log         ./config/
-test -e config.status       && mv config.status      ./config/
+#test -e config.log          && mv config.log         ./config/
+#test -e config.status       && mv config.status      ./config/
 test -e configure.msg       && mv configure.msg      ./config/
 #
 

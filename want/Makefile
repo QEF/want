@@ -117,6 +117,7 @@ clean_all_plugins:
 
 clean_all : clean_all_extlibs clean_all_plugins clean
 	- /bin/rm -rf make.sys ./config/configure.msg \
+		./config.log config.status \
 		./config/config.log ./config/config.status \
 		./config/*.lineno \
 		./include/configure.h ./include/fftqe_defs.h \

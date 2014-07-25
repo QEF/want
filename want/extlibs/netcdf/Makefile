@@ -13,7 +13,7 @@ TARBALL=$(tarball_netcdf)
 #
 # redefinitions
 #
-INSTALL_DIR=$(TOPDIR)/plugins/netcdf/tmp
+INSTALL_DIR=$(TOPDIR)/extlibs/netcdf/tmp
 AUXFLAGS="--prefix=$(INSTALL_DIR)"
 
 
@@ -23,7 +23,7 @@ AUXFLAGS="--prefix=$(INSTALL_DIR)"
 all: package-ready-stamp
 
 uncompress-stamp:
-	( cd ../archive ; if ! test -e $(PACKAGE) ; then make $(PACKAGE) ; fi )
+	( cd ../archive ; if ! test -e $(TARBALL) ; then make $(TARBALL) ; fi )
 	gunzip < ../archive/$(TARBALL) | ../../config/missing --run tar xf -
 	test -d $(INSTALL_DIR) || mkdir $(INSTALL_DIR)
 	touch uncompress-stamp
@@ -52,7 +52,7 @@ package-ready-stamp: uncompress-stamp configure-stamp
 	cp $(PACKAGE)/f90/*.mod $(INSTALL_DIR)/include
 	mv $(INSTALL_DIR)/include .
 	#
-	- ( cd ../../bin ; ln -sf ../plugins/netcdf/bin/* . )
+	- ( cd ../../bin ; ln -sf ../extlibs/netcdf/bin/* . )
 	#	
 	touch package-ready-stamp
 	
