@@ -1,0 +1,20 @@
+
+#
+# storing options
+#
+keep_vdw_wf=
+
+#
+# tarball names
+#
+tarball_vdw_wf=vdW-WF_v1.0.1.tgz
+
+#
+# package names
+#
+pkgname_vdw_wf=vdW-WF_v1.0.1
+
+#
+# URL's
+#
+url_vdw_wf=http://qe-forge.org/gf/download/frsrelease/157/601/vdW-WF_v1.0.1.tgz
