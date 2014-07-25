@@ -92,6 +92,8 @@ $(tarball_phigemm):
 #
 # cleaning
 #
+clean:
+
 clean_all:
 	if test -s $(tarball_blas)    && test "$(keep_blas)"    != "yes" ;  then rm $(tarball_blas)    ; fi
 	if test -s $(tarball_lapack)  && test "$(keep_lapack)"  != "yes" ;  then rm $(tarball_lapack)  ; fi
