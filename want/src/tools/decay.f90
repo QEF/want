@@ -77,7 +77,7 @@
    REAL(dbl),     ALLOCATABLE :: decay(:)
    COMPLEX(dbl),  ALLOCATABLE :: opr(:,:,:), opr_aux(:,:,:)
    !
-   INTEGER, EXTERNAL :: iargc
+   INTEGER      :: iargc
    !
    ! end of declariations
    !
