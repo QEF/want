@@ -54,7 +54,7 @@ package-ready-stamp: uncompress-stamp configure-stamp
 	-( mv $(INSTALL_DIR)/include/*/*.mod  $(INSTALL_DIR)/include )
 	mv $(INSTALL_DIR)/include .
 	#
-	- ( cd ../../bin ; ln -sf ../extlibs/netcdf/bin/* . )
+	- ( cd ../../bin ; ln -sf ../extlibs/etsf_io/bin/* . )
 	touch package-ready-stamp
 
 #

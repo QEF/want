@@ -776,6 +776,8 @@ symmetry.o : ../baselib/parameters.o
 symmetry.o : ../baselib/qexml.o
 symmetry.o : ../baselib/qexpt.o
 symmetry.o : etsf_io_data.o
+symmetry.o : ions.o
+symmetry.o : lattice.o
 translations_calc_atmproj.o : atmproj_tools.o
 translations_calc_atmproj.o : ../baselib/constants.o
 translations_calc_atmproj.o : ../baselib/kind.o
@@ -1020,6 +1022,6 @@ zmatrix.o : ../baselib/timing.o
 zmatrix.o : kpoints.o
 memusage.o : ../../include/f_defs.h
 qvan2.o : ../../include/f_defs.h
- startup.o : ../../include/build_date.h
+startup.o : ../../include/build_date.h
 startup.o : ../../include/configure.h
 version.o : ../../include/version.h

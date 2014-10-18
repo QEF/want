@@ -1,6 +1,8 @@
 compute_efermi.o : kind.o
 constants.o : kind.o
 crystal_io.o : crystal_io_base.o
+d_matrix.o : kind.o
+d_matrix.o : random_numbers.o
 dspev_drv.o : kind.o
 efermig.o : io_global.o
 efermig.o : kind.o

@@ -11,6 +11,7 @@ constants.o \
 crystal_io.o \
 crystal_io_base.o \
 cuda_env_module.o \
+d_matrix.o \
 date_and_tim.o \
 descriptors.o \
 dspev_drv.o \
