@@ -4,6 +4,8 @@
 =======================================================
 
 
+19 Oct 2014     symmetry module updated to deal with atm_proj symmetrization. (AF)
+
 24 Jul 2014     The structure of extlibs and plugins has been deeply changed;
 		now most of the packages are directly downloaded from the web (qe-forge). (AF)
 
