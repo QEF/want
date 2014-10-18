@@ -12,11 +12,15 @@
    !*********************************************
    !
    USE kinds,             ONLY : dbl
-   USE constants,         ONLY : ZERO
+   USE constants,         ONLY : ZERO, TPI
    USE parameters,        ONLY : nstrx
    USE log_module,        ONLY : log_push, log_pop
    USE io_global_module,  ONLY : ionode, ionode_id
+   USE ions_module,       ONLY : nat_ => nat, ions_alloc => alloc
+   USE lattice_module,    ONLY : avec, bvec, lattice_alloc => alloc
    USE mp,                ONLY : mp_bcast
+   USE converters_module, ONLY : cry2cart
+   USE util_module
    USE qexml_module
    USE qexpt_module
    !
@@ -47,10 +51,18 @@
    !
    INTEGER                       :: nsym          ! number of allowed symm operations
    INTEGER,          ALLOCATABLE :: srot(:,:,:)   ! operations, 3x3xNsym, cryst. units 
+   REAL(dbl),        ALLOCATABLE :: srrot(:,:,:)  ! operations, 3x3xNsym, cart. units 
    REAL(dbl),        ALLOCATABLE :: strasl(:,:)   ! frac. traslations, 3xNym, cryst. units
+   REAL(dbl),        ALLOCATABLE :: srtrasl(:,:)  ! frac. traslations, 3xNym, cryst. units
    !
    CHARACTER(nstrx), ALLOCATABLE :: sname(:)      ! symmetry names
-   
+   INTEGER                       :: nat=0         ! natoms
+   INTEGER,          ALLOCATABLE :: irt(:,:)      ! (nsym,nat) atom map upon the action of symmetries
+   ! 
+   REAL(dbl),        ALLOCATABLE :: d1(:,:,:)     ! (3,3,nsym), (5,5,nsym), (7,7,nsym)
+   REAL(dbl),        ALLOCATABLE :: d2(:,:,:)     ! matrices for rotating spherical
+   REAL(dbl),        ALLOCATABLE :: d3(:,:,:)     ! harmonics (d1 for l=1, ...)
+   !
    LOGICAL :: alloc = .FALSE.
 
 !
@@ -61,6 +73,8 @@
    PUBLIC :: srot
    PUBLIC :: strasl
    PUBLIC :: sname
+   PUBLIC :: irt, nat
+   PUBLIC :: d1, d2, d3
    PUBLIC :: alloc
 
    PUBLIC :: symmetry_allocate
@@ -85,15 +99,27 @@ CONTAINS
       
        CALL log_push( subname )
        !
-       IF ( nsym <= 0 ) CALL errore(subname,' Invalid nsym',ABS(nsym)+1)
+       IF ( nsym <= 0 ) CALL errore(subname,'Invalid nsym',ABS(nsym)+1)
 
        ALLOCATE( srot(3, 3, nsym ), STAT = ierr )
-       IF( ierr /=0 ) CALL errore(subname, ' allocating nsym ', ABS(ierr) )
+       IF( ierr /=0 ) CALL errore(subname, 'allocating srot', ABS(ierr) )
+       ALLOCATE( srrot(3, 3, nsym ), STAT = ierr )
+       IF( ierr /=0 ) CALL errore(subname, 'allocating srrot', ABS(ierr) )
        ALLOCATE( strasl( 3, nsym ), STAT = ierr )
-       IF( ierr /=0 ) CALL errore(subname, ' allocating strasl ', ABS(ierr) )
+       IF( ierr /=0 ) CALL errore(subname, 'allocating strasl', ABS(ierr) )
+       ALLOCATE( srtrasl( 3, nsym ), STAT = ierr )
+       IF( ierr /=0 ) CALL errore(subname, 'allocating srtrasl', ABS(ierr) )
        ALLOCATE( sname( nsym ), STAT = ierr )
-       IF( ierr /=0 ) CALL errore(subname, ' allocating sname ', ABS(ierr) )
-
+       IF( ierr /=0 ) CALL errore(subname, 'allocating sname', ABS(ierr) )
+       !
+       IF ( nat > 0 ) THEN
+           ALLOCATE( irt( nsym, nat ), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(subname, 'allocating irt', ABS(ierr) )
+       ENDIF
+       !
+       ALLOCATE( d1(3,3,nsym), d2(5,5,nsym), d3(7,7,nsym), STAT=ierr )
+       IF( ierr /=0 ) CALL errore(subname, 'allocating d1,d2,d3', ABS(ierr) )
+       !
        alloc = .TRUE.
        !
        CALL log_pop ( subname )
@@ -111,16 +137,32 @@ CONTAINS
        CALL log_push( subname )
        !
        IF ( ALLOCATED(srot) ) THEN 
-            DEALLOCATE(srot, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating srot',ABS(ierr))
+           DEALLOCATE(srot, STAT=ierr)
+           IF (ierr/=0)  CALL errore(subname,'deallocating srot',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED(srrot) ) THEN 
+           DEALLOCATE(srrot, STAT=ierr)
+           IF (ierr/=0)  CALL errore(subname,'deallocating srrot',ABS(ierr))
        ENDIF
        IF ( ALLOCATED(strasl) ) THEN 
-            DEALLOCATE(strasl, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating strasl',ABS(ierr))
+           DEALLOCATE(strasl, STAT=ierr)
+           IF (ierr/=0)  CALL errore(subname,'deallocating strasl',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED(srtrasl) ) THEN 
+           DEALLOCATE(srtrasl, STAT=ierr)
+           IF (ierr/=0)  CALL errore(subname,'deallocating srtrasl',ABS(ierr))
        ENDIF
        IF ( ALLOCATED(sname) ) THEN 
-            DEALLOCATE(sname, STAT=ierr)
-            IF (ierr/=0)  CALL errore(subname,' deallocating sname',ABS(ierr))
+           DEALLOCATE(sname, STAT=ierr)
+           IF (ierr/=0)  CALL errore(subname,'deallocating sname',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED(irt) ) THEN 
+           DEALLOCATE(irt, STAT=ierr)
+           IF (ierr/=0)  CALL errore(subname,'deallocating irt',ABS(ierr))
+       ENDIF
+       IF ( ALLOCATED(d1) ) THEN 
+           DEALLOCATE(d1, d2, d3, STAT=ierr)
+           IF (ierr/=0)  CALL errore(subname,'deallocating d1,d2,d3',ABS(ierr))
        ENDIF
        !
        alloc = .FALSE.
@@ -139,7 +181,13 @@ CONTAINS
        !
        cost = ZERO
        IF ( ALLOCATED(srot) )     cost = cost + REAL(SIZE(srot))       * 4.0_dbl
+       IF ( ALLOCATED(srrot) )    cost = cost + REAL(SIZE(srrot))      * 8.0_dbl
        IF ( ALLOCATED(strasl) )   cost = cost + REAL(SIZE(strasl))     * 8.0_dbl
+       IF ( ALLOCATED(srtrasl) )  cost = cost + REAL(SIZE(srtrasl))    * 8.0_dbl
+       IF ( ALLOCATED(irt) )      cost = cost + REAL(SIZE(irt))        * 4.0_dbl
+       IF ( ALLOCATED(d1) )       cost = cost + REAL(SIZE(d1))         * 8.0_dbl
+       IF ( ALLOCATED(d2) )       cost = cost + REAL(SIZE(d2))         * 8.0_dbl
+       IF ( ALLOCATED(d3) )       cost = cost + REAL(SIZE(d3))         * 8.0_dbl
        IF ( ALLOCATED(sname) )    cost = cost + REAL(SIZE(sname))      * nstrx * 4.0_dbl
        !
        symmetry_memusage = cost / 1000000.0_dbl
@@ -148,7 +196,7 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE symmetry_rotate(vect, opr)
+   SUBROUTINE symmetry_rotate(vect, iopr)
    !**********************************************************
    !
    ! this subrotuine apply rotates a given vector according to 
@@ -160,13 +208,13 @@ CONTAINS
    IMPLICIT NONE
        !
        REAL(dbl), INTENT(INOUT) :: vect(3)
-       INTEGER,   INTENT(IN)    :: opr(3,3)
+       INTEGER,   INTENT(IN)    :: iopr(3,3)
        ! 
        REAL(dbl) :: rtmp(3)
  
-       rtmp(1) = DOT_PRODUCT( REAL(opr(1,:), dbl), vect(:) )
-       rtmp(2) = DOT_PRODUCT( REAL(opr(2,:), dbl), vect(:) )
-       rtmp(3) = DOT_PRODUCT( REAL(opr(3,:), dbl), vect(:) )
+       rtmp(1) = DOT_PRODUCT( REAL(iopr(1,:), dbl), vect(:) )
+       rtmp(2) = DOT_PRODUCT( REAL(iopr(2,:), dbl), vect(:) )
+       rtmp(3) = DOT_PRODUCT( REAL(iopr(3,:), dbl), vect(:) )
        !
        vect(:) = rtmp(:)
        ! 
@@ -180,7 +228,7 @@ CONTAINS
        CHARACTER(*),      INTENT(in) :: filefmt
        !
        CHARACTER(17)        :: subname="symmetry_read_ext"
-       INTEGER              :: ierr
+       INTEGER              :: ierr, is
        !
 #ifdef __ETSF_IO
        TYPE(etsf_geometry)  :: geometry
@@ -194,8 +242,9 @@ CONTAINS
        !
        CASE ( 'qexml' )
             !
-            IF (ionode) CALL qexml_read_symmetry( NSYM=nsym, IERR=ierr )
+            IF (ionode) CALL qexml_read_symmetry( NSYM=nsym, NAT=nat, IERR=ierr )
             CALL mp_bcast( nsym, ionode_id)
+            CALL mp_bcast( nat,  ionode_id)
             CALL mp_bcast( ierr, ionode_id)
             !
        CASE ( 'pw_export' )
@@ -226,6 +275,9 @@ CONTAINS
        !
        IF ( ierr/=0) CALL errore(subname,'getting symmetry dimensions',ABS(ierr))
        !
+       IF ( nat > 0 .AND. ions_alloc ) THEN
+           IF ( nat /= nat_ ) CALL errore(subname,'invalid nat',10)
+       ENDIF
 
        !
        ! module allocate 
@@ -239,12 +291,17 @@ CONTAINS
        !
        CASE ( 'qexml' )
             !
-            IF (ionode) CALL qexml_read_symmetry( S=srot, TRASL=strasl, SNAME=sname, IERR=ierr )
+            IF (ionode) THEN 
+               IF (nat > 0  ) CALL qexml_read_symmetry( S=srot, TRASL=strasl, SNAME=sname, IRT=irt, IERR=ierr )
+               IF (nat <= 0 ) CALL qexml_read_symmetry( S=srot, TRASL=strasl, SNAME=sname, IERR=ierr )
+            ENDIF
             !
             CALL mp_bcast( srot,    ionode_id)
             CALL mp_bcast( strasl,  ionode_id)
             CALL mp_bcast( sname,   ionode_id)
             CALL mp_bcast( ierr,    ionode_id)
+            !
+            IF (nat > 0 ) CALL mp_bcast( irt,     ionode_id)
             !
        CASE ( 'pw_export' )
             !
@@ -299,6 +356,35 @@ CONTAINS
        !
        IF ( ierr/=0) CALL errore(subname,'getting symmetry data',ABS(ierr))
 
+       !
+       ! further init if possible
+       !
+       IF ( lattice_alloc ) THEN
+           !
+           ! srrot = avec * srot * bvec / 2pi
+           srrot(:,:,:) = srot(:,:,:)
+           !
+           DO is = 1, nsym
+               CALL mat_mul( srrot(:,:,is), srrot(:,:,is), 'N', bvec, 'N', 3,3,3) 
+               CALL mat_mul( srrot(:,:,is), avec, 'N', srrot(:,:,is), 'N', 3,3,3) 
+           ENDDO 
+           !
+           srrot = srrot / TPI
+           !
+           srtrasl = strasl
+           CALL cry2cart( srtrasl, avec )
+           !
+           ! init rotation matrices for spherical harmonics
+           !
+           CALL d_matrix( nsym, srrot, d1, d2, d3)
+           !
+       ELSE
+           srrot = 0.0
+           d1 = 0.0
+           d2 = 0.0
+           d3 = 0.0
+       ENDIF
+       ! 
        CALL log_pop ( subname )
        !
    END SUBROUTINE symmetry_read_ext
