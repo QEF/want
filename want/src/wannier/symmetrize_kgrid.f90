@@ -157,31 +157,31 @@ SUBROUTINE symmetrize_kgrid( )
 
 ! XXX
 
-!!
-!! <DEBUG>
-!!
-!   WRITE( 0, * ) 
-!   WRITE( 0, * ) "nkpts = ", nkpts
-!   WRITE( 0, * ) 
-!   DO ik = 1, nkpts
-!       !
-!       WRITE( 0, "( i3, 3f12.6)") ik, vkpt_cry( :, ik)
-!       !
-!   ENDDO
 !
-!   WRITE( 0, * ) "=============================="
-!   WRITE( 0, * ) "nkpts_all = ", nkpts_all
-!   WRITE( 0, * ) 
-!   WRITE( 0, * ) "ik    vkpt              kpt_eq    symm"
-!   !
-!   DO ik = 1, nkpts_all
-!       !
-!       WRITE( 0, "( i3, 3f12.6, i5, i5)") ik, vkpt_symm( :, ik), kpteq_map( ik ), symm_map( ik )
-!       !
-!   ENDDO
-!!
-!! </DEBUG>
-!!
+! <DEBUG>
+!
+   WRITE( 0, * ) 
+   WRITE( 0, * ) "nkpts = ", nkpts
+   WRITE( 0, * ) 
+   DO ik = 1, nkpts
+       !
+       WRITE( 0, "( i3, 3f12.6)") ik, vkpt_cry( :, ik)
+       !
+   ENDDO
+
+   WRITE( 0, * ) "=============================="
+   WRITE( 0, * ) "nkpts_all = ", nkpts_all
+   WRITE( 0, * ) 
+   WRITE( 0, * ) "ik    vkpt              kpt_eq    symm"
+   !
+   DO ik = 1, nkpts_all
+       !
+       WRITE( 0, "( i3, 3f12.6, i5, i5)") ik, vkpt_symm( :, ik), kpteq_map( ik ), symm_map( ik )
+       !
+   ENDDO
+!
+! </DEBUG>
+!
        
 
    DEALLOCATE( vkpt_cry, vkpt_symm, STAT=ierr)

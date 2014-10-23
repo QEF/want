@@ -1,4 +1,7 @@
-AC_INIT(WANT, 2.3, , want)
+#
+AC_INIT(WANT, 2.6, , want)
+
+AC_CONFIG_AUX_DIR(config)
 
 # -----------------------------
 # options:
@@ -1270,7 +1273,7 @@ if test "$use_internal_lapack" -eq 0
                         fi
                         FFLAGS="$test_fflags"
                         LDFLAGS="$test_ldflags $try_loption"
-                        LIBS="-llapack $blas_libs"
+                        LIBS="$blas_libs"
                         AC_SEARCH_LIBS(dspev, lapack, have_lapack=1
                                        lapack_libs="$try_loption $LIBS")
                         if test "$ac_cv_search_dspev" != "no"
@@ -1299,12 +1302,12 @@ if test "$use_internal_lapack" -eq 0
 			FFLAGS="$test_fflags"
 			LDFLAGS="$test_ldflags $try_loption"
 			LIBS="$blas_libs"
-			AC_SEARCH_LIBS(dspev, lapack, have_lapack=1
-				       lapack_libs="$try_loption -llapack")
+			AC_SEARCH_LIBS(dspev, lapack-3 lapack, have_lapack=1
+				       lapack_libs="$try_loption $LIBS")
 			if test "$ac_cv_search_dspev" != "no"; then
 			   # essl must precede lapack (if present)
 			   if test "$have_essl" -ne 0 ; then
-				lapack_libs="-lessl $lapack_libs"
+				lapack_libs="$blas_libs $lapack_libs"
 			   fi
 			   break
 			fi
@@ -1810,6 +1813,7 @@ then
     ld_libs="$cuda_libs $ld_libs"
 	
     echo setting CUDA_LIBS... $cuda_libs
+
 fi
 
 # Always show CUDA timing (if CUDA is not enable, only GEMM are tracked)    
@@ -2089,8 +2093,8 @@ AC_SUBST(magma_gpu_target)
 
 AC_CONFIG_HEADERS([include/c_defs.h:include/c_defs.h.in])
 AC_CONFIG_FILES([include/configure.h:include/configure.h.in]) # AF
-AC_CONFIG_FILES(make.sys)
-AC_CONFIG_FILES(configure.msg)
+AC_CONFIG_FILES([make.sys:config/make.sys.in])
+AC_CONFIG_FILES([config/configure.msg:config/configure.msg.in])
 
 AC_CONFIG_FILES(extlibs/install/make_blas.inc)
 AC_CONFIG_FILES(extlibs/install/make_lapack.inc)
@@ -2129,5 +2133,5 @@ fi
 
 
 # final messages
-sed '/@delete@/d' configure.msg
+sed '/@delete@/d' ./config/configure.msg
 echo configure: success

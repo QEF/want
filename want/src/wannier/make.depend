@@ -775,6 +775,8 @@ symmetry.o : ../baselib/mp.o
 symmetry.o : ../baselib/parameters.o
 symmetry.o : ../baselib/qexml.o
 symmetry.o : ../baselib/qexpt.o
+symmetry.o : ../baselib/util.o
+symmetry.o : converters.o
 symmetry.o : etsf_io_data.o
 symmetry.o : ions.o
 symmetry.o : lattice.o
