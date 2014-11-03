@@ -3,6 +3,12 @@
 		WanT code:  Log of Changes 
 =======================================================
 
+-------------------------------------------------
+Date: 03 Nov 2014    Version: WanT-2.5.1
+-------------------------------------------------
+
+03 Nov 2014     Minor changes to configure in order to fix some problems hindering
+		the direct download and compilation of WanT by QE
 
 -------------------------------------------------
 Date: 28 Apr 2014    Version: WanT-2.5.0
