@@ -106,7 +106,7 @@ wash_plugins:
 
 wash : wash_extlibs wash_plugins clean
 	- /bin/rm -rf make.sys ./config/configure.msg \
-		./config/config.log ./config/config.status \
+		./config.log ./config.status \
 		./config/*.lineno \
 		./include/configure.h ./include/fft_defs.h \
 	        ./include/c_defs.h ./include/iotk_config.h \
