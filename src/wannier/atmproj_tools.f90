@@ -12,7 +12,7 @@
    !
    USE kinds,               ONLY : dbl
    USE constants,           ONLY : BOHR => bohr_radius_angs, ZERO, ONE, TWO, &
-                                   RYD, EPS_m8, TPI
+                                   RYD, EPS_m8, TPI, CZERO !Luis 3
    USE parameters,          ONLY : nstrx
    USE timing_module,       ONLY : timing
    USE log_module,          ONLY : log_push, log_pop
@@ -152,9 +152,11 @@ END SUBROUTINE atmproj_tools_init
    CHARACTER(nstrx)  :: attr, energy_units
    CHARACTER(nstrx)  :: filetype_
    LOGICAL           :: write_ham, write_space, write_loc
+   LOGICAL           :: spin_noncollinear                              !Luis 2 
    REAL(dbl)         :: avec(3,3), bvec(3,3), norm, alat, efermi, nelec
    REAL(dbl)         :: proj_wgt
    INTEGER           :: dimwann, natomwfc, nkpts, nspin, nbnd
+   INTEGER           :: nspin_                                         !Luis 2
    INTEGER           :: nk(3), shift(3), nrtot, nr(3)
    INTEGER           :: i, j, ir, ik, ib, isp
    INTEGER           :: ierr
@@ -171,6 +173,15 @@ END SUBROUTINE atmproj_tools_init
    COMPLEX(dbl),   ALLOCATABLE :: zaux(:,:), ztmp(:,:)
    COMPLEX(dbl),   ALLOCATABLE :: kovp_sq(:,:)
    REAL(dbl),      ALLOCATABLE :: w(:)
+
+#if defined __SHIFT_TEST
+   !Luis 3: Changes related to Sohrab's shifting scheme 
+   !PA   = A^dagger * A 
+   !I_PA = inv(PA)
+   COMPLEX(dbl),   ALLOCATABLE :: A(:,:),PA(:,:), IPA(:,:), kham_aux(:,:), E(:,:)
+   INTEGER           :: shifting_scheme = 2
+#endif
+  
 #if defined __WRITE_ASCIIHAM
    CHARACTER(100)    :: kham_file
    INTEGER           :: iw,jw
@@ -255,6 +266,25 @@ END SUBROUTINE atmproj_tools_init
    atmproj_nbnd_ = nbnd
    IF ( atmproj_nbnd > 0 ) atmproj_nbnd_ = MIN(atmproj_nbnd, nbnd)
 
+   !Luis 2 begin --> 
+   WRITE( stdout, "(2x, ' Dimensions found in atomic_proj.{dat,xml}: ')")
+   WRITE( stdout, "(2x, '   nbnd     :  ',i5 )") nbnd
+   WRITE( stdout, "(2x, '   nkpts    :  ',i5 )") nkpts
+   WRITE( stdout, "(2x, '   nspin    :  ',i5 )") nspin
+   WRITE( stdout, "(2x, '   natomwfc :  ',i5 )") natomwfc
+   WRITE( stdout, "(2x, '   nelec    :  ',f12.6)") nelec
+   WRITE( stdout, "(2x, '   efermi   :  ',f12.6 )") efermi 
+   WRITE( stdout, "(2x, '   energy_units :  ',a10 )") energy_units 
+   WRITE( stdout, "()" )
+   IF ( nspin == 4 ) THEN
+      nspin_ = 1
+      spin_noncollinear = .true.
+   ELSE
+      spin_noncollinear = .false.
+      nspin_ = nspin
+   END IF
+   !Luis 2 end   <--
+
    !
    ! quick report
    !
@@ -272,10 +302,12 @@ END SUBROUTINE atmproj_tools_init
    ALLOCATE( vkpt_cry(3, nkpts), STAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'allocating vkpt_cry', ABS(ierr) )
    !
-   ALLOCATE( eig(nbnd,nkpts,nspin), STAT=ierr )
+   !ALLOCATE( eig(nbnd,nkpts,nspin), STAT=ierr )                       !Luis 2
+   ALLOCATE( eig(nbnd,nkpts,nspin_), STAT=ierr )                       !Luis 2
    IF (ierr/=0) CALL errore(subname, 'allocating eig', ABS(ierr))
    !
-   ALLOCATE( proj(natomwfc,nbnd,nkpts,nspin), STAT=ierr )
+   !ALLOCATE( proj(natomwfc,nbnd,nkpts,nspin), STAT=ierr )             !Luis 2
+   ALLOCATE( proj(natomwfc,nbnd,nkpts,nspin_), STAT=ierr )             !Luis 2
    IF (ierr/=0) CALL errore(subname, 'allocating proj', ABS(ierr))
 
    !
@@ -286,6 +318,7 @@ END SUBROUTINE atmproj_tools_init
        ALLOCATE( kovp(1,1,1,1), STAT=ierr )
        IF (ierr/=0) CALL errore(subname, 'allocating kovp I', ABS(ierr))
        !
+       write(*,*) 'do_orthoovp' !Luis 2
        CALL atmproj_read_ext( filein, VKPT=vkpt, WK=wk, EIG=eig, PROJ=proj, IERR=ierr )
        !
    ELSE
@@ -382,7 +415,8 @@ END SUBROUTINE atmproj_tools_init
    ! 
    IF ( write_ham ) THEN
 
-       ALLOCATE( rham(dimwann, dimwann, nrtot, nspin), STAT=ierr )
+       !ALLOCATE( rham(dimwann, dimwann, nrtot, nspin), STAT=ierr )    !Luis 2
+       ALLOCATE( rham(dimwann, dimwann, nrtot, nspin_), STAT=ierr )    !Luis 2
        IF ( ierr/=0 ) CALL errore(subname, 'allocating rham', ABS(ierr) )
        ALLOCATE( kham(dimwann, dimwann, nkpts), STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname, 'allocating kham', ABS(ierr) )
@@ -391,9 +425,27 @@ END SUBROUTINE atmproj_tools_init
            ALLOCATE( rovp(natomwfc,natomwfc,nrtot,nspin), STAT=ierr )
            IF (ierr/=0) CALL errore(subname, 'allocating rovp', ABS(ierr))
        ENDIF
-
-
-       DO isp = 1, nspin
+       
+#if defined __SHIFT_TEST
+       !Luis 3
+       IF ( shifting_scheme .EQ. 2 ) THEN
+           WRITE( stdout, "(2x, ' ATMPROJ uses the experimental shifting: ')")
+           !PA = A'*A
+           ALLOCATE( A(natomwfc, atmproj_nbnd_), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname, 'allocating Space-A Projector', ABS(ierr))
+           ALLOCATE( PA(atmproj_nbnd_, atmproj_nbnd_), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname, 'allocating Space-A Projector', ABS(ierr))
+           ALLOCATE( IPA(atmproj_nbnd_, atmproj_nbnd_), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname, 'allocating inv(P_A)', ABS(ierr))
+           ALLOCATE( E(atmproj_nbnd_, atmproj_nbnd_), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname, 'allocating E', ABS(ierr))
+           ALLOCATE( kham_aux(atmproj_nbnd_, natomwfc), STAT=ierr )
+           IF ( ierr/=0 ) CALL errore(subname, 'allocating kham_aux', ABS(ierr))
+       ENDIF
+#endif
+          
+       !DO isp = 1, nspin                                              !Luis 2
+       DO isp = 1, nspin_                                              !Luis 2
 
            IF ( TRIM(spin_component) == "up"   .AND. isp == 2 ) CYCLE
            IF ( TRIM(spin_component) == "down" .AND. isp == 1 ) CYCLE
@@ -414,13 +466,49 @@ END SUBROUTINE atmproj_tools_init
                ! ztmp(i, b) = < phi^at_i | evc_b >
                !
                ztmp(1:natomwfc,1:nbnd) = proj(1:natomwfc,1:nbnd,ik,isp) 
+       
+#if defined __SHIFT_TEST
+               !Luis 3       
+               IF ( shifting_scheme .EQ. 2 ) THEN
+                   !temporary solution. It assumes the columns of proj are in
+                   !ascending order of projectability
+                   A  = proj(1:natomwfc,1:atmproj_nbnd_,ik,isp) 
+                   PA = ZERO
+                   IPA= ZERO
+                   !PA = A' * A
+                   CALL mat_mul( PA, A, 'C', A, 'N', atmproj_nbnd_, atmproj_nbnd_, natomwfc)
+                   CALL mat_inv( atmproj_nbnd_, PA, IPA)
+               
+                   E  = CZERO 
+                   kham_aux = CZERO
+                   !TO DO, 
+                   !are the eigs in ascending order. where?
+                   !bands.x, nscf.x can change the order of the eigenvalues
+                   DO ib = 1, atmproj_nbnd_
+                      E(ib,ib) = eig(ib,ik,isp) 
+                      !E(ib,ib) = eig(ib,ik,isp) - atmproj_sh 
+                   ENDDO
+                   !HKS_aux = (E - kappa*IPA)*A'
+                   CALL mat_mul( kham_aux, E -atmproj_sh*IPA, 'N', A, 'C', atmproj_nbnd_, natomwfc, atmproj_nbnd_)
+                   !CALL mat_mul( kham_aux, E, 'N', A, 'C', atmproj_nbnd_, natomwfc, atmproj_nbnd_)
+                   !HKS = A*HKS_aux = A*(E - kappa*IPA)*A'
+                   CALL mat_mul( kham(:,:,ik), A, 'N', kham_aux, 'N', natomwfc, natomwfc, atmproj_nbnd_)
+               
+               ELSE
+#endif
+                  
                !
                ibnd_loop:&
                DO ib = 1, atmproj_nbnd_
-
                    !
                    ! filtering
+                   ! Note: - This is one way of doing the filtering.
+                   !       It filters within the atmproj_nbnd bands.
+                   !       Useful if used with atmproj_bnd == Inf (i.e. QE's nbnd)
+                   !       so that the filter is controlled only by atmproj_thr
                    !
+                   !       - Another way is to set atmproj_thr<=0 
+                   !       and then the filtering is controlled only by atmproj_nbnd
                    IF ( atmproj_thr > 0.0d0 ) THEN
                        !
                        proj_wgt = REAL( DOT_PRODUCT( ztmp(:,ib), ztmp(:,ib) ) )
@@ -442,6 +530,10 @@ END SUBROUTINE atmproj_tools_init
                    ENDDO
                    !
                ENDDO ibnd_loop
+
+#if defined __SHIFT_TEST
+               ENDIF
+#endif
                !
                IF ( .NOT. mat_is_herm( dimwann, kham(:,:,ik), TOLL=EPS_m8 ) ) &
                    CALL errore(subname,'kham not hermitian',10)
@@ -531,8 +623,8 @@ END SUBROUTINE atmproj_tools_init
 
 #if defined __WRITE_ASCIIHAM
            ! 
-           if (isp == 1 .and. nspin==1) kham_file = "kham.txt"
-           if (isp == 1 .and. nspin==2) kham_file = "kham_up.txt"
+           if (isp == 1 .and. nspin_==1) kham_file = "kham.txt"
+           if (isp == 1 .and. nspin_==2) kham_file = "kham_up.txt"
            if (isp == 2) kham_file = "kham_down.txt"
 
            IF (isp ==1) THEN !
@@ -589,6 +681,18 @@ END SUBROUTINE atmproj_tools_init
            ENDDO
            !
        ENDDO 
+ 
+#if defined __SHIFT_TEST
+       !Luis 3
+       IF ( shifting_scheme .EQ. 2 ) THEN
+           DEALLOCATE( A )
+           DEALLOCATE( PA )
+           DEALLOCATE( IPA )
+           DEALLOCATE( E )
+           DEALLOCATE( kham_aux )
+       ENDIF
+#endif
+
        ! 
        DEALLOCATE( kham, STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname, 'deallocating kham', ABS(ierr) )
@@ -980,6 +1084,14 @@ SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
    ! 
    ! reading eigenvalues
    ! 
+
+   !Luis 2 begin -->
+   IF ( nspin_ == 4 ) THEN
+      nspin_ = 1
+   END IF
+   !Luis 2 end   <--
+
+   write(*,*) 'about to read eigenvalues' !Luis 2
    IF ( PRESENT( eig ) ) THEN
        ! 
        CALL iotk_scan_begin( iunit, "EIGENVALUES", IERR=ierr )
