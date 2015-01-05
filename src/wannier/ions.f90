@@ -512,36 +512,37 @@ CONTAINS
    ! of pseudopot files. This will be assumed as internal ordering 
    !
    IMPLICIT NONE
-       CHARACTER(9)       :: subname="ions_init"
-       INTEGER            :: ia, i
+      CHARACTER(9)       :: subname="ions_init"
+      INTEGER            :: ia, i
  
-       CALL log_push( subname )
-       !
-       IF ( .NOT. alloc ) CALL errore(subname,'IONS not allocated',1)
+      CALL log_push( subname )
+      !
+      IF ( .NOT. alloc ) CALL errore(subname,'IONS not allocated',1)
 
-       !
-       ! setting species and atomic symbols
-       !
-       na(:) = 0
-       DO i=1,nsp
-          na(i) = 0
-          DO ia=1,nat
-             IF ( symb(ia) == atm_symb(i) ) THEN
-                  ityp(ia) = i
-                  na(i) = na(i) + 1
-             ENDIF
-          ENDDO
-       ENDDO
-       IF ( SUM( na(1:nsp) ) /= nat ) CALL errore(subname,'some species are missing',1)
-       nax = MAXVAL( na(:) )
+      !
+      ! setting species and atomic symbols
+      !
+      na(:) = 0
+      DO i=1,nsp
+         na(i) = 0
+         DO ia=1,nat
+            IF ( symb(ia) == atm_symb(i) ) THEN
+                 ityp(ia) = i
+                 na(i) = na(i) + 1
+            ENDIF
+         ENDDO
+      ENDDO
+      !
+      IF ( SUM( na(1:nsp) ) /= nat ) CALL errore(subname,'some species are missing',1)
+      nax = MAXVAL( na(:) )
      
-       !
-       ! sorting atoms by species
-       !
-       CALL ions_sort_tau(tau_srt, ind_srt, tau, ityp, na )
-       !
-       CALL log_pop( subname )
-       !
+      !
+      ! sorting atoms by species
+      !
+      CALL ions_sort_tau(tau_srt, ind_srt, tau, ityp, na )
+      !
+      CALL log_pop( subname )
+      !
    END SUBROUTINE ions_init
 
 

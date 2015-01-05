@@ -107,8 +107,8 @@ CONTAINS
       !
       CALL want_dftread ( WINDOWS=.FALSE., LATTICE=.TRUE.,   IONS=lions, &
                           KPOINTS=.TRUE.,  PSEUDO=lpseudo )
-      CALL want_init    ( INPUT=.FALSE.,   WINDOWS=.FALSE., IONS=lions,  &
-                          BSHELLS=lbshells )
+      CALL want_init    ( INPUT=.FALSE.,   WINDOWS=.FALSE.,  IONS=lions, &
+                          KPOINTS_PP=.TRUE., BSHELLS=lbshells )
       !
       IF ( ionode ) WRITE( stdout, "()")
 

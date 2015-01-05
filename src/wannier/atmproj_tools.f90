@@ -1,4 +1,4 @@
-!
+  !
 ! Copyright (C) 2012 WanT Group
 !
 ! This file is distributed under the terms of the
@@ -23,6 +23,10 @@
    USE grids_module,        ONLY : grids_get_rgrid
    USE files_module,        ONLY : file_exist
    USE pseudo_types_module, ONLY : pseudo_upf 
+   USE uspp_param,          ONLY : upf
+   USE lattice_module,      ONLY : lattice_read_ext, lattice_init
+   USE symmetry_module,     ONLY : symmetry_read_ext, nsym, symmetry_deallocate
+   USE ions_module,         ONLY : ions_read_ext, ions_init, ions_deallocate
    USE iotk_module
    USE qexml_module
    !
@@ -46,6 +50,8 @@
    REAL(dbl)          :: atmproj_thr = 0.0d0    ! 0.9d0
    INTEGER            :: atmproj_nbnd = 0
    CHARACTER(256)     :: spin_component = "all"
+   !
+   INTEGER, PARAMETER :: nwfcx = 50
 
    ! contains:
    ! SUBROUTINE  atmproj_to_internal( filein, fileham, filespace, filewan, do_orthoovp )
@@ -108,11 +114,6 @@ CONTAINS
    !
    IF ( .NOT. file_exist( file_data ) ) RETURN
    !
-
-   !WRITE(0,*) "file_proj: ", TRIM(file_proj)
-   !WRITE(0,*) "file_data: ", TRIM(file_data)
-   !WRITE(0,*) "savedir:   ", TRIM(savedir)
-
    ierr     =  0
    init     = .TRUE.
    !
@@ -128,6 +129,8 @@ END SUBROUTINE atmproj_tools_init
    !
    ! 3 files are creates: fileham, filespace, filewan
    !
+   USE symmetrize_kgrid_module,    ONLY : symmetrize_kgrid
+   USE lattice_module,             ONLY : avec, bvec, alat
    USE util_module
    !
    IMPLICIT NONE
@@ -152,17 +155,19 @@ END SUBROUTINE atmproj_tools_init
    CHARACTER(nstrx)  :: attr, energy_units
    CHARACTER(nstrx)  :: filetype_
    LOGICAL           :: write_ham, write_space, write_loc
-   LOGICAL           :: spin_noncollinear                              !Luis 2 
-   REAL(dbl)         :: avec(3,3), bvec(3,3), norm, alat, efermi, nelec
+   REAL(dbl)         :: norm, efermi, nelec
+   LOGICAL           :: spin_noncollinear
    REAL(dbl)         :: proj_wgt
    INTEGER           :: dimwann, natomwfc, nkpts, nspin, nbnd
-   INTEGER           :: nspin_                                         !Luis 2
+   INTEGER           :: nkpts_all, nspin_
    INTEGER           :: nk(3), shift(3), nrtot, nr(3)
-   INTEGER           :: i, j, ir, ik, ib, isp
+   INTEGER           :: i, j, ir, ik, ikeq, ib, isp
    INTEGER           :: ierr
    !
    INTEGER,        ALLOCATABLE :: ivr(:,:), itmp(:)
+   INTEGER,        ALLOCATABLE :: kpteq_map(:), kpteq_symm(:)
    REAL(dbl),      ALLOCATABLE :: vkpt_cry(:,:), vkpt(:,:), wk(:), wr(:), vr(:,:)
+   REAL(dbl),      ALLOCATABLE :: vkpt_all(:,:), wk_all(:)
    REAL(dbl),      ALLOCATABLE :: eig(:,:,:)
    REAL(dbl),      ALLOCATABLE :: rtmp(:,:)
    COMPLEX(dbl),   ALLOCATABLE :: rham(:,:,:,:), kham(:,:,:)
@@ -232,25 +237,28 @@ END SUBROUTINE atmproj_tools_init
 !
  
    !
-   ! get lattice information
+   ! get DFT data
+   ! qexml fmt is assumed (otherwise one should use the var "dftdata_fmt")
    !
    !CALL qexml_init( iunit, DIR=savedir)
    CALL qexml_openfile( file_data, "read", IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname,"opening "//TRIM(file_data), ABS(ierr) )
    ! 
-   CALL qexml_read_cell( ALAT=alat, A1=avec(:,1), A2=avec(:,2), A3=avec(:,3), &
-                                    B1=bvec(:,1), B2=bvec(:,2), B3=bvec(:,3), IERR=ierr )
-   IF ( ierr/=0 ) CALL errore(subname,"reading avec, bvec", ABS(ierr) )
+   CALL lattice_read_ext( "qexml" )
+   CALL lattice_init( )
+   !
+   CALL ions_read_ext( "qexml" )
+   CALL ions_init()
+   !
+   CALL symmetry_read_ext( "qexml" )
    !
    CALL qexml_closefile( "read", IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname,"closing "//TRIM(file_data), ABS(ierr) )
 
    !
-   ! bvec is in 2pi/a units
-   ! convert it to bohr^-1
+   ! read pseudos
    !
-   bvec = bvec * TPI / alat
-
+   CALL readpp()
 
    !
    ! reading dimensions
@@ -305,7 +313,6 @@ END SUBROUTINE atmproj_tools_init
    !ALLOCATE( eig(nbnd,nkpts,nspin), STAT=ierr )                       !Luis 2
    ALLOCATE( eig(nbnd,nkpts,nspin_), STAT=ierr )                       !Luis 2
    IF (ierr/=0) CALL errore(subname, 'allocating eig', ABS(ierr))
-   !
    !ALLOCATE( proj(natomwfc,nbnd,nkpts,nspin), STAT=ierr )             !Luis 2
    ALLOCATE( proj(natomwfc,nbnd,nkpts,nspin_), STAT=ierr )             !Luis 2
    IF (ierr/=0) CALL errore(subname, 'allocating proj', ABS(ierr))
@@ -334,7 +341,6 @@ END SUBROUTINE atmproj_tools_init
    !
    IF ( ierr/=0 ) CALL errore(subname, "reading data II", ABS(ierr))
 
-
    !
    ! units (first we convert to bohr^-1, 
    ! then we want vkpt to be re-written in crystal units)
@@ -345,13 +351,48 @@ END SUBROUTINE atmproj_tools_init
    CALL cart2cry( vkpt_cry, bvec ) 
    !
    CALL get_monkpack( nk, shift, nkpts, vkpt_cry, 'CRYSTAL', bvec, ierr)
-   IF ( ierr/=0 ) CALL errore(subname,'kpt grid not Monkhorst-Pack',ABS(ierr))
+   !
+   ! if kpts are not MP, try to symmetrize the grid
+   !
+   IF ( ierr/= 0 ) THEN
+       !
+       CALL symmetrize_kgrid( nkpts, vkpt, bvec, nkpts_all )
+       !
+       ALLOCATE( vkpt_all(3,nkpts_all), wk_all(nkpts_all) )
+       ALLOCATE( kpteq_map(nkpts_all) )
+       ALLOCATE( kpteq_symm(nkpts_all) )
+       !
+       wk_all(1:nkpts_all)=1.0d0/REAL(nkpts_all,dbl)
+       !
+       CALL symmetrize_kgrid( nkpts, vkpt, bvec, nkpts_all, vkpt_all, kpteq_map, kpteq_symm )
+       !
+       CALL get_monkpack( nk, shift, nkpts_all, vkpt_all, 'CARTESIAN', bvec, ierr)
+       IF ( ierr/=0 ) CALL errore(subname,'kpt grid not Monkhorst-Pack',ABS(ierr))
+       !
+   ELSE
+       !
+       nkpts_all = nkpts
+       ALLOCATE( vkpt_all(3,nkpts_all), wk_all(nkpts_all) )
+       ALLOCATE( kpteq_map(nkpts_all) )
+       ALLOCATE( kpteq_symm(nkpts_all) )
+       !
+       vkpt_all(:,1:nkpts)  = vkpt(:,1:nkpts)
+       wk_all(1:nkpts)      = wk(1:nkpts)
+       !
+       DO ik = 1, nkpts
+          kpteq_map(ik)=ik
+          kpteq_symm(ik)=1
+       ENDDO
+       !
+   ENDIF
 
    !
-   ! check the normalization of the weights
+   ! normalize the k-weights to 1.0
    !
    norm   = SUM( wk )
    wk(:)  = wk(:) / norm
+   norm   = SUM( wk_all )
+   wk_all(:) = wk_all(:) / norm
 
 
    !
@@ -405,9 +446,7 @@ END SUBROUTINE atmproj_tools_init
    ! meant to set the zero of the energy scale (where we may have
    ! spurious 0 eigenvalues) far from any physical energy region of interest
    !
-   !eig    = eig    -atmproj_sh                                        !Luis
-   !efermi = efermi -atmproj_sh                                        !Luis
-   eig    = eig  -efermi                                               !Luis
+   eig    = eig  -efermi
 
 
    ! 
@@ -418,7 +457,7 @@ END SUBROUTINE atmproj_tools_init
        !ALLOCATE( rham(dimwann, dimwann, nrtot, nspin), STAT=ierr )    !Luis 2
        ALLOCATE( rham(dimwann, dimwann, nrtot, nspin_), STAT=ierr )    !Luis 2
        IF ( ierr/=0 ) CALL errore(subname, 'allocating rham', ABS(ierr) )
-       ALLOCATE( kham(dimwann, dimwann, nkpts), STAT=ierr )
+       ALLOCATE( kham(dimwann, dimwann, nkpts_all), STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname, 'allocating kham', ABS(ierr) )
        !
        IF ( .NOT. do_orthoovp_ ) THEN
@@ -456,16 +495,26 @@ END SUBROUTINE atmproj_tools_init
            ! build kham
            !
            kpt_loop:&
-           DO ik = 1, nkpts
+           DO ik = 1, nkpts_all
+               !
+               ikeq = kpteq_map(ik)
                !
                kham(:,:,ik) = ZERO
                !
                ALLOCATE( ztmp(natomwfc,nbnd), STAT=ierr)
                IF ( ierr/=0 ) CALL errore(subname,'allocating ztmp', ABS(ierr) )
+
                !
                ! ztmp(i, b) = < phi^at_i | evc_b >
                !
-               ztmp(1:natomwfc,1:nbnd) = proj(1:natomwfc,1:nbnd,ik,isp) 
+               !IF ( kpteq_symm(ik) <= nsym ) THEN
+                   ! no time-reversal involved
+                   ztmp(1:natomwfc,1:nbnd) = proj(1:natomwfc,1:nbnd,ikeq,isp) 
+               !ELSE
+               !    ztmp(1:natomwfc,1:nbnd) = CONJG( proj(1:natomwfc,1:nbnd,ikeq,isp) )
+               !ENDIF
+                !
+               CALL atmproj_rotate_proj( natomwfc, nbnd, kpteq_symm(ik), vkpt_cry(:,ikeq), ztmp)
        
 #if defined __SHIFT_TEST
                !Luis 3       
@@ -520,11 +569,8 @@ END SUBROUTINE atmproj_tools_init
                    DO j = 1, dimwann
                    DO i = 1, dimwann
                        !
-                       kham(i,j,ik) = kham(i,j,ik) + &
-                       !                         ( ztmp(i,ib) ) * eig(ib,ik,isp) * CONJG( ztmp(j,ib) )
-                                                                       !Luis
-                                                ( ztmp(i,ib) ) * (eig(ib,ik,isp)-atmproj_sh) * CONJG( ztmp(j,ib) )
-                                                                       !Luis
+                       kham(i,j,ik) = kham(i,j,ik) &
+                                        + ztmp(i,ib) * (eig(ib,ikeq,isp)-atmproj_sh) * CONJG( ztmp(j,ib) )
                        !
                    ENDDO
                    ENDDO
@@ -538,13 +584,26 @@ END SUBROUTINE atmproj_tools_init
                IF ( .NOT. mat_is_herm( dimwann, kham(:,:,ik), TOLL=EPS_m8 ) ) &
                    CALL errore(subname,'kham not hermitian',10)
                !
+!! XXXX
+!ALLOCATE(w(dimwann))
+!WRITE(0,*) "DEBUG"
+!WRITE(0,*) "ik, ikeq", ik, ikeq
+!CALL mat_hdiag( ztmp, w(:), kham(:,:,ik), dimwann)
+!DO i = 1, dimwann
+!   WRITE(0,"(i5,2f15.9,3x,f15.9)") i, w(i), eig(i,ikeq,isp)-atmproj_sh, ABS(w(i)- eig(i,ikeq,isp)+atmproj_sh)
+!ENDDO
+!WRITE(0,*)
+!WRITE(0,"(8f12.6)") kham(1:4,1:4,ik)
+!WRITE(0,*)
+!DEALLOCATE(w)
+
                DEALLOCATE( ztmp, STAT=ierr)
                IF ( ierr/=0 ) CALL errore(subname,'deallocating ztmp', ABS(ierr) )
 
 
                !
                ! overlaps
-               ! projections are read orthogonals, if non-orthogonality
+               ! projections are read orthogonal, if non-orthogonality
                ! is required, we multiply by S^1/2
                !
                IF ( .NOT. do_orthoovp_ ) THEN
@@ -554,6 +613,7 @@ END SUBROUTINE atmproj_tools_init
                    ALLOCATE( w(dimwann), kovp_sq(dimwann,dimwann), STAT=ierr )
                    IF ( ierr/=0 ) CALL errore(subname, 'allocating w, kovp_sq', ABS(ierr) )
                    !
+! XXX
                    CALL mat_hdiag( zaux, w(:), kovp(:,:,ik,isp), dimwann)
                    !              
                    DO i = 1, dimwann
@@ -603,18 +663,14 @@ END SUBROUTINE atmproj_tools_init
                    !
                    DO j = 1, dimwann
                    DO i = 1, dimwann
-                       !kham(i,j,ik) = kham(i,j,ik) -efermi * kovp(i,j,ik,isp)
-                                                                       !Luis
                        kham(i,j,ik) = kham(i,j,ik) + atmproj_sh * kovp(i,j,ik,isp)
-                                                                       !Luis
                    ENDDO
                    ENDDO
                    !
                ELSE
                    !
                    DO i = 1, dimwann
-                       !kham(i,i,ik) = kham(i,i,ik) -efermi            !Luis
-                       kham(i,i,ik) = kham(i,i,ik) + atmproj_sh        !Luis
+                       kham(i,i,ik) = kham(i,i,ik) + atmproj_sh
                    ENDDO
                    !
                ENDIF
@@ -669,12 +725,12 @@ END SUBROUTINE atmproj_tools_init
            DO ir = 1, nrtot
                !
                CALL compute_rham( dimwann, vr(:,ir), rham(:,:,ir,isp), &
-                                  nkpts, vkpt, wk, kham )
+                                  nkpts_all, vkpt_all, wk_all, kham )
                !
                IF ( .NOT. do_orthoovp_ ) THEN
                    !
                     CALL compute_rham( dimwann, vr(:,ir), rovp(:,:,ir,isp), &
-                                       nkpts, vkpt, wk, kovp(:,:,:,isp) )
+                                       nkpts_all, vkpt_all, wk_all, kovp(:,:,:,isp) )
                    !
                ENDIF
                !
@@ -703,6 +759,9 @@ END SUBROUTINE atmproj_tools_init
        DEALLOCATE( kovp, STAT=ierr)
        IF ( ierr/=0 ) CALL errore(subname, 'deallocating kovp', ABS(ierr) )
    ENDIF
+   !
+   DEALLOCATE( vkpt_all, kpteq_map, kpteq_symm, STAT=ierr)
+   IF ( ierr/=0 ) CALL errore(subname, 'deallocating vkpt_all, kpteq_map, kpteq_symm', ABS(ierr) )
 
 
 !
@@ -922,12 +981,11 @@ END SUBROUTINE atmproj_tools_init
        !
    ENDIF
 
-
-
-
 !
 ! local cleaning
 !
+   CALL ions_deallocate()
+   CALL symmetry_deallocate()
 
    DEALLOCATE( proj, STAT=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'deallocating proj', ABS(ierr) )
@@ -1203,17 +1261,12 @@ SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
    IF ( PRESENT( kovp ) ) THEN
        !
        CALL iotk_scan_begin( iunit, "OVERLAPS", IERR=ierr )
-       !IF ( ierr/=0 ) RETURN                                          !Luis
-
-       IF ( ierr/=0 ) THEN                                             !Luis
-         write(*,*) 'OVERLAPS data not found in file. Crashing ...'    !Luis
-         RETURN                                                        !Luis
-       ENDIF                                                           !Luis
-       !
+       IF ( ierr/=0 ) THEN
+           WRITE(stdout,"(/,'OVERLAPS data not found in file. Crashing ...')")
+           RETURN
+       ENDIF
        !
        DO ik = 1, nkpt_
-           !
-           !
            CALL iotk_scan_begin( iunit, "K-POINT"//TRIM(iotk_index(ik)), IERR=ierr )
            IF ( ierr/=0 ) RETURN
            !
@@ -1278,7 +1331,7 @@ END FUNCTION atmproj_get_index
 
 
 !************************************************************
-SUBROUTINE  atmproj_get_natomwfc( nsp, psfile, natomwfc )
+SUBROUTINE  atmproj_get_natomwfc( nsp, psfile, natomwfc, itypl )
    !************************************************************
    !
    IMPLICIT NONE
@@ -1286,20 +1339,197 @@ SUBROUTINE  atmproj_get_natomwfc( nsp, psfile, natomwfc )
    INTEGER,           INTENT(IN)  :: nsp
    TYPE(pseudo_upf),  INTENT(IN)  :: psfile(nsp)
    INTEGER,           INTENT(OUT) :: natomwfc(nsp)
+   INTEGER, OPTIONAL, INTENT(OUT) :: itypl(nwfcx,nsp)
    !
+   CHARACTER(20) :: subname="atmproj_get_natomwfc"
    INTEGER :: nt, nb, il
    !
    DO nt = 1, nsp
        !
-       natomwfc(nt) = 0
+       !IF (PRESENT(indxl)) indxl(0:3,nt) = 0
+       IF (PRESENT(itypl)) itypl(:,nsp) = -1
+       natomwfc(nt)  = 0
+       !
        DO nb = 1, psfile(nt)%nwfc
            il = psfile(nt)%lchi(nb)
-           IF ( psfile(nt)%oc(nb) >= 0.0d0 ) natomwfc(nt) = natomwfc(nt) + 2 * il + 1
+           IF ( il > 3 ) CALL errore(subname,"invalid il",il)
+           IF ( psfile(nt)%oc(nb) >= 0.0d0 ) THEN
+               !IF (PRESENT(indxl)) indxl(il,nt) = natomwfc(nt) + 1 
+               IF (PRESENT(itypl)) itypl(natomwfc(nt)+1:natomwfc(nt)+2*il+1,nt) = il
+               natomwfc(nt) = natomwfc(nt) + 2 * il + 1
+           ENDIF
        ENDDO
        !
    ENDDO
    !
 END SUBROUTINE atmproj_get_natomwfc
+
+
+!************************************************************
+SUBROUTINE  atmproj_rotate_proj( natomwfc, nbnd, isym, vkpt_c, proj)
+   !************************************************************
+   !
+   USE symmetry_module, ONLY : d1, d2, d3, srot, strasl, nsym, &
+                               irt, icell, symm_alloc => alloc
+   USE ions_module,     ONLY : nat, ityp, nsp, ions_alloc => alloc
+   !
+   IMPLICIT NONE
+   !
+   INTEGER,      INTENT(IN)    :: natomwfc, nbnd, isym
+   REAL(dbl),    INTENT(IN)    :: vkpt_c(3)     ! crystal units are expected
+   COMPLEX(dbl), INTENT(INOUT) :: proj(natomwfc,nbnd)
+   !
+   CHARACTER(19) :: subname="atmproj_rotate_proj"
+   INTEGER       :: ia, iaeq, nt, ierr
+   INTEGER       :: isym_, il, is, iseq, isn, ien, n
+   LOGICAL       :: use_trev
+   REAL(dbl)     :: rvkpt_c(3), arg
+   COMPLEX(dbl)  :: c1(3,3), c2(5,5), c3(7,7), phase
+   !
+   INTEGER,      ALLOCATABLE :: iatom_map(:), itypl(:,:)
+   INTEGER,      ALLOCATABLE :: natomwfc_sp(:)
+   INTEGER,      ALLOCATABLE :: check(:)
+   COMPLEX(dbl), ALLOCATABLE :: proj0(:,:)
+
+
+   !
+   ! if we deal with the identity, nothing to do
+   IF ( isym == 1 ) RETURN
+   !
+   IF ( .NOT. symm_alloc ) CALL errore(subname,"symmetry module not alloc",10)
+   IF ( .NOT. ions_alloc ) CALL errore(subname,"ions module not alloc",10)
+
+   !
+   ! whether to use time-reversal
+   !
+   isym_ = isym
+   use_trev = .FALSE.
+   !
+   IF ( isym_ > nsym ) THEN
+       isym_=isym_-nsym
+       use_trev = .TRUE.
+   ENDIF
+   !
+   IF ( isym_ <= 0 .OR. isym_ > nsym ) CALL errore(subname,"invalid isym index",10)
+   !
+   ! local workspace
+   !
+   ALLOCATE( iatom_map(nat), STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,"allocating iatom_map",10)
+   ALLOCATE( proj0(natomwfc,nbnd), STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,"allocating proj0",10)
+   ALLOCATE( natomwfc_sp(nsp), STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,"allocating natomwfc_sp",10)
+   ALLOCATE( itypl(nwfcx,nsp), STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,"allocating itypl",10)
+   ALLOCATE(check(natomwfc), STAT=ierr)
+   IF (ierr/=0) CALL errore(subname,"allocating check",10)
+
+   !
+   ! build iatom_map
+   !
+   CALL atmproj_get_natomwfc( nsp, upf(1:nsp), natomwfc_sp, itypl )
+   !
+   iatom_map(1)=1
+   !
+   DO ia = 2, nat
+       !
+       nt=ityp(ia-1)
+       iatom_map(ia) = iatom_map(ia-1) + natomwfc_sp(nt) 
+       !
+   ENDDO
+   !
+   !CALL mat_mul( rvkpt_c, REAL(srot(:,:,isym_),dbl), "T", vkpt_c, 3, 3)
+   rvkpt_c = vkpt_c
+
+   !
+   ! main loop
+   !
+   proj0 = proj
+   c1    = d1(:,:,isym_) 
+   c2    = d2(:,:,isym_) 
+   c3    = d3(:,:,isym_) 
+   !
+   check(:) = 0
+   !
+   DO ia = 1, nat
+       !
+       iaeq = irt(isym_,ia)
+       nt   = ityp(ia)
+       !
+       is   = iatom_map(ia)
+       iseq = iatom_map(iaeq)
+       !
+       isn  = 0
+       ien  = 0
+       !
+       DO n = 1, upf(nt)%nwfc
+           !
+           isn = ien+1 
+           il  = itypl(isn,nt)
+           ien = isn+(2*il+1) -1
+           !
+           SELECT CASE ( il)
+           CASE ( 0 )    
+              !
+              proj(is+isn-1,:) = proj0(iseq+isn-1,:)
+              check(is+isn-1)  = check(is+isn-1)+1
+              !
+           CASE ( 1 )
+              !
+              CALL mat_mul( proj(is+isn-1:is+isn+1,:), c1, "N", &
+                            proj0(iseq+isn-1:iseq+isn+1,:), "N", 3, nbnd, 3)
+              check(is+isn-1:is+isn+1) = check(is+isn-1:is+isn+1)+1
+              !
+           CASE ( 2 )
+              !
+              CALL mat_mul( proj(is+isn-1:is+isn+3,:), c2, "N", &
+                            proj0(iseq+isn-1:iseq+isn+3,:), "N", 5, nbnd, 5)
+              check(is+isn-1:is+isn+3)  = check(is+isn-1:is+isn+3)+1
+              !
+           CASE ( 3 )
+              !
+              CALL mat_mul( proj(is+isn-1:is+isn+5,:), c3, "N", &
+                            proj0(iseq+isn-1:iseq+isn+5,:), "N", 7, nbnd, 7)
+              check(is+isn-1:is+isn+5)  = check(is+isn-1:is+isn+5)+1
+              !
+           CASE DEFAULT
+               CALL errore(subname,"invalid il",ABS(il))
+           END SELECT
+           !
+       ENDDO
+       !
+       ! add a phase in case atom iia is shifted into a different cell
+       !
+       arg   = TPI * DOT_PRODUCT( rvkpt_c, REAL(icell(:,isym_,ia)) )
+       !
+       IF ( .NOT. use_trev ) THEN
+           phase = CMPLX( COS(arg),  SIN(arg), dbl )
+       ELSE
+           phase = CMPLX( COS(arg), -SIN(arg), dbl )
+       ENDIF
+       !
+       proj(is:is+natomwfc_sp(nt)-1,:) = proj(is:is+natomwfc_sp(nt)-1,:) * phase
+       !
+   ENDDO
+   !
+   IF ( ANY(check(:)== 0 ) ) CALL errore(subname,"unexpected error in atmwfc mapping",10)
+   
+   !
+   ! cleanup
+   !
+   DEALLOCATE( iatom_map, proj0, STAT=ierr) 
+   IF ( ierr/=0 ) CALL errore(subname,"deallocating iatom_map, proj0",ABS(ierr))
+   DEALLOCATE( natomwfc_sp, STAT=ierr) 
+   IF ( ierr/=0 ) CALL errore(subname,"deallocating natomwfc_sp",ABS(ierr))
+   DEALLOCATE( itypl, STAT=ierr) 
+   IF ( ierr/=0 ) CALL errore(subname,"deallocating itypl",ABS(ierr))
+   DEALLOCATE( check, STAT=ierr) 
+   IF ( ierr/=0 ) CALL errore(subname,"deallocating check",ABS(ierr))
+   !
+   RETURN
+   !
+END SUBROUTINE atmproj_rotate_proj
 
 
 END MODULE atmproj_tools_module

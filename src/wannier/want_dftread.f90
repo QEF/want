@@ -56,6 +56,7 @@ CONTAINS
    USE us_module,                ONLY : okvan
    USE uspp_param,               ONLY : upf
    USE ions_module,              ONLY : uspp_calculation
+   USE datafiles_module,         ONLY : datafiles_fmt, db_alloc => alloc
    !
 #ifdef __ETSF_IO
    USE etsf_io
@@ -110,7 +111,8 @@ CONTAINS
     read_lattice_    = .TRUE.
     read_ions_       = .TRUE.
     read_windows_    = .TRUE.
-    read_symmetry_   = .FALSE.
+    read_symmetry_   = .FALSE. .OR. ( trim(datafiles_fmt) == "atmproj" ) &
+                               .OR. ( trim(datafiles_fmt) == "qexml" )
     read_kpoints_    = .TRUE.
     read_pseudo_     = .FALSE.
     IF ( PRESENT(lattice) )   read_lattice_ = lattice

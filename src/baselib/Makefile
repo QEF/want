@@ -57,10 +57,10 @@ zhpev_drv.o
 #
 # main targets
 #
-all : libwant.a
+all : libbase.a
 
 
-libwant.a : $(OBJS) 
+libbase.a : $(OBJS) 
 	$(AR) $(ARFLAGS) $@ $?
 	$(RANLIB) $@
 

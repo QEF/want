@@ -6,8 +6,10 @@
 ! in the root directory of the present distribution, 
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
+MODULE symmetrize_kgrid_module
+CONTAINS
 !*********************************************************
-SUBROUTINE symmetrize_kgrid( )
+SUBROUTINE symmetrize_kgrid( nkpts, vkpt, bvec, nkpts_all, vkpt_all, kpteq_map, kpteq_symm )
    !*********************************************************
    !
    ! This subroutine ...
@@ -15,11 +17,9 @@ SUBROUTINE symmetrize_kgrid( )
    !
    USE kinds
    USE constants,         ONLY : EPS_m6, ZERO, ONE, TWO
-   USE converters_module, ONLY : cart2cry
+   USE converters_module, ONLY : cart2cry, cry2cart
    USE control_module,    ONLY : use_symmetry, use_timerev
-   USE lattice_module,    ONLY : bvec, lattice_alloc => alloc
    USE symmetry_module,   ONLY : nsym, srot, symmetry_rotate, symmetry_alloc => alloc
-   USE kpoints_module,    ONLY : nkpts, vkpt, nkpts_all, vkpt_all, kpoints_alloc
    USE log_module,        ONLY : log_push, log_pop
    USE timing_module,     ONLY : timing
    !
@@ -28,10 +28,13 @@ SUBROUTINE symmetrize_kgrid( )
    !
    ! input variables
    !
-!   INTEGER,    INTENT(inout) :: nkpts
-!   REAL(dbl),  INTENT(inout) :: vkpt(3,nkpts)
-!   INTEGER,    INTENT(inout) :: nkpts_all
-!   REAL(dbl),  INTENT(inout) :: vkpt_all(3,*)
+   INTEGER,    INTENT(IN) :: nkpts
+   REAL(dbl),  INTENT(IN) :: vkpt(3,nkpts)
+   REAL(dbl),  INTENT(IN) :: bvec(3,3)
+   INTEGER,    INTENT(INOUT) :: nkpts_all
+   REAL(dbl), OPTIONAL, INTENT(INOUT) :: vkpt_all(3,nkpts_all)
+   INTEGER,   OPTIONAL, INTENT(INOUT) :: kpteq_map(nkpts_all)
+   INTEGER,   OPTIONAL, INTENT(INOUT) :: kpteq_symm(nkpts_all)
 
    !
    ! local variables
@@ -39,7 +42,6 @@ SUBROUTINE symmetrize_kgrid( )
    CHARACTER(16)             :: subname="symmetrize_kgrid"
    REAL(dbl)                 :: vect(3)
    REAL(dbl), ALLOCATABLE    :: vkpt_cry(:,:), vkpt_symm(:,:)
-   INTEGER,   ALLOCATABLE    :: symm_map(:), kpteq_map(:)
    LOGICAL                   :: found
    INTEGER                   :: ifact, isym, ik, i, j, ierr
 
@@ -48,9 +50,7 @@ SUBROUTINE symmetrize_kgrid( )
 ! main body
 !------------------------------
 !
-   IF ( .NOT. kpoints_alloc ) CALL errore(subname,'kpoints not alloc', 1)
-   IF ( .NOT. lattice_alloc ) CALL errore(subname,'lattice not alloc', 1)
-   IF ( .NOT. symmetry_alloc ) RETURN
+   IF ( .NOT. symmetry_alloc ) CALL errore(subname,"symmetry mod not alloc",10)
 
    CALL timing(subname,OPR='start')
    CALL log_push(subname)
@@ -64,17 +64,10 @@ SUBROUTINE symmetrize_kgrid( )
    !
    ALLOCATE(vkpt_cry(3, nkpts), STAT=ierr)
    IF (ierr/=0) CALL errore(subname,'allocating vkpt_cry',ABS(ierr))
-   !
    ALLOCATE(vkpt_symm(3, ifact * nkpts), STAT=ierr)
    IF (ierr/=0) CALL errore(subname,'allocating vkpt_symm',ABS(ierr))
    !
-   ALLOCATE( symm_map(ifact * nkpts), STAT=ierr)
-   IF (ierr/=0) CALL errore(subname,'allocating symm_map',ABS(ierr))
-   !
-   ALLOCATE( kpteq_map(ifact * nkpts), STAT=ierr)
-   IF (ierr/=0) CALL errore(subname,'allocating kpteq_map',ABS(ierr))
-   !
-   vkpt_cry( :, 1: nkpts) = vkpt( :, 1:nkpts )
+   vkpt_cry(:,:) = vkpt(:,:)
    !
    ! vkpt_loc in crystal coords
    !
@@ -85,24 +78,26 @@ SUBROUTINE symmetrize_kgrid( )
    !
    ik = 1
    vkpt_symm( :, ik) = vkpt_cry( :, 1)
-   symm_map( ik )    = 1
-   kpteq_map( ik )   = 1
+   IF (PRESENT(kpteq_map))  kpteq_map( ik )   = 1
+   IF (PRESENT(kpteq_symm)) kpteq_symm( ik )  = 1
    !
    DO i = 1, nkpts
        !
        !
        symmetries_loop: &
-       DO isym = 0, nsym
+       DO isym = 1, 2*nsym
            !
            ! get the rotated vector
-           ! isym == 0 is the time reversal operation
+           ! isym > nsym are the 1:nsym spatial symmetries 
+           ! combined with the time reversal operation
            ! all vectors in crystal units
            !
-           IF ( isym == 0 ) THEN
+           IF ( isym > nsym ) THEN
               !
               IF ( .NOT. use_timerev ) CYCLE symmetries_loop
               !
               vect( : ) = - vkpt_cry(:,i)
+              CALL symmetry_rotate( vect, srot(:,:,isym-nsym) )
               !
            ELSE
               !
@@ -116,15 +111,6 @@ SUBROUTINE symmetrize_kgrid( )
            ! bring the rotate kpt in the BZ around 0 
            ! 
            vect(:) = MODULO( vect(:) + 0.5_dbl, ONE ) -0.5_dbl 
-
-!WRITE(0,*)
-!WRITE(0,*) "vkpt", vkpt_cry(:,i)
-!WRITE(0,*) "vect", vect(:)
-!WRITE(0,*) "vect", vect(:)
-!WRITE(0,*) "isym", isym
-!IF ( isym /= 0 ) THEN
-!   WRITE(0,"(3i5)") ((srot(m,n,isym), n = 1,3), m=1,3)
-!ENDIF
 
            ! 
            ! check whether the newly generated point is equivalent
@@ -144,8 +130,8 @@ SUBROUTINE symmetrize_kgrid( )
                !
                ik = ik + 1
                vkpt_symm( :, ik) = vect(:)
-               symm_map( ik )    = isym
-               kpteq_map( ik )   = i
+               IF (PRESENT(kpteq_symm)) kpteq_symm( ik )  = isym
+               IF (PRESENT(kpteq_map))  kpteq_map( ik )   = i
                ! 
            ENDIF
            !
@@ -154,12 +140,14 @@ SUBROUTINE symmetrize_kgrid( )
    ENDDO
    ! 
    nkpts_all = ik
+   !
+   IF ( PRESENT(vkpt_all) ) THEN
+       vkpt_all(:,1:nkpts_all) = vkpt_symm( :, 1:nkpts_all)
+       CALL cry2cart( vkpt_all(:,1:nkpts_all), bvec)
+   ENDIF
 
-! XXX
-
-!
-! <DEBUG>
-!
+#define __DEBUG
+#ifdef __DEBUG
    WRITE( 0, * ) 
    WRITE( 0, * ) "nkpts = ", nkpts
    WRITE( 0, * ) 
@@ -174,22 +162,19 @@ SUBROUTINE symmetrize_kgrid( )
    WRITE( 0, * ) 
    WRITE( 0, * ) "ik    vkpt              kpt_eq    symm"
    !
-   DO ik = 1, nkpts_all
-       !
-       WRITE( 0, "( i3, 3f12.6, i5, i5)") ik, vkpt_symm( :, ik), kpteq_map( ik ), symm_map( ik )
-       !
-   ENDDO
-!
-! </DEBUG>
-!
-       
-
+   IF ( PRESENT(kpteq_map) .AND. PRESENT(kpteq_symm) .AND. PRESENT(vkpt_all) ) THEN
+      DO ik = 1, nkpts_all
+          WRITE( 0, "( i3, 3f12.6, i5, i5)") ik, vkpt_symm( :, ik), kpteq_map( ik ), kpteq_symm( ik )
+      ENDDO
+   ELSE IF ( PRESENT(vkpt_all) ) THEN
+      DO ik = 1, nkpts_all
+          WRITE( 0, "( i3, 3f12.6, i5, i5)") ik, vkpt_symm( :, ik)
+      ENDDO
+   ENDIF
+#endif
+   !       
    DEALLOCATE( vkpt_cry, vkpt_symm, STAT=ierr)
    IF (ierr/=0) CALL errore(subname,'deallocating vkpt_cry, vkpt_symm',ABS(ierr))
-   !
-   DEALLOCATE( symm_map, kpteq_map, STAT=ierr)
-   IF (ierr/=0) CALL errore(subname,'deallocating symm_map, kpteq_map',ABS(ierr))
-
 
    CALL timing(subname,OPR='stop')
    CALL log_pop(subname)
@@ -225,3 +210,4 @@ CONTAINS
    
 END SUBROUTINE symmetrize_kgrid
 
+END MODULE symmetrize_kgrid_module

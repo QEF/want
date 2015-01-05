@@ -39,8 +39,8 @@
    LOGICAL                   :: use_uspp
    LOGICAL                   :: use_atomwfc 
    LOGICAL                   :: use_blimit 
-   LOGICAL                   :: use_symmetry
-   LOGICAL                   :: use_timerev
+   LOGICAL                   :: use_symmetry=.TRUE.
+   LOGICAL                   :: use_timerev=.TRUE.
    LOGICAL                   :: use_debug_mode
    LOGICAL                   :: use_condmin
 
