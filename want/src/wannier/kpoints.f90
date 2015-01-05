@@ -24,6 +24,7 @@
    USE mp,                ONLY : mp_bcast
    USE paratools_module,  ONLY : para_get_poolindex
    USE grids_module,      ONLY : grids_get_rgrid
+   USE symmetrize_kgrid_module,    ONLY : symmetrize_kgrid
    !
    USE qexml_module
    USE qexpt_module
@@ -206,7 +207,7 @@ CONTAINS
 
 
 !**********************************************************
-   SUBROUTINE kpoints_init( )
+   SUBROUTINE kpoints_init( init_pp )
    !**********************************************************
    !
    ! init kpts, 
@@ -214,12 +215,17 @@ CONTAINS
    !   - manage parallelism over kpts
    !
    IMPLICIT NONE
-      CHARACTER(12)     :: subname="kpoints_init"
-      LOGICAL           :: lfound
-      INTEGER           :: ierr, ik
+      LOGICAL, OPTIONAL, INTENT(IN) :: init_pp
+      !
+      CHARACTER(12) :: subname="kpoints_init"
+      LOGICAL       :: lfound, init_pp_
+      INTEGER       :: ierr, ik
       REAL(dbl), ALLOCATABLE :: vr_cry(:,:)
 
       CALL log_push ( subname )
+      !
+      init_pp_ = .FALSE.
+      IF ( PRESENT(init_pp) ) init_pp_ = init_pp
       !
       IF ( .NOT. lattice_alloc ) CALL errore(subname,'lattice NOT alloc',1) 
       IF ( .NOT. kpoints_alloc ) CALL errore(subname,'kpoints NOT alloc',1) 
@@ -227,7 +233,16 @@ CONTAINS
       !
       ! get the kpt grid over the full BZ
       !
-      CALL symmetrize_kgrid() 
+      IF ( init_pp_ ) THEN
+          !
+          CALL symmetrize_kgrid( nkpts, vkpt, bvec, nkpts_all )
+          !
+          ALLOCATE( vkpt_all(3,nkpts_all), STAT=ierr )
+          IF ( ierr/=0 ) CALL errore(subname,"allocating vkpt_all",ABS(ierr))
+          !
+          CALL symmetrize_kgrid( nkpts, vkpt, bvec, nkpts_all, VKPT_ALL=vkpt_all ) 
+          !
+      ENDIF
 
       !
       ! set data for parallelism
@@ -242,18 +257,22 @@ CONTAINS
       !
       ! set the correct weight if the case
       !
-      lfound = .FALSE.
-      DO ik = 1, nkpts_g
+      IF ( .NOT. init_pp_ ) THEN
           !
-          IF( ABS( wk_g(ik) - ONE/REAL(nkpts_g, dbl) ) > EPS_m6 ) lfound = .TRUE.
+          lfound = .FALSE.
+          DO ik = 1, nkpts_g
+              !
+              IF( ABS( wk_g(ik) - ONE/REAL(nkpts_g, dbl) ) > EPS_m6 ) lfound = .TRUE.
+              !
+          ENDDO
           !
-      ENDDO
-      !
-      IF ( lfound ) THEN
-          !
-          WRITE(stdout, "()")
-          CALL warning( subname, 'Invalid kpt weights from DFT data. Recalculated')
-          wk_g(:) = ONE/REAL(nkpts_g, dbl)
+          IF ( lfound ) THEN
+              !
+              WRITE(stdout, "()")
+              CALL warning( subname, 'Invalid kpt weights from DFT data. Recalculated')
+              wk_g(:) = ONE/REAL(nkpts_g, dbl)
+              !
+          ENDIF
           !
       ENDIF
 
@@ -269,7 +288,15 @@ CONTAINS
       ELSE
           !
           CALL get_monkpack( nk, s, nkpts_g, vkpt_g,'CARTESIAN', bvec, ierr)
-          IF ( ierr /= 0) CALL errore(subname,'kpt grid not Monkhorst-Pack',ABS(ierr))
+          !
+          IF ( init_pp_ ) THEN
+              !
+              IF ( ierr /=0 ) CALL get_monkpack( nk, s, nkpts_all, vkpt_all,'CARTESIAN', bvec, ierr)
+              IF ( ierr /=0 ) CALL errore(subname,'kpt grid not Monkhorst-Pack I',ABS(ierr))
+              !
+          ELSE
+              IF ( ierr /=0 ) CALL errore(subname,'kpt grid not Monkhorst-Pack II',ABS(ierr))
+          ENDIF
           !
       ENDIF
 
@@ -320,8 +347,6 @@ CONTAINS
           IF ( ierr /= 0) CALL errore(subname,'deallocating vr_cry',ABS(ierr))
           !
       ENDIF
-      !
-
 
       !
       ! determine nr if needed

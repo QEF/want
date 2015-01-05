@@ -21,7 +21,12 @@ atmproj_tools.o : ../baselib/timing.o
 atmproj_tools.o : ../baselib/util.o
 atmproj_tools.o : converters.o
 atmproj_tools.o : get_rgrid.o
+atmproj_tools.o : ions.o
+atmproj_tools.o : lattice.o
 atmproj_tools.o : pseudo_types.o
+atmproj_tools.o : symmetrize_kgrid.o
+atmproj_tools.o : symmetry.o
+atmproj_tools.o : uspp.o
 atomic_wfc.o : ../baselib/constants.o
 atomic_wfc.o : ../baselib/kind.o
 atomic_wfc.o : ../baselib/log_module.o
@@ -429,6 +434,7 @@ kpoints.o : internal_tools.o
 kpoints.o : io_module.o
 kpoints.o : lattice.o
 kpoints.o : paratools.o
+kpoints.o : symmetrize_kgrid.o
 kpoints.o : wannier90_tools.o
 lattice.o : ../baselib/constants.o
 lattice.o : ../baselib/crystal_io.o
@@ -764,8 +770,6 @@ symmetrize_kgrid.o : ../baselib/log_module.o
 symmetrize_kgrid.o : ../baselib/timing.o
 symmetrize_kgrid.o : control.o
 symmetrize_kgrid.o : converters.o
-symmetrize_kgrid.o : kpoints.o
-symmetrize_kgrid.o : lattice.o
 symmetrize_kgrid.o : symmetry.o
 symmetry.o : ../baselib/constants.o
 symmetry.o : ../baselib/io_global.o
@@ -907,6 +911,7 @@ want_dftread.o : ../baselib/log_module.o
 want_dftread.o : ../baselib/parameters.o
 want_dftread.o : ../baselib/timing.o
 want_dftread.o : control.o
+want_dftread.o : datafiles.o
 want_dftread.o : io_module.o
 want_dftread.o : ions.o
 want_dftread.o : kpoints.o

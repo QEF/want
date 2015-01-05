@@ -18,7 +18,8 @@
    USE parameters,           ONLY : nstrx, nkpts_inx
    USE io_module,            ONLY : stdout, stdin
    USE io_module,            ONLY : work_dir, prefix, postfix
-   USE control_module,       ONLY : debug_level, use_debug_mode, verbosity
+   USE control_module,       ONLY : debug_level, use_debug_mode, verbosity,&
+                                    use_symmetry, use_timerev
    USE datafiles_module,     ONLY : datafiles_init
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
@@ -50,6 +51,7 @@
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
                     fileout, nkpts_in, nkpts_max, ircut, debug_level, verbosity, &
+                    use_symmetry, use_timerev, &
                     do_orthoovp, atmproj_sh, atmproj_thr, atmproj_nbnd, spin_component
    !
    ! end of declariations
@@ -140,6 +142,8 @@ CONTAINS
       atmproj_sh                  = 5.0d0
       atmproj_thr                 = 0.9d0
       atmproj_nbnd                = 0
+      use_symmetry                = .TRUE.
+      use_timerev                 = .TRUE.
       spin_component              = 'all'
       
       
@@ -170,6 +174,8 @@ CONTAINS
       CALL mp_bcast( atmproj_sh,      ionode_id )
       CALL mp_bcast( atmproj_thr,     ionode_id )
       CALL mp_bcast( atmproj_nbnd,    ionode_id )
+      CALL mp_bcast( use_symmetry,    ionode_id )
+      CALL mp_bcast( use_timerev,     ionode_id )
       CALL mp_bcast( spin_component,  ionode_id )
 
       !

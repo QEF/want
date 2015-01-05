@@ -6,7 +6,6 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-
 !*********************************************
    MODULE symmetry_module
    !*********************************************
@@ -16,10 +15,10 @@
    USE parameters,        ONLY : nstrx
    USE log_module,        ONLY : log_push, log_pop
    USE io_global_module,  ONLY : ionode, ionode_id
-   USE ions_module,       ONLY : nat_ => nat, ions_alloc => alloc
-   USE lattice_module,    ONLY : avec, bvec, lattice_alloc => alloc
+   USE ions_module,       ONLY : nat_ => nat, tau, ions_alloc => alloc
+   USE lattice_module,    ONLY : avec, bvec, alat, lattice_alloc => alloc
    USE mp,                ONLY : mp_bcast
-   USE converters_module, ONLY : cry2cart
+   USE converters_module, ONLY : cry2cart, cart2cry
    USE util_module
    USE qexml_module
    USE qexpt_module
@@ -33,7 +32,7 @@
    IMPLICIT NONE
    PRIVATE
    SAVE
-
+!
 ! This module handles symmetry data.
 ! Symmetry operations are not computed, but read from DFT datafile
 !
@@ -58,6 +57,7 @@
    CHARACTER(nstrx), ALLOCATABLE :: sname(:)      ! symmetry names
    INTEGER                       :: nat=0         ! natoms
    INTEGER,          ALLOCATABLE :: irt(:,:)      ! (nsym,nat) atom map upon the action of symmetries
+   INTEGER,          ALLOCATABLE :: icell(:,:,:)  ! (3,nsym,nat) gives the reference cell after the symmetry is operated
    ! 
    REAL(dbl),        ALLOCATABLE :: d1(:,:,:)     ! (3,3,nsym), (5,5,nsym), (7,7,nsym)
    REAL(dbl),        ALLOCATABLE :: d2(:,:,:)     ! matrices for rotating spherical
@@ -73,7 +73,7 @@
    PUBLIC :: srot
    PUBLIC :: strasl
    PUBLIC :: sname
-   PUBLIC :: irt, nat
+   PUBLIC :: irt, nat, icell
    PUBLIC :: d1, d2, d3
    PUBLIC :: alloc
 
@@ -115,6 +115,8 @@ CONTAINS
        IF ( nat > 0 ) THEN
            ALLOCATE( irt( nsym, nat ), STAT = ierr )
            IF( ierr /=0 ) CALL errore(subname, 'allocating irt', ABS(ierr) )
+           ALLOCATE( icell( 3, nsym, nat ), STAT = ierr )
+           IF( ierr /=0 ) CALL errore(subname, 'allocating icell', ABS(ierr) )
        ENDIF
        !
        ALLOCATE( d1(3,3,nsym), d2(5,5,nsym), d3(7,7,nsym), STAT=ierr )
@@ -160,6 +162,10 @@ CONTAINS
            DEALLOCATE(irt, STAT=ierr)
            IF (ierr/=0)  CALL errore(subname,'deallocating irt',ABS(ierr))
        ENDIF
+       IF ( ALLOCATED(icell) ) THEN 
+           DEALLOCATE(icell, STAT=ierr)
+           IF (ierr/=0)  CALL errore(subname,'deallocating icell',ABS(ierr))
+       ENDIF
        IF ( ALLOCATED(d1) ) THEN 
            DEALLOCATE(d1, d2, d3, STAT=ierr)
            IF (ierr/=0)  CALL errore(subname,'deallocating d1,d2,d3',ABS(ierr))
@@ -185,6 +191,7 @@ CONTAINS
        IF ( ALLOCATED(strasl) )   cost = cost + REAL(SIZE(strasl))     * 8.0_dbl
        IF ( ALLOCATED(srtrasl) )  cost = cost + REAL(SIZE(srtrasl))    * 8.0_dbl
        IF ( ALLOCATED(irt) )      cost = cost + REAL(SIZE(irt))        * 4.0_dbl
+       IF ( ALLOCATED(icell) )    cost = cost + REAL(SIZE(icell))      * 4.0_dbl
        IF ( ALLOCATED(d1) )       cost = cost + REAL(SIZE(d1))         * 8.0_dbl
        IF ( ALLOCATED(d2) )       cost = cost + REAL(SIZE(d2))         * 8.0_dbl
        IF ( ALLOCATED(d3) )       cost = cost + REAL(SIZE(d3))         * 8.0_dbl
@@ -225,10 +232,12 @@ CONTAINS
    SUBROUTINE symmetry_read_ext( filefmt )
    !*********************************************************
    IMPLICIT NONE
-       CHARACTER(*),      INTENT(in) :: filefmt
+       CHARACTER(*),  INTENT(in) :: filefmt
        !
-       CHARACTER(17)        :: subname="symmetry_read_ext"
-       INTEGER              :: ierr, is
+       CHARACTER(17)  :: subname="symmetry_read_ext"
+       INTEGER        :: ierr, is, ia, iaeq
+       REAL(dbl)      :: rvec(3)
+       REAL(dbl), ALLOCATABLE :: tau_cry(:,:)
        !
 #ifdef __ETSF_IO
        TYPE(etsf_geometry)  :: geometry
@@ -361,18 +370,19 @@ CONTAINS
        !
        IF ( lattice_alloc ) THEN
            !
-           ! srrot = avec * srot * bvec / 2pi
-           srrot(:,:,:) = srot(:,:,:)
+           ! srrot = avec * srot * bvec^dag / 2pi
+           srrot(:,:,:) = REAL(srot(:,:,:), dbl)
            !
            DO is = 1, nsym
-               CALL mat_mul( srrot(:,:,is), srrot(:,:,is), 'N', bvec, 'N', 3,3,3) 
-               CALL mat_mul( srrot(:,:,is), avec, 'N', srrot(:,:,is), 'N', 3,3,3) 
+               CALL mat_mul( srrot(:,:,is), srrot(:,:,is), 'N', avec, 'T', 3,3,3) 
+               CALL mat_mul( srrot(:,:,is), bvec, 'N', srrot(:,:,is), 'N', 3,3,3) 
            ENDDO 
            !
            srrot = srrot / TPI
            !
            srtrasl = strasl
            CALL cry2cart( srtrasl, avec )
+
            !
            ! init rotation matrices for spherical harmonics
            !
@@ -384,6 +394,34 @@ CONTAINS
            d2 = 0.0
            d3 = 0.0
        ENDIF
+       !
+       ! we need irt and other specific inputs from the DFT engine
+       !
+       IF ( ions_alloc .AND. lattice_alloc .AND. TRIM(filefmt)== "qexml" ) THEN
+           !
+           ALLOCATE( tau_cry(3,nat) )
+           tau_cry = tau
+           !
+           CALL cart2cry( tau_cry, avec )
+           !
+           DO ia = 1, nat
+               !
+               DO is = 1, nsym
+                   !
+                   CALL mat_mul( rvec(:), REAL(srot(:,:,is),dbl), "T", tau_cry(:,ia), 3, 3 )
+                   !
+                   iaeq=irt(is,ia)
+                   !
+                   icell(:,is,ia) = NINT( rvec(:)-tau_cry(:,iaeq) ) 
+! XXXX
+!WRITE(0,"(a,2i4,3f15.9)") "is, ia: rcell", is, ia, rvec(:)-tau_cry(:,iaeq)
+!WRITE(0,"(a,2i4,3i6)") "is, ia: icell", is, ia,  icell(:,is,ia)
+                   !
+               ENDDO
+           ENDDO
+           !
+       ENDIF
+      
        ! 
        CALL log_pop ( subname )
        !

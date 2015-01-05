@@ -19,7 +19,7 @@
 CONTAINS
 !
 !*********************************************************
-SUBROUTINE want_init(input, lattice, ions, windows, kpoints, bshells, pseudo)
+SUBROUTINE want_init(input, lattice, ions, windows, kpoints, kpoints_pp, bshells, pseudo)
    !*********************************************************
    ! 
    ! This subroutine performs all the allocations and 
@@ -65,6 +65,7 @@ SUBROUTINE want_init(input, lattice, ions, windows, kpoints, bshells, pseudo)
    LOGICAL, OPTIONAL, INTENT(in) :: ions
    LOGICAL, OPTIONAL, INTENT(in) :: windows
    LOGICAL, OPTIONAL, INTENT(in) :: kpoints
+   LOGICAL, OPTIONAL, INTENT(in) :: kpoints_pp
    LOGICAL, OPTIONAL, INTENT(in) :: bshells
    LOGICAL, OPTIONAL, INTENT(in) :: pseudo
 
@@ -72,8 +73,8 @@ SUBROUTINE want_init(input, lattice, ions, windows, kpoints, bshells, pseudo)
    ! local variables
    !
    CHARACTER(9)              :: subname="want_init"
-   LOGICAL                   :: input_, init_lattice_, init_ions_, init_windows_, &
-                                        init_kpoints_, init_bshells_, init_pseudo_
+   LOGICAL                   :: input_, init_lattice_, init_ions_,       init_windows_, &
+                                        init_kpoints_, init_kpoints_pp_, init_bshells_, init_pseudo_
    INTEGER                   :: ia, iwann
    !   
    ! end of declarations
@@ -94,6 +95,7 @@ SUBROUTINE want_init(input, lattice, ions, windows, kpoints, bshells, pseudo)
     init_lattice_    = .TRUE.
     init_ions_       = .TRUE.
     init_kpoints_    = .TRUE.
+    init_kpoints_pp_ = .FALSE.
     init_windows_    = .TRUE.
     init_bshells_    =  init_kpoints_
     init_pseudo_     = .FALSE.
@@ -102,6 +104,7 @@ SUBROUTINE want_init(input, lattice, ions, windows, kpoints, bshells, pseudo)
     IF ( PRESENT(ions) )        init_ions_ = ions
     IF ( PRESENT(windows) )  init_windows_ = windows
     IF ( PRESENT(kpoints) )  init_kpoints_ = kpoints
+    IF ( PRESENT(kpoints_pp) )  init_kpoints_pp_ = kpoints_pp
     IF ( PRESENT(bshells) )  init_bshells_ = bshells
     IF ( PRESENT(pseudo) )    init_pseudo_ = pseudo 
 
@@ -165,9 +168,9 @@ SUBROUTINE want_init(input, lattice, ions, windows, kpoints, bshells, pseudo)
 !
 ! ... kpoint data
 !
-    IF ( init_kpoints_ ) THEN
+    IF ( init_kpoints_ .OR. init_kpoints_pp_ ) THEN
         !
-        CALL kpoints_init()
+        CALL kpoints_init( INIT_PP=init_kpoints_pp_ )
         !
     ENDIF
 
