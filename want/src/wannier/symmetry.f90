@@ -40,7 +40,7 @@
 ! SUBROUTINE symmetry_allocate()
 ! SUBROUTINE symmetry_deallocate()
 ! SUBROUTINE symmetry_rotate( vect, opr )
-! SUBROUTINE symmetry_read_ext( filefmt )
+! SUBROUTINE symmetry_read_ext( filefmt[, lpara ] )
 ! SUBROUTINE symmetry_write ( unit, isym, srot, tau, sname)
 
 !
@@ -229,14 +229,16 @@ CONTAINS
 
 
 !*********************************************************
-   SUBROUTINE symmetry_read_ext( filefmt )
+   SUBROUTINE symmetry_read_ext( filefmt, lpara )
    !*********************************************************
    IMPLICIT NONE
-       CHARACTER(*),  INTENT(in) :: filefmt
+       CHARACTER(*),      INTENT(IN) :: filefmt
+       LOGICAL, OPTIONAL, INTENT(IN) :: lpara
        !
        CHARACTER(17)  :: subname="symmetry_read_ext"
        INTEGER        :: ierr, is, ia, iaeq
        REAL(dbl)      :: rvec(3)
+       LOGICAL        :: lpara_
        REAL(dbl), ALLOCATABLE :: tau_cry(:,:)
        !
 #ifdef __ETSF_IO
@@ -247,20 +249,27 @@ CONTAINS
 
        CALL log_push( subname )
        !
+       lpara_=.TRUE.
+       IF (PRESENT(lpara)) lpara_ = lpara
+       !
        SELECT CASE ( TRIM(filefmt) )
        !
        CASE ( 'qexml' )
             !
             IF (ionode) CALL qexml_read_symmetry( NSYM=nsym, NAT=nat, IERR=ierr )
-            CALL mp_bcast( nsym, ionode_id)
-            CALL mp_bcast( nat,  ionode_id)
-            CALL mp_bcast( ierr, ionode_id)
+            IF ( lpara_ ) THEN
+                CALL mp_bcast( nsym, ionode_id)
+                CALL mp_bcast( nat,  ionode_id)
+                CALL mp_bcast( ierr, ionode_id)
+            ENDIF
             !
        CASE ( 'pw_export' )
             !
             IF (ionode) CALL qexpt_read_symmetry( NSYM=nsym, IERR=ierr )
-            CALL mp_bcast( nsym, ionode_id)
-            CALL mp_bcast( ierr, ionode_id)
+            IF ( lpara_ ) THEN
+                CALL mp_bcast( nsym, ionode_id)
+                CALL mp_bcast( ierr, ionode_id)
+            ENDIF
             !
        CASE ( 'etsf_io' )
             !
@@ -305,10 +314,12 @@ CONTAINS
                IF (nat <= 0 ) CALL qexml_read_symmetry( S=srot, TRASL=strasl, SNAME=sname, IERR=ierr )
             ENDIF
             !
-            CALL mp_bcast( srot,    ionode_id)
-            CALL mp_bcast( strasl,  ionode_id)
-            CALL mp_bcast( sname,   ionode_id)
-            CALL mp_bcast( ierr,    ionode_id)
+            IF ( lpara_ ) THEN
+                CALL mp_bcast( srot,    ionode_id)
+                CALL mp_bcast( strasl,  ionode_id)
+                CALL mp_bcast( sname,   ionode_id)
+                CALL mp_bcast( ierr,    ionode_id)
+            ENDIF
             !
             IF (nat > 0 ) CALL mp_bcast( irt,     ionode_id)
             !
@@ -316,10 +327,12 @@ CONTAINS
             !
             IF (ionode) CALL qexpt_read_symmetry( S=srot, TRASL=strasl, SNAME=sname, IERR=ierr )
             !
-            CALL mp_bcast( srot,    ionode_id)
-            CALL mp_bcast( strasl,  ionode_id)
-            CALL mp_bcast( sname,   ionode_id)
-            CALL mp_bcast( ierr,    ionode_id)
+            IF ( lpara_ ) THEN
+                CALL mp_bcast( srot,    ionode_id)
+                CALL mp_bcast( strasl,  ionode_id)
+                CALL mp_bcast( sname,   ionode_id)
+                CALL mp_bcast( ierr,    ionode_id)
+            ENDIF 
             !
        CASE( 'etsf_io' )
             !
@@ -339,9 +352,11 @@ CONTAINS
             geometry%reduced_symmetry_matrices       => null()
             geometry%reduced_symmetry_translations   => null()
             !
-            CALL mp_bcast( reduced_symmetry_matrices,      ionode_id)
-            CALL mp_bcast( reduced_symmetry_translations,  ionode_id)
-            CALL mp_bcast( lstat,    ionode_id)
+            IF ( lpara_ ) THEN
+                CALL mp_bcast( reduced_symmetry_matrices,      ionode_id)
+                CALL mp_bcast( reduced_symmetry_translations,  ionode_id)
+                CALL mp_bcast( lstat,    ionode_id)
+            ENDIF
             !
             ierr = 0
             IF ( .NOT. lstat) THEN

@@ -578,7 +578,6 @@ END PROGRAM dos_main
           WRITE( stdout, "(2x, 'Generated kpt mesh: (cart. coord. in Bohr^-1)',/)" )
           !
           DO ik=1,nkpts_int
-              !
               WRITE( stdout, " (4x, 'k (', i5, ') =    ( ',3f9.5,' ),   &
                                & weight = ', f11.7 )") ik, ( vkpt_int(i,ik), i=1,3 ), wk(ik)
           ENDDO
