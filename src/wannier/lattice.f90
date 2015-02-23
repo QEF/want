@@ -40,7 +40,7 @@
 !
 ! Subroutines in this module:
 ! SUBROUTINE lattice_init()
-! SUBROUTINE lattice_read_ext(unit, name, found)
+! SUBROUTINE lattice_read_ext( filefmt[, lpara] )
 !
 ! </INFO>
 !
@@ -92,12 +92,15 @@ CONTAINS
 
 
 !*********************************************************
-   SUBROUTINE lattice_read_ext(filefmt)
+   SUBROUTINE lattice_read_ext(filefmt,lpara)
    !*********************************************************
    IMPLICIT NONE
-       CHARACTER(*)       :: filefmt
+       CHARACTER(*),      INTENT(IN) :: filefmt
+       LOGICAL, OPTIONAL, INTENT(IN) :: lpara
+       !
        CHARACTER(16)      :: subname="lattice_read_ext"
        CHARACTER(256)     :: a_units
+       LOGICAL            :: lpara_
        INTEGER            :: ierr
        !
 #ifdef __ETSF_IO
@@ -108,6 +111,9 @@ CONTAINS
        CALL log_push ( subname )
        ierr = 0
        !
+       lpara_=.TRUE.
+       IF (PRESENT(lpara)) lpara_ = lpara
+       !
        SELECT CASE ( TRIM(filefmt) )
        !
        CASE ( 'qexml' )
@@ -116,9 +122,11 @@ CONTAINS
            CALL qexml_read_cell( ALAT=alat, A1=avec(:,1), A2=avec(:,2),  &
                                             A3=avec(:,3), IERR=ierr)
            !
-           CALL mp_bcast( avec,  ionode_id )
-           CALL mp_bcast( alat,  ionode_id )
-           CALL mp_bcast( ierr,  ionode_id )
+           IF (lpara_ ) THEN
+               CALL mp_bcast( avec,  ionode_id )
+               CALL mp_bcast( alat,  ionode_id )
+               CALL mp_bcast( ierr,  ionode_id )
+           ENDIF
            !
            IF (ierr/=0) CALL errore(subname,'QEXML: reading lattice',ABS(ierr))
            !
@@ -128,9 +136,11 @@ CONTAINS
            CALL qexpt_read_cell( ALAT=alat, A1=avec(:,1), A2=avec(:,2),  &
                                             A3=avec(:,3), IERR=ierr)
            !
-           CALL mp_bcast( avec,  ionode_id )
-           CALL mp_bcast( alat,  ionode_id )
-           CALL mp_bcast( ierr,  ionode_id )
+           IF (lpara_ ) THEN
+               CALL mp_bcast( avec,  ionode_id )
+               CALL mp_bcast( alat,  ionode_id )
+               CALL mp_bcast( ierr,  ionode_id )
+           ENDIF
            !
            IF (ierr/=0) CALL errore(subname,'QEXPT: reading lattice',ABS(ierr))
            !
@@ -147,8 +157,10 @@ CONTAINS
            !
            geometry%primitive_vectors                 => null()
            !
-           CALL mp_bcast( primitive_vectors,  ionode_id )
-           CALL mp_bcast( lstat,  ionode_id )
+           IF (lpara_ ) THEN
+               CALL mp_bcast( primitive_vectors,  ionode_id )
+               CALL mp_bcast( lstat,  ionode_id )
+           ENDIF
            !
            IF ( .NOT. lstat ) CALL etsf_error(error_data,subname,'ETSF_IO: reading lattice',10)
 
@@ -173,17 +185,19 @@ CONTAINS
        CASE ( 'crystal' )
            !
            IF ( ionode ) CALL crio_open_section( "GEOMETRY", ACTION='read', IERR=ierr )
-           CALL mp_bcast( ierr,  ionode_id )
+           IF (lpara_) CALL mp_bcast( ierr,  ionode_id )
            IF ( ierr/=0 ) CALL errore(subname, 'CRIO: opening sec. GEOMETRY', ABS(ierr) )
            !
            IF ( ionode ) CALL crio_read_periodicity( AVEC=avec, A_UNITS=a_units, IERR=ierr)
-           CALL mp_bcast( a_units,  ionode_id )
-           CALL mp_bcast( avec,     ionode_id )
-           CALL mp_bcast( ierr,     ionode_id )
+           IF (lpara_) THEN
+               CALL mp_bcast( a_units,  ionode_id )
+               CALL mp_bcast( avec,     ionode_id )
+               CALL mp_bcast( ierr,     ionode_id )
+           ENDIF
            IF ( ierr/=0 ) CALL errore(subname, 'CRIO: reading lattice', ABS(ierr) )
            !
            IF ( ionode ) CALL crio_close_section( "GEOMETRY", ACTION='read', IERR=ierr )
-           CALL mp_bcast( ierr,  ionode_id )
+           IF (lpara_) CALL mp_bcast( ierr,  ionode_id )
            IF ( ierr/=0 ) CALL errore(subname, 'CRIO: closing sec. GEOMETRY', ABS(ierr) )
            !
            CALL change_case( a_units, 'lower' )
@@ -210,17 +224,21 @@ CONTAINS
            !
            IF (ionode) CALL wannier90_tools_get_lattice( alat, avec, bvec )
            !
-           CALL mp_bcast( alat,     ionode_id )
-           CALL mp_bcast( avec,     ionode_id )
-           CALL mp_bcast( bvec,     ionode_id )
+           IF (lpara_) THEN
+               CALL mp_bcast( alat,     ionode_id )
+               CALL mp_bcast( avec,     ionode_id )
+               CALL mp_bcast( bvec,     ionode_id )
+           ENDIF
            !
        CASE ( 'internal' )
            !
            IF (ionode) CALL internal_tools_get_lattice( alat, avec, bvec )
            !
-           CALL mp_bcast( alat,     ionode_id )
-           CALL mp_bcast( avec,     ionode_id )
-           CALL mp_bcast( bvec,     ionode_id )
+           IF (lpara_) THEN
+               CALL mp_bcast( alat,     ionode_id )
+               CALL mp_bcast( avec,     ionode_id )
+               CALL mp_bcast( bvec,     ionode_id )
+           ENDIF
            !
        CASE DEFAULT
            !

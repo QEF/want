@@ -44,7 +44,7 @@
 ! SUBROUTINE ions_allocate( nat_, nsp_ )
 ! SUBROUTINE ions_deallocate()
 ! SUBROUTINE ions_init()
-! SUBROUTINE ions_read_ext( filefmt )
+! SUBROUTINE ions_read_ext( filefmt[, lpara] )
 ! SUBROUTINE ions_tau_sort( tausrt, isrt, tau_, isp, na_ )
 !
 ! </INFO>
@@ -223,17 +223,18 @@ CONTAINS
 
 
 !*********************************************************
-   SUBROUTINE ions_read_ext( filefmt )
+   SUBROUTINE ions_read_ext( filefmt, lpara )
    !*********************************************************
    IMPLICIT NONE
-       CHARACTER(*),      INTENT(in) :: filefmt
+       CHARACTER(*),      INTENT(IN) :: filefmt
+       LOGICAL, OPTIONAL, INTENT(IN) :: lpara
        !
        CHARACTER(13)             :: subname="ions_read_ext"
        CHARACTER(256)            :: units
        INTEGER,      ALLOCATABLE :: ityp_tmp(:)
        CHARACTER(3), ALLOCATABLE :: symb_tmp(:), atm_symb_tmp(:)
        INTEGER                   :: i, ia, ierr
-       LOGICAL                   :: found
+       LOGICAL                   :: found, lpara_
        !   
 #ifdef __ETSF_IO
        TYPE(etsf_geometry)                   :: geometry
@@ -245,23 +246,30 @@ CONTAINS
 
        CALL log_push( subname )
        !
+       lpara_=.TRUE.
+       IF (PRESENT(lpara)) lpara_ = lpara
+       !
        SELECT CASE ( TRIM(filefmt) )
        !
        CASE ( 'qexml' )
             !
             IF (ionode) CALL qexml_read_ions( NAT=nat, NSP=nsp, IERR=ierr )
-            CALL mp_bcast( nat,   ionode_id )
-            CALL mp_bcast( nsp,   ionode_id )
-            CALL mp_bcast( ierr,  ionode_id )
+            IF (lpara_) THEN
+                CALL mp_bcast( nat,   ionode_id )
+                CALL mp_bcast( nsp,   ionode_id )
+                CALL mp_bcast( ierr,  ionode_id )
+            ENDIF
             !
             IF ( ierr/=0) CALL errore(subname,'QEXML: getting ion dimensions',ABS(ierr))
             !
        CASE ( 'pw_export' )
             !
             IF (ionode) CALL qexpt_read_ions( NAT=nat, NSP=nsp, IERR=ierr )
-            CALL mp_bcast( nat,   ionode_id )
-            CALL mp_bcast( nsp,   ionode_id )
-            CALL mp_bcast( ierr,  ionode_id )
+            IF (lpara_) THEN
+                CALL mp_bcast( nat,   ionode_id )
+                CALL mp_bcast( nsp,   ionode_id )
+                CALL mp_bcast( ierr,  ionode_id )
+            ENDIF
             !
             IF ( ierr/=0) CALL errore(subname,'QEXPT: getting ion dimensions',ABS(ierr))
             !
@@ -280,12 +288,14 @@ CONTAINS
        CASE ( 'crystal' )
             !
             IF (ionode) CALL crio_open_section( "GEOMETRY", ACTION='read', IERR=ierr )
-            CALL mp_bcast( ierr,  ionode_id )
+            IF (lpara_) CALL mp_bcast( ierr,  ionode_id )
             IF ( ierr/=0 ) CALL errore(subname, 'CRIO: opening sec. GEOMETRY', ABS(ierr) )
             !
             IF (ionode) CALL crio_read_atoms( NUM_OF_ATOMS=nat, IERR=ierr )
-            CALL mp_bcast( nat,   ionode_id )
-            CALL mp_bcast( ierr,  ionode_id )
+            IF ( lpara_ ) THEN
+                CALL mp_bcast( nat,   ionode_id )
+                CALL mp_bcast( ierr,  ionode_id )
+            ENDIF
             IF ( ierr/=0) CALL errore(subname,'CRIO: getting ion dimensions',ABS(ierr))
 
             !
@@ -296,8 +306,10 @@ CONTAINS
             IF ( ierr/=0) CALL errore(subname,'allocating symb_tmp',ABS(ierr))
             !
             IF (ionode) CALL crio_read_atoms( SYMB=symb_tmp, IERR=ierr )
-            CALL mp_bcast( symb_tmp,   ionode_id )
-            CALL mp_bcast( ierr,       ionode_id )
+            IF (lpara_) THEN
+                CALL mp_bcast( symb_tmp,   ionode_id )
+                CALL mp_bcast( ierr,       ionode_id )
+            ENDIF
             IF ( ierr/=0) CALL errore(subname,'CRIO: getting SYMB',ABS(ierr))
             !
             nsp = 1
@@ -355,11 +367,13 @@ CONTAINS
             CALL qexml_read_ions( ATM=atm_symb, ITYP=ityp_tmp, &
                                   PSFILE=psfile, TAU=tau,  IERR=ierr )
             !
-            CALL mp_bcast( atm_symb,   ionode_id )
-            CALL mp_bcast( ityp_tmp,   ionode_id )
-            CALL mp_bcast( psfile,     ionode_id )
-            CALL mp_bcast( tau,        ionode_id )
-            CALL mp_bcast( ierr,       ionode_id )
+            IF (lpara_) THEN
+                CALL mp_bcast( atm_symb,   ionode_id )
+                CALL mp_bcast( ityp_tmp,   ionode_id )
+                CALL mp_bcast( psfile,     ionode_id )
+                CALL mp_bcast( tau,        ionode_id )
+                CALL mp_bcast( ierr,       ionode_id )
+            ENDIF
             !
             IF (ierr/=0) CALL errore(subname,'QEXML: reading data' , ABS(ierr))
             !
@@ -381,12 +395,14 @@ CONTAINS
             CALL qexpt_read_ions( ATM=atm_symb, SYMB=symb, PSEUDO_DIR=pseudo_dir, &
                                   PSFILE=psfile, TAU=tau,  IERR=ierr )
             !
-            CALL mp_bcast( atm_symb,   ionode_id )
-            CALL mp_bcast( symb,       ionode_id )
-            CALL mp_bcast( pseudo_dir, ionode_id )
-            CALL mp_bcast( psfile,     ionode_id )
-            CALL mp_bcast( tau,        ionode_id )
-            CALL mp_bcast( ierr,       ionode_id )
+            IF (lpara_) THEN
+                CALL mp_bcast( atm_symb,   ionode_id )
+                CALL mp_bcast( symb,       ionode_id )
+                CALL mp_bcast( pseudo_dir, ionode_id )
+                CALL mp_bcast( psfile,     ionode_id )
+                CALL mp_bcast( tau,        ionode_id )
+                CALL mp_bcast( ierr,       ionode_id )
+            ENDIF
             !
             IF (ierr/=0) CALL errore(subname,'QEXPT: reading data' , ABS(ierr))
             !
@@ -409,7 +425,7 @@ CONTAINS
                 CALL etsf_io_geometry_get(ncid, geometry, lstat, error_data) 
             ENDIF
             !
-            CALL mp_bcast( lstat,                   ionode_id )
+            IF (lpara_) CALL mp_bcast( lstat, ionode_id )
             IF (.NOT. lstat) CALL etsf_error(error_data,subname,'ETSF_IO: reading data' , 11 )
             !
             geometry%primitive_vectors         => null()
@@ -417,10 +433,12 @@ CONTAINS
             geometry%atom_species              => null()
             geometry%reduced_atom_positions    => null()
 
-            CALL mp_bcast( primitive_vectors,       ionode_id )
-            CALL mp_bcast( chemical_symbols,        ionode_id )
-            CALL mp_bcast( reduced_atom_positions,  ionode_id )
-            CALL mp_bcast( atom_species,            ionode_id )
+            IF ( lpara_ ) THEN
+                CALL mp_bcast( primitive_vectors,       ionode_id )
+                CALL mp_bcast( chemical_symbols,        ionode_id )
+                CALL mp_bcast( reduced_atom_positions,  ionode_id )
+                CALL mp_bcast( atom_species,            ionode_id )
+            ENDIF
 
             !
             pseudo_dir  = " "
@@ -455,10 +473,12 @@ CONTAINS
             IF ( ionode ) &
             CALL crio_read_atoms( SYMB=symb, COORDS=tau, UNITS=units, IERR=ierr )
             !
-            CALL mp_bcast( symb,       ionode_id )
-            CALL mp_bcast( tau,        ionode_id )
-            CALL mp_bcast( units,      ionode_id )
-            CALL mp_bcast( ierr,       ionode_id )
+            IF ( lpara_ ) THEN
+                CALL mp_bcast( symb,       ionode_id )
+                CALL mp_bcast( tau,        ionode_id )
+                CALL mp_bcast( units,      ionode_id )
+                CALL mp_bcast( ierr,       ionode_id )
+            ENDIF
             !
             IF ( ierr/=0) CALL errore(subname,'CRIO: getting ion dimensions',ABS(ierr))
             !
@@ -486,7 +506,7 @@ CONTAINS
             ENDDO
             !
             IF (ionode) CALL crio_close_section( "GEOMETRY", ACTION='read', IERR=ierr )
-            CALL mp_bcast( ierr,       ionode_id )
+            IF (lpara_) CALL mp_bcast( ierr,       ionode_id )
             IF ( ierr/=0 ) CALL errore(subname, 'CRIO: closing sec. GEOMETRY', ABS(ierr) )
             !
             ! local cleanup

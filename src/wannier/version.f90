@@ -13,6 +13,7 @@
      character(LEN=1), PARAMETER   :: version_minor= __VERSION_MINOR
      character(LEN=1), PARAMETER   :: version_patch= __VERSION_PATCH
      character(LEN=10),PARAMETER   :: version_label= __VERSION_LABEL
+     character(LEN=10),PARAMETER   :: version_svnrev= __VERSION_SVN_REV
      character(LEN=20),PARAMETER   :: version_number=  version_major//"."//  &
                                                        version_minor//"."//  &
                                                        version_patch//       &

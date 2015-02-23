@@ -11,6 +11,7 @@
 #define  __VERSION_MINOR   "6"
 #define  __VERSION_PATCH   "0"
 #define  __VERSION_LABEL   "devel"
+#define  __VERSION_SVN_REV "unknown"
 
 
 

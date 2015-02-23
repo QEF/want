@@ -12,7 +12,7 @@
    !
    USE kinds,               ONLY : dbl
    USE constants,           ONLY : BOHR => bohr_radius_angs, ZERO, ONE, TWO, &
-                                   RYD, EPS_m8, TPI, CZERO !Luis 3
+                                   RYD, EPS_m8, TPI, CZERO 
    USE parameters,          ONLY : nstrx
    USE timing_module,       ONLY : timing
    USE log_module,          ONLY : log_push, log_pop
@@ -239,18 +239,19 @@ END SUBROUTINE atmproj_tools_init
    !
    ! get DFT data
    ! qexml fmt is assumed (otherwise one should use the var "dftdata_fmt")
+   ! note that the parallelism inside *_read_ext routines may be dangerous
    !
    !CALL qexml_init( iunit, DIR=savedir)
    CALL qexml_openfile( file_data, "read", IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname,"opening "//TRIM(file_data), ABS(ierr) )
    ! 
-   CALL lattice_read_ext( "qexml" )
+   CALL lattice_read_ext( "qexml", LPARA=.FALSE. )
    CALL lattice_init( )
    !
-   CALL ions_read_ext( "qexml" )
+   CALL ions_read_ext( "qexml", LPARA=.FALSE. )
    CALL ions_init()
    !
-   CALL symmetry_read_ext( "qexml" )
+   CALL symmetry_read_ext( "qexml", LPARA=.FALSE. )
    !
    CALL qexml_closefile( "read", IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname,"closing "//TRIM(file_data), ABS(ierr) )
