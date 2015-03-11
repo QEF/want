@@ -119,7 +119,7 @@ END SUBROUTINE wannier90_tools_get_prefix
    !
    CHARACTER(24) :: subname='wannier90_tools_get_dims'
    LOGICAL       :: lread
-   INTEGER       :: nkpts_, dimwann_, iunit
+   INTEGER       :: nkpts_, dimwann_, iunit,nbnd_
    INTEGER       :: i_old, i_new, j, ierr
    
    CALL log_push( subname )
@@ -141,6 +141,15 @@ END SUBROUTINE wannier90_tools_get_prefix
    READ(iunit, IOSTAT=ierr) 
    IF ( ierr/=0 ) CALL errore(subname,'skipping header',ABS(ierr) )
    !
+   READ(iunit, IOSTAT=ierr) nbnd_
+   IF ( ierr/=0 ) CALL errore(subname,'reading nbnd',ABS(ierr) )
+   !
+   READ(iunit, IOSTAT=ierr) 
+   IF ( ierr/=0 ) CALL errore(subname,'skipping number of excluded bands',ABS(ierr) )
+   !
+   READ(iunit, IOSTAT=ierr) 
+   IF ( ierr/=0 ) CALL errore(subname,'skipping exclude bands',ABS(ierr) )
+   !
    READ(iunit, IOSTAT=ierr) 
    IF ( ierr/=0 ) CALL errore(subname,'skipping lattice',ABS(ierr) )
    READ(iunit, IOSTAT=ierr) 
@@ -148,6 +157,9 @@ END SUBROUTINE wannier90_tools_get_prefix
    !
    READ(iunit, IOSTAT=ierr) nkpts_
    IF ( ierr/=0 ) CALL errore(subname,'reading nkpts',ABS(ierr) )
+   !
+   READ(iunit, IOSTAT=ierr) 
+   IF ( ierr/=0) CALL errore(subname,'skipping mp_grid',ABS(ierr) )
    !
    READ(iunit, IOSTAT=ierr) 
    IF ( ierr/=0 ) CALL errore(subname,'skipping vkpt',ABS(ierr) )
@@ -163,35 +175,35 @@ END SUBROUTINE wannier90_tools_get_prefix
    !
    IF ( PRESENT( nkpts ) )      nkpts = nkpts_
    IF ( PRESENT( dimwann ) )  dimwann = dimwann_
-  
+   IF ( PRESENT( nbnd) )         nbnd = nbnd_
    !
    ! get dimensions from .eig
    !
-   IF ( PRESENT( nbnd ) ) THEN
-       !
-       OPEN( iunit, FILE=file_eig, STATUS='old', FORM='formatted', IOSTAT=ierr )
-       IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(file_eig),ABS(ierr) )
-       !
-       lread = .TRUE.
-       i_old = 0
-       i_new = 0
-       DO WHILE( lread )
-           !
-           i_old = i_new
-           READ(iunit, *, IOSTAT=ierr) i_new, j
-           IF ( ierr/=0 ) CALL errore(subname,'reading indexes', ABS(ierr) )
-           !
-           IF ( j == 2 ) lread = .FALSE.
-           !
-       ENDDO
-       !
-       nbnd = i_old
-       !
-       !
-       CLOSE( iunit, IOSTAT=ierr )
-       IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(file_eig),ABS(ierr) )
-       !
-   ENDIF
+   !IF ( PRESENT( nbnd ) ) THEN
+   !    !
+   !    OPEN( iunit, FILE=file_eig, STATUS='old', FORM='formatted', IOSTAT=ierr )
+   !    IF ( ierr/=0 ) CALL errore(subname,'opening '//TRIM(file_eig),ABS(ierr) )
+   !    !
+   !    lread = .TRUE.
+   !    i_old = 0
+   !    i_new = 0
+   !    DO WHILE( lread )
+   !        !
+   !        i_old = i_new
+   !        READ(iunit, *, IOSTAT=ierr) i_new, j
+   !        IF ( ierr/=0 ) CALL errore(subname,'reading indexes', ABS(ierr) )
+   !        !
+   !        IF ( j == 2 ) lread = .FALSE.
+   !        !
+   !    ENDDO
+   !    !
+   !    nbnd = i_old
+   !    !
+   !    !
+   !    CLOSE( iunit, IOSTAT=ierr )
+   !    IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(file_eig),ABS(ierr) )
+   !    !
+   !ENDIF
    !
    CALL log_pop( subname )
    RETURN
@@ -267,7 +279,8 @@ END SUBROUTINE wannier90_tools_get_eig
    CHARACTER(24) :: subname='wannier90_tools_get_data'
    !CHARACTER(20) :: checkpoint
    INTEGER       :: iunit
-   INTEGER       :: nkpts_, dimwann_
+   INTEGER       :: nkpts_, dimwann_,nbnd_,nbnd_exclude_
+   INTEGER       :: mp_grid(3)
    LOGICAL       :: have_disentangle
    INTEGER       :: i, ik, ierr
    
@@ -291,6 +304,16 @@ END SUBROUTINE wannier90_tools_get_eig
    READ(iunit, IOSTAT=ierr)
    IF ( ierr/=0 ) CALL errore(subname,'skipping header',ABS(ierr) )
    !
+   READ(iunit, IOSTAT=ierr)nbnd_
+   IF ( ierr/=0 ) CALL errore(subname,'reading nbnd_',ABS(ierr) )
+   IF ( nbnd_ /= nbnd ) CALL errore(subname,'Wrong nbnd from file',ABS(ierr) )
+   !
+   READ(iunit, IOSTAT=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'skipping nbnd_exclude',ABS(ierr) )
+   !
+   READ(iunit, IOSTAT=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'skipping exclude_bnds',ABS(ierr) )
+   !
    READ(iunit, IOSTAT=ierr)  avec(1:3,1:3)
    IF ( ierr/=0 ) CALL errore(subname,'reading lattice',ABS(ierr) )
    READ(iunit, IOSTAT=ierr)  bvec(1:3,1:3)
@@ -299,6 +322,9 @@ END SUBROUTINE wannier90_tools_get_eig
    READ(iunit, IOSTAT=ierr) nkpts_
    IF ( ierr/=0 ) CALL errore(subname,'reading nkpts',ABS(ierr) )
    IF ( nkpts_ /= nkpts ) CALL errore(subname,'wrong nkpts from file',10)
+   !
+   READ(iunit, IOSTAT=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'skipping mp_grid',ABS(ierr) )
    !
    READ(iunit, IOSTAT=ierr) vkpt(1:3,1:nkpts)
    IF ( ierr/=0 ) CALL errore(subname,'reading vkpt',ABS(ierr) )
@@ -407,7 +433,17 @@ END SUBROUTINE wannier90_tools_get_data
    READ(iunit, IOSTAT=ierr)
    IF ( ierr/=0 ) CALL errore(subname,'skipping header',ABS(ierr) )
    !
+   READ(iunit, IOSTAT=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'skipping nbnd',ABS(ierr) )
+   !
+   READ(iunit, IOSTAT=ierr) 
+   IF ( ierr/=0 ) CALL errore(subname,'skipping number of excluded bands',ABS(ierr) )
+   !
+   READ(iunit, IOSTAT=ierr) 
+   IF ( ierr/=0 ) CALL errore(subname,'skipping exclude bands',ABS(ierr) )
+   !
    READ(iunit, IOSTAT=ierr)  avec(1:3,1:3)
+   !
    IF ( ierr/=0 ) CALL errore(subname,'reading lattice',ABS(ierr) )
    READ(iunit, IOSTAT=ierr)  bvec(1:3,1:3)
    IF ( ierr/=0 ) CALL errore(subname,'reading recipr lattice',ABS(ierr) )
@@ -470,6 +506,15 @@ END SUBROUTINE wannier90_tools_get_lattice
    READ(iunit, IOSTAT=ierr) 
    IF ( ierr/=0 ) CALL errore(subname,'skipping header',ABS(ierr) )
    !
+   READ(iunit, IOSTAT=ierr)
+   IF ( ierr/=0 ) CALL errore(subname,'skipping nbnd',ABS(ierr) )
+   !
+   READ(iunit, IOSTAT=ierr) 
+   IF ( ierr/=0 ) CALL errore(subname,'skipping number of excluded bands',ABS(ierr) )
+   !
+   READ(iunit, IOSTAT=ierr) 
+   IF ( ierr/=0 ) CALL errore(subname,'skipping exclude bands',ABS(ierr) )
+   !
    READ(iunit, IOSTAT=ierr) 
    IF ( ierr/=0 ) CALL errore(subname,'skipping lattice',ABS(ierr) )
    !
@@ -481,6 +526,9 @@ END SUBROUTINE wannier90_tools_get_lattice
    !
    IF ( nkpts_ /= nkpts ) CALL errore(subname,'invalid nkpts',10)
    !
+   READ(iunit, IOSTAT=ierr) 
+   IF ( ierr/=0) CALL errore(subname,'skipping mp_grid',ABS(ierr) )
+   ! 
    IF ( PRESENT( vkpt ) ) THEN
        READ(iunit, IOSTAT=ierr) vkpt(1:3,1:nkpts)
        IF ( ierr/=0 ) CALL errore(subname,'reading vkpt',ABS(ierr) )
