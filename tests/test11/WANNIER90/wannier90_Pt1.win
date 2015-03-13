@@ -1,6 +1,6 @@
 
 !used for first abinit run - comment out for stand-alone wannier90 runs
-!postproc_setup = .true.
+postproc_setup = .true.
 !num_iter = 1000
 
 !comment out for first run, uncomment for stand-alone wannier90 runs
@@ -9,8 +9,8 @@
 
 !comment out for first run, uncomment for stand-alone wannier90 runs
 ! for band plotting
-restart = plot
-bands_plot = .true.
+!restart = plot
+!bands_plot = .true.
 
 !to print out the hamiltonian
 !restart=plot
