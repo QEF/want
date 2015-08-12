@@ -30,7 +30,6 @@
    PRIVATE
    SAVE
    
-   !
    ! global variables of the module
    !
    CHARACTER(nstrx)   :: savedir
@@ -174,17 +173,25 @@ END SUBROUTINE atmproj_tools_init
    COMPLEX(dbl),   ALLOCATABLE :: kovp_sq(:,:)
    REAL(dbl),      ALLOCATABLE :: w(:)
 
-#if defined __SHIFT_TEST
    !Luis 3: Changes related to Sohrab's shifting scheme 
    !PA   = A^dagger * A 
    !I_PA = inv(PA)
    COMPLEX(dbl),   ALLOCATABLE :: A(:,:),PA(:,:), IPA(:,:), kham_aux(:,:), E(:,:)
-   INTEGER           :: shifting_scheme = 2
-#endif
+   INTEGER           :: shifting_scheme = 1
+
+   !Luis 4: changes related to new TB scheme
+   INTEGER           :: ncols, icounter
+   INTEGER,        ALLOCATABLE :: mask_indx(:)
   
 #if defined __WRITE_ASCIIHAM
    CHARACTER(100)    :: kham_file
    INTEGER           :: iw,jw
+#endif
+   
+   !Luis 3
+#if defined __SHIFT_TEST
+   shifting_scheme = 2
+   WRITE( stdout, "(2x, ' ATMPROJ uses the experimental shifting: ')")
 #endif
    !
 !------------------------------
@@ -318,7 +325,7 @@ END SUBROUTINE atmproj_tools_init
        ALLOCATE( kovp(1,1,1,1), STAT=ierr )
        IF (ierr/=0) CALL errore(subname, 'allocating kovp I', ABS(ierr))
        !
-       write(*,*) 'do_orthoovp' !Luis 2
+       write(*,*) 'Using an orthogonal basis. do_orthoovp=.true.' !Luis 2
        CALL atmproj_read_ext( filein, VKPT=vkpt, WK=wk, EIG=eig, PROJ=proj, IERR=ierr )
        !
    ELSE
@@ -426,23 +433,6 @@ END SUBROUTINE atmproj_tools_init
            IF (ierr/=0) CALL errore(subname, 'allocating rovp', ABS(ierr))
        ENDIF
        
-#if defined __SHIFT_TEST
-       !Luis 3
-       IF ( shifting_scheme .EQ. 2 ) THEN
-           WRITE( stdout, "(2x, ' ATMPROJ uses the experimental shifting: ')")
-           !PA = A'*A
-           ALLOCATE( A(natomwfc, atmproj_nbnd_), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname, 'allocating Space-A Projector', ABS(ierr))
-           ALLOCATE( PA(atmproj_nbnd_, atmproj_nbnd_), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname, 'allocating Space-A Projector', ABS(ierr))
-           ALLOCATE( IPA(atmproj_nbnd_, atmproj_nbnd_), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname, 'allocating inv(P_A)', ABS(ierr))
-           ALLOCATE( E(atmproj_nbnd_, atmproj_nbnd_), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname, 'allocating E', ABS(ierr))
-           ALLOCATE( kham_aux(atmproj_nbnd_, natomwfc), STAT=ierr )
-           IF ( ierr/=0 ) CALL errore(subname, 'allocating kham_aux', ABS(ierr))
-       ENDIF
-#endif
           
        !DO isp = 1, nspin                                              !Luis 2
        DO isp = 1, nspin_                                              !Luis 2
@@ -467,36 +457,71 @@ END SUBROUTINE atmproj_tools_init
                !
                ztmp(1:natomwfc,1:nbnd) = proj(1:natomwfc,1:nbnd,ik,isp) 
        
-#if defined __SHIFT_TEST
                !Luis 3       
                IF ( shifting_scheme .EQ. 2 ) THEN
-                   !temporary solution. It assumes the columns of proj are in
-                   !ascending order of projectability
-                   A  = proj(1:natomwfc,1:atmproj_nbnd_,ik,isp) 
+                   !Luis 4
+                   !Finds the dimensions
+                   ncols = 0
+                   DO ib = 1, nbnd
+                      if (eig(ib,ik,isp) < atmproj_sh) then
+                         ncols=ncols+1
+                      endif
+                   ENDDO
+                   IF (ncols == 0) THEN
+                      WRITE(*,*) 'No eigenvalues are below shifting at ik=',ik,'. Stopping ...'
+                      STOP
+                   ENDIF
+
+                   ALLOCATE( mask_indx(ncols), STAT=ierr )
+                   IF ( ierr/=0 ) CALL errore(subname, 'allocating mask_indx', ABS(ierr))
+
+                   ALLOCATE( A(natomwfc, ncols), STAT=ierr )
+                   IF ( ierr/=0 ) CALL errore(subname, 'allocating Space-A Projector', ABS(ierr))
+                   ALLOCATE( PA(ncols, ncols), STAT=ierr )
+                   IF ( ierr/=0 ) CALL errore(subname, 'allocating Space-A Projector', ABS(ierr))
+                   ALLOCATE( IPA(ncols, ncols), STAT=ierr )
+                   IF ( ierr/=0 ) CALL errore(subname, 'allocating inv(P_A)', ABS(ierr))
+                   ALLOCATE( E(ncols, ncols), STAT=ierr )
+                   IF ( ierr/=0 ) CALL errore(subname, 'allocating E', ABS(ierr))
+                   ALLOCATE( kham_aux(ncols, natomwfc), STAT=ierr )
+                   IF ( ierr/=0 ) CALL errore(subname, 'allocating kham_aux', ABS(ierr))
+                   
+                   E  = CZERO 
+                   kham_aux = CZERO
+                   icounter = 1
+                   DO ib = 1, nbnd
+                      if (eig(ib,ik,isp) < atmproj_sh) then
+                         E(icounter,icounter) = eig(ib,ik,isp) 
+                         mask_indx(icounter)  = ib
+                         icounter = icounter + 1
+                      endif
+                   ENDDO
+
+                   A  = proj(1:natomwfc,mask_indx,ik,isp) 
                    PA = ZERO
                    IPA= ZERO
                    !PA = A' * A
-                   CALL mat_mul( PA, A, 'C', A, 'N', atmproj_nbnd_, atmproj_nbnd_, natomwfc)
-                   CALL mat_inv( atmproj_nbnd_, PA, IPA)
+                   CALL mat_mul( PA, A, 'C', A, 'N', ncols, ncols, natomwfc)
+                   CALL mat_inv( ncols, PA, IPA)
                
-                   E  = CZERO 
-                   kham_aux = CZERO
-                   !TO DO, 
-                   !are the eigs in ascending order. where?
-                   !bands.x, nscf.x can change the order of the eigenvalues
-                   DO ib = 1, atmproj_nbnd_
-                      E(ib,ib) = eig(ib,ik,isp) 
-                      !E(ib,ib) = eig(ib,ik,isp) - atmproj_sh 
-                   ENDDO
                    !HKS_aux = (E - kappa*IPA)*A'
-                   CALL mat_mul( kham_aux, E -atmproj_sh*IPA, 'N', A, 'C', atmproj_nbnd_, natomwfc, atmproj_nbnd_)
-                   !CALL mat_mul( kham_aux, E, 'N', A, 'C', atmproj_nbnd_, natomwfc, atmproj_nbnd_)
+                   CALL mat_mul( kham_aux, E -atmproj_sh*IPA, 'N', A, 'C', ncols, natomwfc, ncols)
+                   !CALL mat_mul( kham_aux, E, 'N', A, 'C', ncols, natomwfc, ncols)
                    !HKS = A*HKS_aux = A*(E - kappa*IPA)*A'
-                   CALL mat_mul( kham(:,:,ik), A, 'N', kham_aux, 'N', natomwfc, natomwfc, atmproj_nbnd_)
-               
+                   CALL mat_mul( kham(:,:,ik), A, 'N', kham_aux, 'N', natomwfc, natomwfc, ncols)
+                   do i=1,natomwfc
+                      do j=1,i-1 
+                         kham(i,j,ik) = conjg(kham(j,i,ik))
+                      enddo
+                   enddo
+                   DEALLOCATE( mask_indx )
+                   DEALLOCATE( A )
+                   DEALLOCATE( PA )
+                   DEALLOCATE( IPA )
+                   DEALLOCATE( E )
+                   DEALLOCATE( kham_aux )
+
                ELSE
-#endif
-                  
                !
                ibnd_loop:&
                DO ib = 1, atmproj_nbnd_
@@ -512,7 +537,10 @@ END SUBROUTINE atmproj_tools_init
                    IF ( atmproj_thr > 0.0d0 ) THEN
                        !
                        proj_wgt = REAL( DOT_PRODUCT( ztmp(:,ib), ztmp(:,ib) ) )
-                       IF ( proj_wgt < atmproj_thr ) CYCLE ibnd_loop
+                       !IF ( proj_wgt < atmproj_thr ) CYCLE ibnd_loop  !Luis 4
+                       IF ( eig(ib,ik,isp) > atmproj_sh ) CYCLE ibnd_loop 
+                                                                       !Luis 4
+
                        !
                    ENDIF
                    !
@@ -531,9 +559,7 @@ END SUBROUTINE atmproj_tools_init
                    !
                ENDDO ibnd_loop
 
-#if defined __SHIFT_TEST
                ENDIF
-#endif
                !
                IF ( .NOT. mat_is_herm( dimwann, kham(:,:,ik), TOLL=EPS_m8 ) ) &
                    CALL errore(subname,'kham not hermitian',10)
@@ -682,17 +708,6 @@ END SUBROUTINE atmproj_tools_init
            !
        ENDDO 
  
-#if defined __SHIFT_TEST
-       !Luis 3
-       IF ( shifting_scheme .EQ. 2 ) THEN
-           DEALLOCATE( A )
-           DEALLOCATE( PA )
-           DEALLOCATE( IPA )
-           DEALLOCATE( E )
-           DEALLOCATE( kham_aux )
-       ENDIF
-#endif
-
        ! 
        DEALLOCATE( kham, STAT=ierr )
        IF ( ierr/=0 ) CALL errore(subname, 'deallocating kham', ABS(ierr) )
