@@ -182,6 +182,9 @@ END SUBROUTINE atmproj_tools_init
    !Luis 4: changes related to new TB scheme
    INTEGER           :: ncols, icounter
    INTEGER,        ALLOCATABLE :: mask_indx(:)
+
+   !Luis 5: Print projectability
+   COMPLEX(dbl),   ALLOCATABLE :: ztmp1(:)
   
 #if defined __WRITE_ASCIIHAM
    CHARACTER(100)    :: kham_file
@@ -263,8 +266,11 @@ END SUBROUTINE atmproj_tools_init
    ! reading dimensions
    ! and small data
    !
+
+   write(*,*) 'Begins atmproj_read_ext' !Luis 2
    CALL atmproj_read_ext( filein, nbnd, nkpts, nspin, natomwfc, &
                           nelec, efermi, energy_units, IERR=ierr)
+   write(*,*) 'Ends atmproj_read_ext' !Luis 2
 
    IF ( ierr/=0 ) CALL errore(subname, "reading dimensions I", ABS(ierr))
 
@@ -320,6 +326,7 @@ END SUBROUTINE atmproj_tools_init
    !
    ! read-in massive data
    !
+   write(*,*) 'Begins atmproj_read_ext --massive data' !Luis 2
    IF ( do_orthoovp_ ) THEN
        !
        ALLOCATE( kovp(1,1,1,1), STAT=ierr )
@@ -338,6 +345,7 @@ END SUBROUTINE atmproj_tools_init
        CALL atmproj_read_ext( filein, VKPT=vkpt, WK=wk, EIG=eig, PROJ=proj, KOVP=kovp, IERR=ierr )
        !
    ENDIF
+   write(*,*) 'Ends atmproj_read_ext --massive data' !Luis 2
    !
    IF ( ierr/=0 ) CALL errore(subname, "reading data II", ABS(ierr))
 
@@ -648,7 +656,26 @@ END SUBROUTINE atmproj_tools_init
            ENDDO kpt_loop
 
 #if defined __WRITE_ASCIIHAM
-           ! 
+           !Luis 5 
+           !print projectabilities
+           write(*,*) 'Prints projectabilities'
+           if (isp == 1 .and. nspin_==1) kham_file = "projectability.txt"
+           if (isp == 1 .and. nspin_==2) kham_file = "projectability_up.txt"
+           if (isp == 2) kham_file = "projectability_dn.txt"
+           OPEN (unit = 14, file = trim(kham_file))
+           ALLOCATE( ztmp1(natomwfc), STAT=ierr)
+           IF ( ierr/=0 ) CALL errore(subname,'allocating ztmp1', ABS(ierr) )
+
+           DO ik = 1, nkpts
+               DO ib = 1, nbnd
+                  ztmp1(1:natomwfc) = proj(1:natomwfc,ib,ik,isp) 
+                  WRITE(14,"(2f20.13)") eig(ib,ik,isp),REAL(DOT_PRODUCT(ztmp1,ztmp1))
+               ENDDO
+           ENDDO 
+           CLOSE(14)
+           DEALLOCATE(ztmp1)
+           
+           !print Hamiltonians 
            if (isp == 1 .and. nspin_==1) kham_file = "kham.txt"
            if (isp == 1 .and. nspin_==2) kham_file = "kham_up.txt"
            if (isp == 2) kham_file = "kham_down.txt"
@@ -1106,7 +1133,7 @@ SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
    END IF
    !Luis 2 end   <--
 
-   write(*,*) 'about to read eigenvalues' !Luis 2
+   write(*,*) 'Begins reading eigenvalues' !Luis 2
    IF ( PRESENT( eig ) ) THEN
        ! 
        CALL iotk_scan_begin( iunit, "EIGENVALUES", IERR=ierr )
@@ -1149,8 +1176,10 @@ SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
        IF ( ierr/=0 ) RETURN
        !
    ENDIF
+   write(*,*) 'Finished reading eigenvalues' !Luis 2
 
 
+   write(*,*) 'Begins reading projections' !Luis 2
    ! 
    ! reading projections
    ! 
@@ -1211,6 +1240,7 @@ SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
        IF ( ierr/=0 ) RETURN
        !
    ENDIF
+   write(*,*) 'Ends reading projections' !Luis 2
 
    ! 
    ! reading overlaps
