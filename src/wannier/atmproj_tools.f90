@@ -45,6 +45,7 @@
    REAL(dbl)          :: atmproj_thr = 0.0d0    ! 0.9d0
    INTEGER            :: atmproj_nbnd = 0
    CHARACTER(256)     :: spin_component = "all"
+   LOGICAL            :: atmproj_do_norm = .FALSE. !Luis 6 
 
    ! contains:
    ! SUBROUTINE  atmproj_to_internal( filein, fileham, filespace, filewan, do_orthoovp )
@@ -60,6 +61,7 @@
    PUBLIC :: atmproj_sh
    PUBLIC :: atmproj_thr
    PUBLIC :: atmproj_nbnd
+   PUBLIC :: atmproj_do_norm !Luis 6
    PUBLIC :: spin_component
 
 CONTAINS
@@ -147,6 +149,7 @@ END SUBROUTINE atmproj_tools_init
    INTEGER           :: iunit, ounit
    LOGICAL           :: do_orthoovp_
    INTEGER           :: atmproj_nbnd_
+   LOGICAL           :: atmproj_do_norm_                               !Luis 6
    !
    CHARACTER(nstrx)  :: attr, energy_units
    CHARACTER(nstrx)  :: filetype_
@@ -185,6 +188,8 @@ END SUBROUTINE atmproj_tools_init
 
    !Luis 5: Print projectability
    COMPLEX(dbl),   ALLOCATABLE :: ztmp1(:)
+
+   !Luis 6: Normalization of the trial vectors
   
 #if defined __WRITE_ASCIIHAM
    CHARACTER(100)    :: kham_file
@@ -278,6 +283,8 @@ END SUBROUTINE atmproj_tools_init
    !
    atmproj_nbnd_ = nbnd
    IF ( atmproj_nbnd > 0 ) atmproj_nbnd_ = MIN(atmproj_nbnd, nbnd)
+  
+   atmproj_do_norm_ = atmproj_do_norm  !Luis 6
 
    !Luis 2 begin --> 
    WRITE( stdout, "(2x, ' Dimensions found in atomic_proj.{dat,xml}: ')")
@@ -305,6 +312,7 @@ END SUBROUTINE atmproj_tools_init
    WRITE( stdout, "(2x, '   atmproj_nbnd :  ',i5 )") atmproj_nbnd_
    WRITE( stdout, "(2x, '   atmproj_thr  :  ',f12.6 )") atmproj_thr
    WRITE( stdout, "(2x, '   atmproj_sh   :  ',f12.6 )") atmproj_sh
+   WRITE( stdout, "(2x, '   atmproj_do_norm:  ',L )") atmproj_do_norm !Luis 6
    WRITE( stdout, "()" )
 
    !
@@ -505,7 +513,16 @@ END SUBROUTINE atmproj_tools_init
                       endif
                    ENDDO
 
-                   A  = proj(1:natomwfc,mask_indx,ik,isp) 
+                   A = proj(1:natomwfc,mask_indx,ik,isp) 
+                    
+                   !Luis 6 
+                   DO ib =1, ncols
+                      if (atmproj_do_norm) then
+                         proj_wgt = REAL(DOT_PRODUCT(A(:,ib),A(:,ib)))
+                         A(:,ib) = A(:,ib)/SQRT(proj_wgt)
+                      endif
+                   ENDDO
+
                    PA = ZERO
                    IPA= ZERO
                    !PA = A' * A
@@ -551,6 +568,12 @@ END SUBROUTINE atmproj_tools_init
 
                        !
                    ENDIF
+
+
+                   !Luis 6 
+                   if (atmproj_do_norm) then
+                      ztmp(:,ib) = ztmp(:,ib)/SQRT(proj_wgt)
+                   endif
                    !
                    !
                    DO j = 1, dimwann

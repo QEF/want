@@ -44,13 +44,15 @@
    INTEGER            :: atmproj_nbnd   ! filtering: # of bands
    LOGICAL            :: do_orthoovp
    CHARACTER(nstrx)   :: spin_component
+   LOGICAL            :: atmproj_do_norm        ! Luis 6                        
 
    !
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
                     fileout, nkpts_in, nkpts_max, ircut, debug_level, verbosity, &
-                    do_orthoovp, atmproj_sh, atmproj_thr, atmproj_nbnd, spin_component
+                    do_orthoovp, atmproj_sh, atmproj_thr, atmproj_nbnd, spin_component, &
+                    atmproj_do_norm !Luis 6
    !
    ! end of declariations
    !   
@@ -110,7 +112,8 @@ CONTAINS
    USE atmproj_tools_module, ONLY : atmproj_sh_ => atmproj_sh, &
                                     atmproj_thr_ => atmproj_thr, &
                                     atmproj_nbnd_ => atmproj_nbnd, &
-                                    spin_component_atmproj => spin_component
+                                    spin_component_atmproj => spin_component, &
+                                    atmproj_do_norm_ => atmproj_do_norm  !Luis 6
    !
    IMPLICIT NONE
 
@@ -141,6 +144,7 @@ CONTAINS
       atmproj_thr                 = 0.9d0
       atmproj_nbnd                = 0
       spin_component              = 'all'
+      atmproj_do_norm             =.FALSE.  !Luis 6
       
       
       CALL input_from_file ( stdin )
@@ -171,6 +175,8 @@ CONTAINS
       CALL mp_bcast( atmproj_thr,     ionode_id )
       CALL mp_bcast( atmproj_nbnd,    ionode_id )
       CALL mp_bcast( spin_component,  ionode_id )
+      CALL mp_bcast( atmproj_do_norm, ionode_id )  !Luis 6
+
 
       !
       ! passing input vars to vars in io_module
@@ -200,6 +206,7 @@ CONTAINS
       atmproj_sh_ = atmproj_sh
       atmproj_thr_ = atmproj_thr
       atmproj_nbnd_ = atmproj_nbnd
+      atmproj_do_norm_ = atmproj_do_norm   !Luis 6
 
 
       !
@@ -244,6 +251,7 @@ CONTAINS
               WRITE( stdout,"(7x,'         atmproj shift :',5x,  f12.6)") atmproj_sh
               WRITE( stdout,"(7x,'          atmproj nbnd :',5x,   i5)") atmproj_nbnd
               WRITE( stdout,"(7x,'           atmproj thr :',5x,  f12.6)") atmproj_thr
+              WRITE( stdout,"(7x,'       atmproj do_norm :',5x,  L)") atmproj_do_norm
           ENDIF
           !
           WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )
