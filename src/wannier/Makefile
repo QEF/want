@@ -132,14 +132,18 @@ dos.x \
 plot.x \
 unfold.x
 
-EXTERNAL_LIBS= ../clib/libclib.a ../baselib/libwant.a 
-BIN_DEPS=      $(OBJS) $(EXTERNAL_LIBS)
+LIBOBJS = ../baselib/libbase.a ../clib/libclib.a
+BIN_DEPS=      $(OBJS) $(LIBOBJS)
 
 #
 # main targets
 #
-all : $(BIN)
+all : libwannier.a $(BIN)
 
+
+libwannier.a : $(OBJS)
+	$(AR) $(ARFLAGS) $@ $?
+	$(RANLIB) $@
 
 disentangle.x: disentangle.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ disentangle.o $(OBJS) $(LIBOBJS) $(LIBS)

@@ -31,34 +31,12 @@ transmittance.o \
 workspace.o \
 write_data.o
 
-WANNIER_OBJS= \
-../wannier/atmproj_tools.o \
-../wannier/compute_kham.o \
-../wannier/compute_rham.o \
-../wannier/control.o \
-../wannier/converters.o \
-../wannier/cp2k_tools.o \
-../wannier/crystal_tools.o \
-../wannier/datafiles.o \
-../wannier/etsf_io_data.o \
-../wannier/get_monkpack.o \
-../wannier/get_rgrid.o \
-../wannier/io_module.o \
-../wannier/internal_tools.o \
-../wannier/monkpack.o \
-../wannier/operator.o \
-../wannier/startup.o \
-../wannier/smearing_base.o \
-../wannier/shutdown.o \
-../wannier/version.o \
-../wannier/wannier90_tools.o 
-
 BIN= \
 conductor.x \
 current.x 
 
-EXTERNAL_LIBS= ../clib/libclib.a ../baselib/libwant.a
-BIN_DEPS=      $(OBJS) $(WANNIER_OBJS) $(EXTERNAL_LIBS)
+LIBOBJS=../wannier/libwannier.a ../baselib/libbase.a ../clib/libclib.a
+BIN_DEPS=      $(OBJS) $(LIBOBJS)
 
 #
 # main targets
@@ -68,12 +46,12 @@ all: $(BIN)
 
 conductor.x: conductor.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ conductor.o \
-	     $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
+	     $(OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../../bin ; ln -sf ../src/transport/$@ . )
 
 current.x: current.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ current.o \
-	     $(OBJS) $(WANNIER_OBJS) $(LIBOBJS) $(LIBS)
+	     $(OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../../bin ; ln -sf ../src/transport/$@ . )
 
 clean:
