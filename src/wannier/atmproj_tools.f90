@@ -478,7 +478,7 @@ END SUBROUTINE atmproj_tools_init
                    !Luis 4
                    !Finds the dimensions
                    ncols = 0
-                   DO ib = 1, nbnd
+                   DO ib = 1, atmproj_nbnd_
                       if (eig(ib,ik,isp) < atmproj_sh) then
                          ncols=ncols+1
                       endif
@@ -505,7 +505,7 @@ END SUBROUTINE atmproj_tools_init
                    E  = CZERO 
                    kham_aux = CZERO
                    icounter = 1
-                   DO ib = 1, nbnd
+                   DO ib = 1, atmproj_nbnd_
                       if (eig(ib,ik,isp) < atmproj_sh) then
                          E(icounter,icounter) = eig(ib,ik,isp) 
                          mask_indx(icounter)  = ib
