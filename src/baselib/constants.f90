@@ -56,6 +56,7 @@
         REAL(dbl), PARAMETER :: K_BOLTZMAN_AU    = 3.1667D-6         ! Hartree K^-1 
         REAL(dbl), PARAMETER :: K_BOLTZMAN_M1_AU = 315795.26D0       ! Hartree^-1 K 
         REAL(dbl), PARAMETER :: FACTEM           = 315795.26D0       ! Hartree^-1 K 
+        REAL(dbl), PARAMETER :: H_OVER_TPI       = 1.054571D-34      ! J sec   
 
 ! ...   Physical constants defining the Atomic Units System
         REAL(dbl), PARAMETER :: BOHR_RADIUS_SI   = 0.529177D-10      ! m
@@ -85,9 +86,12 @@
         REAL(dbl), PARAMETER :: rhothr = 1.0e-5_dbl ! tolerance
         REAL(dbl), PARAMETER :: gsmall = 1.0d-12
 
-        REAL(dbl), PARAMETER :: e2 = 2.d0           ! the square of the electron charge
+        REAL(dbl), PARAMETER :: e2 = 2.0_dbl        ! the square of the electron charge
+        REAL(dbl), PARAMETER :: eps0 = 1.0_dbl/(4.0_dbl * 3.14159265358979323846_dbl)
+                                                    ! vacuum dielectric constant in Ry
         REAL(dbl), PARAMETER :: degspin = 2.d0      ! the number of spins per level
         REAL(dbl), PARAMETER :: rytoev=13.6058d0    ! conversion from Ry to eV
+        REAL(dbl), PARAMETER :: evtory=1.0_dbl/13.6058d0  ! conversion from eV to Ry
 
         !  mass conversion: a.m.u to a.u. (Ry)
         REAL(dbl), PARAMETER :: amconv= 1.66042d-24/9.1095d-28*0.5d0 

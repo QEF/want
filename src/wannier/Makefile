@@ -19,6 +19,8 @@ ccalbec.o \
 cleanup.o \
 collect_wf.o \
 compute_kham.o \
+compute_grad_kham.o \
+compute_hessian_kham.o \
 compute_kham_2D.o \
 compute_rham.o \
 control.o \
@@ -129,6 +131,8 @@ blc2wan.x \
 bands.x \
 cmplx_bands.x \
 dos.x \
+epsilon.x \
+effmass.x \
 plot.x \
 unfold.x
 
@@ -163,6 +167,14 @@ cmplx_bands.x:       cmplx_bands.o $(BIN_DEPS)
 
 dos.x:         dos.o $(BIN_DEPS)
 	$(LD) $(LDFLAGS) -o $@ dos.o $(OBJS) $(LIBOBJS) $(LIBS)
+	- ( cd ../../bin ; ln -sf ../src/wannier/$@ . )
+
+epsilon.x:         epsilon.o $(BIN_DEPS)
+	$(LD) $(LDFLAGS) -o $@ epsilon.o $(OBJS) $(LIBOBJS) $(LIBS)
+	- ( cd ../../bin ; ln -sf ../src/wannier/$@ . )
+
+effmass.x:        effmass.o $(BIN_DEPS)
+	$(LD) $(LDFLAGS) -o $@ effmass.o $(OBJS) $(LIBOBJS) $(LIBS)
 	- ( cd ../../bin ; ln -sf ../src/wannier/$@ . )
 
 plot.x:        plot.o $(BIN_DEPS)
