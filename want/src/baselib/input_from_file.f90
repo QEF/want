@@ -5,7 +5,7 @@
 ! in the root directory of the present distribution,
 ! or http://www.gnu.org/copyleft/gpl.txt .
 !
-! Slightly modified by Andrea Ferretti
+! Minor changes by Andrea Ferretti
 !
 #if defined(__ABSOFT)
 #  define getenv getenv_
