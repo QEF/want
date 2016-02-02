@@ -51,6 +51,7 @@ SUBROUTINE symmetrize_kgrid( nkpts, vkpt, bvec, nkpts_all, vkpt_all, kpteq_map, 
 !------------------------------
 !
    IF ( .NOT. symmetry_alloc ) CALL errore(subname,"symmetry mod not alloc",10)
+   IF ( nkpts == 0 ) RETURN
 
    CALL timing(subname,OPR='start')
    CALL log_push(subname)
@@ -148,12 +149,13 @@ SUBROUTINE symmetrize_kgrid( nkpts, vkpt, bvec, nkpts_all, vkpt_all, kpteq_map, 
 
 #define __DEBUG
 #ifdef __DEBUG
+   ! XXXXX
    WRITE( 0, * ) 
    WRITE( 0, * ) "nkpts = ", nkpts
    WRITE( 0, * ) 
    DO ik = 1, nkpts
        !
-       WRITE( 0, "( i3, 3f12.6)") ik, vkpt_cry( :, ik)
+       WRITE( 0, "( i5, 3f12.6)") ik, vkpt_cry( :, ik)
        !
    ENDDO
 
@@ -164,11 +166,11 @@ SUBROUTINE symmetrize_kgrid( nkpts, vkpt, bvec, nkpts_all, vkpt_all, kpteq_map, 
    !
    IF ( PRESENT(kpteq_map) .AND. PRESENT(kpteq_symm) .AND. PRESENT(vkpt_all) ) THEN
       DO ik = 1, nkpts_all
-          WRITE( 0, "( i3, 3f12.6, i5, i5)") ik, vkpt_symm( :, ik), kpteq_map( ik ), kpteq_symm( ik )
+          WRITE( 0, "( i5, 3f12.6, i5, i5)") ik, vkpt_symm( :, ik), kpteq_map( ik ), kpteq_symm( ik )
       ENDDO
    ELSE IF ( PRESENT(vkpt_all) ) THEN
       DO ik = 1, nkpts_all
-          WRITE( 0, "( i3, 3f12.6, i5, i5)") ik, vkpt_symm( :, ik)
+          WRITE( 0, "( i5, 3f12.6, i5, i5)") ik, vkpt_symm( :, ik)
       ENDDO
    ENDIF
 #endif
