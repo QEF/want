@@ -100,6 +100,7 @@
    LOGICAL                    :: wantdata_binary
    !
    CHARACTER(nstrx)           :: datafile_sgm = ' '
+   CHARACTER(nstrx)           :: datafile_qp = ' '
 
    LOGICAL                    :: alloc = .FALSE.
 !
@@ -112,7 +113,7 @@
 
    PUBLIC ::  stderr, stdin, stdout 
    PUBLIC ::  dftdata_fmt, dftdata_fmt_version, dftdata_file
-   PUBLIC ::  datafile_sgm
+   PUBLIC ::  datafile_sgm, datafile_qp
    PUBLIC ::  wantdata_fmt, wantdata_form, wantdata_binary
    PUBLIC ::  dft_unit, pseudo_unit 
    PUBLIC ::  ovp_unit, space_unit, wan_unit, ham_unit, sgm_unit 

@@ -46,6 +46,7 @@
    CHARACTER(nstrx) :: fileout       ! output filename
    CHARACTER(nstrx) :: datafile_dft  !
    CHARACTER(nstrx) :: datafile_sgm  !
+   CHARACTER(nstrx) :: datafile_qp   !
    LOGICAL          :: projdos       ! whether to write WF projected DOS
    INTEGER          :: ircut(3)      ! real space curoff in terms of unit cells
                                      ! for directions i=1,2,3  (0 means no cutoff)
@@ -62,7 +63,7 @@
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
+   NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, datafile_qp, &
                     nk, s, delta, smearing_type, fileout, debug_level,     &
                     emin, emax, ne, ircut, projdos, nprint, verbosity,     &
                     shift, scale, do_orthoovp, atmproj_sh, atmproj_thr,    &
@@ -122,7 +123,8 @@ CONTAINS
    !
    USE mp,                   ONLY : mp_bcast
    USE io_module,            ONLY : io_init, ionode, ionode_id
-   USE io_module,            ONLY : datafile_dft_ => dftdata_file, datafile_sgm_ => datafile_sgm
+   USE io_module,            ONLY : datafile_dft_ => dftdata_file, datafile_sgm_ => datafile_sgm, &
+                                    datafile_qp_ => datafile_qp
    USE atmproj_tools_module, ONLY : atmproj_sh_ => atmproj_sh, &
                                     atmproj_thr_ => atmproj_thr, &
                                     atmproj_nbnd_ => atmproj_nbnd, &
@@ -132,6 +134,7 @@ CONTAINS
 
       CHARACTER(9)     :: subname = 'dos_input'
       INTEGER          :: ierr, nkpts_int
+      LOGICAL          :: lhave_qp
       !
       ! end of declarations
       !
@@ -145,8 +148,9 @@ CONTAINS
       prefix                      = 'WanT' 
       postfix                     = ' ' 
       work_dir                    = './' 
-      datafile_sgm                = ' '
       datafile_dft                = ' '
+      datafile_sgm                = ' '
+      datafile_qp                 = ' '
       fileout                     = ' '
       delta                       = 0.1    ! eV
       nk(:)                       = -1
@@ -185,8 +189,9 @@ CONTAINS
       CALL mp_bcast( prefix,          ionode_id )
       CALL mp_bcast( postfix,         ionode_id )
       CALL mp_bcast( work_dir,        ionode_id )
-      CALL mp_bcast( datafile_sgm,    ionode_id )
       CALL mp_bcast( datafile_dft,    ionode_id )
+      CALL mp_bcast( datafile_sgm,    ionode_id )
+      CALL mp_bcast( datafile_qp,     ionode_id )
       CALL mp_bcast( fileout,         ionode_id )
       CALL mp_bcast( delta,           ionode_id )
       CALL mp_bcast( nk,              ionode_id )
@@ -215,6 +220,7 @@ CONTAINS
       !
       datafile_dft_ = TRIM( datafile_dft )
       datafile_sgm_ = TRIM( datafile_sgm )
+      datafile_qp_  = TRIM( datafile_qp )
 
       !
       ! Init
@@ -227,6 +233,8 @@ CONTAINS
       !
       lhave_sgm = .FALSE.
       IF ( LEN_TRIM(datafile_sgm) > 0 ) lhave_sgm = .TRUE.
+      lhave_qp = .FALSE.
+      IF ( LEN_TRIM(datafile_qp) > 0 ) lhave_qp = .TRUE.
       !
       CALL io_init( NEED_WFC=.FALSE. )
 
@@ -306,6 +314,10 @@ CONTAINS
           WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )
           IF ( lhave_sgm ) THEN
               WRITE( stdout,"(7x,'        sigma datafile :',5x,   a)") TRIM( datafile_sgm )
+          ENDIF
+          WRITE( stdout, "(   7x,'           have fileQP :',5x, a  )") TRIM( log2char(lhave_qp) )
+          IF ( lhave_qp ) THEN
+              WRITE( stdout,"(7x,'           QP datafile :',5x,   a)") TRIM( datafile_qp )
           ENDIF
           !
       ENDIF

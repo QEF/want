@@ -15,7 +15,7 @@
    !
    USE parameters,              ONLY : nstrx
    USE io_module,               ONLY : ionode, ionode_id, stdout, aux_unit
-   USE io_module,               ONLY : work_dir, prefix, postfix, datafile => dftdata_file
+   USE io_module,               ONLY : work_dir, prefix, postfix, datafile => dftdata_file, datafile_qp
    USE mp,                      ONLY : mp_bcast
    USE timing_module,           ONLY : timing
    USE log_module,              ONLY : log_push, log_pop
@@ -152,8 +152,13 @@ CONTAINS
            filespace = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
            filewan   = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.wan'
            !
-           CALL atmproj_to_internal( filein, FILEHAM=fileham, FILESPACE=filespace, & 
-                                             FILEWAN=filewan, DO_ORTHOOVP=do_orthoovp_ )
+           IF ( LEN_TRIM(datafile_qp) > 0 ) THEN
+               CALL atmproj_to_internal( filein, FILEQP=TRIM(datafile_qp), FILEHAM=fileham, FILESPACE=filespace, & 
+                                                 FILEWAN=filewan, DO_ORTHOOVP=do_orthoovp_ )
+           ELSE
+               CALL atmproj_to_internal( filein, FILEHAM=fileham, FILESPACE=filespace, & 
+                                                 FILEWAN=filewan, DO_ORTHOOVP=do_orthoovp_ )
+           ENDIF
            !
            WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
            !
