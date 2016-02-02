@@ -40,19 +40,21 @@
    CHARACTER(nstrx)   :: fileout        ! output filename
    CHARACTER(nstrx)   :: datafile_dft   !
    CHARACTER(nstrx)   :: datafile_sgm   !
+   CHARACTER(nstrx)   :: datafile_qp    !
    REAL(dbl)          :: atmproj_sh     ! shifthing: energy shift when computing the proj Hamiltonian
    REAL(dbl)          :: atmproj_thr    ! filtering: thr on projections 
    INTEGER            :: atmproj_nbnd   ! filtering: # of bands
+   INTEGER            :: atmproj_nbndmin! filtering: ibnd min
    LOGICAL            :: do_orthoovp
    CHARACTER(nstrx)   :: spin_component
 
    !
    ! input namelist
    !
-   NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
+   NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, datafile_qp, &
                     fileout, nkpts_in, nkpts_max, ircut, debug_level, verbosity, &
-                    use_symmetry, use_timerev, &
-                    do_orthoovp, atmproj_sh, atmproj_thr, atmproj_nbnd, spin_component
+                    use_symmetry, use_timerev, spin_component, &
+                    do_orthoovp, atmproj_sh, atmproj_thr, atmproj_nbnd, atmproj_nbndmin
    !
    ! end of declariations
    !   
@@ -108,16 +110,19 @@ CONTAINS
    !
    USE mp,                   ONLY : mp_bcast
    USE io_module,            ONLY : io_init, ionode, ionode_id
-   USE io_module,            ONLY : datafile_dft_ => dftdata_file, datafile_sgm_ => datafile_sgm
+   USE io_module,            ONLY : datafile_dft_ => dftdata_file, datafile_sgm_ => datafile_sgm, &
+                                    datafile_qp_ => datafile_qp
    USE atmproj_tools_module, ONLY : atmproj_sh_ => atmproj_sh, &
                                     atmproj_thr_ => atmproj_thr, &
                                     atmproj_nbnd_ => atmproj_nbnd, &
+                                    atmproj_nbndmin_ => atmproj_nbndmin, &
                                     spin_component_atmproj => spin_component
    !
    IMPLICIT NONE
 
       CHARACTER(11)    :: subname = 'bands_input'
       INTEGER          :: ierr
+      LOGICAL          :: lhave_qp
       !
       ! end of declarations
       !
@@ -130,8 +135,9 @@ CONTAINS
       prefix                      = ' ' 
       postfix                     = 'WanT' 
       work_dir                    = './' 
-      datafile_sgm                = ' '
       datafile_dft                = ' '
+      datafile_sgm                = ' '
+      datafile_qp                 = ' '
       fileout                     = ' '
       nkpts_in                    = 0
       nkpts_max                   = 100
@@ -142,6 +148,7 @@ CONTAINS
       atmproj_sh                  = 5.0d0
       atmproj_thr                 = 0.9d0
       atmproj_nbnd                = 0
+      atmproj_nbndmin             = 1
       use_symmetry                = .TRUE.
       use_timerev                 = .TRUE.
       spin_component              = 'all'
@@ -162,8 +169,9 @@ CONTAINS
       CALL mp_bcast( prefix,          ionode_id )
       CALL mp_bcast( postfix,         ionode_id )
       CALL mp_bcast( work_dir,        ionode_id )
-      CALL mp_bcast( datafile_sgm,    ionode_id )
       CALL mp_bcast( datafile_dft,    ionode_id )
+      CALL mp_bcast( datafile_sgm,    ionode_id )
+      CALL mp_bcast( datafile_qp,     ionode_id )
       CALL mp_bcast( fileout,         ionode_id )
       CALL mp_bcast( nkpts_in,        ionode_id )
       CALL mp_bcast( nkpts_max,       ionode_id )
@@ -174,6 +182,7 @@ CONTAINS
       CALL mp_bcast( atmproj_sh,      ionode_id )
       CALL mp_bcast( atmproj_thr,     ionode_id )
       CALL mp_bcast( atmproj_nbnd,    ionode_id )
+      CALL mp_bcast( atmproj_nbndmin, ionode_id )
       CALL mp_bcast( use_symmetry,    ionode_id )
       CALL mp_bcast( use_timerev,     ionode_id )
       CALL mp_bcast( spin_component,  ionode_id )
@@ -184,6 +193,7 @@ CONTAINS
       !
       datafile_dft_ = TRIM( datafile_dft )
       datafile_sgm_ = TRIM( datafile_sgm )
+      datafile_qp_  = TRIM( datafile_qp )
 
       !
       ! init
@@ -196,6 +206,8 @@ CONTAINS
       !   
       lhave_sgm = .FALSE.
       IF ( LEN_TRIM(datafile_sgm) > 0 ) lhave_sgm = .TRUE.
+      lhave_qp = .FALSE.
+      IF ( LEN_TRIM(datafile_qp) > 0 ) lhave_qp = .TRUE.
       !
       CALL io_init( NEED_WFC=.FALSE. )
 
@@ -206,6 +218,7 @@ CONTAINS
       atmproj_sh_ = atmproj_sh
       atmproj_thr_ = atmproj_thr
       atmproj_nbnd_ = atmproj_nbnd
+      atmproj_nbndmin_ = atmproj_nbndmin
 
 
       !
@@ -219,6 +232,7 @@ CONTAINS
       IF ( atmproj_thr > 1.0d0 .OR. atmproj_thr < 0.0d0) &
                                   CALL errore(subname, 'invalid atmproj_thr', 10 )
       IF ( atmproj_nbnd < 0)      CALL errore(subname, 'invalid atmproj_nbnd', 10 )
+      IF ( atmproj_nbndmin < 1)   CALL errore(subname, 'invalid atmproj_nbndmin', 10 )
       !
       CALL change_case(spin_component,'lower')
       spin_component_atmproj = spin_component
@@ -249,12 +263,17 @@ CONTAINS
               WRITE( stdout,"(7x,'       use ortho basis :',5x,   a)") TRIM( log2char(do_orthoovp) )
               WRITE( stdout,"(7x,'         atmproj shift :',5x,  f12.6)") atmproj_sh
               WRITE( stdout,"(7x,'          atmproj nbnd :',5x,   i5)") atmproj_nbnd
+              WRITE( stdout,"(7x,'       atmproj nbndmin :',5x,   i5)") atmproj_nbndmin
               WRITE( stdout,"(7x,'           atmproj thr :',5x,  f12.6)") atmproj_thr
           ENDIF
           !
           WRITE( stdout, "(   7x,'            have sigma :',5x, a  )") TRIM( log2char(lhave_sgm) )
           IF ( lhave_sgm ) THEN
               WRITE( stdout,"(7x,'        sigma datafile :',5x,   a)") TRIM( datafile_sgm )
+          ENDIF
+          WRITE( stdout, "(   7x,'           have fileQP :',5x, a  )") TRIM( log2char(lhave_qp) )
+          IF ( lhave_qp ) THEN
+              WRITE( stdout,"(7x,'           QP datafile :',5x,   a)") TRIM( datafile_qp )
           ENDIF
           !
           WRITE( stdout, "()" )
