@@ -77,6 +77,7 @@ pwcom.o \
 qvan2.o \
 radial_grids.o \
 random_orthovect.o \
+read_fileqp.o \
 read_ncpp.o \
 read_pseudo.o \
 read_upf_v1.o \
@@ -132,7 +133,7 @@ dos.x \
 plot.x \
 unfold.x
 
-LIBOBJS= ../baselib/libbase.a ../clib/libclib.a
+LIBOBJS = ../baselib/libbase.a ../clib/libclib.a
 BIN_DEPS=      $(OBJS) $(LIBOBJS)
 
 #
@@ -141,7 +142,7 @@ BIN_DEPS=      $(OBJS) $(LIBOBJS)
 all : libwannier.a $(BIN)
 
 
-libwannier.a : $(OBJS) 
+libwannier.a : $(OBJS)
 	$(AR) $(ARFLAGS) $@ $?
 	$(RANLIB) $@
 
