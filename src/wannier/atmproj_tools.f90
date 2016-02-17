@@ -49,6 +49,7 @@
    REAL(dbl)          :: atmproj_sh = 10.0d0
    REAL(dbl)          :: atmproj_thr = 0.0d0    ! 0.9d0
    INTEGER            :: atmproj_nbnd = 0
+   INTEGER            :: atmproj_nbndmin = 1
    CHARACTER(256)     :: spin_component = "all"
    !
    INTEGER, PARAMETER :: nwfcx = 50
@@ -67,6 +68,7 @@
    PUBLIC :: atmproj_sh
    PUBLIC :: atmproj_thr
    PUBLIC :: atmproj_nbnd
+   PUBLIC :: atmproj_nbndmin
    PUBLIC :: spin_component
 
 CONTAINS
@@ -121,7 +123,7 @@ END SUBROUTINE atmproj_tools_init
 
 
 !**********************************************************
-   SUBROUTINE atmproj_to_internal( filein, fileham, filespace, filewan, do_orthoovp )
+   SUBROUTINE atmproj_to_internal( filein, fileqp, fileham, filespace, filewan, do_orthoovp )
    !**********************************************************
    !
    ! Convert the datafile written by the projwfc program (QE suite) to
@@ -142,6 +144,7 @@ END SUBROUTINE atmproj_tools_init
    !
    CHARACTER(*), INTENT(IN) :: filein
    CHARACTER(*), OPTIONAL, INTENT(IN) :: fileham, filespace, filewan
+   CHARACTER(*), OPTIONAL, INTENT(IN) :: fileqp
    LOGICAL,      OPTIONAL, INTENT(IN) :: do_orthoovp
    
    !
