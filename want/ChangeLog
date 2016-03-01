@@ -4,9 +4,15 @@
 =======================================================
 
 
+20 Feb 2016     kpt symmetrization seems to be working. Clenaup and commits done (AF)
+
 27 Dec 2014     Makefile system cleaned and improved. (AF)
 
 25 Dec 2014     implementation of kpt symmetrization in atmproj_tools completed. (AF)
+
+-------------------------------------------------
+Date: 03 Nov 2014    Version: WanT-2.5.1
+-------------------------------------------------
 
 19 Oct 2014     symmetry module updated to deal with atm_proj symmetrization. (AF)
 
