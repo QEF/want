@@ -147,9 +147,8 @@ SUBROUTINE symmetrize_kgrid( nkpts, vkpt, bvec, nkpts_all, vkpt_all, kpteq_map, 
        CALL cry2cart( vkpt_all(:,1:nkpts_all), bvec)
    ENDIF
 
-#define __DEBUG
+!#define __DEBUG
 #ifdef __DEBUG
-   ! XXXXX
    WRITE( 0, * ) 
    WRITE( 0, * ) "nkpts = ", nkpts
    WRITE( 0, * ) 

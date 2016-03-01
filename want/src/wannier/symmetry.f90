@@ -428,9 +428,6 @@ CONTAINS
                    iaeq=irt(is,ia)
                    !
                    icell(:,is,ia) = NINT( rvec(:)-tau_cry(:,iaeq) ) 
-! XXXX
-!WRITE(0,"(a,2i4,3f15.9)") "is, ia: rcell", is, ia, rvec(:)-tau_cry(:,iaeq)
-!WRITE(0,"(a,2i4,3i6)") "is, ia: icell", is, ia,  icell(:,is,ia)
                    !
                ENDDO
            ENDDO
