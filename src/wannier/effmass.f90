@@ -44,15 +44,9 @@
    REAL(dbl)        :: shift         ! shift energy grid
    REAL(dbl)        :: scale         ! scale resulting dos
    CHARACTER(nstrx) :: smearing_type
-   CHARACTER(nstrx) :: fileout       ! output filename
-   CHARACTER(nstrx) :: fileout2      ! output filename for conductivity
-   CHARACTER(nstrx) :: fileout3      ! output filename for Seebeck
-   CHARACTER(nstrx) :: fileout4      ! output filename for Sigma*Seebeck
-   CHARACTER(nstrx) :: fileout5      ! output filename for KAPPA
-   CHARACTER(nstrx) :: fileout6      ! output filename for ZetaT
+   CHARACTER(nstrx) :: fileout       ! output filename for effective mass 
    CHARACTER(nstrx) :: datafile_dft  !
    CHARACTER(nstrx) :: datafile_sgm  !
-   LOGICAL          :: projdos       ! whether to write WF projected DOS
    INTEGER          :: ircut(3)      ! real space curoff in terms of unit cells
                                      ! for directions i=1,2,3  (0 means no cutoff)
    INTEGER          :: nprint        ! print every "nprint" iterations
@@ -61,24 +55,18 @@
    INTEGER          :: atmproj_nbnd  ! filtering: # of bands
    LOGICAL          :: do_orthoovp
    CHARACTER(nstrx) :: spin_component
-   !
-   LOGICAL          :: do_fermisurf  ! whether to dump files to plot the fermi surface
-   LOGICAL          :: do_boltzmann_conductivity  
-                                     ! whether to calculate the conductivity using the Boltzmann            
-                                     ! formulation in the scattering time approximation
-   LOGICAL          :: atmproj_do_norm 
+   LOGICAL          :: atmproj_do_norm
    !
    ! input namelist
    !
    NAMELIST /INPUT/ prefix, postfix, work_dir, datafile_dft, datafile_sgm, &
-                    nk, s, delta, temperature, smearing_type, fileout,     &
-                    fileout2, fileout3, fileout4, fileout5, fileout6,      &  
-                    emin, emax, ne, ircut, projdos, nprint, verbosity,     &
+                    nk, s, delta, temperature, smearing_type, fileout, &                                                                    
+                    emin, emax, ne, ircut, nprint, verbosity,     &
                     shift, scale, do_orthoovp, atmproj_sh, atmproj_thr,    &
-                    atmproj_nbnd, spin_component, do_fermisurf,            &
-                    do_boltzmann_conductivity, atmproj_do_norm
+                    atmproj_nbnd, spin_component, atmproj_do_norm
+                    
    !
-   ! end of declariations
+   ! end of declarations
    !   
 
 !
@@ -110,16 +98,15 @@
       !
       ! do the main task
       !
-!      print *, "pippo_in"
-      CALL do_dos( fileout, fileout2, fileout3, fileout4, fileout5, fileout6,      & 
-                   nk, s, delta, temperature, smearing_type, emin, emax, ne,       &
-                   shift, scale, ircut, projdos, do_fermisurf,                     &
-                   do_boltzmann_conductivity, nprint, verbosity )
+      CALL do_dos( fileout, nk, s, delta,            &
+                   temperature, smearing_type, emin, emax, ne, &
+                   shift, scale, ircut,                        &
+                   nprint, verbosity )
       !
       ! clean global memory
       !
       CALL cleanup()
-!      print *, "pippo_out"
+
       !
       ! finalize
       !
@@ -140,7 +127,7 @@ CONTAINS
                                     atmproj_thr_ => atmproj_thr, &
                                     atmproj_nbnd_ => atmproj_nbnd, &
                                     spin_component_atmproj => spin_component, &
-                                    atmproj_do_norm_ => atmproj_do_norm 
+                                    atmproj_do_norm_ => atmproj_do_norm
    !
    IMPLICIT NONE
 
@@ -162,13 +149,8 @@ CONTAINS
       datafile_sgm                = ' '
       datafile_dft                = ' '
       fileout                     = ' '
-      fileout2                    = ' '
-      fileout3                    = ' '
-      fileout4                    = ' '
-      fileout5                    = ' '
-      fileout6                    = ' '
       delta                       = 0.1    ! eV
-      temperature                 = 0.025852    ! eV
+      temperature                 = 0.025852    ! eV, room temperature
       nk(:)                       = -1
       s(:)                        =  0
       emin                        = -10.0
@@ -178,7 +160,6 @@ CONTAINS
       scale                       = 1.0
       smearing_type               = 'gaussian'
       ircut(1:3)                  =  0
-      projdos                     = .FALSE.
       nprint                      = 50
       debug_level                 = 0
       verbosity                   = 'medium'
@@ -187,9 +168,7 @@ CONTAINS
       atmproj_thr                 = 0.9d0
       atmproj_nbnd                = 0
       spin_component              = 'all'
-      do_fermisurf                = .FALSE.
-      do_boltzmann_conductivity   = .FALSE.
-      atmproj_do_norm             = .FALSE.       
+      atmproj_do_norm             = .FALSE.
       
       CALL input_from_file ( stdin )
       !
@@ -209,11 +188,6 @@ CONTAINS
       CALL mp_bcast( datafile_sgm,    ionode_id )
       CALL mp_bcast( datafile_dft,    ionode_id )
       CALL mp_bcast( fileout,         ionode_id )
-      CALL mp_bcast( fileout2,        ionode_id )
-      CALL mp_bcast( fileout3,        ionode_id )
-      CALL mp_bcast( fileout4,        ionode_id )
-      CALL mp_bcast( fileout5,        ionode_id )
-      CALL mp_bcast( fileout6,        ionode_id )
       CALL mp_bcast( delta,           ionode_id )
       CALL mp_bcast( temperature,     ionode_id )
       CALL mp_bcast( nk,              ionode_id )
@@ -225,7 +199,6 @@ CONTAINS
       CALL mp_bcast( scale,           ionode_id )
       CALL mp_bcast( smearing_type,   ionode_id )
       CALL mp_bcast( ircut,           ionode_id )      
-      CALL mp_bcast( projdos,         ionode_id )      
       CALL mp_bcast( nprint,          ionode_id )      
       CALL mp_bcast( debug_level,     ionode_id )      
       CALL mp_bcast( verbosity,       ionode_id )      
@@ -234,10 +207,7 @@ CONTAINS
       CALL mp_bcast( atmproj_thr,     ionode_id )
       CALL mp_bcast( atmproj_nbnd,    ionode_id )      
       CALL mp_bcast( spin_component,  ionode_id )
-      CALL mp_bcast( do_fermisurf,    ionode_id )
-      CALL mp_bcast( do_boltzmann_conductivity,    ionode_id )
       CALL mp_bcast( atmproj_do_norm,  ionode_id )
-
       !
       ! passing input vars to vars in io_module
       ! (this is done explicitly as a fix to a problem with gfortran)
@@ -249,22 +219,7 @@ CONTAINS
       ! Init
       !
       IF ( LEN_TRIM(fileout) == 0 ) &
-           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_dos.dat'
-      !
-      IF ( LEN_TRIM(fileout2) == 0 ) &
-           fileout2 = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_cond.dat'
-      !
-      IF ( LEN_TRIM(fileout3) == 0 ) &
-           fileout3 = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_seebeck.dat'
-      !
-      IF ( LEN_TRIM(fileout4) == 0 ) &
-           fileout4 = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_sigmaseebeck.dat'
-      !
-      IF ( LEN_TRIM(fileout5) == 0 ) &
-           fileout5 = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_kappa.dat'
-      !
-      IF ( LEN_TRIM(fileout6) == 0 ) &
-           fileout6 = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_ZetaT.dat'
+           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'_mass.dat'
       !
       use_debug_mode = .FALSE.
       IF ( debug_level > 0  )     use_debug_mode = .TRUE.
@@ -312,6 +267,7 @@ CONTAINS
       atmproj_thr_ = atmproj_thr
       atmproj_nbnd_ = atmproj_nbnd
       atmproj_do_norm_ = atmproj_do_norm
+
       !
       ! input summary
       !
@@ -320,11 +276,6 @@ CONTAINS
       IF ( ionode ) THEN
           !
           WRITE( stdout, "(   7x,'               fileout :',5x,   a)") TRIM(fileout)
-          WRITE( stdout, "(   7x,'               fileout2 :',5x,   a)") TRIM(fileout2)
-          WRITE( stdout, "(   7x,'               fileout3 :',5x,   a)") TRIM(fileout3)
-          WRITE( stdout, "(   7x,'               fileout4 :',5x,   a)") TRIM(fileout4)
-          WRITE( stdout, "(   7x,'               fileout5 :',5x,   a)") TRIM(fileout5)
-          WRITE( stdout, "(   7x,'               fileout6 :',5x,   a)") TRIM(fileout6)
           WRITE( stdout, "(   7x,'                  type :',5x,   a)") TRIM(smearing_type)
           WRITE( stdout, "(   7x,'        spin component :',5x,   a)") TRIM(spin_component)
           WRITE( stdout, "(   7x,'                 delta :',3x, f9.5, ' eV')" ) delta
@@ -342,10 +293,6 @@ CONTAINS
           IF ( ANY( ircut(:) > 0 ) ) THEN
               WRITE( stdout,"(7x,'                 ircut :',3x,3i4)") ircut(:)
           ENDIF
-          !
-          WRITE( stdout, "(   7x,'       compute projdos :',5x,   a)") TRIM( log2char( projdos ) )
-          WRITE( stdout, "(   7x,'    compute fermi surf :',5x,   a)") TRIM( log2char( do_fermisurf ) )
-          WRITE( stdout, "(   7x,'    compute boltz cond :',5x,   a)") TRIM( log2char( do_boltzmann_conductivity ) )
           !
           IF ( LEN_TRIM( datafile_dft ) /=0 ) THEN
               WRITE( stdout,"(7x,'          DFT datafile :',5x,   a)") TRIM( datafile_dft )
@@ -372,18 +319,18 @@ END PROGRAM dos_main
 
 
 !********************************************************
-   SUBROUTINE do_dos( fileout, fileout2, fileout3, fileout4, fileout5, fileout6, nk, s, delta,  &
-                      temperature, smearing_type, emin, emax, ne, shift, scale, ircut, projdos, &
-                     do_fermisurf, do_boltzmann_conductivity, nprint, verbosity )
+   SUBROUTINE do_dos( fileout, nk, s, delta, temperature, smearing_type, &
+                      emin, emax, ne, shift, scale, ircut,                         &
+                      nprint, verbosity )
    !********************************************************
    !
    ! perform the main task of the calculation
    !
-!   print *, "pippo2"
    USE kinds
    USE parameters,           ONLY : nstrx
-   USE constants,            ONLY : CZERO, ZERO, ONE, CI, TWO, FOUR, PI, TPI, EPS_m4, EPS_m6, EPS_m8
+   USE constants,            ONLY : CZERO, ZERO, ONE, CI, TWO, FOUR, PI, TPI,SQRTPI, EPS_m4, EPS_m6, EPS_m8
    USE constants,            ONLY : H_OVER_TPI, K_BOLTZMAN_SI, ELECTRONVOLT_SI, BOHR_RADIUS_SI, K_BOLTZMAN_SI
+   USE constants,            ONLY : evtory, eps0, e2
    USE io_module,            ONLY : stdout, stdin, ionode, ionode_id, aux_unit, sgm_unit
    USE io_module,            ONLY : work_dir, prefix, postfix
    USE io_module,            ONLY : datafile_sgm
@@ -392,7 +339,7 @@ END PROGRAM dos_main
    USE files_module,         ONLY : file_open, file_close
    USE util_module,          ONLY : mat_hdiag, mat_herm, mat_is_herm, mat_mul, mat_inv
    USE converters_module,    ONLY : cry2cart, cart2cry
-   USE lattice_module,       ONLY : avec, bvec
+   USE lattice_module,       ONLY : avec, bvec, omega
    USE kpoints_module,       ONLY : nrtot, vr, wr 
    USE windows_module,       ONLY : nspin
    USE smearing_base_module, ONLY : smearing_func
@@ -411,11 +358,6 @@ END PROGRAM dos_main
       ! input vars
       !
       CHARACTER(*),  INTENT(IN)    :: fileout
-      CHARACTER(*),  INTENT(IN)    :: fileout2
-      CHARACTER(*),  INTENT(IN)    :: fileout3
-      CHARACTER(*),  INTENT(IN)    :: fileout4
-      CHARACTER(*),  INTENT(IN)    :: fileout5
-      CHARACTER(*),  INTENT(IN)    :: fileout6
       INTEGER,       INTENT(IN)    :: nk(3), s(3)
       REAL(dbl),     INTENT(IN)    :: delta
       REAL(dbl),     INTENT(IN)    :: temperature
@@ -424,9 +366,6 @@ END PROGRAM dos_main
       REAL(dbl),     INTENT(IN)    :: shift, scale
       CHARACTER(*),  INTENT(IN)    :: smearing_type
       INTEGER,       INTENT(IN)    :: ircut(3)
-      LOGICAL,       INTENT(IN)    :: projdos
-      LOGICAL,       INTENT(IN)    :: do_fermisurf
-      LOGICAL,       INTENT(IN)    :: do_boltzmann_conductivity
       INTEGER,       INTENT(IN)    :: nprint
       CHARACTER(*),  INTENT(IN)    :: verbosity
 
@@ -438,38 +377,37 @@ END PROGRAM dos_main
       INTEGER      :: nkpts_int     ! Number of interpolated k-points
       INTEGER      :: nrtot_nn
       LOGICAL      :: lhave_nn(3)
-      REAL(dbl)    :: arg, arg2, cost, raux, raux2, efermi, x0(3)
+      REAL(dbl)    :: arg, arg2, arg3, cost, raux, raux2, raux3, efermi, x0(3), FSUM, EFF_MASS 
       COMPLEX(dbl) :: ze
       !
       INTEGER,      ALLOCATABLE :: r_index(:), ind_plot(:)
       COMPLEX(dbl), ALLOCATABLE :: kham(:,:), rham_nn(:,:,:)
-      COMPLEX(dbl), ALLOCATABLE :: work(:,:), work2(:,:), work3(:,:), gradkham(:,:,:) 
+      COMPLEX(dbl), ALLOCATABLE :: work(:,:), work2(:,:), work3(:,:), gradkham(:,:,:), hessiankham(:,:,:,:) 
       COMPLEX(dbl), ALLOCATABLE :: aux1(:,:,:), aux2(:,:,:) 
       COMPLEX(dbl), ALLOCATABLE :: gradient(:,:,:), gradkovp(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: ksgm(:,:), rsgm_nn(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: kovp(:,:), rovp_nn(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: z(:,:,:), zc(:,:,:)
       COMPLEX(dbl), ALLOCATABLE :: GF(:,:), GF0(:,:)
-      REAL(dbl),    ALLOCATABLE :: vel(:,:,:), tau(:,:)
-      REAL(dbl),    ALLOCATABLE :: L_ZERO(:,:,:), invL_ZERO(:,:), L_ONE(:,:,:), L_TWO(:,:,:)
-      REAL(dbl),    ALLOCATABLE :: seebeck(:,:,:), kappa(:,:,:), invkappa(:,:), ZetaT(:,:,:)
+      COMPLEX(dbl), ALLOCATABLE :: momentum(:,:,:,:)
+      REAL(dbl),    ALLOCATABLE :: vel(:,:,:), hessian(:,:,:,:), inv_MASS(:,:,:,:), mass(:,:), vect_mass(:,:), eig_mass(:)
       REAL(dbl),    ALLOCATABLE :: egrid(:)
       REAL(dbl),    ALLOCATABLE :: dos(:), dos0(:), pdos(:,:)
       REAL(dbl),    ALLOCATABLE :: vkpt_int(:,:), vkpt_int_cry(:,:), wk(:)
       REAL(dbl),    ALLOCATABLE :: eig_int(:,:)
       REAL(dbl),    ALLOCATABLE :: eig_band(:,:,:,:), eig_coll(:,:)
       REAL(dbl),    ALLOCATABLE :: vr_cry(:,:), vr_nn(:,:), wr_nn(:), vr_sgm(:,:)
-      CHARACTER(nstrx)          :: filename, filename2, filename3, filename4, filename5, filename6, analyticity_sgm, aux_fmt
+      CHARACTER(nstrx)          :: filename, analyticity_sgm, aux_fmt
       CHARACTER(4)              :: ctmp
       !
       INTEGER      :: iks, ike
-      INTEGER      :: i, j, k, ie, ik, ik_g, ir, ib, l, m 
+      INTEGER      :: i, j, k, ie, ie2, ik, ik_g, ir, ib, l, m, n 
       INTEGER      :: ierr, icount, nbndx_plot
       INTEGER      :: dimwann_sgm, nrtot_sgm
       !
       ! end of declarations
       !
-!      print *, "pippo3"
+
 !
 !------------------------------
 ! main body 
@@ -569,8 +507,8 @@ END PROGRAM dos_main
       !
       ! furhter checks on non-implemented special cases
       !
-      IF ( ldynam_sgm .AND. projdos )      CALL errore(subname,'projdos and dyn-sigma NOT impl.', 10)
-      IF ( ldynam_sgm .AND. do_fermisurf ) CALL errore(subname,'fermi surf and dyn-sigma NOT impl.', 10)
+      IF ( ldynam_sgm )      CALL errore(subname,'projdos and dyn-sigma NOT impl.', 10)
+      IF ( ldynam_sgm ) CALL errore(subname,'fermi surf and dyn-sigma NOT impl.', 10)
 
 
       !
@@ -611,17 +549,6 @@ END PROGRAM dos_main
       ALLOCATE( vkpt_int( 3, nkpts_int ), wk( nkpts_int ), STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'allocating vkpt_int, wk', ABS(ierr) )
       !
-      ALLOCATE( dos( ne ), dos0( ne ), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'allocating dos, dos0', ABS(ierr) )
-      !
-      ALLOCATE( pdos( ne, dimwann ), STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'allocating pdos', ABS(ierr) )
-      !
-!      ALLOCATE( vel( 3, dimwann, nkpts_int ), STAT=ierr )
-!      IF( ierr /=0 ) CALL errore(subname,'allocating vel', ABS(ierr) )
-
-
-      !
       ! generate monkhorst-pack grid, using nk(:) and s(:)
       ! kpts gen are in crystal coords
       !
@@ -650,11 +577,13 @@ END PROGRAM dos_main
                                & 6x,'shift = (',3i4,' )' ) " ) nk(:), s(:)
           WRITE( stdout, "(2x, 'Generated kpt mesh: (cart. coord. in Bohr^-1)',/)" )
           !
+!          print *, "pippo"
           DO ik=1,nkpts_int
               !
               WRITE( stdout, " (4x, 'k (', i5, ') =    ( ',3f9.5,' ),   &
                                & weight = ', f11.7 )") ik, ( vkpt_int(i,ik), i=1,3 ), wk(ik)
           ENDDO
+          print *, "pippo2"
           !
           WRITE( stdout, "()" )
           !
@@ -816,39 +745,46 @@ END PROGRAM dos_main
           z( :, :, : )    = CZERO
           eig_int( :, : ) = ZERO
           !
-          IF ( do_boltzmann_conductivity ) THEN
-              !
-              ! local workspace
-              !
-              ALLOCATE( work( dimwann, dimwann ), STAT=ierr )
-              IF( ierr /=0 ) CALL errore(subname,'allocating work', ABS(ierr) )
-              !
-              ALLOCATE( work2( dimwann, dimwann ), STAT=ierr )
-              IF( ierr /=0 ) CALL errore(subname,'allocating work2', ABS(ierr) )
-              !
-              ALLOCATE( work3( dimwann, dimwann ), STAT=ierr )
-              IF( ierr /=0 ) CALL errore(subname,'allocating work3', ABS(ierr) )
-              !
-              ALLOCATE( gradkham( dimwann, dimwann, 3 ), STAT=ierr )
-              IF( ierr /=0 ) CALL errore(subname,'allocating gradkham', ABS(ierr) )
-              !
-              ALLOCATE( gradkovp( dimwann, dimwann, 3 ), STAT=ierr )
-              IF( ierr /=0 ) CALL errore(subname,'allocating gradkovp', ABS(ierr) )
-              !
-              ALLOCATE( gradient( dimwann, dimwann, 3 ), STAT=ierr )
-              IF( ierr /=0 ) CALL errore(subname,'allocating gradient', ABS(ierr) )
-              !
-              ALLOCATE( aux1( dimwann, dimwann, 3 ), STAT=ierr )
-              IF( ierr /=0 ) CALL errore(subname,'allocating aux1', ABS(ierr) )
-              !
-              ALLOCATE( aux2( dimwann, dimwann, 3 ), STAT=ierr )
-              IF( ierr /=0 ) CALL errore(subname,'allocating aux2', ABS(ierr) )
-              !
-              ALLOCATE( vel( 3, dimwann, ike-iks+1 ), STAT=ierr )
-              IF( ierr /=0 ) CALL errore(subname,'allocating vel', ABS(ierr) )
-              !
-          ENDIF
-!          print *, "pippo4"
+          ! local workspace
+          !
+          ALLOCATE( work( dimwann, dimwann ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating work', ABS(ierr) )
+          !
+          ALLOCATE( work2( dimwann, dimwann ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating work2', ABS(ierr) )
+          !
+          ALLOCATE( work3( dimwann, dimwann ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating work3', ABS(ierr) )
+          !
+          ALLOCATE( gradkham( dimwann, dimwann, 3 ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating gradkham', ABS(ierr) )
+          !
+          ALLOCATE( hessiankham( dimwann, dimwann, 3, 3 ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating hessiankham', ABS(ierr) )
+          !
+          ALLOCATE( gradkovp( dimwann, dimwann, 3 ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating gradkovp', ABS(ierr) )
+          !
+          ALLOCATE( gradient( dimwann, dimwann, 3 ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating gradient', ABS(ierr) )
+          !
+          ALLOCATE( aux1( dimwann, dimwann, 3 ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating aux1', ABS(ierr) )
+          !
+          ALLOCATE( aux2( dimwann, dimwann, 3 ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating aux2', ABS(ierr) )
+          !
+          ALLOCATE( vel( 3, dimwann, ike - iks + 1 ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating vel', ABS(ierr) )
+          !
+          ALLOCATE( hessian( 3, 3, dimwann, ike - iks + 1 ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating hessian', ABS(ierr) )
+          !
+          ALLOCATE( inv_MASS( 3, 3, dimwann, ike - iks + 1 ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating inv_MASS', ABS(ierr) )
+          !
+          ALLOCATE( momentum( 3, dimwann, dimwann, ike - iks + 1 ), STAT=ierr )
+          IF( ierr /=0 ) CALL errore(subname,'allocating momentum', ABS(ierr) )
           !
           kpt_loop: &
           DO ik_g = iks, ike
@@ -940,17 +876,13 @@ END PROGRAM dos_main
                   ENDDO
                   !
               ENDIF
-
-
-
-
-
-
-              IF ( do_boltzmann_conductivity ) THEN
-                  !
+              !
                   CALL compute_grad_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rham_nn,  &
                              vkpt_int(:,ik_g), gradkham)
-
+                  !
+                  CALL compute_hessian_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rham_nn,  &
+                             vkpt_int(:,ik_g), hessiankham)
+                  !                 
                   IF ( lhave_overlap ) THEN
                       !  
 !                      CALL mat_inv( dimwann, kovp, invkovp )
@@ -961,28 +893,6 @@ END PROGRAM dos_main
                           !
                       ENDDO
                   !
-!                      CALL compute_grad_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn,  &
-!                                 vkpt_int(:,ik_g), gradkovp)
-!                      CALL mat_mul( zc(:,:,ik),  kovp(:,:), 'N', z(:,:,ik), 'N', dimwann, dimwann, dimwann )
-!                  !
-!                      DO i  = 1, dimwann 
-!                          !
-!                          raux = REAL( DOT_PRODUCT( z(:,i,ik), zc(:,i,ik) ) )
-!                          z( :, i, ik) = z( :, i, ik) / SQRT(raux)
-!                          !
-!                      ENDDO
-
-!                      DO l = 1, 3
-!                          CALL mat_mul( aux1(:,:,l),  gradkovp(:,:,l), 'N', kham(:,:), 'N', dimwann, dimwann, dimwann )
-!                          CALL mat_mul( aux2(:,:,l),  kovp(:,:), 'N', gradkham(:,:,l), 'N', dimwann, dimwann, dimwann )
-!                          gradient(:,:,l) = aux1(:,:,l) + aux2(:,:,l)
-!                      ENDDO 
-                      ! 
-!                  ELSE
-                      !
-!                      gradient(:,:,:) = gradkham(:,:,:)
-                      !
-
                       arg  = ( egrid( ie ) - eig_int( i, ik ) ) / delta 
                       raux = smearing_func( arg, smearing_type )
 
@@ -997,33 +907,96 @@ END PROGRAM dos_main
                           CALL mat_mul( work3,  z(:,:,ik),       'C', work3,      'N', dimwann, dimwann, dimwann )
                           !
                           DO i = 1, dimwann
-                          vel(l,i,ik) = (REAL( work(i,i), dbl ) - eig_int(i,ik)*REAL( work2(i,i), dbl))/(REAL( work3(i,i), dbl))
-                              
+                              !
+                              vel(l,i,ik) = (REAL( work(i,i), dbl ) - eig_int(i,ik)*REAL( work2(i,i), dbl))/(REAL( work3(i,i), dbl))                            
+                              !
                           ENDDO
                       ENDDO
                   ELSE
                       DO l = 1, 3
                           CALL mat_mul( work,  gradkham(:,:,l), 'N', z(:,:,ik), 'N', dimwann, dimwann, dimwann )
-                          CALL mat_mul( work,  z(:,:,ik),       'C', work,      'N', dimwann, dimwann, dimwann )
+                          CALL mat_mul( work2,  z(:,:,ik),       'C', work,      'N', dimwann, dimwann, dimwann )
                           !
                           DO i = 1, dimwann
-                          !    vel(l,i,ik) = ( ( ONE ) / delta ) * raux * REAL( work(i,i), dbl )
-                              vel(l,i,ik) = REAL( work(i,i), dbl )
-                          !    write (*, *)  vel (l, i, ik), l, i, ik
+                              !
+                              ! evtory converts electronvolt to Rydberg, in order to be consistent.
+                              !
+                              vel(l,i,ik) = evtory * REAL( work2(i,i), dbl ) 
+                              !
+                              DO j = 1, dimwann
+                                  !
+                                  momentum(l,i,j,ik) = work2(i,j) 
+                                  !
+                              ENDDO    
+                              ! 
                           ENDDO
+                          !
                       ENDDO
-                  !
+!                      DO k = 1, 3
+!                      DO l = 1, 3
+!                          !
+!                          DO i = 1, dimwann
+!                              !
+!                              vel(l,i,ik) = REAL( work2(i,i), dbl )
+!                              !
+!                              DO j = 1, dimwann
+!                                  !
+!                                  print *, k, l, i, j, ik, momentum (l,i,j,ik)*momentum (k, j, i, ik), &
+!                                           REAL( momentum (l,i,j,ik) * momentum (k, j, i, ik), dbl), &
+!                                           AIMAG( momentum (l,i,j,ik) * momentum (k, j, i, ik))
+!                                  !
+!                              ENDDO
+!                              ! 
+!                          ENDDO
+!                          !
+!                      ENDDO
+!                      ENDDO 
+                      !
+                      DO k = 1, 3
+                          !
+                          DO l = 1, 3
+                              ! 
+                              CALL mat_mul( work,  hessiankham(:,:,k,l), 'N', z(:,:,ik), 'N', dimwann, dimwann, dimwann )
+                              CALL mat_mul( work,  z(:,:,ik),       'C', work,      'N', dimwann, dimwann, dimwann )
+                              !
+                              DO i = 1, dimwann
+                                  !
+                                  inv_MASS(k,l,i,ik) = inv_MASS(k,l,i,ik) + REAL( work(i,i), dbl )
+                                  !   
+!                                  DO j = 1, dimwann
+!                                      !
+!                                      IF ( i.ne.j) THEN
+!                                          !
+!                                          inv_MASS(k,l,i,ik) = inv_MASS(k,l,i,ik) + &
+!                                                          ! 
+!                                                          (SQRT ( REAL( momentum( k, i, j, ik) * momentum( l, j, i, ik))**2 + &
+!                                                          !
+!                                                          AIMAG( momentum( k, i, j, ik) * momentum( l, j, i, ik))**2) + &
+!                                                          ! 
+!                                                          SQRT ( REAL( momentum( l, i, j, ik) * momentum( k, j, i, ik))**2 + &
+!                                                          ! 
+!                                                          AIMAG( momentum( l, i, j, ik) * momentum( k, j, i, ik))**2) ) / &
+!                                                          ! 
+!                                                          (eig_int( i, ik ) - eig_int( j, ik))
+                                                          ! 
+                                          !
+!                                      ENDIF
+!                                      !
+!                                  ENDDO 
+                                  !
+                              ENDDO
+                              !
+                          ENDDO
+                          !
+                      ENDDO
+                      !
                   ENDIF
- 
-              ENDIF
-
               !
           ENDDO kpt_loop
           !
-      ENDIF
+          inv_MASS(:,:,:,:) = evtory * inv_MASS(:,:,:,:)
+    ENDIF
 
-
-!      print *, "pippo5"
       !
       ! DOS normalization costant
       ! spin doubling is avoided
@@ -1043,7 +1016,7 @@ END PROGRAM dos_main
       ELSE
           cost = ONE / ( delta )
       ENDIF
-!      print *, "pippo in energy loop"  
+     
       !
       ! stdout report
       !
@@ -1053,33 +1026,26 @@ END PROGRAM dos_main
       !
       ! compute DOS and pDOS
       !
-!      print *, "pippo6"
-      IF ( do_boltzmann_conductivity ) THEN         
-          !
-          ALLOCATE( tau( dimwann, ike - iks +1 ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(subname,'allocating tau', ABS(ierr) )
-          ALLOCATE( L_ZERO( 3, 3, ne ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(subname,'allocating L_ZERO', ABS(ierr) )
-          ALLOCATE( invL_ZERO( 3, 3 ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(subname,'allocating invL_ZERO', ABS(ierr) )
-          ALLOCATE( L_ONE( 3, 3, ne ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(subname,'allocating L_ONE', ABS(ierr) )
-          ALLOCATE( L_TWO( 3, 3, ne ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(subname,'allocating L_TWO', ABS(ierr) )
-          ALLOCATE( seebeck( 3, 3, ne ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(subname,'allocating seebeck', ABS(ierr) )
-          ALLOCATE( kappa( 3, 3, ne ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(subname,'allocating KAPPA', ABS(ierr) )
-          ALLOCATE( invkappa( 3, 3 ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(subname,'allocating KAPPA^-1', ABS(ierr) )
-          ALLOCATE( ZetaT( 3, 3, ne ), STAT=ierr )
-          IF( ierr /=0 ) CALL errore(subname,'allocating ZetaT', ABS(ierr) )
-          !
-      ENDIF
-!      print *, "pippo7"
-      energy_loop1: &
-      DO ie = 1, ne
-!          print *, "pippo8"          
+      ALLOCATE( mass( 3, 3 ), STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname,'allocating mass', ABS(ierr) )
+      !
+      ALLOCATE( vect_mass( 3, 3 ), STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname,'allocating vect_mass', ABS(ierr) )
+      !
+      ALLOCATE( eig_mass( 3 ), STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname,'allocating eig_mass', ABS(ierr) )
+
+
+!      DO ik_g = iks, ike
+!                 !
+!      ik = ik_g -iks +1
+!  
+!      ENDDO 
+      !
+
+!      energy_loop1: &
+!      DO ie = 1, ne
+          
           !
           ! stdout report
           !
@@ -1087,24 +1053,8 @@ END PROGRAM dos_main
               WRITE(stdout,"(2x, 'Computing E( ',i5,' ) = ', f12.5, ' eV' )") &
                             ie, egrid(ie)
           ENDIF
-
-          
-          dos ( ie )  = ZERO
-          dos0 ( ie ) = ZERO
-          IF ( do_boltzmann_conductivity ) THEN
-              !
-              L_ZERO(:,:,ie) = ZERO
-              invL_ZERO(:,:) = ZERO
-              L_ONE(:,:,ie) = ZERO
-              L_TWO(:,:,ie) = ZERO
-              seebeck(:,:,ie) = ZERO
-              kappa(:,:,ie) = ZERO
-              tau(:,:) = ONE
-              invkappa(:,:) = ZERO
-              ZetaT(:,:,:) = ZERO
-              !
-          ENDIF
-!          print *, "pippo9"
+!          IM_EPSILON(:,:,ie) = ZERO
+!          RE_EPSILON(:,:,ie) = ZERO
           !
           IF ( lhave_sgm .AND. ldynam_sgm ) THEN
 
@@ -1175,120 +1125,51 @@ END PROGRAM dos_main
              !
              ! standard DOS calculation (no sgm or static sgm)
              !
+          filename=TRIM(fileout)
+          OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
+          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
+          WRITE( aux_unit, *) "# Band index,  Kvector(3), Energy, Velocity(3), Eigenmasses(3), MASS"
+
+          !
+!          WRITE( aux_unit, *) "# E (eV)   Im_Epsilon(i,j,E)"
+!          DO ie = 1, ne
+!              WRITE(aux_unit, "(f9.4,9E15.4E3)") egrid(ie)+shift, IM_EPSILON(:,:,ie)
+!          ENDDO
+!          !
+!          CLOSE( aux_unit )
+!          !
+!          WRITE( stdout, "(/,2x,'Imaginary part of epsilon written on file:',4x,a)" ) TRIM(filename)
+!          ! 
+
              DO ik_g = iks, ike
                  !
                  ik = ik_g -iks +1
                  !
-                 DO m = 1, dimwann 
+                                   
+                 DO n = 1, dimwann 
                      !
-                     arg  = ( egrid( ie ) - eig_int( m, ik ) ) / delta
-                     raux = smearing_func( arg, smearing_type )
-                     !
-                     dos( ie ) = dos( ie ) + cost * wk(ik_g) * raux  
-                     !
-!                 ENDDO
-                 !
-!             ENDDO
-!                 print *, "pippo10"             
-                     IF ( do_boltzmann_conductivity) THEN
-             !
-             ! Boltzmann Conductivity calculation
-             !
-!                 DO ik_g = iks, ike
-                     !
-!                     ik = ik_g -iks +1
-                     !
-!                     DO m = 1, dimwann 
-                         !
-                         arg2  = ( eig_int( m, ik ) -  egrid( ie ) ) / temperature
-                         raux2 = smearing_func( arg2, 'fermi-dirac' )
-!                         arg2 = ( egrid( ie ) - eig_int( m, ik ) ) / ( delta )
-!                         raux2 = smearing_func( arg2, smearing_type )   
-                         !
-                         DO j = 1, 3
-                             !
-                             DO i = 1, 3
-                                 !
-                                 L_ZERO( i, j, ie ) = L_ZERO( i, j, ie ) + ( ONE/ (temperature) ) * wk(ik_g) * raux2 * &
-                                                    !
-                                                    vel(i,m,ik) * tau( m, ik ) * vel(j,m,ik) 
-                                                    !
-                                 L_ONE( i, j, ie) = L_ONE( i, j, ie ) + ( ONE/ (temperature) ) * &
-                                                    !
-                                                    wk(ik_g) * raux2 * vel(i,m,ik) * tau( m, ik ) * vel(j,m,ik) * &
-                                                    ! 
-                                                    ( eig_int( m, ik ) - egrid( ie) )
-                                                    !( cost * raux ) 
-                                                    !
-                                 L_TWO( i, j, ie) = L_TWO( i, j, ie ) + ( ONE/ (temperature) ) * &
-                                                    !
-                                                    wk(ik_g) * raux2 * vel(i,m,ik) * tau( m, ik ) * vel(j,m,ik) * &
-                                                    ! 
-                                                    ( eig_int( m, ik ) - egrid( ie) )**2                              
-                                                    !( cost * raux )**2
-                                 ! 
-                             ENDDO
-                             ! 
-                         ENDDO
-                         !
-!                     ENDDO
-                     !
-!                 ENDDO
-                         !
-!                         L_ZERO( :, :, ie ) = L_ZERO( :, :, ie) * ( ELECTRONVOLT_SI**2 / ( FOUR * PI**3 ) ) * &
-!                                           ( ELECTRONVOLT_SI / ( H_OVER_TPI**2 * BOHR_RADIUS_SI ) )
-!                         ! 
-!                         L_ONE( :, :, ie ) = L_ONE( :, :, ie) * ( ELECTRONVOLT_SI**2 / ( FOUR * PI**3 ) ) * &
-!                                             ( ELECTRONVOLT_SI**2 / ( H_OVER_TPI**2 * BOHR_RADIUS_SI ) )
-!                         !
-!                         CALL mat_inv( 3, L_ZERO(:,:,ie), invL_ZERO(:,:) )
-!                         !
-!                         CALL mat_mul( seebeck(:,:,ie),  invL_ZERO(:,:), 'N', L_ONE(:,:,ie), 'N', 3, 3, 3 )
-!                         !
-!                         seebeck( :, :, ie ) = - ( K_BOLTZMAN_SI / ( temperature * ELECTRONVOLT_SI * ELECTRONVOLT_SI ) ) * &
-!                                               seebeck( :, :, ie)
-                         !   
-                     ENDIF   
-             !
-!                 print *, "pippo11"
+                     mass(:,:) = ZERO
+                     eig_mass (:) = ZERO
+                     vect_mass(:,:) = ZERO
+                     EFF_MASS = ZERO
+!                 print *, eig_int(n, ik)
+!                     IF ( vel(1, n, ik)**2.lt.0.0000000000000001 ) THEN
+                     IF ( eig_int(n, ik).gt.emin.and.eig_int(n, ik).lt.emax ) THEN
+                     CALL mat_inv( 3, inv_MASS(:,:,n,ik), mass(:,:) )
+                     CALL mat_hdiag( vect_mass(:,:), eig_mass(:), mass(:,:), 3)          
+                     EFF_MASS = (eig_mass(1)+eig_mass(2)+eig_mass(3) ) / 3.0
+                     !IF (ionode) THEN
+!                     print "(I3, 3E15.4E3, E15.4E3, 3E15.4E3)", n, vkpt_int(:,ik_g), eig_int(n, ik), vel(:,n,ik)
+!                     print "(3E15.4E3)", eig_mass(:)
+ WRITE(aux_unit, "(I3, 3E15.4E3, E15.4E3, 3E15.4E3, 3E15.4E3, E15.4E3)") n, vkpt_int(:,ik_g), eig_int(n, ik), vel(:,n,ik), & 
+                                                                       eig_mass(:), EFF_MASS
+                     !ENDIF
+                     ENDIF
+                     !   
                  ENDDO
-             !
+                 !
              ENDDO  
-             !
-!             IF ( do_boltzmann_conductivity ) THEN
-!                 !
-!                 L_ZERO( :, :, ie ) = L_ZERO( :, :, ie) * ( ELECTRONVOLT_SI**2 / ( FOUR * PI**3 ) ) * &
-!                                      !
-!                                      ( ELECTRONVOLT_SI / ( H_OVER_TPI**2 * BOHR_RADIUS_SI ) )
-!                 !     
-!                 L_ONE( :, :, ie ) = L_ONE( :, :, ie) * ( ELECTRONVOLT_SI**2 / ( FOUR * PI**3 ) ) * &
-!                                     !
-!                                     ( ELECTRONVOLT_SI**2 / ( H_OVER_TPI**2 * BOHR_RADIUS_SI ) )
-!                 !
-!                 L_TWO( :, :, ie ) = L_TWO( :, :, ie) * ( ELECTRONVOLT_SI**2 / ( FOUR * PI**3 ) ) * &
-!                                     !
-!                                     ( ELECTRONVOLT_SI**3 / ( H_OVER_TPI**2 * BOHR_RADIUS_SI ) )
-!                 !
-!                 CALL mat_inv( 3, L_ZERO(:,:,ie), invL_ZERO(:,:) )
-!                 !
-!                 CALL mat_mul( seebeck(:,:,ie),  invL_ZERO(:,:), 'N', L_ONE(:,:,ie), 'N', 3, 3, 3 )
-!                 !
-!                 seebeck( :, :, ie ) = - ( K_BOLTZMAN_SI / ( temperature * ELECTRONVOLT_SI * ELECTRONVOLT_SI ) ) * &
-!                                       !
-!                                       seebeck( :, :, ie)
-!                 !
-!                 CALL mat_mul( kappa( :, :, ie ), invL_ZERO(:,:), 'N', L_ONE(:,:,ie), 'N', 3, 3, 3 )
-!                 !
-!                 CALL mat_mul( kappa( :, :, ie ), L_ONE(:,:,ie), 'N', kappa(:,:,ie), 'N', 3, 3, 3 ) 
-!                 !
-!                 kappa( :, :, ie ) = L_TWO( :, :, ie ) - kappa( :, :, ie ) 
-!                 !
-!                 kappa( :, :, ie ) = ( K_BOLTZMAN_SI / ( temperature * ELECTRONVOLT_SI * ELECTRONVOLT_SI**2 ) ) * &
-!                                     !
-!                                     kappa( :, :, ie  ) 
-!                                 
-!                 !
-!             ENDIF
+          CLOSE( aux_unit )
              !
           ENDIF
 
@@ -1302,447 +1183,42 @@ END PROGRAM dos_main
                !
           ENDIF          
           !
-      ENDDO energy_loop1
+!      ENDDO energy_loop1
       !
       ! recover over kpt-parallelism
       !
-      CALL mp_sum( dos  )
-      CALL mp_sum( dos0 )
-      IF (do_boltzmann_conductivity) THEN
-          !
-          CALL mp_sum( L_ZERO )
-!          CALL mp_sum( seebeck )
-          CALL mp_sum( L_ONE )
-!          CALL mp_sum( kappa )
-          CALL mp_sum( L_TWO )
-
-          !
-      ENDIF
+!      CALL mp_sum( IM_EPSILON )
       !
-
-           IF ( do_boltzmann_conductivity ) THEN
-                 DO ie = 1, ne
-                 !
-                 L_ZERO( :, :, ie ) = L_ZERO( :, :, ie) * ( ELECTRONVOLT_SI**2 / ( FOUR * PI**3 ) ) * &
-                                      !
-                                      ( ELECTRONVOLT_SI / ( H_OVER_TPI**2 * BOHR_RADIUS_SI ) )
-                 !     
-                 L_ONE( :, :, ie ) = L_ONE( :, :, ie) * ( ELECTRONVOLT_SI**2 / ( FOUR * PI**3 ) ) * &
-                                     !
-                                     ( ELECTRONVOLT_SI**2 / ( H_OVER_TPI**2 * BOHR_RADIUS_SI ) )
-                 !
-                 L_TWO( :, :, ie ) = L_TWO( :, :, ie) * ( ELECTRONVOLT_SI**2 / ( FOUR * PI**3 ) ) * &
-                                     !
-                                     ( ELECTRONVOLT_SI**3 / ( H_OVER_TPI**2 * BOHR_RADIUS_SI ) )
-                 !
-!                 print "(f9.4,9E15.8E3)", egrid(ie), L_ZERO(:,:,ie)
-                 CALL mat_inv( 3, L_ZERO(:,:,ie), invL_ZERO(:,:) )
-                 !
-                 CALL mat_mul( seebeck(:,:,ie),  invL_ZERO(:,:), 'N', L_ONE(:,:,ie), 'N', 3, 3, 3 )
-                 !
-                 seebeck( :, :, ie ) = - ( K_BOLTZMAN_SI / ( temperature * ELECTRONVOLT_SI * ELECTRONVOLT_SI ) ) * &
-                                       !
-                                       seebeck( :, :, ie)
-                 !
-                 CALL mat_mul( kappa( :, :, ie ), invL_ZERO(:,:), 'N', L_ONE(:,:,ie), 'N', 3, 3, 3 )
-                 !
-                 CALL mat_mul( kappa( :, :, ie ), L_ONE(:,:,ie), 'N', kappa(:,:,ie), 'N', 3, 3, 3 )
-                 !
-                 kappa( :, :, ie ) = L_TWO( :, :, ie ) - kappa( :, :, ie )
-                 !
-                 kappa( :, :, ie ) = ( K_BOLTZMAN_SI / ( temperature * ELECTRONVOLT_SI * ELECTRONVOLT_SI**2 ) ) * &
-                                     !
-                                     kappa( :, :, ie  )
-                 !
-                 CALL mat_inv( 3, kappa(:,:,ie), invkappa(:,:) )
-                 !
-                 CALL mat_mul( ZetaT( :, :, ie ), -L_ONE( :, :, ie ), 'N', invkappa(:,:), 'N', 3, 3, 3 )
-                 !
-                 CALL mat_mul( ZetaT( :, :, ie ), seebeck( :, :, ie ), 'T', ZetaT( :, :, ie ), 'N', 3, 3, 3 )
-                 !
-                 ZetaT( : ,: , ie ) = ( temperature / K_BOLTZMAN_SI ) * ZetaT( : ,: , ie )
-                 !
-             ENDDO
-             ENDIF
-
-
-
-
+      !
       IF ( lhave_sgm ) THEN
           !
           CALL file_close(sgm_unit, PATH="/", ACTION="read", IERR=ierr )
           IF ( ierr/=0 ) CALL errore(subname,'closing '//TRIM(datafile_sgm), ABS(ierr) )
-          !
+           !
       ENDIF
-
-
       !
-      ! compute pDOS if requested
-      !
-      IF ( projdos ) THEN  
-          !
-          IF (ionode) WRITE( stdout, "(/,2x, 'Computing projected-DOS...',/)")
-
-          !
-          ! ensure the normalization of eigenvectors in z
-          ! and compute the covariant components of the wfc if the
-          ! basis is not orthogonal
-          !
-          IF ( lhave_overlap ) THEN
-              !
-              ALLOCATE( zc( dimwann, dimwann, ike-iks+1), STAT=ierr )
-              IF ( ierr/=0 ) CALL errore(subname, 'allocating zc', ABS(ierr) )
-              !
-          ENDIF
-          !
-          !
-          DO ik_g = iks, ike
-              !
-              ik = ik_g -iks +1
-              !
-              IF ( .NOT. lhave_overlap ) THEN
-                  !
-                  DO i  = 1, dimwann 
-                      !
-                      raux = REAL( DOT_PRODUCT( z(:,i,ik), z(:,i,ik) ) )
-                      z( :, i, ik) = z( :, i, ik) / SQRT(raux)
-                      !
-                  ENDDO
-                  ! 
-              ELSE
-                  ! 
-                  ! diagonalizing H phi = eps S phi, where H_ij and S_ij are
-                  ! definied on the covariant orbitals, then the z coefficients
-                  ! are indeed contravariant.
-                  !
-                  CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rovp_nn,  &
-                                     vkpt_int(:,ik_g), kovp(:,:) )
-                  ! zc = S * z
-                  !
-                  CALL mat_mul( zc(:,:,ik),  kovp(:,:), 'N', z(:,:,ik), 'N', dimwann, dimwann, dimwann )
-                  !
-                  DO i  = 1, dimwann 
-                      !
-                      raux = REAL( DOT_PRODUCT( z(:,i,ik), zc(:,i,ik) ) )
-                      z( :, i, ik) = z( :, i, ik) / SQRT(raux)
-                      !
-                  ENDDO
-                  !
-              ENDIF
-              !
-          ENDDO
-
-          !
-          ! main task
-          !
-          pdos ( 1: ne, 1: dimwann ) = ZERO
-          ! 
-          energy_loop2: &
-          DO ie = 1, ne
-              !
-              DO ik_g = iks, ike
-              DO i  = 1, dimwann 
-                  !
-                  ik = ik_g -iks +1
-                  !
-                  ! compute the smearing function
-                  !
-                  arg  = ( egrid( ie ) - eig_int( i, ik ) ) / delta
-                  raux = smearing_func( arg, smearing_type )
-
-                  !
-                  IF ( .NOT. lhave_overlap ) THEN
-                      !
-                      DO j = 1, dimwann
-                          !
-                          pdos( ie, j ) = pdos( ie, j ) + cost * wk(ik_g) * raux * &
-                                          REAL( z( j, i, ik) * CONJG( z( j, i, ik)) , dbl )
-                      ENDDO
-                      !
-                  ELSE
-                      !
-                      ! non-orthogonal basis: 
-                      ! the projector on the orbital phi_j needs to be written
-                      ! in terms of both the covariant and contravariant components
-                      !
-                      ! < psi | P_j | psi > = < psi | phi_j > < phi^j | psi >
-                      !
-                      DO j = 1, dimwann
-                          !
-                          pdos( ie, j ) = pdos( ie, j ) + cost * wk(ik_g) * raux * &
-                                          REAL( z( j, i, ik) * CONJG( zc( j, i, ik)) , dbl )
-                      ENDDO
-                      !
-                  ENDIF
-                  !
-              ENDDO
-              ENDDO
-              !
-          ENDDO energy_loop2
-          !
-          CALL mp_sum( pdos )
-          !
-          IF ( lhave_overlap ) THEN
-              DEALLOCATE( zc, STAT=ierr )
-              IF ( ierr/=0 ) CALL errore(subname, 'deallocating zc', ABS(ierr) )
-          ENDIF
-          !
-      ENDIF
-
- 
-      !
-      ! Fermi surface description
-      ! Dump files describing the shape of the bands in a fmt
-      ! consistent with isosurface plotting
-      !
-      IF ( do_fermisurf ) THEN
-          !
-          ! local workspace
-          !
-          nbndx_plot = 5
-          !
-          ALLOCATE( vkpt_int_cry(3,nkpts_int), STAT=ierr )
-          IF ( ierr/=0 ) CALL errore(subname, 'allocating vkpt_int_cry', ABS(ierr) )
-          !
-          ALLOCATE( eig_coll(nkpts_int, dimwann), &
-                    eig_band( nk(1)+1, nk(2)+1, nk(3)+1, nbndx_plot), &
-                    ind_plot(nbndx_plot), STAT=ierr )
-          IF ( ierr/=0 ) CALL errore(subname, 'allocating eig_coll, eig_band, ind_plot', ABS(ierr) )
-          !
-          ! setting the kpt mesh
-          !
-          IF ( ANY( s(:) > 0.0 ) )     CALL errore(subname, "fermi surf and s>0 not implemented", 10 )
-          !
-          vkpt_int_cry = vkpt_int
-          CALL cart2cry( vkpt_int_cry, bvec)
-          !
-          !vkpt_int_cry(:,:) = vkpt_int_cry(:,:) + 0.5d0
-          DO ik_g = 1, nkpts_int
-              DO i = 1, 3
-                  !
-                  IF ( vkpt_int_cry(i,ik_g) < -EPS_m8 ) &
-                       vkpt_int_cry(i,ik_g) = vkpt_int_cry(i,ik_g) +1.0d0 
-                  !
-              ENDDO
-          ENDDO
-
-
-          !
-          ! first we collect the interpolated eigenvalues
-          !
-          eig_coll = 0.0d0
-          !
-          DO ik_g = iks, ike
-              !
-              ik = ik_g -iks +1
-              !
-              DO ib = 1, dimwann
-                  eig_coll( ik_g, ib) = eig_int( ib, ik )
-              ENDDO
-              !
-          ENDDO
-          !
-          CALL mp_sum( eig_coll )
-
-          !
-          ! now search for the relevant bands
-          !
-          efermi = 0.0d0
-          !
-          icount = 0
-          DO ib = 1, dimwann
-              !
-              IF ( MINVAL( eig_coll(:,ib) ) <  efermi .AND. &
-                   MAXVAL( eig_coll(:,ib) ) >= efermi ) THEN
-                  !
-                  icount = icount+1
-                  IF ( icount > nbndx_plot ) CALL errore(subname,"too many bands contributing",10)
-                  !
-                  eig_band(:,:,:,icount) = -20.0 
-                  ind_plot(icount) = ib
-                  !
-                  DO ik_g = 1, nkpts_int
-                      !
-                      i = 1+NINT( vkpt_int_cry(1,ik_g)*nk(1) ) 
-                      j = 1+NINT( vkpt_int_cry(2,ik_g)*nk(2) ) 
-                      k = 1+NINT( vkpt_int_cry(3,ik_g)*nk(3) ) 
-                      !
-                      IF ( i < 1 .OR. i > nk(1)+1 .OR. j < 1 .OR. j > nk(2)+1 .OR. k < 1 .OR. k > nk(3)+1 ) &
-                          CALL errore(subname,"invalid i,j,k",ik_g)
-                      !
-                      eig_band(i,j,k,icount) = eig_coll(ik_g,ib) 
-                      !
-                  ENDDO
-                  !
-                  eig_band(nk(1)+1,:,:,icount) = eig_band(1,:,:,icount) 
-                  eig_band(:,nk(2)+1,:,icount) = eig_band(:,1,:,icount) 
-                  eig_band(:,:,nk(3)+1,icount) = eig_band(:,:,1,icount)
-                  ! 
-              ENDIF
-              !
-          ENDDO
-          !
-          IF ( ionode ) THEN
-              !
-              aux_fmt = ".bxsf"
-              !
-              filename = TRIM(work_dir)//"/"//TRIM(prefix)//TRIM(postfix)// &
-                         "_FERMISURF"//TRIM(aux_fmt)
-              !
-              WRITE( stdout,"(2x,'writing FERMI-SURF plot on file: ',a)") &
-              TRIM(filename)
-              !
-              OPEN ( aux_unit, FILE=TRIM(filename), STATUS='unknown', IOSTAT=ierr )
-              IF ( ierr/=0 ) CALL errore(subname,'opening file '//TRIM(filename),1)
-              !
-              x0(1:3) = 0.0d0
-              !
-              CALL xsf_bandgrid_3d ( eig_band, nk(1)+1, nk(2)+1, nk(3)+1, icount, ind_plot, &
-                                     efermi, x0, bvec(:,1), bvec(:,2), bvec(:,3), aux_unit )                      
-              !
-              CLOSE( aux_unit )
-              !
-          ENDIF
-
-          !
-          ! cleanup
-          !
-          DEALLOCATE( eig_coll, eig_band, ind_plot, STAT=ierr )
-          IF ( ierr/=0 ) CALL errore(subname, 'deallocating eig_coll', ABS(ierr) )
-          !
-      ENDIF
-
-
-! 
-! ... Write final interpolated (p)DOS to file
-! 
-      filename=TRIM(fileout)
-      !
-      IF ( ionode ) THEN
-          !
-          OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
-             !
-             IF ( lhave_sgm ) THEN
-                !
-                WRITE( aux_unit, *) "# E (eV)   ldos(E)    ldos0(E)"
-                DO ie = 1, ne
-                    WRITE(aux_unit, "(f9.4,2E15.4E3)") egrid(ie)+shift, dos(ie)*scale, dos0(ie)*scale
-                ENDDO
-                !
-             ELSE
-                !
-                WRITE( aux_unit, *) "# E (eV)   ldos(E)"
-                DO ie = 1, ne
-                    WRITE(aux_unit, "(f9.4,1E15.4E3)") egrid(ie)+shift, dos(ie)*scale
-                ENDDO
-                !
-             ENDIF
-             !
-          CLOSE( aux_unit )
-          !
-          WRITE( stdout, "(/,2x,'Total DOS written on file:',4x,a)" ) TRIM(fileout)
-          !
-      ENDIF
- 
-      !
-      ! write Boltzmann Conductivity, if the case
+      ! write Dielectric Function
       ! 
-      filename2=TRIM(fileout2)
-      filename3=TRIM(fileout3)
-      filename4=TRIM(fileout4)
-      filename5=TRIM(fileout5)
-      filename6=TRIM(fileout6)
+!      filename=TRIM(fileout)
       !
-      IF ( do_boltzmann_conductivity .AND. ionode ) THEN
-          !
-          OPEN( aux_unit, FILE=TRIM(filename2), FORM='formatted', IOSTAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename2),ABS(ierr))
-          !
-          WRITE( aux_unit, *) "# E (eV)   cond(i,j,E)"
-          DO ie = 1, ne
-              WRITE(aux_unit, "(f9.4,9E15.4E3)") egrid(ie)+shift, L_ZERO(:,:,ie)
-          ENDDO
-          !
-          CLOSE( aux_unit )
-          !
-          WRITE( stdout, "(/,2x,'Boltzmann Conductivity written on file:',4x,a)" ) TRIM(filename2)
-          ! 
-          OPEN( aux_unit, FILE=TRIM(filename3), FORM='formatted', IOSTAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename3),ABS(ierr))
-          !
-          WRITE( aux_unit, *) "# E (eV)   Seebeck(i,j,E)"
-          DO ie = 1, ne
-              WRITE(aux_unit, "(f9.4,9E15.4E3)") egrid(ie)+shift, seebeck(:,:,ie)
-          ENDDO
-          !
-          CLOSE( aux_unit )
-          !
-          WRITE( stdout, "(/,2x,'Seebeck coefficients written on file:',4x,a)" ) TRIM(filename3)
-          !
-          OPEN( aux_unit, FILE=TRIM(filename4), FORM='formatted', IOSTAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename4),ABS(ierr))
-          !
-          WRITE( aux_unit, *) "# E (eV)   (Sigma*Seebeck)(i,j,E)"
-          DO ie = 1, ne
-              WRITE(aux_unit, "(f9.4,9E15.4E3)") egrid(ie)+shift, -L_ONE(:,:,ie)
-          ENDDO
-         !
-          CLOSE( aux_unit )
-          !
-          WRITE( stdout, "(/,2x,'Sigma*Seebeck coefficients written on file:',4x,a)" ) TRIM(filename4)
-          !
-          OPEN( aux_unit, FILE=TRIM(filename5), FORM='formatted', IOSTAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename5),ABS(ierr))
-          !
-          WRITE( aux_unit, *) "# E (eV)   KAPPA(i,j,E)"
-          DO ie = 1, ne
-              WRITE(aux_unit, "(f9.4,9E15.4E3)") egrid(ie)+shift, kappa(:,:,ie)
-          ENDDO
-         !
-          CLOSE( aux_unit )
-          !
-          WRITE( stdout, "(/,2x,'KAPPA coefficients written on file:',4x,a)" ) TRIM(filename5)
-          !
-          !
-          OPEN( aux_unit, FILE=TRIM(filename6), FORM='formatted', IOSTAT=ierr )
-          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename6),ABS(ierr))
-          !
-          WRITE( aux_unit, *) "# E (eV)   ZT(i,j,E)"
-          DO ie = 1, ne
-              WRITE(aux_unit, "(f9.4,9E15.4E3)") egrid(ie)+shift, ZetaT(:,:,ie)
-          ENDDO
-         !
-          CLOSE( aux_unit )
-          !
-          WRITE( stdout, "(/,2x,' ZetaT coefficients written on file:',4x,a)" ) TRIM(filename6)
-          !
-      ENDIF
-      !
-      ! write pDOS if the case
-      !
-      IF ( projdos .AND. ionode ) THEN
-          !
-          DO i = 1, dimwann
-              !
-              WRITE( ctmp , "(i4.4)" ) i
-              filename= TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)// &
-                        '_dos-'//ctmp//'.dat'
-              !
-              OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
-              IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
-              !
-              WRITE( aux_unit, *) "# E (eV)   ldos(E)"
-              DO ie = 1, ne
-                  WRITE(aux_unit, "(f9.4,1E15.4E3)") egrid(ie)+shift, pdos( ie, i)*scale
-              ENDDO
-              !
-              CLOSE( aux_unit )
-              !
-          ENDDO
-          !
-      ENDIF
-              
+     ! !
+
+
+!      IF (ionode) THEN
+!          !
+!          OPEN( aux_unit, FILE=TRIM(filename), FORM='formatted', IOSTAT=ierr )
+!          IF (ierr/=0) CALL errore(subname,'opening '//TRIM(filename),ABS(ierr))
+!          !
+!          WRITE( aux_unit, *) "# E (eV)   Im_Epsilon(i,j,E)"
+!          DO ie = 1, ne
+!              WRITE(aux_unit, "(f9.4,9E15.4E3)") egrid(ie)+shift, IM_EPSILON(:,:,ie)
+!          ENDDO
+!          !
+!          CLOSE( aux_unit )
+!          !
+!          WRITE( stdout, "(/,2x,'Imaginary part of epsilon written on file:',4x,a)" ) TRIM(filename)
+!          ! 
+!      ENDIF
 !
 ! ... Shutdown
 !
@@ -1759,8 +1235,8 @@ END PROGRAM dos_main
       DEALLOCATE( z, STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'deallocating z', ABS(ierr))
       !
-      DEALLOCATE( egrid, dos, dos0, pdos, STAT=ierr )
-      IF( ierr /=0 ) CALL errore(subname, 'deallocating egrid, dos, pdos', ABS(ierr))
+      DEALLOCATE( egrid, STAT=ierr )
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating egrid', ABS(ierr))
       !
       DEALLOCATE( vr_nn, wr_nn, STAT=ierr )
       IF( ierr /=0 ) CALL errore(subname, 'deallocating vr_nn, wr_nn', ABS(ierr) )
@@ -1768,14 +1244,11 @@ END PROGRAM dos_main
       DEALLOCATE( kham, rham_nn, STAT=ierr)
       IF( ierr /=0 ) CALL errore(subname, 'deallocating kham, rham_nn', ABS(ierr) )
       !
-      IF (do_boltzmann_conductivity ) THEN
-          !
-          DEALLOCATE( gradkham, work, vel, tau, L_ZERO, invL_ZERO, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(subname, 'deallocating gradkham, work, vel, L_ZERO, invL_ZERO', ABS(ierr) )
-          DEALLOCATE( L_ONE, seebeck, kappa, invkappa, ZetaT, STAT=ierr)
-          IF( ierr /=0 ) CALL errore(subname, 'deallocating L_ONE, seebeck, kappa, kappa^-1, ZetaT', ABS(ierr) )
-          !
-      ENDIF
+      DEALLOCATE( gradkham, hessiankham, work, vel, hessian, momentum, STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating gradkham, hessiankham, work, vel, hessian, momentum', ABS(ierr) )
+      !
+      DEALLOCATE( inv_MASS, mass, vect_mass, eig_mass, STAT=ierr)
+      IF( ierr /=0 ) CALL errore(subname, 'deallocating inv_MASS mass, vect_mass, eig_mass and mass', ABS(ierr) )
       !
       IF ( lhave_overlap ) THEN
           !
