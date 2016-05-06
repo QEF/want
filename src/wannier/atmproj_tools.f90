@@ -231,7 +231,11 @@ END SUBROUTINE atmproj_tools_init
    !
    lhave_fileqp=.FALSE.
    IF ( PRESENT(fileqp) ) THEN
-       IF ( file_exist(fileqp) ) lhave_fileqp=.TRUE.
+       IF ( file_exist(fileqp) ) THEN
+           lhave_fileqp=.TRUE.
+       ELSE
+           CALL errore(subname,"file: "//TRIM(fileqp)//" does not exist",10)
+       ENDIF
    ENDIF
 
    !
@@ -467,7 +471,6 @@ END SUBROUTINE atmproj_tools_init
        efermi = 0.0
        !
    ENDIF
-
 
    !
    ! shifting
