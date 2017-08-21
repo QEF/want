@@ -4,9 +4,10 @@
     calculation_type = 'bulk'
     ne = 2000  
     emin =  -15.0
-    emax =   15.0 
-    postfix='_H6_cryLDA'
-    datafile_C = "./CRYSTAL/hydrogen_H6_cryLDA.xml"
+    emax =   20.0 
+    ispin = 2
+    postfix='_H6_spin_cryHF_DW'
+    datafile_C = "./CRYSTAL/hydrogen_H6_spin_HF.xml"
     transport_dir = 1
     delta = 0.0005
     smearing_type = "lorentzian"

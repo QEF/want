@@ -1,0 +1,15 @@
+
+ &INPUT
+   prefix         = 'poly_pe'
+   postfix        = '_WanT'
+   work_dir       = './SCRATCH'
+   datafile_dft   = './CRYSTAL/PE_LDAPZ.xml'
+   fileout        = './bands_PE_crys.dat'
+   nkpts_in       = 2
+   nkpts_max      = 500
+   do_orthoovp    = .FALSE.
+ /
+G   0.000  0.000  0.000
+X   0.500  0.000  0.000
+
+
