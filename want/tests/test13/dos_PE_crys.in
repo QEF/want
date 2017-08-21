@@ -1,0 +1,19 @@
+
+ &INPUT
+   prefix         = 'poly_pe'
+   postfix        = '_WanT'
+   work_dir       = './SCRATCH'
+   datafile_dft   = './CRYSTAL/PE_LDAPZ.xml'
+   fileout        = './dos_PE_crys.dat'
+   do_orthoovp    = .FALSE.
+   nk(1) = 200
+   nk(2) = 1
+   nk(3) = 1
+   delta = 0.05
+   emin  = -20.0
+   emax  =  5.0
+   ne    = 1200
+   smearing_type = 'gaussian'
+ /
+
+

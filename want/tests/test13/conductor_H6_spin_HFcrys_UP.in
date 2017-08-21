@@ -5,9 +5,9 @@
     ne = 2000  
     emin =  -15.0
     emax =   20.0 
-    ispin = 2
-    postfix='_H6_spin_cryHF_DW'
-    datafile_C = "./CRYSTAL/hydrogen_H6_spin_cryHF.xml"
+    ispin = 1
+    postfix='_H6_spin_cryHF_UP'
+    datafile_C = "./CRYSTAL/hydrogen_H6_spin_HF.xml"
     transport_dir = 1
     delta = 0.0005
     smearing_type = "lorentzian"

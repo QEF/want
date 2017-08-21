@@ -351,7 +351,7 @@ CONTAINS
           CALL iotk_write_begin( ounit, "CELL" )
           !
           attr = " "
-          IF (PRESENT( a_units ) )       CALL iotk_write_attr( attr, "unit", TRIM(a_units) )
+          IF (PRESENT( a_units ) )       CALL iotk_write_attr( attr, "units", TRIM(a_units) )
           !
           CALL iotk_write_empty( ounit, "CELL_INFO", ATTR=attr )
           !
@@ -369,7 +369,7 @@ CONTAINS
           CALL iotk_write_begin( ounit, "CELL_RECIPROCAL" )
           !
           attr = " "
-          IF (PRESENT( b_units ) )       CALL iotk_write_attr( attr, "unit", TRIM( b_units ))
+          IF (PRESENT( b_units ) )       CALL iotk_write_attr( attr, "units", TRIM( b_units ))
           !
           CALL iotk_write_empty( ounit, "CELL_RECIPROCAL_INFO", ATTR=attr )
           !
@@ -427,7 +427,7 @@ CONTAINS
       IF ( PRESENT( coords) ) THEN
           !
           CALL iotk_write_attr( attr, "number_of_items", num_of_atoms, FIRST=.TRUE.)
-          IF ( PRESENT(units) ) CALL iotk_write_attr( attr, "unit", TRIM(units) )
+          IF ( PRESENT(units) ) CALL iotk_write_attr( attr, "units", TRIM(units) )
           !
           CALL iotk_write_begin( ounit, "CARTESIAN_COORDINATES", ATTR=attr )
           ! 
@@ -449,7 +449,7 @@ CONTAINS
       IF ( PRESENT( coords_cry ) .AND. periodicity /= 0 ) THEN
           !
           CALL iotk_write_attr( attr, "number_of_items", num_of_atoms, FIRST=.TRUE.)
-          CALL iotk_write_attr( attr, "unit", "relative" )
+          CALL iotk_write_attr( attr, "units", "relative" )
           CALL iotk_write_attr( attr, "periodicity", periodicity )
           !
           CALL iotk_write_begin( ounit, "FRACTIONARY_COORDINATES", ATTR=attr )
@@ -497,7 +497,7 @@ CONTAINS
               !
               CALL iotk_write_attr( attr, "number_of_atomic_orbitals_per_atom", &
                                     atm_orbital(i)%norb, NEWLINE=.TRUE., FIRST=.TRUE. )
-              CALL iotk_write_attr( attr, "unit", TRIM(atm_orbital(i)%units) )
+              CALL iotk_write_attr( attr, "units", TRIM(atm_orbital(i)%units) )
               CALL iotk_write_attr( attr, "centre", atm_orbital(i)%coord, NEWLINE=.TRUE. )
               !
               CALL iotk_write_begin( ounit, "ATOMIC_ORBITALS_OF_ATOM"//TRIM(iotk_index(i)), &
@@ -539,7 +539,7 @@ CONTAINS
           !
           CALL iotk_write_attr( attr, "number_of_items", nrtot, FIRST=.TRUE.)
           IF (PRESENT( r_units ) ) &
-               CALL iotk_write_attr( attr, "unit", TRIM(r_units) )
+               CALL iotk_write_attr( attr, "units", TRIM(r_units) )
           CALL iotk_write_empty( ounit, "CARTESIAN_VECTORS_INFO", ATTR=attr )
           !
           DO ir = 1, nrtot
@@ -557,7 +557,7 @@ CONTAINS
           CALL iotk_write_begin( ounit, "INTEGER_VECTORS" )
           !
           CALL iotk_write_attr( attr, "number_of_items", nrtot, FIRST=.TRUE.)
-          CALL iotk_write_attr( attr, "unit", "relative" )
+          CALL iotk_write_attr( attr, "units", "relative" )
           CALL iotk_write_empty( ounit, "INTEGER_VECTORS_INFO", ATTR=attr )
           !
           DO ir = 1, nrtot
@@ -598,7 +598,7 @@ CONTAINS
       !
       CALL iotk_write_attr( attr, "number_of_items", num_k_points, FIRST=.TRUE.) 
       IF ( PRESENT( nk ) ) CALL iotk_write_attr( attr, "monkhorst_pack_grid", nk )
-      IF ( PRESENT( k_units ) ) CALL iotk_write_attr( attr, "unit", TRIM(k_units) )
+      IF ( PRESENT( k_units ) ) CALL iotk_write_attr( attr, "units", TRIM(k_units) )
       !
       CALL iotk_write_empty( ounit, "IRREDUCIBLE_K_VECTORS_INFO", ATTR=attr)
       !
@@ -644,14 +644,11 @@ CONTAINS
       CALL iotk_write_dat( ounit, "NUMBER_OF_ATOMIC_ORBITALS", &
                                    num_of_atomic_orbitals )
       !
-! XXXX
-! XXXX unit for each ENERGY_UNITS, EIGENVALUES
-! XXXX
       IF ( PRESENT(e_units) )  CALL iotk_write_dat( ounit, "ENERGY_UNITS", TRIM(e_units) )
       !
       attr=""
       IF ( PRESENT( energy_ref_type) ) &
-           CALL iotk_write_attr( attr, "energy_ref_type", energy_ref_type, FIRST=.TRUE.)
+           CALL iotk_write_attr( attr, "system_type", energy_ref_type, FIRST=.TRUE.)
       !
       IF ( PRESENT( energy_ref ) )  CALL iotk_write_dat( ounit, "FERMI_ENERGY", energy_ref, ATTR=attr )
       !
@@ -801,7 +798,7 @@ CONTAINS
       CALL iotk_write_attr( attr, "matrix_number_of_elements", n_elements, NEWLINE=.TRUE. )
       !
       IF ( PRESENT( units ) ) &
-         CALL iotk_write_attr( attr, "unit", TRIM(units), NEWLINE=.TRUE. )
+         CALL iotk_write_attr( attr, "units", TRIM(units), NEWLINE=.TRUE. )
       !
       IF ( PRESENT( label ) ) &
          CALL iotk_write_attr( attr, "label", TRIM(label) )
@@ -978,7 +975,7 @@ CONTAINS
           IF ( ierr /= 0 ) RETURN
           !
           IF ( PRESENT( a_units )) THEN
-             CALL iotk_scan_attr( attr, "unit", a_units, IERR=ierr )
+             CALL iotk_scan_attr( attr, "units", a_units, IERR=ierr )
              IF ( ierr /= 0 ) RETURN
           ENDIF
           !
@@ -1004,7 +1001,7 @@ CONTAINS
           IF ( ierr /= 0 ) RETURN
           !
           IF ( PRESENT( b_units )) THEN
-             CALL iotk_scan_attr( attr, "unit", b_units, IERR=ierr )
+             CALL iotk_scan_attr( attr, "units", b_units, IERR=ierr )
              IF ( ierr /= 0 ) RETURN
           ENDIF
           !
@@ -1065,7 +1062,7 @@ CONTAINS
           CALL iotk_scan_begin( iunit, "CARTESIAN_COORDINATES", ATTR=attr, IERR=ierr )
           IF ( ierr /= 0 ) RETURN
           !
-          CALL iotk_scan_attr( attr, "unit", units_, IERR=ierr )
+          CALL iotk_scan_attr( attr, "units", units_, IERR=ierr )
           IF ( ierr /= 0 ) RETURN
           !
           DO ia = 1, num_of_atoms_
@@ -1213,7 +1210,7 @@ CONTAINS
               !
               CALL iotk_scan_attr( attr, "number_of_atomic_orbitals_per_atom", norb_, IERR=ierr ) 
               IF ( ierr/=0 ) RETURN
-              CALL iotk_scan_attr( attr, "unit", atm_orbital(i)%units, IERR=ierr ) 
+              CALL iotk_scan_attr( attr, "units", atm_orbital(i)%units, IERR=ierr ) 
               IF ( ierr/=0 ) RETURN
               CALL iotk_scan_attr( attr, "centre", atm_orbital(i)%coord, IERR=ierr ) 
               IF ( ierr/=0 ) RETURN
@@ -1279,7 +1276,7 @@ CONTAINS
           !
           CALL iotk_scan_attr( attr, "number_of_items", ntmp_, IERR=ierr )
           IF ( ierr /= 0 ) RETURN
-          CALL iotk_scan_attr( attr, "unit", r_units_, IERR=ierr )
+          CALL iotk_scan_attr( attr, "units", r_units_, IERR=ierr )
           IF ( ierr /= 0 ) RETURN
           !
           IF ( ntmp_ /= nrtot_ ) RETURN
@@ -1374,7 +1371,7 @@ CONTAINS
       ENDIF
       !
       IF ( PRESENT( k_units )) THEN
-          CALL iotk_scan_attr( attr, "unit", k_units, IERR=ierr )
+          CALL iotk_scan_attr( attr, "units", k_units, IERR=ierr )
           IF ( ierr/=0 ) RETURN
       ENDIF
       !
@@ -1435,8 +1432,8 @@ CONTAINS
       INTEGER         :: nspin_, nbnd_, nkpts_, num_of_atomic_orbitals_
       REAL(dbl)       :: energy_ref_
       LOGICAL         :: lfound
-      CHARACTER(25)   :: energy_ref_allowed(3)
-      DATA energy_ref_allowed / "FERMI_ENERGY", "TOP_OF_VALENCE_BANDS", "HOMO" /
+      CHARACTER(25)   :: energy_ref_allowed(2)
+      DATA energy_ref_allowed / "FERMI_ENERGY", "HOMO" /
       
       ierr = 0 
       !
@@ -1456,30 +1453,24 @@ CONTAINS
       ENDIF
       ! 
       IF ( PRESENT( num_of_atomic_orbitals ) .OR. PRESENT(nbnd) ) THEN
-         CALL iotk_scan_dat( iunit, "TOTAL_NUMBER_OF_ATOMIC_ORBITALS", &
+         CALL iotk_scan_dat( iunit, "NUMBER_OF_ATOMIC_ORBITALS", &
                                     num_of_atomic_orbitals_, IERR=ierr)
          IF (ierr/=0 ) RETURN
          IF ( PRESENT(num_of_atomic_orbitals) ) num_of_atomic_orbitals=num_of_atomic_orbitals_
       ENDIF
       ! 
-      ! in the following I've implemented a workaround due to the  fact
-      ! that CRYSTAL is not yet writing eigs and their dimensions
+      ! in the following I've implemented a workaround due to the fact
+      ! that CRYSTAL is not yet writing eigs
       !
       IF ( PRESENT( nbnd ) ) THEN
-#ifdef __CRYSTAL_TO_BE
          CALL iotk_scan_dat( iunit, "NUMBER_OF_BANDS", nbnd, IERR=ierr)
          IF (ierr/=0 ) RETURN
-#endif
-         IF ( PRESENT(nbnd) ) nbnd=num_of_atomic_orbitals_
+         !IF ( PRESENT(nbnd) ) nbnd=num_of_atomic_orbitals_
       ENDIF
       !
       IF ( PRESENT( nkpts ) .OR. PRESENT(eig) ) THEN
-#ifdef __CRYSTAL_TO_BE
          CALL iotk_scan_dat( iunit, "NUMBER_OF_K_VECTORS", nkpts_, IERR=ierr)
          IF (ierr/=0 ) RETURN
-#else
-         nkpts_=0
-#endif
          IF ( PRESENT( nkpts ) ) nkpts = nkpts_
       ENDIF
       ! 
@@ -1491,7 +1482,6 @@ CONTAINS
               CALL iotk_scan_dat( iunit, TRIM(energy_ref_allowed(i)), &
                                   energy_ref_, ATTR=attr, FOUND=lfound, IERR=ierr )
               IF ( ierr/=0 ) RETURN
-              !
               IF ( lfound ) EXIT
               !
           ENDDO
@@ -1500,12 +1490,12 @@ CONTAINS
           IF ( PRESENT( energy_ref ) ) energy_ref = energy_ref_
           !
           IF ( PRESENT(e_units) ) THEN
-              CALL iotk_scan_attr( attr, "unit", e_units, IERR=ierr)
+              CALL iotk_scan_attr( attr, "units", e_units, IERR=ierr)
               IF (ierr/=0 ) RETURN
           ENDIF
           !
           IF ( PRESENT(energy_ref_type) ) THEN
-              CALL iotk_scan_attr( attr, "energy_ref_type", energy_ref_type, IERR=ierr)
+              CALL iotk_scan_attr( attr, "system_type", energy_ref_type, IERR=ierr)
               IF (ierr/=0 ) RETURN
           ENDIF
           !
@@ -1642,7 +1632,7 @@ CONTAINS
       IF ( ierr /= 0 ) RETURN
       !
       IF ( PRESENT( units ) ) THEN
-          CALL iotk_scan_attr( attr, "unit", units, IERR=ierr ) 
+          CALL iotk_scan_attr( attr, "units", units, IERR=ierr ) 
           IF ( ierr /= 0 ) RETURN
       ENDIF
       !

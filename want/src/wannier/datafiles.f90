@@ -65,7 +65,7 @@ CONTAINS
    ! local variables
    !
    CHARACTER(14)    :: subname="datafiles_init"
-   CHARACTER(nstrx) :: fmtstr
+   CHARACTER(nstrx) :: fmtstr=" "
    CHARACTER(nstrx) :: filein, fileout
    CHARACTER(nstrx) :: fileham, filespace, filewan
    LOGICAL          :: exists, do_orthoovp_
@@ -173,7 +173,7 @@ CONTAINS
        !
    ENDIF
    !
-   CALL mp_bcast( fmtstr,      ionode_id )
+   CALL mp_bcast( TRIM(fmtstr),  ionode_id )
    !
    IF ( LEN_TRIM(fmtstr) == 0 ) CALL errore(subname, 'no input fmt detected', 71)
    !

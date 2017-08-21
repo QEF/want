@@ -1,10 +1,11 @@
 
 ==============================================================================
-@title@   Hydrogen chains; check interface to CRYSTAL09 (http://www.crystal.polito.it)
+@title@   Hydrogen chains and polymers; interface to CRYSTAL
 ==============================================================================
 
   In this test we compare post-processing calculations done using WanT
-  starting from Qauntum-ESPRESSO (QE) or CRYSTAL09 (CRY) data.
+  starting from Qauntum-ESPRESSO (QE) or CRYSTAL14/17 (http://www.crystal.polito.it)
+  (CRYS) data.
   As a model system we consider a one dimension chain of equispaced 
   Hydrogen atoms (this system is instable and would undergo a Pierls
   distortion, but here ions are kept fixed).

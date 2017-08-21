@@ -17,6 +17,7 @@
    USE log_module,         ONLY : log_push, log_pop
    USE converters_module,  ONLY : cart2cry, cry2cart
    USE parser_module,      ONLY : change_case
+   USE symmetry_module,    ONLY : nsym, symmetry_allocate
    USE crystal_io_module
    USE iotk_module
    !
@@ -37,7 +38,7 @@ CONTAINS
    SUBROUTINE crystal_to_internal( filein, fileout, filetype, do_orthoovp )
    !**********************************************************
    !
-   ! Convert the datafile written by the CRYSTAL06/09 program to
+   ! Convert the datafile written by the CRYSTAL06/09/14/17 program to
    ! the internal representation.
    !
    ! FILETYPE values are:
@@ -120,7 +121,7 @@ CONTAINS
 
 !
 !---------------------------------
-! read from filein (CRYSTAL06/9 fmt)
+! read from filein (CRYSTAL06/09/14/17 fmt)
 !---------------------------------
 !
    CALL crio_open_file( UNIT=iunit, FILENAME=filein, ACTION='read', IERR=ierr )
@@ -132,6 +133,11 @@ CONTAINS
    !
    CALL crio_read_periodicity( AVEC=dlatt, A_UNITS=a_units, BVEC=rlatt, B_UNITS=b_units, IERR=ierr)
    IF ( ierr/=0 ) CALL errore(subname, 'reading lattices', ABS(ierr) )
+   !
+   CALL crio_read_symmetry( NUM_OF_SYMMETRIES=nsym, IERR=ierr)
+   IF ( ierr/=0 ) CALL errore(subname, 'reading symmetries', ABS(ierr) )
+   !
+   CALL symmetry_allocate()
    !
    CALL crio_close_section( "GEOMETRY", ACTION='read', IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'closing sec. GEOMETRY', ABS(ierr) )
@@ -627,7 +633,8 @@ END SUBROUTINE crystal_to_internal
      CALL crio_read_header( CREATOR_NAME=prog, IERR=ierr)
      IF ( ierr/= 0 ) lerror = .TRUE.
      !
-     IF ( TRIM(prog) /= "CRYSTAL06" ) lerror = .TRUE.
+     IF ( TRIM(prog) /= "CRYSTAL06" .AND. TRIM(prog) /= "CRYSTAL09" .AND. &
+          TRIM(prog) /= "CRYSTAL14" .AND. TRIM(prog) /= "CRYSTAL17" ) lerror = .TRUE.
      !
      CALL crio_close_file( ACTION='read', IERR=ierr )
      IF ( ierr/= 0 ) lerror = .TRUE.

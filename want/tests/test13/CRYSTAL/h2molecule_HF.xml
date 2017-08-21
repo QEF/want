@@ -18,7 +18,7 @@
  <ATOMS>
   <NUMBER_OF_ATOMS> 2</NUMBER_OF_ATOMS>
   <CARTESIAN_COORDINATES number_of_items="2" 
-  unit="bohr" >
+  units="bohr" >
    <ATOM.1 atomic_symbol="H " atomic_number="1" >
   0.0000000000000E+00  0.0000000000000E+00  0.0000000000000E+00
    </ATOM.1>
@@ -30,10 +30,10 @@
 </GEOMETRY>
 
 <BASIS_SET>
- <TOTAL_NUMBER_OF_ATOMIC_ORBITALS> 2</TOTAL_NUMBER_OF_ATOMIC_ORBITALS>
+ <NUMBER_OF_ATOMIC_ORBITALS> 2</NUMBER_OF_ATOMIC_ORBITALS>
  <ATOMIC_ORBITALS>
   <ATOMIC_ORBITALS_INFO number_of_atoms="2" />
-  <ATOMIC_ORBITALS_OF_ATOM.1 number_of_atomic_orbitals="1" unit="bohr"
+  <ATOMIC_ORBITALS_OF_ATOM.1 number_of_atomic_orbitals="1" units="bohr"
    centre="  0.0000000000000E+00  0.0000000000000E+00  0.0000000000000E+00" >
    <SEQUENCE_NUMBER_LABEL>
         1
@@ -42,7 +42,7 @@
         S
    </TYPE>
   </ATOMIC_ORBITALS_OF_ATOM.1>
-  <ATOMIC_ORBITALS_OF_ATOM.2 number_of_atomic_orbitals="1" unit="bohr"
+  <ATOMIC_ORBITALS_OF_ATOM.2 number_of_atomic_orbitals="1" units="bohr"
    centre="  0.0000000000000E+00 -1.1646336473632E-32  1.5911363074478E+00" >
    <SEQUENCE_NUMBER_LABEL>
         2
@@ -59,14 +59,14 @@
   <NUMBER_OF_DIRECT_LATTICE_VECTORS> 1</NUMBER_OF_DIRECT_LATTICE_VECTORS>
   <CARTESIAN_VECTORS>
    <CARTESIAN_VECTORS_INFO number_of_items="1"
-   unit="bohr" label="XG-VEC" />
+   units="bohr" label="XG-VEC" />
    <CVDL.1>
   0.0000000000000E+00  0.0000000000000E+00  0.0000000000000E+00
    </CVDL.1>
   </CARTESIAN_VECTORS>
   <INTEGER_VECTORS>
    <INTEGER_VECTORS_INFO number_of_items="1"
-   unit="relative" label="LG-VEC" />
+   units="relative" label="LG-VEC" />
    <IVDL.1>                  0         0         0   </IVDL.1>
   </INTEGER_VECTORS>
  </DIRECT_LATTICE>
@@ -75,7 +75,7 @@
   <IRREDUCIBLE_K_VECTORS
   alias="IRREDUCIBLE_FRACTIONARY_VECTORS_IN_RECIPROCAL_LATTICE" >
   <IRREDUCIBLE_K_VECTORS_INFO number_of_items="1" 
-  monkhorst_pack_grid="1 1 1" unit="relative" />
+  monkhorst_pack_grid="1 1 1" units="relative" />
   <K_VECTOR.1 weight="0.1000000000000E+01" wavefunction_type="real"    >
   0.0000000000000E+00  0.0000000000000E+00  0.0000000000000E+00
   </K_VECTOR.1>
@@ -87,8 +87,8 @@
  <ELECTRONIC_STRUCTURE>
   <NUMBER_OF_ELECTRONS>2</NUMBER_OF_ELECTRONS>
   <NUMBER_OF_SPIN_COMPONENTS>1</NUMBER_OF_SPIN_COMPONENTS>
-  <TOTAL_NUMBER_OF_ATOMIC_ORBITALS>2</TOTAL_NUMBER_OF_ATOMIC_ORBITALS>
-  <HOMO unit="Hartree" > -5.8250400674111E-01</HOMO>
+  <NUMBER_OF_ATOMIC_ORBITALS>2</NUMBER_OF_ATOMIC_ORBITALS>
+  <HOMO units="Hartree" > -5.8250400674111E-01</HOMO>
  </ELECTRONIC_STRUCTURE>
  <DIRECT_OVERLAP_MATRIX>
   <DIRECT_OVERLAP_MATRIX_INFO
@@ -123,7 +123,7 @@
    matrix_type="real"
    matrix_form="lower_triangular"
    matrix_number_of_elements="3"
-   unit="Hartree" label="FGRED" />
+   units="Hartree" label="FGRED" />
   <DIRECT_FOCK_KOHN-SHAM_MATRIX__IVDL.1 components_of_IVDL.1="0 0 0" >
  -4.4075055677453E-01 -5.4518664072100E-01 -4.4075055677453E-01
   </DIRECT_FOCK_KOHN-SHAM_MATRIX__IVDL.1>

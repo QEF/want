@@ -16,7 +16,7 @@
    USE parameters,          ONLY : nstrx
    USE timing_module,       ONLY : timing
    USE log_module,          ONLY : log_push, log_pop
-   USE io_global_module,    ONLY : stdout
+   USE io_global_module,    ONLY : ionode, stdout
    USE converters_module,   ONLY : cart2cry, cry2cart
    USE parser_module,       ONLY : change_case
    USE util_module,         ONLY : mat_is_herm, mat_mul
@@ -294,36 +294,44 @@ END SUBROUTINE atmproj_tools_init
    atmproj_nbndmin_ = MIN( MAX(1,atmproj_nbndmin), atmproj_nbnd_)
    atmproj_ndim_ = atmproj_nbnd_-atmproj_nbndmin_+1
 
-   WRITE( stdout, "(/,2x, ' Dimensions found in atomic_proj.{dat,xml}: ')")
-   WRITE( stdout, "(2x, '   nbnd     :  ',i5 )") nbnd
-   WRITE( stdout, "(2x, '   nkpts    :  ',i5 )") nkpts
-   WRITE( stdout, "(2x, '   nspin    :  ',i5 )") nspin
-   WRITE( stdout, "(2x, '   natomwfc :  ',i5 )") natomwfc
-   WRITE( stdout, "(2x, '   nelec    :  ',f12.6)") nelec
-   WRITE( stdout, "(2x, '   efermi   :  ',f12.6 )") efermi 
-   WRITE( stdout, "(2x, '   en-units :  ',a10 )") energy_units 
-   IF (lhave_fileqp) &
-     WRITE(stdout,"(2x, '   fileQP   :  ',a )") TRIM(fileqp)
-   !
-   WRITE( stdout, "()" )
-   IF ( nspin == 4 ) THEN
-      nspin_ = 1
-      spin_noncollinear = .true.
-   ELSE
-      spin_noncollinear = .false.
-      nspin_ = nspin
-   END IF
+   IF (ionode) THEN
+       !
+       WRITE( stdout, "(/,2x, ' Dimensions found in atomic_proj.{dat,xml}: ')")
+       WRITE( stdout, "(2x, '   nbnd     :  ',i5 )") nbnd
+       WRITE( stdout, "(2x, '   nkpts    :  ',i5 )") nkpts
+       WRITE( stdout, "(2x, '   nspin    :  ',i5 )") nspin
+       WRITE( stdout, "(2x, '   natomwfc :  ',i5 )") natomwfc
+       WRITE( stdout, "(2x, '   nelec    :  ',f12.6)") nelec
+       WRITE( stdout, "(2x, '   efermi   :  ',f12.6 )") efermi 
+       WRITE( stdout, "(2x, '   en-units :  ',a10 )") TRIM(energy_units)
+       IF (lhave_fileqp) &
+          WRITE(stdout,"(2x, '   fileQP   :  ',a )") TRIM(fileqp)
+       !
+       WRITE( stdout, "()" )
+       IF ( nspin == 4 ) THEN
+          nspin_ = 1
+          spin_noncollinear = .true.
+       ELSE
+          spin_noncollinear = .false.
+          nspin_ = nspin
+       ENDIF
+       !
+   ENDIF
 
    !
    ! quick report
    !
-   WRITE( stdout, "(2x, ' ATMPROJ conversion to be done using: ')")
-   WRITE( stdout, "(2x, '   atmproj_nbnd :  ',i5 )") atmproj_nbnd_
-   WRITE( stdout, "(2x, 'atmproj_nbndmin :  ',i5 )") atmproj_nbndmin_
-   WRITE( stdout, "(2x, '   atmproj_thr  :  ',f12.6 )") atmproj_thr
-   WRITE( stdout, "(2x, '   atmproj_sh   :  ',f12.6 )") atmproj_sh
-   WRITE( stdout, "(2x, '   do_orthoovp  :  ',a )") TRIM(log2char(do_orthoovp_))
-   WRITE( stdout, "()" )
+   IF (ionode) THEN
+       !
+       WRITE( stdout, "(2x, ' ATMPROJ conversion to be done using: ')")
+       WRITE( stdout, "(2x, '   atmproj_nbnd :  ',i5 )") atmproj_nbnd_
+       WRITE( stdout, "(2x, 'atmproj_nbndmin :  ',i5 )") atmproj_nbndmin_
+       WRITE( stdout, "(2x, '   atmproj_thr  :  ',f12.6 )") atmproj_thr
+       WRITE( stdout, "(2x, '   atmproj_sh   :  ',f12.6 )") atmproj_sh
+       WRITE( stdout, "(2x, '   do_orthoovp  :  ',a )") TRIM(log2char(do_orthoovp_))
+       WRITE( stdout, "()" )
+       !
+   ENDIF
 
    !
    ! allocations

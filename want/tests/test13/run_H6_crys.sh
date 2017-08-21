@@ -38,9 +38,6 @@ MANUAL=" Usage
 # source low level macros for test
 . ../../script/libtest.sh
 
-#
-# macros
-SUFFIX="_H6_cry"
 
 #
 # evaluate the starting choice about what is to run 
@@ -94,35 +91,40 @@ fi
 
 #-----------------------------------------------------------------------------
 
+SUFFIX="_H6_LDAcrys"
+
 #
 # running BANDS LDA
 #
-run_bands  NAME=BANDS_LDA  SUFFIX=${SUFFIX}LDA  RUN=$BANDS_LDA
+run_bands  NAME=BANDS_LDA  SUFFIX=${SUFFIX}  RUN=$BANDS_LDA
 
 #
 # running DOS LDA
 #
-run_dos  NAME=DOS_LDA  SUFFIX=${SUFFIX}LDA  RUN=$DOS_LDA
+run_dos  NAME=DOS_LDA  SUFFIX=${SUFFIX}  RUN=$DOS_LDA
 
 #
 # running CONDUCTOR LDA
 #
-run_conductor  NAME=CONDUCTOR_LDA  SUFFIX=${SUFFIX}LDA RUN=$CONDUCTOR_LDA
+run_conductor  NAME=CONDUCTOR_LDA  SUFFIX=${SUFFIX} RUN=$CONDUCTOR_LDA
+
+
+SUFFIX="_H6_HFcrys"
 
 #
 # running BANDS HF
 #
-run_bands  NAME=BANDS_HF  SUFFIX=${SUFFIX}HF  RUN=$BANDS_HF
+run_bands  NAME=BANDS_HF  SUFFIX=${SUFFIX}  RUN=$BANDS_HF
 
 #
 # running DOS HF
 #
-run_dos  NAME=DOS_HF  SUFFIX=${SUFFIX}HF  RUN=$DOS_HF
+run_dos  NAME=DOS_HF  SUFFIX=${SUFFIX}  RUN=$DOS_HF
 
 #
 # running CONDUCTOR HF
 #
-run_conductor NAME=CONDUCTOR_HF  SUFFIX=${SUFFIX}HF RUN=$CONDUCTOR_HF
+run_conductor NAME=CONDUCTOR_HF  SUFFIX=${SUFFIX} RUN=$CONDUCTOR_HF
 
 
 

@@ -43,7 +43,7 @@ MANUAL=" Usage
 
 #
 # macros
-SUFFIX="_H6_spin_cry"
+SUFFIX="_H6_spin_crys"
 
 #
 # evaluate the starting choice about what is to run 

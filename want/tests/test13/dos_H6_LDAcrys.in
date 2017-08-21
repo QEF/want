@@ -3,7 +3,7 @@
    prefix        = 'hydrogen_H6'
    postfix       = '_cryLDA'
    work_dir      = './SCRATCH'
-   datafile_dft  = './CRYSTAL/hydrogen_H6_cryLDA.xml'
+   datafile_dft  = './CRYSTAL/hydrogen_H6_LDA.xml'
    fileout       = 'dos_H6_cryLDA.dat'
    nk(1)         = 400
    nk(2)         = 1

@@ -111,8 +111,9 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
    CALL read_spin_orb(u, upf)
    ! Read additional data for PAW (All-electron charge, wavefunctions, vloc..)
    CALL read_paw(u, upf)
-   ! Read data dor gipaw reconstruction
-   CALL read_gipaw(u, upf)
+   ! Read data for gipaw reconstruction
+! XXX
+!   CALL read_gipaw(u, upf)
    !
    ! Close the file (not the unit!)
    CALL iotk_close_read(u)

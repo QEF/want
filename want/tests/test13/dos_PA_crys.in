@@ -3,8 +3,8 @@
    prefix         = 'poly_pa'
    postfix        = '_WanT'
    work_dir       = './SCRATCH'
-   datafile_dft   = './CRYSTAL/pa_LDAPZ.xml'
-   fileout        = './dos_PA_cry.dat'
+   datafile_dft   = './CRYSTAL/PA_LDAPZ.xml'
+   fileout        = './dos_PA_crys.dat'
    do_orthoovp    = .FALSE.
    nk(1) = 200
    nk(2) = 1
