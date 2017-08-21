@@ -115,6 +115,7 @@ clean_all_plugins:
 	if test -d plugins ;   then ( cd plugins;   $(MAKE) clean_all ) ; fi
 
 
+distclean: clean_all
 clean_all : clean_all_extlibs clean_all_plugins clean
 	- /bin/rm -rf make.sys ./config/configure.msg \
 		./config.log config.status \

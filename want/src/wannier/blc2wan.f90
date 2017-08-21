@@ -17,7 +17,7 @@
    USE kinds,                ONLY : dbl
    USE parameters,           ONLY : nstrx
    USE io_module,            ONLY : stdout, stdin
-   USE io_module,            ONLY : work_dir, prefix, postfix
+   USE io_module,            ONLY : io_init, work_dir, prefix, postfix
    USE control_module,       ONLY : verbosity, debug_level, use_debug_mode
    USE timing_module,        ONLY : timing
    USE log_module,           ONLY : log_push, log_pop
@@ -108,7 +108,7 @@ CONTAINS
    ! Read INPUT namelist from stdin
    !
    USE mp,                   ONLY : mp_bcast
-   USE io_module,            ONLY : io_init, ionode, ionode_id
+   USE io_module,            ONLY : ionode, ionode_id
    USE io_module,            ONLY : datafile_dft_ => dftdata_file
    USE atmproj_tools_module, ONLY : atmproj_sh_ => atmproj_sh, &
                                     atmproj_thr_ => atmproj_thr, &

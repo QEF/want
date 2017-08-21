@@ -181,8 +181,7 @@ CONTAINS
    SUBROUTINE setup_io()
    !**********************************************************
       USE io_module,                ONLY : prefix, postfix, work_dir, title, &
-                                           dftdata_fmt, wantdata_fmt,        &
-                                           io_init
+                                           io_init, dftdata_fmt, wantdata_fmt
       USE input_parameters_module,  ONLY : prefix_       => prefix,       &
                                            wantdata_fmt_ => wantdata_fmt, &
                                            postfix_      => postfix,      &
@@ -200,7 +199,7 @@ CONTAINS
       !
       ! init io
       !
-      CALL io_init ( )
+      CALL io_init( NEED_WFC=.TRUE. )
 
    END SUBROUTINE setup_io
 

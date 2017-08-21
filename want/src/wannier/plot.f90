@@ -108,7 +108,7 @@ CONTAINS
    !
    USE constants,            ONLY : EPS_m4
    USE mp,                   ONLY : mp_bcast
-   USE io_module,            ONLY : io_init, ionode, ionode_id
+   USE io_module,            ONLY : ionode, ionode_id
    USE files_module,         ONLY : file_exist
    !
    IMPLICIT NONE

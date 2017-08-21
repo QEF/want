@@ -17,7 +17,7 @@
    USE version_module,       ONLY : version_number
    USE parameters,           ONLY : nstrx, nkpts_inx
    USE io_module,            ONLY : stdout, stdin
-   USE io_module,            ONLY : work_dir, prefix, postfix
+   USE io_module,            ONLY : io_init, work_dir, prefix, postfix
    USE control_module,       ONLY : debug_level, use_debug_mode, verbosity,&
                                     use_symmetry, use_timerev
    USE datafiles_module,     ONLY : datafiles_init
@@ -109,7 +109,7 @@ CONTAINS
    ! Read INPUT namelist from stdin
    !
    USE mp,                   ONLY : mp_bcast
-   USE io_module,            ONLY : io_init, ionode, ionode_id
+   USE io_module,            ONLY : ionode, ionode_id
    USE io_module,            ONLY : datafile_dft_ => dftdata_file, datafile_sgm_ => datafile_sgm, &
                                     datafile_qp_ => datafile_qp
    USE atmproj_tools_module, ONLY : atmproj_sh_ => atmproj_sh, &
