@@ -19,7 +19,7 @@
    USE version_module,       ONLY : version_number
    USE parameters,           ONLY : nstrx
    USE io_module,            ONLY : stdout, stdin
-   USE io_module,            ONLY : prefix, postfix, work_dir
+   USE io_module,            ONLY : io_init, prefix, postfix, work_dir
    USE control_module,       ONLY : debug_level, use_debug_mode, verbosity
    USE correlation_module,   ONLY : lhave_sgm
    USE timing_module,        ONLY : timing
@@ -122,7 +122,7 @@ CONTAINS
    ! Read INPUT namelist from stdin
    !
    USE mp,                   ONLY : mp_bcast
-   USE io_module,            ONLY : io_init, ionode, ionode_id
+   USE io_module,            ONLY : ionode, ionode_id
    USE io_module,            ONLY : datafile_dft_ => dftdata_file, datafile_sgm_ => datafile_sgm, &
                                     datafile_qp_ => datafile_qp
    USE atmproj_tools_module, ONLY : atmproj_sh_ => atmproj_sh, &

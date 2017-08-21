@@ -18,7 +18,7 @@
    USE version_module,             ONLY : version_number
    USE parameters,                 ONLY : nstrx
    USE io_module,                  ONLY : stdout, stdin
-   USE io_module,                  ONLY : work_dir, prefix, postfix
+   USE io_module,                  ONLY : io_init, work_dir, prefix, postfix
    USE control_module,             ONLY : debug_level, use_debug_mode, verbosity, read_pseudo
    USE control_module,             ONLY : nwfc_buffer, nkb_buffer
    USE datafiles_module,           ONLY : datafiles_init
@@ -119,7 +119,7 @@ CONTAINS
    ! Read INPUT namelist from stdin
    !
    USE mp,                   ONLY : mp_bcast
-   USE io_module,            ONLY : io_init, ionode, ionode_id
+   USE io_module,            ONLY : ionode, ionode_id
    USE io_module,            ONLY : datafile_dft_ => dftdata_file
    USE control_module,       ONLY : read_pseudo, use_pseudo
    USE atmproj_tools_module, ONLY : atmproj_sh_ => atmproj_sh, &
@@ -130,6 +130,7 @@ CONTAINS
    IMPLICIT NONE
 
       CHARACTER(12)    :: subname = 'unfold_input'
+      LOGICAL          :: lneed_wfc
       INTEGER          :: ierr
       !
       ! end of declarations
@@ -239,13 +240,15 @@ CONTAINS
       !
       IF ( lhave_transl ) THEN
           !
-          CALL io_init( NEED_WFC=.FALSE. )
+          lneed_wfc= .FALSE.
           !
       ELSE
           !
-          CALL io_init( NEED_WFC=.TRUE. )
+          lneed_wfc= .TRUE.
           !
       ENDIF
+      !
+      CALL io_init( lneed_wfc )
 
 
       !

@@ -115,7 +115,7 @@ SUBROUTINE want_init(input, lattice, ions, windows, kpoints, kpoints_pp, bshells
 !
 ! ... if the case init IO
 !
-    IF ( .NOT. io_alloc ) CALL io_init ( )
+    IF ( .NOT. io_alloc ) CALL io_init ( NEED_WFC=.TRUE. )
 
 
 !

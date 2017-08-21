@@ -49,6 +49,7 @@ input_manager.o \
 input_parameters.o \
 internal_tools.o \
 io_module.o \
+io_tools.o \
 ions.o \
 kpoints.o \
 lattice.o \
