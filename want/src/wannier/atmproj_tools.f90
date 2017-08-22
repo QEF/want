@@ -180,6 +180,7 @@ END SUBROUTINE atmproj_tools_init
    COMPLEX(dbl),   ALLOCATABLE :: rham(:,:,:,:), kham(:,:,:)
    COMPLEX(dbl),   ALLOCATABLE :: proj(:,:,:,:)
    COMPLEX(dbl),   ALLOCATABLE :: kovp(:,:,:,:), rovp(:,:,:,:)
+   COMPLEX(dbl),   ALLOCATABLE :: kovp_all(:,:,:,:)
    COMPLEX(dbl),   ALLOCATABLE :: cu_tmp(:,:,:), eamp_tmp(:,:)
    !
    COMPLEX(dbl),   ALLOCATABLE :: zaux(:,:), ztmp(:,:)
@@ -360,6 +361,8 @@ END SUBROUTINE atmproj_tools_init
        !
        ALLOCATE( kovp(natomwfc,natomwfc,nkpts,nspin), STAT=ierr )
        IF (ierr/=0) CALL errore(subname, 'allocating kovp II', ABS(ierr))
+       ALLOCATE( kovp_all(natomwfc,natomwfc,nkpts_all,nspin), STAT=ierr )
+       IF (ierr/=0) CALL errore(subname, 'allocating kovp_all III', ABS(ierr))
        !
        ! reading  proj(i,b)  = < phi^at_i | evc_b >
        !
@@ -633,16 +636,35 @@ END SUBROUTINE atmproj_tools_init
                !
                IF ( .NOT. do_orthoovp_ ) THEN
                    !
-                   ! kpt symmetrization needs to be implemented
-                   ! when non-orthogonal orbitals are used
-                   IF ( nkpts /= nkpts_all ) CALL errore(subname,"kpt symmetrization and OVPs not implemented",10)
-                   !
                    ALLOCATE( zaux(dimwann,dimwann), ztmp(dimwann,dimwann), STAT=ierr )
                    IF ( ierr/=0 ) CALL errore(subname, 'allocating raux-rtmp', ABS(ierr) )
                    ALLOCATE( w(dimwann), kovp_sq(dimwann,dimwann), STAT=ierr )
                    IF ( ierr/=0 ) CALL errore(subname, 'allocating w, kovp_sq', ABS(ierr) )
+
+! XXX
                    !
-                   CALL mat_hdiag( zaux, w(:), kovp(:,:,ik,isp), dimwann)
+                   ! kpt symmetrization needs to be implemented
+                   ! when non-orthogonal orbitals are used
+                   IF ( nkpts /= nkpts_all ) CALL errore(subname,"kpt symmetrization and OVPs not implemented",10)
+
+                   !
+                   !
+                   ! ztmp(i, j) = < phi^at_i | phi^at_j >
+                   !
+                   IF ( kpteq_symm(ik) <= nsym ) THEN
+                      ! no time-reversal involved
+                      kovp_all(1:natomwfc,1:natomwfc,ik,isp) = kovp(1:natomwfc,1:natomwfc,ikeq,isp) 
+                   ELSE
+                      kovp_all(1:natomwfc,1:natomwfc,ik,isp) = CONJG( kovp(1:natomwfc,1:natomwfc,ikeq,isp) )
+                   ENDIF
+                   !
+                   CALL atmproj_rotate_ovp( natomwfc, kpteq_symm(ik), vkpt_cry(:,ikeq), kovp_all(:,:,ik,isp))
+! XXX
+       
+                   !
+                   ! diagonalize ovp
+                   !
+                   CALL mat_hdiag( zaux, w(:), kovp_all(:,:,ik,isp), dimwann)
                    !              
                    DO i = 1, dimwann
                        !
@@ -691,7 +713,7 @@ END SUBROUTINE atmproj_tools_init
                    !
                    DO j = 1, dimwann
                    DO i = 1, dimwann
-                       kham(i,j,ik) = kham(i,j,ik) + atmproj_sh * kovp(i,j,ik,isp)
+                       kham(i,j,ik) = kham(i,j,ik) + atmproj_sh * kovp_all(i,j,ik,isp)
                    ENDDO
                    ENDDO
                    !
@@ -758,7 +780,7 @@ END SUBROUTINE atmproj_tools_init
                IF ( .NOT. do_orthoovp_ ) THEN
                    !
                     CALL compute_rham( dimwann, vr(:,ir), rovp(:,:,ir,isp), &
-                                       nkpts_all, vkpt_all, wk_all, kovp(:,:,:,isp) )
+                                       nkpts_all, vkpt_all, wk_all, kovp_all(:,:,:,isp) )
                    !
                ENDIF
                !
@@ -786,6 +808,11 @@ END SUBROUTINE atmproj_tools_init
    IF ( ALLOCATED( kovp ) ) THEN
        DEALLOCATE( kovp, STAT=ierr)
        IF ( ierr/=0 ) CALL errore(subname, 'deallocating kovp', ABS(ierr) )
+   ENDIF
+   !
+   IF ( ALLOCATED( kovp_all ) ) THEN
+       DEALLOCATE( kovp_all, STAT=ierr)
+       IF ( ierr/=0 ) CALL errore(subname, 'deallocating kovp_all', ABS(ierr) )
    ENDIF
    !
    DEALLOCATE( vkpt_all, kpteq_map, kpteq_symm, STAT=ierr)
@@ -1177,7 +1204,6 @@ SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
    END IF
    !Luis 2 end   <--
 
-   write(*,*) 'about to read eigenvalues' !Luis 2
    IF ( PRESENT( eig ) ) THEN
        ! 
        CALL iotk_scan_begin( iunit, "EIGENVALUES", IERR=ierr )
@@ -1423,6 +1449,7 @@ SUBROUTINE  atmproj_rotate_proj( natomwfc, nbnd, isym, vkpt_c, proj)
    !
    ! if we deal with the identity, nothing to do
    IF ( isym == 1 ) RETURN
+   CALL log_push(subname)
    !
    IF ( .NOT. symm_alloc ) CALL errore(subname,"symmetry module not alloc",10)
    IF ( .NOT. ions_alloc ) CALL errore(subname,"ions module not alloc",10)
@@ -1555,9 +1582,242 @@ SUBROUTINE  atmproj_rotate_proj( natomwfc, nbnd, isym, vkpt_c, proj)
    DEALLOCATE( check, STAT=ierr) 
    IF ( ierr/=0 ) CALL errore(subname,"deallocating check",ABS(ierr))
    !
+   CALL log_pop(subname)
    RETURN
    !
 END SUBROUTINE atmproj_rotate_proj
 
 
+!************************************************************
+SUBROUTINE  atmproj_rotate_ovp( natomwfc, isym, vkpt_c, ovp)
+   !************************************************************
+   !
+   USE symmetry_module, ONLY : d1, d2, d3, srot, strasl, nsym, &
+                               irt, icell, symm_alloc => alloc
+   USE ions_module,     ONLY : nat, ityp, nsp, ions_alloc => alloc
+   !
+   IMPLICIT NONE
+   !
+   INTEGER,      INTENT(IN)    :: natomwfc, isym
+   REAL(dbl),    INTENT(IN)    :: vkpt_c(3)     ! crystal units are expected
+   COMPLEX(dbl), INTENT(INOUT) :: ovp(natomwfc,natomwfc)
+   !
+   CHARACTER(18) :: subname="atmproj_rotate_ovp"
+   INTEGER       :: ia, iaeq, nt_a
+   INTEGER       :: il_a, is_a, iseq_a, isn_a, ien_a, na, nd_a
+   INTEGER       :: ib, ibeq, nt_b
+   INTEGER       :: il_b, is_b, iseq_b, isn_b, ien_b, nb, nd_b
+   INTEGER       :: ierr, isym_
+   LOGICAL       :: use_trev
+   REAL(dbl)     :: rvkpt_c(3), arg
+   COMPLEX(dbl)  :: phase
+   COMPLEX(dbl), TARGET   :: c0(1,1), c1(3,3), c2(5,5), c3(7,7)
+   COMPLEX(dbl), POINTER  :: c_a(:,:), c_b(:,:)
+   !
+   INTEGER,      ALLOCATABLE :: iatom_map(:), itypl(:,:)
+   INTEGER,      ALLOCATABLE :: natomwfc_sp(:)
+   INTEGER,      ALLOCATABLE :: check(:,:)
+   COMPLEX(dbl), ALLOCATABLE :: ovp0(:,:)
+
+
+   !
+   ! if we deal with the identity, nothing to do
+   IF ( isym == 1 ) RETURN
+   CALL log_push(subname)
+   !
+   IF ( .NOT. symm_alloc ) CALL errore(subname,"symmetry module not alloc",10)
+   IF ( .NOT. ions_alloc ) CALL errore(subname,"ions module not alloc",10)
+
+   !
+   ! whether to use time-reversal
+   !
+   isym_ = isym
+   use_trev = .FALSE.
+   !
+   IF ( isym_ > nsym ) THEN
+       isym_=isym_-nsym
+       use_trev = .TRUE.
+   ENDIF
+   !
+   IF ( isym_ <= 0 .OR. isym_ > nsym ) CALL errore(subname,"invalid isym index",10)
+   !
+   ! local workspace
+   !
+   ALLOCATE( iatom_map(nat), STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,"allocating iatom_map",10)
+   ALLOCATE( ovp0(natomwfc,natomwfc), STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,"allocating proj0",10)
+   ALLOCATE( natomwfc_sp(nsp), STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,"allocating natomwfc_sp",10)
+   ALLOCATE( itypl(nwfcx,nsp), STAT=ierr )
+   IF (ierr/=0) CALL errore(subname,"allocating itypl",10)
+   ALLOCATE(check(natomwfc,natomwfc), STAT=ierr)
+   IF (ierr/=0) CALL errore(subname,"allocating check",10)
+
+   !
+   ! build iatom_map
+   !
+   CALL atmproj_get_natomwfc( nsp, upf(1:nsp), natomwfc_sp, itypl )
+   !
+   iatom_map(1)=1
+   !
+   DO ia = 2, nat
+       !
+       nt_a=ityp(ia-1)
+       iatom_map(ia) = iatom_map(ia-1) + natomwfc_sp(nt_a) 
+       !
+   ENDDO
+   !
+   !CALL mat_mul( rvkpt_c, REAL(srot(:,:,isym_),dbl), "T", vkpt_c, 3, 3)
+   rvkpt_c = vkpt_c
+
+   !
+   ! main loop
+   !
+   ovp0 = ovp
+   c0    = 1.0d0
+   c1    = d1(:,:,isym_) 
+   c2    = d2(:,:,isym_) 
+   c3    = d3(:,:,isym_) 
+   !
+   check(:,:) = 0
+   !
+   DO ib = 1, nat
+       ! 
+       ibeq   = irt(isym_,ib)
+       nt_b   = ityp(ib)
+       !
+       is_b   = iatom_map(ib)
+       iseq_b = iatom_map(ibeq)
+       !
+       isn_b  = 0
+       ien_b  = 0
+       !
+       DO nb = 1, upf(nt_b)%nwfc
+           !
+           isn_b = ien_b+1 
+           il_b  = itypl(isn_b,nt_b)
+           nd_b  = (2*il_b+1)
+           ien_b = isn_b+(2*il_b+1) -1
+           !
+           CALL associate_pointer(c_b,il_b)
+           !
+           !
+           DO ia = 1, nat
+               !
+               iaeq   = irt(isym_,ia)
+               nt_a   = ityp(ia)
+               !
+               is_a   = iatom_map(ia)
+               iseq_a = iatom_map(iaeq)
+               !
+               isn_a  = 0
+               ien_a  = 0
+               !
+               DO na = 1, upf(nt_a)%nwfc
+                   !
+                   isn_a = ien_a+1 
+                   il_a  = itypl(isn_a,nt_a)
+                   nd_a  = (2*il_a+1)
+                   ien_a = isn_a+(2*il_a+1) -1
+
+                   CALL associate_pointer(c_a,il_a)
+
+                   !
+                   ! sanity check
+                   !
+                   check(is_a+isn_a-1:is_a+isn_a-1+nd_a,is_b+isn_b-1:is_b+isn_b-1+nd_b) = &
+                        check(is_a+isn_a-1:is_a+isn_a-1+nd_a,is_b+isn_b-1:is_b+isn_b-1+nd_b) +1
+
+                   !
+                   ! actual rotation
+                   !
+                   CALL mat_mul( ovp(is_a+isn_a-1:is_a+isn_a-1+nd_a, is_b+isn_b-1:is_b+isn_b-1+nd_b), c_a, "N", &
+                                 ovp0(iseq_a+isn_a-1:iseq_a+isn_a-1+nd_a, iseq_b+isn_b-1:iseq_b+isn_b-1+nd_b), "N", &
+                                 nd_a, nd_b, nd_a)
+                   CALL mat_mul( ovp(is_a+isn_a-1:is_a+isn_a-1+nd_a, is_b+isn_b-1:is_b+isn_b-1+nd_b), & 
+                                 ovp(is_a+isn_a-1:is_a+isn_a-1+nd_a, is_b+isn_b-1:is_b+isn_b-1+nd_b), "N", &
+                                 c_b, "N", nd_a, nd_b, nd_b )
+                   !
+               ENDDO
+           ENDDO
+           ! 
+       ENDDO
+   ENDDO
+
+   !
+   ! add a phase in case atom ia is shifted into a different cell
+   !
+   DO ib = 1, nat
+       !
+       nt_b   = ityp(ib)
+       is_b   = iatom_map(ib)
+       !
+       DO ia = 1, nat
+           !
+           nt_a   = ityp(ia)
+           is_a   = iatom_map(ia)
+           !
+           !
+           phase = 1.0d0
+           !
+           arg   = TPI * DOT_PRODUCT( rvkpt_c, REAL(icell(:,isym_,ia)) )
+           phase = phase * CMPLX( COS(arg),  SIN(arg), dbl )
+           !
+           arg   = TPI * DOT_PRODUCT( rvkpt_c, REAL(icell(:,isym_,ib)) )
+           phase = phase * CMPLX( COS(arg), -SIN(arg), dbl )
+           !
+           ! AF: do we really need this cmplx conjg here ?
+           IF ( use_trev ) phase = CONJG( phase )
+           !
+           !
+           ovp(is_a:is_a+natomwfc_sp(nt_a)-1,is_b:is_b+natomwfc_sp(nt_b)-1) = &
+               ovp(is_a:is_a+natomwfc_sp(nt_a)-1,is_b:is_b+natomwfc_sp(nt_b)-1) * phase
+           !
+       ENDDO
+       !
+   ENDDO
+   !
+   IF ( ANY(check(:,:)== 0 ) ) CALL errore(subname,"unexpected error in atmwfc mapping",10)
+   
+   !
+   ! cleanup
+   !
+   DEALLOCATE( iatom_map, ovp0, STAT=ierr) 
+   IF ( ierr/=0 ) CALL errore(subname,"deallocating iatom_map, ovp0",ABS(ierr))
+   DEALLOCATE( natomwfc_sp, STAT=ierr) 
+   IF ( ierr/=0 ) CALL errore(subname,"deallocating natomwfc_sp",ABS(ierr))
+   DEALLOCATE( itypl, STAT=ierr) 
+   IF ( ierr/=0 ) CALL errore(subname,"deallocating itypl",ABS(ierr))
+   DEALLOCATE( check, STAT=ierr) 
+   IF ( ierr/=0 ) CALL errore(subname,"deallocating check",ABS(ierr))
+   !
+   CALL log_pop(subname)
+   !
+   RETURN
+
+CONTAINS
+
+   SUBROUTINE associate_pointer(cp,il)
+      IMPLICIT NONE
+      COMPLEX(dbl), POINTER :: cp(:,:)
+      INTEGER               :: il
+
+      SELECT CASE (il)
+      CASE (0)
+        cp => c0
+      CASE (1)
+        cp => c1
+      CASE (2)
+        cp => c2
+      CASE (3)
+        cp => c3
+      CASE DEFAULT
+         CALL errore(subname,"invalid il",ABS(il)+1)
+      END SELECT
+   END SUBROUTINE associate_pointer
+   !
+END SUBROUTINE atmproj_rotate_ovp
+
 END MODULE atmproj_tools_module
+
