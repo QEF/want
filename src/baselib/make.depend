@@ -58,5 +58,5 @@ ylmr2.o : constants.o
 ylmr2.o : kind.o
 zhpev_drv.o : io_global.o
 zhpev_drv.o : kind.o
-fft_scalar.o : ../../include/fftqe_defs.h
+fft_scalar.o : ../../include/fftx_defs.h
 log_module.o : ../../include/f_defs.h

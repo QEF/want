@@ -4,6 +4,10 @@
 =======================================================
 
 
+25 Aug 2017     fftqe renamed to fftxlib. (AF)
+
+20 Aug 2017     overlap symmetrization implemented. (AF)
+
 20 Feb 2016     kpt symmetrization seems to be working. Clenaup and commits done (AF)
 
 27 Dec 2014     Makefile system cleaned and improved. (AF)
