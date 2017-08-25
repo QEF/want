@@ -20,11 +20,11 @@ fft_stick.o : ../../include/c_defs.h
 fft_stick.o : fftw2.c
 fftw2.o : 
 fftw2.o : 
-mod_fft_aux.o : ../../include/fftqe_defs.h
-mod_fft_base.o : ../../include/fftqe_defs.h
-mod_fft_interfaces.o : ../../include/fftqe_defs.h
-mod_fft_parallel.o : ../../include/fftqe_defs.h
-mod_fft_scalar.o : ../../include/fftqe_defs.h
-mod_fft_types.o : ../../include/fftqe_defs.h
-mod_stick_base.o : ../../include/fftqe_defs.h
-mod_stick_set.o : ../../include/fftqe_defs.h
+mod_fft_aux.o : ../../include/fftx_defs.h
+mod_fft_base.o : ../../include/fftx_defs.h
+mod_fft_interfaces.o : ../../include/fftx_defs.h
+mod_fft_parallel.o : ../../include/fftx_defs.h
+mod_fft_scalar.o : ../../include/fftx_defs.h
+mod_fft_types.o : ../../include/fftx_defs.h
+mod_stick_base.o : ../../include/fftx_defs.h
+mod_stick_set.o : ../../include/fftx_defs.h

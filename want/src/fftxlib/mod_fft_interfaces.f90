@@ -7,7 +7,7 @@
 !
 ! Extracted from "cp_interfaces", written by Carlo Cavazzoni
 !
-#include "fftqe_defs.h"
+#include "fftx_defs.h"
 !
 !=----------------------------------------------------------------------------=!
    MODULE fft_interfaces

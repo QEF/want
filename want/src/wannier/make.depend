@@ -658,6 +658,7 @@ random_orthovect.o : ../baselib/kind.o
 random_orthovect.o : ../baselib/random_numbers.o
 random_orthovect.o : ../baselib/util.o
 read_fileqp.o : ../baselib/kind.o
+read_fileqp.o : ../baselib/parser.o
 read_ncpp.o : ../baselib/kind.o
 read_ncpp.o : ../baselib/parameters.o
 read_ncpp.o : functionals.o

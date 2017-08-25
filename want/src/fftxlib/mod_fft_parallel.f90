@@ -16,7 +16,7 @@
 !
 !=---------------------------------------------------------------------==!
 !
-#include "fftqe_defs.h"
+#include "fftx_defs.h"
 !
 MODULE fft_parallel
 !

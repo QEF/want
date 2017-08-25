@@ -15,7 +15,7 @@
 ! Nicolas Lacorne, Filippo Spiga - Last update Aug 2012                    !
 !--------------------------------------------------------------------------!
 !
-#include "fftqe_defs.h"
+#include "fftx_defs.h"
 !
 !=----------------------------------------------------------------------=!
    MODULE fft_scalar
