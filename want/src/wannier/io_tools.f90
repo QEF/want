@@ -12,7 +12,9 @@
    !
    ! init some data related to IO and taken from input
    !
-   USE io_module
+   USE io_module,               ONLY : prefix, postfix, work_dir, io_alloc=> alloc, dftdata_fmt, dftdata_file, &
+                                       dftdata_fmt_version, wantdata_fmt, wantdata_form, wantdata_binary, &
+                                       suffix_qe_data, dft_unit, log_unit, io_name
    USE parameters,              ONLY : nstrx
    USE control_module,          ONLY : read_symmetry, use_pseudo, read_pseudo, use_debug_mode, debug_level 
    USE files_module,            ONLY : file_open, file_close
@@ -186,7 +188,7 @@
       CALL log_init( log_unit, use_debug_mode, logfile, debug_level )
       CALL log_push( "main" )
       !
-      alloc = .TRUE.
+      io_alloc = .TRUE.
       !
    END SUBROUTINE io_init
 
@@ -197,7 +199,7 @@
    !
    ! get the fmt of the dftdata file (use the names)
    !
-   USE io_module
+   USE io_module,               ONLY : dft_unit, ionode, ionode_id, stdout
    USE parameters,              ONLY : nstrx
    USE crystal_tools_module,    ONLY : file_is_crystal
    USE wannier90_tools_module,  ONLY : file_is_wannier90
@@ -392,7 +394,7 @@
    !
    ! open the dftdata files, either for a serial or a parallel read 
    !
-   USE io_module
+   USE io_module,               ONLY : io_name, dftdata_fmt, etsf_io_version_min, ionode, dft_unit
    USE parameters,              ONLY : nstrx
    USE crystal_io_module,       ONLY : crio_open_file
    USE files_module,            ONLY : file_open, file_close
@@ -464,7 +466,7 @@
    !
    ! close the dftdata files, either after a serial or a parallel read 
    !
-   USE io_module
+   USE io_module,               ONLY : dft_unit, ionode, dftdata_fmt
    USE crystal_io_module,       ONLY : crio_close_file
    USE files_module,            ONLY : file_open, file_close
    USE log_module,              ONLY : log_push, log_pop
