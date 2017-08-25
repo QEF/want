@@ -641,11 +641,15 @@ END SUBROUTINE atmproj_tools_init
                    ALLOCATE( w(dimwann), kovp_sq(dimwann,dimwann), STAT=ierr )
                    IF ( ierr/=0 ) CALL errore(subname, 'allocating w, kovp_sq', ABS(ierr) )
 
-! XXX
                    !
                    ! kpt symmetrization needs to be implemented
                    ! when non-orthogonal orbitals are used
                    IF ( nkpts /= nkpts_all ) CALL errore(subname,"kpt symmetrization and OVPs not implemented",10)
+
+!
+! The following implementatio is still tentative, so the above error is kept
+! for the moment
+!
 
                    !
                    !
@@ -659,7 +663,9 @@ END SUBROUTINE atmproj_tools_init
                    ENDIF
                    !
                    CALL atmproj_rotate_ovp( natomwfc, kpteq_symm(ik), vkpt_cry(:,ikeq), kovp_all(:,:,ik,isp))
-! XXX
+!
+! end of tentative implementation
+!
        
                    !
                    ! diagonalize ovp
