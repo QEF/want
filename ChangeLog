@@ -6,7 +6,8 @@
 
 25 Aug 2017     fftqe renamed to fftxlib. (AF)
 
-20 Aug 2017     overlap symmetrization implemented. (AF)
+20 Aug 2017     Overlap symmetrization implemented. Circular dependency involving io_module
+		avoided. (AF)
 
 20 Feb 2016     kpt symmetrization seems to be working. Clenaup and commits done (AF)
 
