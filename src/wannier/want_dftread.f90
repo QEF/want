@@ -112,7 +112,8 @@ CONTAINS
     read_ions_       = .TRUE.
     read_windows_    = .TRUE.
     read_symmetry_   = .FALSE. .OR. ( trim(datafiles_fmt) == "atmproj" ) &
-                               .OR. ( trim(dftdata_fmt) == "qexml" )
+                               .OR. ( trim(dftdata_fmt) == "qexml" ) &
+                               .OR. ( trim(dftdata_fmt) == "pw_export" )
     read_kpoints_    = .TRUE.
     read_pseudo_     = .FALSE.
     IF ( PRESENT(lattice) )   read_lattice_ = lattice
