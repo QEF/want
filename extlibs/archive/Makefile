@@ -67,28 +67,6 @@ $(tarball_etsf_io):
 		echo "*** If not, copy $(tarball_etsf_io) into extlibs/archive/" ; \
 	exit 1 ; fi
 
-$(tarball_magma):
-	wget -O $(tarball_magma) $(url_magma) > /dev/null 2>&1
-	@if test "`echo $$?`" -ne "0" ; then \
-		curl -o $(tarball_magma) $(url_magma) > /dev/null 2>&1 ; \
-	fi
-	@if test ! -s $(tarball_magma) ; then \
-		echo "*** Unable to download MAGMA. Test whether curl or wget is installed and working," ; \
-		echo "*** if you have direct access to the internet." ; \
-		echo "*** If not, copy $(tarball_magma) into extlibs/archive/" ; \
-	exit 1 ; fi
-
-$(tarball_phigemm):
-	wget -O $(tarball_phigemm) $(url_phigemm) > /dev/null 2>&1
-	@if test "`echo $$?`" -ne "0" ; then \
-		curl -o $(tarball_phigemm) $(url_phigemm) > /dev/null 2>&1 ; \
-	fi
-	@if test ! -s $(tarball_phigemm) ; then \
-		echo "*** Unable to download PhiGEMM. Test whether curl or wget is installed and working," ; \
-		echo "*** if you have direct access to the internet." ; \
-		echo "*** If not, copy $(tarball_phigemm) into extlibs/archive/" ; \
-	exit 1 ; fi
-
 #
 # cleaning
 #
@@ -100,6 +78,4 @@ clean_all:
 	if test -s $(tarball_iotk)    && test "$(keep_iotk)"    != "yes" ;  then rm $(tarball_iotk)    ; fi
 	if test -s $(tarball_netcdf)  && test "$(keep_netcdf)"  != "yes" ;  then rm $(tarball_netcdf)  ; fi
 	if test -s $(tarball_etsf_io) && test "$(keep_etsf_io)" != "yes" ;  then rm $(tarball_etsf_io) ; fi
-	if test -s $(tarball_phigemm) && test "$(keep_phigemm)" != "yes" ;  then rm $(tarball_phigemm) ; fi
-	if test -s $(tarball_magma)   && test "$(keep_magma)"   != "yes" ;  then rm $(tarball_magma)   ; fi
 
