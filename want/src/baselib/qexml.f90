@@ -1969,8 +1969,6 @@ CONTAINS
       !
       CALL iotk_scan_end( iunit, "SYMMETRIES", IERR=ierr )
       IF (ierr/=0) RETURN
-! XXX
-WRITE(0,*) "end of scan SYMMETRIES "
       !
       !
       IF ( PRESENT(nsym) )        nsym          = nsym_
