@@ -14,8 +14,6 @@ The following libraries have been found:
   @etsf_io_line@
   @netcdf_line@
   @cuda_line@
-  @phigemm_line@
-  @magma_line@
 
 Please check if that is correct.
 
