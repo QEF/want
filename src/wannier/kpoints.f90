@@ -235,12 +235,12 @@ CONTAINS
       !
       IF ( init_pp_ ) THEN
           !
-          CALL symmetrize_kgrid( nkpts, vkpt, bvec, nkpts_all )
+          CALL symmetrize_kgrid( nkpts_g, vkpt_g, bvec, nkpts_all )
           !
           ALLOCATE( vkpt_all(3,nkpts_all), STAT=ierr )
           IF ( ierr/=0 ) CALL errore(subname,"allocating vkpt_all",ABS(ierr))
           !
-          CALL symmetrize_kgrid( nkpts, vkpt, bvec, nkpts_all, VKPT_ALL=vkpt_all ) 
+          CALL symmetrize_kgrid( nkpts_g, vkpt_g, bvec, nkpts_all, VKPT_ALL=vkpt_all ) 
           !
       ENDIF
 
