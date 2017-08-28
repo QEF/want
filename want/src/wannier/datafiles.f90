@@ -16,7 +16,7 @@
    USE parameters,              ONLY : nstrx
    USE io_module,               ONLY : ionode, ionode_id, stdout, aux_unit
    USE io_module,               ONLY : work_dir, prefix, postfix, datafile => dftdata_file, datafile_qp
-   USE mp,                      ONLY : mp_bcast, mp_barrier
+   USE mp,                      ONLY : mp_bcast
    USE timing_module,           ONLY : timing
    USE log_module,              ONLY : log_push, log_pop
    USE crystal_tools_module,    ONLY : crystal_to_internal, file_is_crystal
