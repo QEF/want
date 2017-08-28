@@ -13,8 +13,8 @@ keep_etsf_io=
 #
 tarball_blas=blas-1.tar.gz
 tarball_lapack=lapack-3.2.tar.gz
-#tarball_iotk=iotk-1.2.1.tar.gz
-tarball_iotk=iotk-y1.2.1.tar.gz
+tarball_iotk=iotk-1.2.1.tar.gz
+#tarball_iotk=iotk-y1.2.1.tar.gz
 tarball_netcdf=netcdf-3.6.3.tar.gz
 tarball_etsf_io=etsf_io-1.0.2.tar.gz
 

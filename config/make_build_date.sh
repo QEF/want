@@ -15,7 +15,7 @@ if [ -e "$TARGETFILE" ] ; then rm $TARGETFILE ; fi
 cat > $TARGETFILE << EOF
 
 !
-! Copyright (C) 2010 WanT Group
+! Copyright (C) 2017 WanT Group
 !
 ! This file is distributed under the terms of the
 ! GNU General Public License. See the file "License"
