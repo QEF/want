@@ -134,11 +134,10 @@ END SUBROUTINE atmproj_tools_init
    USE symmetrize_kgrid_module,    ONLY : symmetrize_kgrid
    USE lattice_module,             ONLY : avec, bvec, alat
    USE files_module,               ONLY : file_exist
+   USE io_module,                  ONLY : dft_unit
    USE util_module
    USE parser_module
    !
-! XXX
-use mp_global
    IMPLICIT NONE
 
    LOGICAL, PARAMETER :: binary = .TRUE.
@@ -278,15 +277,10 @@ use mp_global
    CALL symmetry_read_ext( "qexml", LPARA=lpara )
    !
    IF ( ionode ) THEN
-WRITE(0,*) mpime, "ierr before"
       CALL qexml_closefile( "read", IERR=ierr )
-WRITE(0,*) mpime, "ierr", ierr
+      !CLOSE(dft_unit,IOSTAT=ierr)
       IF ( ierr/=0 ) CALL errore(subname,"closing "//TRIM(file_data), ABS(ierr) )
    ENDIF
-   !
-! XXX
-WRITE(0,*) mpime, "after qexml_close"
-STOP "culo"
 
    !
    ! read pseudos
@@ -299,7 +293,6 @@ STOP "culo"
    !
    CALL atmproj_read_ext( filein, nbnd, nkpts, nspin, natomwfc, &
                           nelec, efermi, energy_units, IERR=ierr)
-
    IF ( ierr/=0 ) CALL errore(subname, "reading dimensions I", ABS(ierr))
 
    dimwann = natomwfc
@@ -310,6 +303,21 @@ STOP "culo"
    atmproj_nbndmin_ = MIN( MAX(1,atmproj_nbndmin), atmproj_nbnd_)
    atmproj_ndim_ = atmproj_nbnd_-atmproj_nbndmin_+1
 
+   !
+   ! nspin_ definition
+   ! non-collinear case
+   !
+   IF ( nspin == 4 ) THEN
+       nspin_ = 1
+       spin_noncollinear = .true.
+   ELSE
+       spin_noncollinear = .false.
+       nspin_ = nspin
+   ENDIF
+
+   !
+   ! quick report
+   !
    IF (ionode) THEN
        !
        WRITE( stdout, "(/,2x, ' Dimensions found in atomic_proj.{dat,xml}: ')")
@@ -324,20 +332,7 @@ STOP "culo"
           WRITE(stdout,"(2x, '   fileQP   :  ',a )") TRIM(fileqp)
        !
        WRITE( stdout, "()" )
-       IF ( nspin == 4 ) THEN
-          nspin_ = 1
-          spin_noncollinear = .true.
-       ELSE
-          spin_noncollinear = .false.
-          nspin_ = nspin
-       ENDIF
        !
-   ENDIF
-
-   !
-   ! quick report
-   !
-   IF (ionode) THEN
        !
        WRITE( stdout, "(2x, ' ATMPROJ conversion to be done using: ')")
        WRITE( stdout, "(2x, '   atmproj_nbnd :  ',i5 )") atmproj_nbnd_
@@ -662,7 +657,7 @@ STOP "culo"
                    IF ( nkpts /= nkpts_all ) CALL errore(subname,"kpt symmetrization and OVPs not implemented",10)
 
 !
-! The following implementatio is still tentative, so the above error is kept
+! The following implementation is still tentative, so the above error is kept
 ! for the moment
 !
 
@@ -845,7 +840,7 @@ STOP "culo"
 ! write to fileout (internal fmt)
 !---------------------------------
 !
-   IF ( write_ham ) THEN
+   IF ( ionode .AND. write_ham ) THEN
        !
        CALL iotk_open_write( ounit, FILE=TRIM(fileham), BINARY=binary )
        CALL iotk_write_begin( ounit, "HAMILTONIAN" )
@@ -920,7 +915,7 @@ STOP "culo"
        !
    ENDIF
 
-   IF ( write_space ) THEN
+   IF ( ionode .AND. write_space ) THEN
        !
        CALL iotk_open_write( ounit, FILE=TRIM(filespace), BINARY=binary )
        !
@@ -1012,7 +1007,7 @@ STOP "culo"
    ENDIF
 
 
-   IF ( write_loc ) THEN
+   IF ( ionode .AND. write_loc ) THEN
        !
        CALL iotk_open_write( ounit, FILE=TRIM(filewan), BINARY=binary )
        !
@@ -1215,21 +1210,19 @@ SUBROUTINE atmproj_read_ext ( filein, nbnd, nkpt, nspin, natomwfc, nelec, &
        !
    ENDIF
    
+   !
+   ! Added by Luis to take spinors into accout
+   !
+   IF ( nspin_ == 4 ) nspin_ = 1
+   
    ! 
    ! reading eigenvalues
    ! 
-
-   !Luis 2 begin -->
-   IF ( nspin_ == 4 ) THEN
-      nspin_ = 1
-   END IF
-   !Luis 2 end   <--
 
    IF ( PRESENT( eig ) ) THEN
        ! 
        CALL iotk_scan_begin( iunit, "EIGENVALUES", IERR=ierr )
        IF ( ierr/=0 ) RETURN
-       !
        !
        DO ik = 1, nkpt_
            !

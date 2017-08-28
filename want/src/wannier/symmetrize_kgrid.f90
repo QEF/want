@@ -51,7 +51,6 @@ SUBROUTINE symmetrize_kgrid( nkpts, vkpt, bvec, nkpts_all, vkpt_all, kpteq_map, 
 !------------------------------
 !
    IF ( .NOT. symmetry_alloc ) CALL errore(subname,"symmetry mod not alloc",10)
-   !IF ( .NOT. symmetry_alloc ) RETURN   ! XXXX
    IF ( nkpts == 0 ) RETURN
 
    CALL timing(subname,OPR='start')
