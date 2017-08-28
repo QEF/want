@@ -149,27 +149,6 @@ AC_ARG_ENABLE(cuda,
    fi],
    [use_cuda=0])
 
-AC_ARG_ENABLE(magma,
-   [AS_HELP_STRING([--enable-magma],
-       [enable MAGMA (default: no)])],
-   [if  test "$enableval" = "yes" ; then
-      use_magma=1
-   else
-      use_magma=0
-   fi],
-   [use_magma=0])
-
-AC_ARG_ENABLE(phigemm,
-   [AS_HELP_STRING([--enable-phigemm],
-       [enable phiGEMM (default: no)])],
-   [if  test "$enableval" = "yes" ; then
-      use_phigemm=1
-   else
-      use_phigemm=0
-   fi],
-   [use_phigemm=0])
-
-
 AC_ARG_WITH(cuda_dir,
    [AS_HELP_STRING([--with-cuda-dir=<path>],
     [specify CUDA installation directory (default is /usr/local/cuda/)])],
@@ -860,7 +839,6 @@ have_atlas=0
 have_essl=0
 have_mkl=0
 have_cuda=0
-have_phigemm=0
 
 
 # check for blas
@@ -1729,101 +1707,6 @@ if test "$use_cuda" -eq 1 && test "$have_cuda" -eq 0; then
     AC_MSG_ERROR([Please check if CUDA is correctly installed.]) 
 fi
 
-if test "$have_cuda" -eq 1
-then
-     
-    # Empty inits...
-    # AF
-    cuda_switch="external"
-    #
-    magma_include=""
-    magma_libs=""
-    magma_switch=""
-    #
-    phigemm_include=""
-    phigemm_libs=""
-    phigemm_switch=""
-                    
-    # GPU architecture
-    if  test "$cuda_arch" = "20" ; then
-        nvccflags="-O3 --ptxas-options=-v -arch sm_20 -gencode arch=compute_20,code=compute_20"
-        try_dflags="$try_dflags -D__GPU_NVIDIA_20"
-        magma_gpu_target=1
-    fi
-    if test "$cuda_arch" = "13" ; then
-        nvccflags="-O3 --ptxas-options=-v -arch sm_13 -gencode arch=compute_13,code=compute_13"
-        try_dflags="$try_dflags -D__GPU_NVIDIA_13"
-        magma_gpu_target=0
-    fi   
-    
-    cuda_include="-I$cuda_path/include"
-    
-    # phiGEMM 
-    if test "$use_phigemm" -eq 1  ; then 
-    	if test "$have_mkl" -eq 1  ; then
-	        phigemm_switch="internal"
-	        try_dflags="$try_dflags -D__PHIGEMM"
-	        phigemm_opts="-D__PHIGEMM_WEAK_INTERFACES"	       
-                # AF
-	        phigemm_include="-I$topdir/extlibs/phiGEMM/include"
-	        phigemm_libs="$topdir/extlibs/phiGEMM/lib/libphigemm.a "    
-
-		    if test "$have_mpi" -eq 1 && test "$cudamajor" -eq 4 ; then
-			    phigemm_opts="$phigemm_opts -D__PHIGEMM_PARA"
-		    fi
-		    
-		    if test "$use_phigemmprofile" -eq 1; then
-		        phigemm_opts="$phigemm_opts -D__PHIGEMM_PROFILE"
-		        try_dflags="$try_dflags -D__PHIGEMM_PROFILE"
-		    fi		    
-	    else
-	        AC_MSG_WARN([This version of Quantum ESPRESSO requires the Intel MKL libraries to use the phiGEMM library.]) 
-		fi
-    fi
-    
-	if test "$use_multigpu" -eq 1
-	then
-	   if test "$cudamajor" -eq 4
-	   then
-            try_dflags="$try_dflags -D__MULTI_GPU"
-       else
-            AC_MSG_WARN([The multi-GPU features are available only using CUDA 4.x.]) 
-       fi
-    fi
-      
-    # By default show all CUDA timing    
-    # try_dflags="$try_dflags -D__CUDA_QE_TIMING"
-            
-    if test "$use_magma" -eq 1; then
-        magma_switch="internal"
-        # AF
-        magma_include="-I$topdir/extlibs/magma/include -I$topdir/quark/include"
-        magma_libs="$topdir/extlibs/magma/lib/libmagma.a $topdir/extlibs/magma/lib/libmagmablas.a $topdir/extlibs/magma/lib/libmagma.a" 
-        try_dflags="$try_dflags -D__MAGMA"
-        
-        # new MAGMA (1.1.0) requires this flag...
-        ldflags="$ldflags -zmuldefs"
-    fi
-    
-    try_iflags="$try_iflags $magma_include $phigemm_include $cuda_include"
-    
-    lapack_libs="$magma_libs $lapack_libs"
-    blas_libs="$phigemm_libs $blas_libs"
-        
-    ld_libs="$cuda_libs $ld_libs"
-	
-    echo setting CUDA_LIBS... $cuda_libs
-
-fi
-
-# Always show CUDA timing (if CUDA is not enable, only GEMM are tracked)    
-if test "$have_cuda" -eq 1
-then
-    try_dflags="$try_dflags -D__CUDA_QE_TIMING"
-else
-    try_dflags="$try_dflags"
-fi
-    
 
 # final check on availability of parallel environment
 parallel=0
@@ -1969,24 +1852,6 @@ if test "$netcdf_libs" != "" ; then
 else
    netcdf_line="@delete@"
 fi
-# AF
-if test "$have_cuda" -eq 1 ; then 
-   cuda_line="CUDA_LIBS=$cuda_libs"
-else
-   cuda_line="@delete@"
-fi
-if test "$phigemm_libs" != "" ; then 
-   phigemm_line="PHIGEMM_LIBS=$phigemm_libs"
-else
-   phigemm_line="@delete@"
-fi
-if test "$magma_libs" != "" ; then 
-   magma_line="MAGMA_LIBS=$magma_libs"
-else
-   magma_line="@delete@"
-fi
-
-#
 
 
 if test "$use_parallel" -ne 0
@@ -2077,20 +1942,6 @@ AC_SUBST(cuda_libs)
 AC_SUBST(cuda_switch)
 AC_SUBST(cuda_line)
 #
-AC_SUBST(phigemm_cc)
-AC_SUBST(phigemm_fc)
-AC_SUBST(phigemm_opts)
-AC_SUBST(phigemm_include)
-AC_SUBST(phigemm_libs)
-AC_SUBST(phigemm_switch)
-AC_SUBST(phigemm_line)
-#
-AC_SUBST(magma_include)
-AC_SUBST(magma_libs)
-AC_SUBST(magma_switch)
-AC_SUBST(magma_line)
-AC_SUBST(magma_gpu_target)
-
 AC_CONFIG_HEADERS([include/c_defs.h:include/c_defs.h.in])
 AC_CONFIG_FILES([include/configure.h:include/configure.h.in]) # AF
 AC_CONFIG_FILES([make.sys:config/make.sys.in])
@@ -2119,9 +1970,6 @@ fi
 #
 if test "$iotk_switch" = "internal" ; then
    test -e ./extlibs/iotk/configure-stamp && rm ./extlibs/iotk/configure-stamp
-fi
-if test "$use_phigemm" = "1" ; then
-   test -e ./extlibs/phiGEMM/fconfigure-stamp && rm ./extlibs/phiGEMM/configure-stamp
 fi
 if test "$use_etsf_io" = "1" ; then
    test -e ./extlibs/etsf_io/configure-stamp && rm ./extlibs/etsf_io/configure-stamp

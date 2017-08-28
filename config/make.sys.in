@@ -67,14 +67,6 @@ NETCDF_LIBS         = @netcdf_libs@
 NETCDF_LIBS_SWITCH  = @netcdf_switch@
 NETCDF_INCLUDE      = @netcdf_include@
 #
-PHIGEMM_LIBS        = @phigemm_libs@
-PHIGEMM_LIBS_SWITCH = @phigemm_switch@
-PHIGEMM_INCLUDE     = @phigemm_include@
-#
-MAGMA_LIBS          = @magma_libs@
-MAGMA_LIBS_SWITCH   = @magma_switch@
-MAGMA_INCLUDE       = @magma_include@
-#
 CUDA_LIBS           = @cuda_libs@
 CUDA_LIBS_SWITCH    = @cuda_switch@
 CUDA_INCLUDE        = @cuda_include@
