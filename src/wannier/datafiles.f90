@@ -16,7 +16,7 @@
    USE parameters,              ONLY : nstrx
    USE io_module,               ONLY : ionode, ionode_id, stdout, aux_unit
    USE io_module,               ONLY : work_dir, prefix, postfix, datafile => dftdata_file, datafile_qp
-   USE mp,                      ONLY : mp_bcast
+   USE mp,                      ONLY : mp_bcast, mp_barrier
    USE timing_module,           ONLY : timing
    USE log_module,              ONLY : log_push, log_pop
    USE crystal_tools_module,    ONLY : crystal_to_internal, file_is_crystal
@@ -65,7 +65,7 @@ CONTAINS
    ! local variables
    !
    CHARACTER(14)    :: subname="datafiles_init"
-   CHARACTER(nstrx) :: fmtstr=" "
+   CHARACTER(nstrx) :: fmtstr
    CHARACTER(nstrx) :: filein, fileout
    CHARACTER(nstrx) :: fileham, filespace, filewan
    LOGICAL          :: exists, do_orthoovp_
@@ -106,8 +106,11 @@ CONTAINS
    ! 
    IF (.NOT. exists ) CALL errore(subname, 'unable to find '//TRIM(filein),1 )
 
+
    !
-   ! convert the file if the case
+   ! determine the file format
+   !
+   fmtstr=" "
    !
    IF ( ionode ) THEN
        !
@@ -115,69 +118,76 @@ CONTAINS
        !
        WRITE( stdout, "(2x, ' file fmt: ', A )") TRIM( fmtstr )
        !
-       SELECT CASE( TRIM(fmtstr) )
-       CASE ( 'crystal' )
-           !
-           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
-           CALL crystal_to_internal( filein, fileout, 'hamiltonian', do_orthoovp_ )
-           !
-           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
-           CALL crystal_to_internal( filein, fileout, 'subspace', do_orthoovp_ )
-           !
-           WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
-           !
-       CASE ( 'wannier90' )
-           !
-           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
-           CALL wannier90_to_internal( TRIM(filein), TRIM(fileout), 'hamiltonian' )
-           !
-           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
-           CALL wannier90_to_internal( filein, fileout, 'subspace' )
-           !
-           WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
-           !
-       CASE ( 'cp2k' )
-           !
-           fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
-           CALL cp2k_to_internal( TRIM(filein), TRIM(fileout), 'hamiltonian', do_orthoovp_ )
-           !
-           !fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
-           !CALL wannier90_to_internal( filein, fileout, 'subspace' )
-           !
-           WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
-           !
-       CASE ( 'atmproj' )
-           !
-           fileham   = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
-           filespace = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
-           filewan   = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.wan'
-           !
-           IF ( LEN_TRIM(datafile_qp) > 0 ) THEN
-               CALL atmproj_to_internal( filein, FILEQP=TRIM(datafile_qp), FILEHAM=fileham, FILESPACE=filespace, & 
-                                                 FILEWAN=filewan, DO_ORTHOOVP=do_orthoovp_ )
-           ELSE
-               CALL atmproj_to_internal( filein, FILEHAM=fileham, FILESPACE=filespace, & 
-                                                 FILEWAN=filewan, DO_ORTHOOVP=do_orthoovp_ )
-           ENDIF
-           !
-           WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
-           !
-       CASE ( 'internal' )
-           !
-           ! nothing to do
-           WRITE( stdout, "(2x, A,' used as internal fmt' )") TRIM( filein )
-           !
-       CASE DEFAULT
-           CALL errore(subname,'invalid FMT = '//TRIM(fmtstr),10 )
-       END SELECT
-       !
    ENDIF
    !
-   CALL mp_bcast( TRIM(fmtstr),  ionode_id )
-   !
+   CALL mp_bcast( fmtstr,  ionode_id )
    IF ( LEN_TRIM(fmtstr) == 0 ) CALL errore(subname, 'no input fmt detected', 71)
    !
    datafiles_fmt = TRIM( fmtstr )
+
+   !
+   ! convert the file
+   !
+!   IF ( ionode ) THEN 
+      !
+      SELECT CASE( TRIM(fmtstr) )
+      CASE ( 'crystal' )
+          !
+          fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
+          CALL crystal_to_internal( filein, fileout, 'hamiltonian', do_orthoovp_ )
+          !
+          fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
+          CALL crystal_to_internal( filein, fileout, 'subspace', do_orthoovp_ )
+          !
+          WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
+          !
+      CASE ( 'wannier90' )
+          !
+          fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
+          CALL wannier90_to_internal( TRIM(filein), TRIM(fileout), 'hamiltonian' )
+          !
+          fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
+          CALL wannier90_to_internal( filein, fileout, 'subspace' )
+          !
+          WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
+          !
+      CASE ( 'cp2k' )
+          !
+          fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
+          CALL cp2k_to_internal( TRIM(filein), TRIM(fileout), 'hamiltonian', do_orthoovp_ )
+          !
+          !fileout = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
+          !CALL wannier90_to_internal( filein, fileout, 'subspace' )
+          !
+          WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
+          !
+      CASE ( 'atmproj' )
+          !
+          fileham   = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.ham'
+          filespace = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.space'
+          filewan   = TRIM(work_dir)//'/'//TRIM(prefix)//TRIM(postfix)//'.wan'
+          !
+          IF ( LEN_TRIM(datafile_qp) > 0 ) THEN
+              CALL atmproj_to_internal( filein, FILEQP=TRIM(datafile_qp), FILEHAM=fileham, FILESPACE=filespace, & 
+                                                FILEWAN=filewan, DO_ORTHOOVP=do_orthoovp_ )
+          ELSE
+              CALL atmproj_to_internal( filein, FILEHAM=fileham, FILESPACE=filespace, & 
+                                                FILEWAN=filewan, DO_ORTHOOVP=do_orthoovp_ )
+          ENDIF
+          !
+          WRITE( stdout, "(2x, A,' converted to internal fmt' )") TRIM( filein )
+          !
+      CASE ( 'internal' )
+          !
+          ! nothing to do
+          WRITE( stdout, "(2x, A,' used as internal fmt' )") TRIM( filein )
+          !
+      CASE DEFAULT
+          CALL errore(subname,'invalid FMT = '//TRIM(fmtstr),10 )
+      END SELECT
+      !
+!   ENDIF
+   !
    alloc = .TRUE. 
    !
    !

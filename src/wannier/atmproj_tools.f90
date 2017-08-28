@@ -137,6 +137,8 @@ END SUBROUTINE atmproj_tools_init
    USE util_module
    USE parser_module
    !
+! XXX
+use mp_global
    IMPLICIT NONE
 
    LOGICAL, PARAMETER :: binary = .TRUE.
@@ -186,7 +188,8 @@ END SUBROUTINE atmproj_tools_init
    COMPLEX(dbl),   ALLOCATABLE :: zaux(:,:), ztmp(:,:)
    COMPLEX(dbl),   ALLOCATABLE :: kovp_sq(:,:)
    REAL(dbl),      ALLOCATABLE :: w(:)
-
+   !
+   LOGICAL          :: lpara
 #if defined __SHIFT_TEST
    !Luis 3: Changes related to Sohrab's shifting scheme 
    !PA   = A^dagger * A 
@@ -256,22 +259,34 @@ END SUBROUTINE atmproj_tools_init
    !
    ! get DFT data
    ! qexml fmt is assumed (otherwise one should use the var "dftdata_fmt")
-   ! note that the parallelism inside *_read_ext routines may be dangerous
+   ! note that the parallelism inside *_read_ext routines may be harmful
+   ! and needs to be handled
    !
-   !CALL qexml_init( iunit, DIR=savedir)
-   CALL qexml_openfile( file_data, "read", IERR=ierr )
-   IF ( ierr/=0 ) CALL errore(subname,"opening "//TRIM(file_data), ABS(ierr) )
+   lpara = .TRUE.
+   !
+   IF ( ionode ) THEN
+      CALL qexml_openfile( file_data, "read", IERR=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,"opening "//TRIM(file_data), ABS(ierr) )
+   ENDIF
    ! 
-   CALL lattice_read_ext( "qexml", LPARA=.FALSE. )
+   CALL lattice_read_ext( "qexml", LPARA=lpara )
    CALL lattice_init( )
    !
-   CALL ions_read_ext( "qexml", LPARA=.FALSE. )
+   CALL ions_read_ext( "qexml", LPARA=lpara )
    CALL ions_init()
    !
-   CALL symmetry_read_ext( "qexml", LPARA=.FALSE. )
+   CALL symmetry_read_ext( "qexml", LPARA=lpara )
    !
-   CALL qexml_closefile( "read", IERR=ierr )
-   IF ( ierr/=0 ) CALL errore(subname,"closing "//TRIM(file_data), ABS(ierr) )
+   IF ( ionode ) THEN
+WRITE(0,*) mpime, "ierr before"
+      CALL qexml_closefile( "read", IERR=ierr )
+WRITE(0,*) mpime, "ierr", ierr
+      IF ( ierr/=0 ) CALL errore(subname,"closing "//TRIM(file_data), ABS(ierr) )
+   ENDIF
+   !
+! XXX
+WRITE(0,*) mpime, "after qexml_close"
+STOP "culo"
 
    !
    ! read pseudos
