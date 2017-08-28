@@ -4,6 +4,8 @@
 =======================================================
 
 
+28 Aug 2017     parallel bug fixed in pp + atmproj. (AF)
+
 25 Aug 2017     fftqe renamed to fftxlib. (AF)
 
 20 Aug 2017     Overlap symmetrization implemented. Circular dependency involving io_module
