@@ -19,7 +19,6 @@ default:
 	@echo  "     wannier            compile Wannier function suite"
 	@echo  "     transport          compile transport executables"
 	@echo  "     embed              compile embedding executables"
-	@echo  "     odd                compile odd executables"
 	@echo  "     tools              compile utilities"
 	@echo  "     libwant            compile the want internal library"
 	@echo  "     libclib            compile the intenral c-library"
@@ -67,21 +66,17 @@ libwant: libextlibs
 	if test -d src/baselib ; then \
 	( cd src/baselib ; $(MAKE) ) ; fi
 
-wannier: libextlibs libclib libwant
+wannier: build_date libextlibs libclib libwant
 	if test -d src/wannier ; then \
 	( cd src/wannier ; $(MAKE) ) ; fi
 
-transport: libextlibs libclib libwant wannier
+transport: build_date libextlibs libclib libwant wannier
 	if test -d src/transport ; then \
 	( cd src/transport ; $(MAKE) ) ; fi
 
 embed: libextlibs libclib libwant transport wannier
 	if test -d src/embed ; then \
 	( cd src/embed ; $(MAKE) ) ; fi
-
-odd:   libextlibs libclib libfftxlib libwant wannier
-	if test -d src/odd ; then \
-	( cd src/odd ; $(MAKE) ) ; fi
 
 tools: libextlibs libclib libwant wannier
 	if test -d src/tools ; then \
@@ -99,7 +94,6 @@ clean:
 	if test -d src/wannier ;   then ( cd src/wannier;   $(MAKE) clean ) ; fi
 	if test -d src/transport ; then ( cd src/transport; $(MAKE) clean ) ; fi
 	if test -d src/embed ;     then ( cd src/embed;     $(MAKE) clean ) ; fi
-	if test -d src/odd ;       then ( cd src/odd;       $(MAKE) clean ) ; fi
 	if test -d src/tools ;     then ( cd src/tools;     $(MAKE) clean ) ; fi
 	- /bin/rm  ./include/build_date.h
 	- /bin/rm -rf ./bin/*.x ./bin/sumpdos ./bin/iotk ./bin/sax2qexml

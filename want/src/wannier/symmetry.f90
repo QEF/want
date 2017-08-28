@@ -321,7 +321,7 @@ CONTAINS
                 CALL mp_bcast( ierr,    ionode_id)
             ENDIF
             !
-            IF (nat > 0 ) CALL mp_bcast( irt,     ionode_id)
+            IF (nat > 0 .and. lpara_ ) CALL mp_bcast( irt,     ionode_id)
             !
        CASE ( 'pw_export' )
             !
@@ -433,7 +433,6 @@ CONTAINS
            ENDDO
            !
        ENDIF
-      
        ! 
        CALL log_pop ( subname )
        !
