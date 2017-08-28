@@ -79,7 +79,7 @@ CONTAINS
    !
    ! local variables
    !
-   !CHARACTER(12)             :: subname='want_dftread'
+   CHARACTER(12)             :: subname='want_dftread'
    CHARACTER(nstrx)          :: filename 
    LOGICAL                   :: read_lattice_,  read_ions_, read_windows_, &
                                 read_symmetry_, read_kpoints_, read_pseudo_, &
@@ -102,8 +102,8 @@ CONTAINS
     !
     IF ( .NOT. io_alloc ) CALL io_init ( need_wfc_ ) 
 
-    CALL timing('want_dftread',OPR='start')
-    CALL log_push('want_dftread')
+    CALL timing(subname,OPR='start')
+    CALL log_push(subname)
 
 !   
 ! setting up   
@@ -112,7 +112,7 @@ CONTAINS
     read_ions_       = .TRUE.
     read_windows_    = .TRUE.
     read_symmetry_   = .FALSE. .OR. ( trim(datafiles_fmt) == "atmproj" ) &
-                               .OR. ( trim(datafiles_fmt) == "qexml" )
+                               .OR. ( trim(dftdata_fmt) == "qexml" )
     read_kpoints_    = .TRUE.
     read_pseudo_     = .FALSE.
     IF ( PRESENT(lattice) )   read_lattice_ = lattice
@@ -206,8 +206,8 @@ CONTAINS
     ENDIF
 
 
-    CALL timing('want_dftread',OPR='stop')
-    CALL log_pop('want_dftread')
+    CALL timing(subname,OPR='stop')
+    CALL log_pop(subname)
 
 END SUBROUTINE want_dftread
 
