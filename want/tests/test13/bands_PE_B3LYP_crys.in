@@ -1,0 +1,17 @@
+
+ &INPUT
+   prefix         = 'poly_pe_b3lyp'
+   postfix        = '_WanT'
+   work_dir       = './SCRATCH'
+!   datafile_dft   = './CRYSTAL/PE_B3LYP_CRY17.xml'
+!   datafile_dft   = './CRYSTAL/PE_B3LYP_CRY14.xml'
+   datafile_dft   = './CRYSTAL/PE_B3LYP_CRY09.xml'
+   fileout        = './bands_PE_B3LYP_crys.dat'
+   nkpts_in       = 2
+   nkpts_max      = 500
+   do_orthoovp    = .FALSE.
+ /
+G   0.000  0.000  0.000
+X   0.500  0.000  0.000
+
+

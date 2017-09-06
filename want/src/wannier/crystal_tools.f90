@@ -1,4 +1,5 @@
 !
+
 ! Copyright (C) 2008 WanT Group
 !
 ! This file is distributed under the terms of the
@@ -17,7 +18,7 @@
    USE log_module,         ONLY : log_push, log_pop
    USE converters_module,  ONLY : cart2cry, cry2cart
    USE parser_module,      ONLY : change_case
-   USE symmetry_module,    ONLY : nsym, symmetry_allocate
+   USE symmetry_module,    ONLY : nsym, symmetry_allocate, symm_alloc => alloc
    USE crystal_io_module
    USE iotk_module
    !
@@ -137,7 +138,7 @@ CONTAINS
    CALL crio_read_symmetry( NUM_OF_SYMMETRIES=nsym, IERR=ierr)
    IF ( ierr/=0 ) CALL errore(subname, 'reading symmetries', ABS(ierr) )
    !
-   CALL symmetry_allocate()
+   if (.not. symm_alloc) CALL symmetry_allocate()
    !
    CALL crio_close_section( "GEOMETRY", ACTION='read', IERR=ierr )
    IF ( ierr/=0 ) CALL errore(subname, 'closing sec. GEOMETRY', ABS(ierr) )
@@ -415,7 +416,7 @@ CONTAINS
        CASE DEFAULT
           CALL errore( subname, 'unknown units for ham: '//TRIM(h_units), 71)
        END SELECT
-    
+
        !
        ! take fermi energy into account
        !
@@ -426,7 +427,8 @@ CONTAINS
            !
        ENDDO
        ENDDO
-       !
+
+
    ENDIF
 
 
@@ -610,6 +612,7 @@ END SUBROUTINE crystal_to_internal
    LOGICAL FUNCTION file_is_crystal( filename )
    !**********************************************************
    !
+   USE parser_module, ONLY: matches
    IMPLICIT NONE
    !
    ! check for crystal fmt
@@ -633,8 +636,7 @@ END SUBROUTINE crystal_to_internal
      CALL crio_read_header( CREATOR_NAME=prog, IERR=ierr)
      IF ( ierr/= 0 ) lerror = .TRUE.
      !
-     IF ( TRIM(prog) /= "CRYSTAL06" .AND. TRIM(prog) /= "CRYSTAL09" .AND. &
-          TRIM(prog) /= "CRYSTAL14" .AND. TRIM(prog) /= "CRYSTAL17" ) lerror = .TRUE.
+     IF ( .NOT. matches("CRYSTAL",prog) ) lerror = .TRUE.
      !
      CALL crio_close_file( ACTION='read', IERR=ierr )
      IF ( ierr/= 0 ) lerror = .TRUE.

@@ -141,62 +141,62 @@ CONTAINS
            !
            WRITE( stdout, "(2x, A,' file fmt: ', A )") TRIM(filename), TRIM(fmtstr)
            !
+           !
            ! removing old versions of the file
+           !
            CALL file_delete( TRIM(filename)//'.ham' )
-           !
-           !
-           SELECT CASE( TRIM(fmtstr) )
-           CASE ( 'crystal' )
-               !
-               CALL crystal_to_internal( filename, TRIM(filename)//'.ham', 'hamiltonian', do_orthoovp )
-               !
-               WRITE( stdout, "(2x, A,' converted from CRYSTAL to internal fmt' )") &
-                   TRIM( filename )
-               !
-               filelist(i) = TRIM(filelist(i))//'.ham' 
-               !
-           CASE( 'wannier90' )
-               !
-               CALL wannier90_to_internal( TRIM(filename), TRIM(filename)//'.ham', 'hamiltonian' )
-               !
-               WRITE( stdout, "(2x, A,' converted from Wannier90 to internal fmt' )") &
-                   TRIM( filename )
-               !
-               filelist(i) = TRIM(filelist(i))//'.ham' 
-               !
-           CASE( 'cp2k' )
-               !
-               CALL cp2k_to_internal( TRIM(filename), TRIM(filename)//'.ham', 'hamiltonian', do_orthoovp )
-               !
-               WRITE( stdout, "(2x, A,' converted from CP2K to internal fmt' )") &
-                   TRIM( filename )
-               !
-               filelist(i) = TRIM(filelist(i))//'.ham' 
-               !
-           CASE( 'atmproj' )
-               !
-               CALL atmproj_to_internal( TRIM(filename), FILEHAM=TRIM(filename)//'.ham', DO_ORTHOOVP=do_orthoovp )
-               !
-               WRITE( stdout, "(2x, A,' converted from ATMPROJ to internal fmt' )") &
-                   TRIM( filename )
-               !
-               filelist(i) = TRIM(filelist(i))//'.ham' 
-               !
-           CASE ( 'internal' )
-               !
-               ! nothing to do
-               !
-           CASE DEFAULT
-               CALL errore(subname,'invalid FMT = '//TRIM(fmtstr),10 )
-           END SELECT
-
            !
        ENDIF
        !
-       CALL mp_bcast( fmtstr,      ionode_id )
-       CALL mp_bcast( filelist(i), ionode_id )
-       !
+       CALL mp_bcast( fmtstr,  ionode_id )
        IF ( LEN_TRIM(fmtstr) == 0 ) CALL errore(subname, 'no input fmt detected', 71)
+ 
+       !
+       ! file conversion
+       !
+       SELECT CASE( TRIM(fmtstr) )
+       CASE ( 'crystal' )
+           !
+           IF (ionode) CALL crystal_to_internal( filename, TRIM(filename)//'.ham', 'hamiltonian', do_orthoovp )
+           !
+           IF (ionode) WRITE( stdout, "(2x, A,' converted from CRYSTAL to internal fmt' )") TRIM( filename )
+           !
+           filelist(i) = TRIM(filelist(i))//'.ham' 
+           !
+       CASE( 'wannier90' )
+           !
+           IF (ionode) CALL wannier90_to_internal( TRIM(filename), TRIM(filename)//'.ham', 'hamiltonian' )
+           !
+           IF (ionode) WRITE( stdout, "(2x, A,' converted from Wannier90 to internal fmt' )") TRIM( filename )
+           !
+           filelist(i) = TRIM(filelist(i))//'.ham' 
+           !
+       CASE( 'cp2k' )
+           !
+           IF (ionode) CALL cp2k_to_internal( TRIM(filename), TRIM(filename)//'.ham', 'hamiltonian', do_orthoovp )
+           !
+           IF (ionode) WRITE( stdout, "(2x, A,' converted from CP2K to internal fmt' )") TRIM( filename )
+           !
+           filelist(i) = TRIM(filelist(i))//'.ham' 
+           !
+       CASE( 'atmproj' )
+           !
+           
+           !
+           CALL atmproj_to_internal( TRIM(filename), FILEHAM=TRIM(filename)//'.ham', DO_ORTHOOVP=do_orthoovp )
+           !
+           IF (ionode) WRITE( stdout, "(2x, A,' converted from ATMPROJ to internal fmt' )") TRIM( filename )
+           !
+           filelist(i) = TRIM(filelist(i))//'.ham' 
+           !
+       CASE ( 'internal' )
+           !
+           ! nothing to do
+           IF (ionode) WRITE( stdout, "(2x, A,' used as internal fmt',/ )") TRIM( filename )
+           !
+       CASE DEFAULT
+           CALL errore(subname,'invalid FMT = '//TRIM(fmtstr),10 )
+       END SELECT
        !
    ENDDO file_loop
 
@@ -211,7 +211,6 @@ CONTAINS
        datafile_R = TRIM( filelist(3) )
        !
    ENDIF
-
 
    CALL log_pop( subname )
    CALL timing( subname, OPR='stop')

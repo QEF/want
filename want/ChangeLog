@@ -4,6 +4,8 @@
 =======================================================
 
 
+31 Aug 2017     interface to CRYSTAL17 fixed, courtesy of G. Mallia. (AF)
+
 28 Aug 2017     parallel bug fixed in pp + atmproj. (AF)
 
 25 Aug 2017     fftqe renamed to fftxlib. (AF)

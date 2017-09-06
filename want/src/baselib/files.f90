@@ -27,6 +27,7 @@
 ! SUBROUTINE  file_close(unit[,path][,action], ierr)
 ! SUBROUTINE  file_delete(name)
 ! FUNCTION    file_exist(name)
+! FUNCTION    dir_exist(name)
 ! SUBROUTINE  file_rename(oldname,newname)
 !
 ! PATH is the IOTK_PATH (root NOT included) for the
@@ -55,6 +56,7 @@
    PUBLIC ::  file_close
    PUBLIC ::  file_delete
    PUBLIC ::  file_exist
+   PUBLIC ::  dir_exist
 
 CONTAINS
 
@@ -97,6 +99,34 @@ CONTAINS
       RETURN
       !
    END FUNCTION file_exist
+
+
+!**********************************************************
+   LOGICAL FUNCTION dir_exist(dirname)
+   !**********************************************************
+   IMPLICIT NONE
+      CHARACTER(*)  :: dirname
+      !
+      CHARACTER(256):: filename
+      INTEGER :: ierr, iunaux
+
+      ierr=0
+      dir_exist=.false.
+      CALL iotk_free_unit( iunaux )
+      !
+      filename=TRIM(dirname)//'/__tmp__'
+      OPEN(iunaux,FILE=TRIM(filename),IOSTAT=ierr)
+      !
+      IF (ierr==0) THEN
+         dir_exist=.true.
+         CLOSE(iunaux, STATUS="delete")
+      ENDIF
+      !
+      !IF ( file_exist(filename) ) CALL file_delete(filename)
+      !
+      RETURN
+      !
+   END FUNCTION dir_exist
 
 
 !**********************************************************
