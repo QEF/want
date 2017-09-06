@@ -91,17 +91,21 @@
         !
         ! actual read-in
         !
-        IF ( file_is_QP .and. NF == 6 ) THEN
-           READ(line,*,IOSTAT=ierr) rk, rb, E0, DE_QP, sgmc, rsp
-           IF ( ierr/=0 ) CALL errore(subname,"invalid line fmt I",nline)
-        ELSE IF ( file_is_QP .and. NF == 5 ) THEN
+        IF ( file_is_QP .and. NF == 5 ) THEN
            READ(line,*,IOSTAT=ierr) rk, rb, E0, DE_QP, sgmc
-           IF ( ierr/=0 ) CALL errore(subname,"invalid line fmt II",nline)
+           IF ( ierr/=0 ) CALL errore(subname,"invalid line fmt I",nline)
            rsp=1
+        ELSE IF ( file_is_QP .and. NF == 6 ) THEN
+           READ(line,*,IOSTAT=ierr) rk, rb, E0, DE_QP, sgmc, rsp
+           IF ( ierr/=0 ) CALL errore(subname,"invalid line fmt II",nline)
         ELSE IF ( file_is_HF .and. NF == 6 ) THEN
            READ(line,*,IOSTAT=ierr) rk, rb, E0, E_QP, rtmp, rtmp
            IF ( ierr/=0 ) CALL errore(subname,"invalid line fmt III",nline)
            rsp=1
+           DE_QP=E_QP-E0
+        ELSE IF ( file_is_HF .and. NF == 7 ) THEN
+           READ(line,*,IOSTAT=ierr) rk, rb, E0, E_QP, rtmp, rtmp, rsp
+           IF ( ierr/=0 ) CALL errore(subname,"invalid line fmt IV",nline)
            DE_QP=E_QP-E0
         ELSE 
            CALL errore(subname,"fmt not supported",10)

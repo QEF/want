@@ -11,6 +11,7 @@
     transport_dir = 3
     delta = 0.0001
     do_orthoovp    = .TRUE.
+    debug_level=10
   /
 
 <HAMILTONIAN_DATA>

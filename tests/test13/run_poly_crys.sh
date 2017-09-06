@@ -114,7 +114,7 @@ run_bands  NAME=PE_BANDS  SUFFIX=${SUFFIX} RUN=$PE_BANDS
 run_dos  NAME=PE_DOS  SUFFIX=${SUFFIX} RUN=$PE_DOS
 
 
-SUFFIX="_PE_B3LYPcrys"
+SUFFIX="_PE_B3LYP_crys"
 
 #
 # running PE_BANDS_hyb

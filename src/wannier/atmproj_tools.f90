@@ -16,14 +16,15 @@
    USE parameters,          ONLY : nstrx
    USE timing_module,       ONLY : timing
    USE log_module,          ONLY : log_push, log_pop
-   USE io_global_module,    ONLY : ionode, stdout
+   USE io_global_module,    ONLY : ionode, ionode_id, stdout
    USE converters_module,   ONLY : cart2cry, cry2cart
    USE parser_module,       ONLY : change_case
    USE util_module,         ONLY : mat_is_herm, mat_mul
    USE grids_module,        ONLY : grids_get_rgrid
-   USE files_module,        ONLY : file_exist
+   USE files_module,        ONLY : file_exist, dir_exist
    USE pseudo_types_module, ONLY : pseudo_upf 
    USE uspp_param,          ONLY : upf
+   USE mp
    USE lattice_module,      ONLY : lattice_read_ext, lattice_init
    USE symmetry_module,     ONLY : symmetry_read_ext, nsym, symmetry_deallocate
    USE ions_module,         ONLY : ions_read_ext, ions_init, ions_deallocate
@@ -134,7 +135,7 @@ END SUBROUTINE atmproj_tools_init
    USE symmetrize_kgrid_module,    ONLY : symmetrize_kgrid
    USE lattice_module,             ONLY : avec, bvec, alat
    USE files_module,               ONLY : file_exist
-   USE io_module,                  ONLY : dft_unit
+   USE io_module,                  ONLY : dft_unit, pseudo_dir
    USE util_module
    USE parser_module
    !
@@ -164,7 +165,7 @@ END SUBROUTINE atmproj_tools_init
    CHARACTER(nstrx)  :: filetype_
    LOGICAL           :: write_ham, write_space, write_loc
    REAL(dbl)         :: norm, efermi, nelec
-   LOGICAL           :: spin_noncollinear
+   LOGICAL           :: spin_noncollinear, lexist
    REAL(dbl)         :: proj_wgt
    INTEGER           :: dimwann, natomwfc, nkpts, nspin, nbnd
    INTEGER           :: nkpts_all, nspin_
@@ -278,12 +279,18 @@ END SUBROUTINE atmproj_tools_init
    !
    IF ( ionode ) THEN
       CALL qexml_closefile( "read", IERR=ierr )
-      !CLOSE(dft_unit,IOSTAT=ierr)
       IF ( ierr/=0 ) CALL errore(subname,"closing "//TRIM(file_data), ABS(ierr) )
    ENDIF
 
    !
    ! read pseudos
+   !
+   IF ( ionode ) THEN
+      lexist = dir_exist(pseudo_dir)
+   ENDIF
+   CALL mp_bcast( lexist, ionode_id )
+   !
+   pseudo_dir=TRIM(savedir)
    !
    CALL readpp()
 
@@ -371,8 +378,6 @@ END SUBROUTINE atmproj_tools_init
        !
        ALLOCATE( kovp(natomwfc,natomwfc,nkpts,nspin), STAT=ierr )
        IF (ierr/=0) CALL errore(subname, 'allocating kovp II', ABS(ierr))
-       ALLOCATE( kovp_all(natomwfc,natomwfc,nkpts_all,nspin), STAT=ierr )
-       IF (ierr/=0) CALL errore(subname, 'allocating kovp_all III', ABS(ierr))
        !
        ! reading  proj(i,b)  = < phi^at_i | evc_b >
        !
@@ -381,7 +386,6 @@ END SUBROUTINE atmproj_tools_init
    ENDIF
    !
    IF ( ierr/=0 ) CALL errore(subname, "reading data II", ABS(ierr))
-
 
    !
    ! units (first we convert to bohr^-1, 
@@ -436,6 +440,15 @@ END SUBROUTINE atmproj_tools_init
    norm   = SUM( wk_all )
    wk_all(:) = wk_all(:) / norm
 
+   !
+   ! further alloc
+   !
+   IF ( .not. do_orthoovp_ ) THEN
+       !
+       ALLOCATE( kovp_all(natomwfc,natomwfc,nkpts_all,nspin), STAT=ierr )
+       IF (ierr/=0) CALL errore(subname, 'allocating kovp_all III', ABS(ierr))
+       !
+   ENDIF
 
    !
    ! kpts and real-space lattice vectors

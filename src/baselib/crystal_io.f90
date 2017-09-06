@@ -1183,7 +1183,7 @@ CONTAINS
       INTEGER        :: num_of_atomic_orbitals_, num_of_atoms_, norb_
       INTEGER        :: i
       CHARACTER(256) :: str
-      !
+      LOGICAL        :: lfound
 
       ierr=0
       !
@@ -1210,8 +1210,15 @@ CONTAINS
               !
               CALL iotk_scan_attr( attr, "number_of_atomic_orbitals_per_atom", norb_, IERR=ierr ) 
               IF ( ierr/=0 ) RETURN
-              CALL iotk_scan_attr( attr, "units", atm_orbital(i)%units, IERR=ierr ) 
+              !
+              CALL iotk_scan_attr( attr, "units", atm_orbital(i)%units,FOUND=lfound, IERR=ierr ) 
               IF ( ierr/=0 ) RETURN
+              !
+              IF (.NOT. lfound) THEN
+                 CALL iotk_scan_attr( attr, "unit", atm_orbital(i)%units, IERR=ierr ) 
+                 IF ( ierr/=0 ) RETURN
+              ENDIF
+              !
               CALL iotk_scan_attr( attr, "centre", atm_orbital(i)%coord, IERR=ierr ) 
               IF ( ierr/=0 ) RETURN
               !
@@ -1495,8 +1502,13 @@ CONTAINS
           ENDIF
           !
           IF ( PRESENT(energy_ref_type) ) THEN
-              CALL iotk_scan_attr( attr, "system_type", energy_ref_type, IERR=ierr)
+              CALL iotk_scan_attr( attr, "system_type", energy_ref_type, FOUND=lfound, IERR=ierr)
               IF (ierr/=0 ) RETURN
+              !
+              IF ( .NOT. lfound) THEN
+                 CALL iotk_scan_attr( attr, "type", energy_ref_type, IERR=ierr)
+                 IF (ierr/=0 ) RETURN
+              ENDIF
           ENDIF
           !
       ENDIF
