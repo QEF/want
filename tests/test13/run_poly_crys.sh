@@ -21,8 +21,8 @@ MANUAL=" Usage
  PA_dos          interpolate the PA DOS from CRYSTAL datafile (LDA xc)
  PE_bands        interpolate the PE band structure from CRYSTAL datafile (LDA xc)
  PE_dos          interpolate the PE DOS from CRYSTAL datafile (LDA xc)
- PE_bands_hyb    interpolate the PE band structure from CRYSTAL datafile (B3LYP xc)
- PE_dos_hyb      interpolate the PE DOS from CRYSTAL datafile (B3LYP xc)
+ PE_bands_hyb    interpolate the PE band structure from CRYSTAL datafile (PBE0 xc)
+ PE_dos_hyb      interpolate the PE DOS from CRYSTAL datafile (PBE0 xc)
 
  all             perform all the above described steps
 
@@ -59,13 +59,13 @@ if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
 INPUT=`echo $1 | tr [:upper:] [:lower:]`
 
 case $INPUT in 
-   (pa_bands)      PA_BANDS=yes ;;
-   (pa_dos)        PA_DOS=yes ;;
+#   (pa_bands)      PA_BANDS=yes ;;
+#   (pa_dos)        PA_DOS=yes ;;
    (pe_bands)      PE_BANDS=yes ;;
    (pe_dos)        PE_DOS=yes ;;
    (pe_bands_hyb)  PE_BANDS_HYB=yes ;;
    (pe_dos_hyb)    PE_DOS_HYB=yes ;;
-   (all|want)      PA_BANDS=yes ; PA_DOS=yes ;
+   (all|want)      #PA_BANDS=yes ; PA_DOS=yes ;
                    PE_BANDS=yes ; PE_DOS=yes ;
                    PE_BANDS_HYB=yes ; PE_DOS_HYB=yes ;;
    (check)         CHECK=yes ;;
@@ -114,7 +114,7 @@ run_bands  NAME=PE_BANDS  SUFFIX=${SUFFIX} RUN=$PE_BANDS
 run_dos  NAME=PE_DOS  SUFFIX=${SUFFIX} RUN=$PE_DOS
 
 
-SUFFIX="_PE_B3LYP_crys"
+SUFFIX="_PE_PBE0_crys"
 
 #
 # running PE_BANDS_hyb

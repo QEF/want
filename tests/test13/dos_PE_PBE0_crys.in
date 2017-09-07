@@ -1,10 +1,10 @@
 
  &INPUT
-   prefix         = 'poly_pe_b3lyp'
+   prefix         = 'poly_pe_pbe0'
    postfix        = '_WanT'
    work_dir       = './SCRATCH'
-   datafile_dft   = './CRYSTAL/PE_B3LYP_CRY17.xml'
-   fileout        = './dos_PE_B3LYP_crys.dat'
+   datafile_dft   = './CRYSTAL/PE_PBE0_CRY17.xml'
+   fileout        = './dos_PE_PBE0_crys.dat'
    do_orthoovp    = .FALSE.
    nk(1) = 200
    nk(2) = 1
