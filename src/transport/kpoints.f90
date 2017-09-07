@@ -78,7 +78,8 @@ CONTAINS
    !
    USE parameters,       ONLY : nstrx
    USE files_module,     ONLY : file_open, file_close
-   USE io_module,        ONLY : aux_unit
+   USE io_global_module, ONLY : ionode, ionode_id
+   USE mp,               ONLY : mp_bcast
    USE iotk_module
    !
    IMPLICIT NONE
@@ -91,7 +92,7 @@ CONTAINS
       INTEGER            :: nr_(3), nrtot_, nkpts_par_x
       INTEGER            :: nrtot_par_x
       INTEGER            :: ir, ir2, ik, i, j, l, ierr
-      INTEGER            :: counter
+      INTEGER            :: counter, aux_unit
       LOGICAL            :: lfound, lequiv
       REAL(dbl)          :: arg, vaux(2)
       !
@@ -103,26 +104,35 @@ CONTAINS
       !
       ! read data from datafile_C (ham file)
       !
-      CALL file_open(aux_unit,TRIM(datafile_C),PATH="/",ACTION="read", IERR=ierr)
-      IF (ierr/=0) CALL errore(subname, 'opening '//TRIM(datafile_C), ABS(ierr) )
+      CALL iotk_free_unit(aux_unit)
       !
-      CALL iotk_scan_begin( aux_unit, "HAMILTONIAN", IERR=ierr )
-      IF (ierr/=0) CALL errore(subname, 'searching for HAMILTONIAN', ABS(ierr) )
+      IF (ionode) THEN
+         !
+         CALL file_open(aux_unit,TRIM(datafile_C),PATH="/",ACTION="read", IERR=ierr)
+         IF (ierr/=0) CALL errore(subname, 'opening '//TRIM(datafile_C), ABS(ierr) )
+         !
+         CALL iotk_scan_begin( aux_unit, "HAMILTONIAN", IERR=ierr )
+         IF (ierr/=0) CALL errore(subname, 'searching for HAMILTONIAN', ABS(ierr) )
+         !
+         CALL iotk_scan_empty( aux_unit, 'DATA', ATTR=attr, IERR=ierr) 
+         IF (ierr/=0) CALL errore(subname, 'searching for DATA', ABS(ierr) )
+         !
+         CALL iotk_scan_attr(attr,'nrtot',nrtot_,IERR=ierr) 
+         IF (ierr/=0) CALL errore(subname, 'searching for nrtot', ABS(ierr) )
+         !
+         CALL iotk_scan_attr(attr,'nr',nr_,IERR=ierr) 
+         IF (ierr/=0) CALL errore(subname, 'searching for nr', ABS(ierr) )
+         !
+         CALL iotk_scan_end( aux_unit, "HAMILTONIAN", IERR=ierr )
+         IF (ierr/=0) CALL errore(subname, 'searching for end HAMILTONIAN', ABS(ierr) )
+         !
+         CALL file_close(aux_unit,PATH="/",ACTION="read", IERR=ierr)
+         IF (ierr/=0) CALL errore(subname, 'closing '//TRIM(datafile_C), ABS(ierr) )
+         !
+      ENDIF
       !
-      CALL iotk_scan_empty( aux_unit, 'DATA', ATTR=attr, IERR=ierr) 
-      IF (ierr/=0) CALL errore(subname, 'searching for DATA', ABS(ierr) )
-!      CALL iotk_scan_attr(attr,'nk',nk_,IERR=ierr) 
-!      IF (ierr/=0) CALL errore(subname, 'searching for nk', ABS(ierr) )
-      CALL iotk_scan_attr(attr,'nrtot',nrtot_,IERR=ierr) 
-      IF (ierr/=0) CALL errore(subname, 'searching for nrtot', ABS(ierr) )
-      CALL iotk_scan_attr(attr,'nr',nr_,IERR=ierr) 
-      IF (ierr/=0) CALL errore(subname, 'searching for nr', ABS(ierr) )
-      !
-      CALL iotk_scan_end( aux_unit, "HAMILTONIAN", IERR=ierr )
-      IF (ierr/=0) CALL errore(subname, 'searching for end HAMILTONIAN', ABS(ierr) )
-      !
-      CALL file_close(aux_unit,PATH="/",ACTION="read", IERR=ierr)
-      IF (ierr/=0) CALL errore(subname, 'closing '//TRIM(datafile_C), ABS(ierr) )
+      CALL mp_bcast( nrtot_, ionode_id)
+      CALL mp_bcast( nr_,    ionode_id)
   
       !
       ! set the 2D Rmesh orthogonal to transport direction
