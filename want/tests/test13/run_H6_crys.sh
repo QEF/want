@@ -65,9 +65,9 @@ case $INPUT in
    (dos_hf)         DOS_HF=yes ;;
    (conductor_hf)   CONDUCTOR_HF=yes ;;
    (want_hf)        BANDS_HF=yes ;  DOS_HF=yes ;  CONDUCTOR_HF=yes ;;
-   (want)           BANDS_LDA=yes ; DOS_LDA=yes ; CONDUCTOR_LDA=yes ;
+   (want)           #BANDS_LDA=yes ; DOS_LDA=yes ; CONDUCTOR_LDA=yes ;
                     BANDS_HF=yes ;  DOS_HF=yes ;  CONDUCTOR_HF=yes ;;
-   (all)            BANDS_LDA=yes ; DOS_LDA=yes ; CONDUCTOR_LDA=yes ;
+   (all)            #BANDS_LDA=yes ; DOS_LDA=yes ; CONDUCTOR_LDA=yes ;
                     BANDS_HF=yes ;  DOS_HF=yes ;  CONDUCTOR_HF=yes ;;
    (check)          CHECK=yes ;;
    (clean)          CLEAN=yes ;;
@@ -109,7 +109,7 @@ run_dos  NAME=DOS_LDA  SUFFIX=${SUFFIX}  RUN=$DOS_LDA
 run_conductor  NAME=CONDUCTOR_LDA  SUFFIX=${SUFFIX} RUN=$CONDUCTOR_LDA
 
 
-SUFFIX="_H6_HFcrys"
+SUFFIX="_H6_HF_crys"
 
 #
 # running BANDS HF

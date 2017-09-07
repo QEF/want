@@ -10,6 +10,7 @@
     transport_dir = 1
     delta = 0.0005
     smearing_type = "lorentzian"
+    !debug_level = 10
   /
 
 <HAMILTONIAN_DATA>
