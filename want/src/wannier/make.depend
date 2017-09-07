@@ -14,6 +14,7 @@ atmproj_tools.o : ../baselib/files.o
 atmproj_tools.o : ../baselib/io_global.o
 atmproj_tools.o : ../baselib/kind.o
 atmproj_tools.o : ../baselib/log_module.o
+atmproj_tools.o : ../baselib/mp.o
 atmproj_tools.o : ../baselib/parameters.o
 atmproj_tools.o : ../baselib/parser.o
 atmproj_tools.o : ../baselib/qexml.o
@@ -21,6 +22,7 @@ atmproj_tools.o : ../baselib/timing.o
 atmproj_tools.o : ../baselib/util.o
 atmproj_tools.o : converters.o
 atmproj_tools.o : get_rgrid.o
+atmproj_tools.o : io_module.o
 atmproj_tools.o : ions.o
 atmproj_tools.o : lattice.o
 atmproj_tools.o : pseudo_types.o
@@ -438,6 +440,7 @@ kpoints.o : io_module.o
 kpoints.o : lattice.o
 kpoints.o : paratools.o
 kpoints.o : symmetrize_kgrid.o
+kpoints.o : symmetry.o
 kpoints.o : wannier90_tools.o
 lattice.o : ../baselib/constants.o
 lattice.o : ../baselib/crystal_io.o

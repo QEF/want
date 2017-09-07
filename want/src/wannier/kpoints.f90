@@ -25,6 +25,7 @@
    USE paratools_module,  ONLY : para_get_poolindex
    USE grids_module,      ONLY : grids_get_rgrid
    USE symmetrize_kgrid_module,    ONLY : symmetrize_kgrid
+   USE symmetry_module,   ONLY : symm_alloc => alloc
    !
    USE qexml_module
    USE qexpt_module
@@ -233,7 +234,7 @@ CONTAINS
       !
       ! get the kpt grid over the full BZ
       !
-      IF ( init_pp_ ) THEN
+      IF ( init_pp_ .AND. symm_alloc ) THEN
           !
           CALL symmetrize_kgrid( nkpts_g, vkpt_g, bvec, nkpts_all )
           !

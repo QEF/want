@@ -41,7 +41,7 @@
    USE io_module,            ONLY : stdin, ionode, ionode_id
    USE log_module,           ONLY : log_push, log_pop
    USE timing_module,        ONLY : timing
-   USE mp,                   ONLY : mp_bcast
+   USE mp,                   ONLY : mp_bcast, mp_barrier
    USE util_module,          ONLY : mat_herm
    USE T_control_module,     ONLY : calculation_type, idir => transport_dir, &
                                     datafile_L, datafile_C, datafile_R, &
@@ -81,6 +81,9 @@
    !
    ! Read the HAMILTONIAN_DATA card from input file
    !
+! XXX
+CALL mp_barrier()
+!
    IF ( ionode ) THEN
        !
        CALL iotk_scan_begin( stdin, 'HAMILTONIAN_DATA', IERR=ierr )

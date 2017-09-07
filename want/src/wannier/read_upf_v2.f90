@@ -112,7 +112,6 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
    ! Read additional data for PAW (All-electron charge, wavefunctions, vloc..)
    CALL read_paw(u, upf)
    ! Read data for gipaw reconstruction
-! XXX
 !   CALL read_gipaw(u, upf)
    !
    ! Close the file (not the unit!)
