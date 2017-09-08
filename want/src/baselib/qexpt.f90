@@ -145,7 +145,7 @@ CONTAINS
       IMPLICIT NONE
       CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: creator_name, creator_version
       CHARACTER(LEN=*),  OPTIONAL, INTENT(OUT) :: format_name, format_version
-      INTEGER,           OPTIONAL, INTENT(OUT) :: ierr
+      INTEGER,                     INTENT(OUT) :: ierr
 
       CHARACTER(256) :: creator_name_, creator_version_
       CHARACTER(256) :: format_name_,     format_version_
