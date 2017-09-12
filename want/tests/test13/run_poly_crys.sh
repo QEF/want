@@ -17,14 +17,14 @@ MANUAL=" Usage
  where FLAG is one of the following 
  (no FLAG will print this manual page) :
  
- PA_bands        interpolate the PA band structure from CRYSTAL datafile (LDA xc)
- PA_dos          interpolate the PA DOS from CRYSTAL datafile (LDA xc)
- PA_bands_hyb    interpolate the PA band structure from CRYSTAL datafile (B3LYP xc)
- PA_dos_hyb      interpolate the PA DOS from CRYSTAL datafile (B3LYP xc)
- PE_bands        interpolate the PE band structure from CRYSTAL datafile (LDA xc)
- PE_dos          interpolate the PE DOS from CRYSTAL datafile (LDA xc)
- PE_bands_hyb    interpolate the PE band structure from CRYSTAL datafile (PBE0 and B3LYP xc)
- PE_dos_hyb      interpolate the PE DOS from CRYSTAL datafile (PBE0 and B3LYP xc)
+ pa_bands        interpolate the PA band structure from CRYSTAL datafile (LDA xc)
+ pa_dos          interpolate the PA DOS from CRYSTAL datafile (LDA xc)
+ pa_bands_hyb    interpolate the PA band structure from CRYSTAL datafile (B3LYP xc)
+ pa_dos_hyb      interpolate the PA DOS from CRYSTAL datafile (B3LYP xc)
+ pe_bands        interpolate the PE band structure from CRYSTAL datafile (LDA xc)
+ pe_dos          interpolate the PE DOS from CRYSTAL datafile (LDA xc)
+ pe_bands_hyb    interpolate the PE band structure from CRYSTAL datafile (PBE0 and B3LYP xc)
+ pe_dos_hyb      interpolate the PE DOS from CRYSTAL datafile (PBE0 and B3LYP xc)
 
  all             perform all the above described steps
 
@@ -63,17 +63,17 @@ if [ $# = 0 ] ; then echo "$MANUAL" ; exit 0 ; fi
 INPUT=`echo $1 | tr [:upper:] [:lower:]`
 
 case $INPUT in 
-   (pa_bands)      PA_BANDS=yes ;;
-   (pa_dos)        PA_DOS=yes ;;
+#   (pa_bands)      PA_BANDS=yes ;;
+#   (pa_dos)        PA_DOS=yes ;;
    (pa_bands_hyb)  PA_BANDS_HYB=yes ;;
    (pa_dos_hyb)    PA_DOS_HYB=yes ;;
-   (pe_bands)      PE_BANDS=yes ;;
-   (pe_dos)        PE_DOS=yes ;;
+#   (pe_bands)      PE_BANDS=yes ;;
+#   (pe_dos)        PE_DOS=yes ;;
    (pe_bands_hyb)  PE_BANDS_HYB=yes ;;
    (pe_dos_hyb)    PE_DOS_HYB=yes ;;
-   (all|want)      PA_BANDS=yes ; PA_DOS=yes ;
+   (all|want)      #PA_BANDS=yes ; PA_DOS=yes ;
                    PA_BANDS_HYB=yes ; PA_DOS_HYB=yes ;
-                   PE_BANDS=yes ; PE_DOS=yes ;
+                   #PE_BANDS=yes ; PE_DOS=yes ;
                    PE_BANDS_HYB=yes ; PE_DOS_HYB=yes ;;
    (check)         CHECK=yes ;;
    (clean)         CLEAN=yes ;;
@@ -138,11 +138,11 @@ SUFFIX="_PE_PBE0_crys"
 #
 # running PE_BANDS_hyb
 #
-run_bands  NAME=PE_BANDS_HYB  SUFFIX=${SUFFIX} RUN=$PE_BANDS
+run_bands  NAME=PE_BANDS_HYB  SUFFIX=${SUFFIX} RUN=$PE_BANDS_HYB
 #
 # running PE_DOS_hyb
 #
-run_dos  NAME=PE_DOS_HYB  SUFFIX=${SUFFIX} RUN=$PE_DOS
+run_dos  NAME=PE_DOS_HYB  SUFFIX=${SUFFIX} RUN=$PE_DOS_HYB
 
 
 SUFFIX="_PE_B3LYP_crys"
@@ -150,11 +150,11 @@ SUFFIX="_PE_B3LYP_crys"
 #
 # running PE_BANDS_hyb
 #
-run_bands  NAME=PE_BANDS_HYB  SUFFIX=${SUFFIX} RUN=$PE_BANDS
+run_bands  NAME=PE_BANDS_HYB  SUFFIX=${SUFFIX} RUN=$PE_BANDS_HYB
 #
 # running PE_DOS_hyb
 #
-run_dos  NAME=PE_DOS_HYB  SUFFIX=${SUFFIX} RUN=$PE_DOS
+run_dos  NAME=PE_DOS_HYB  SUFFIX=${SUFFIX} RUN=$PE_DOS_HYB
 
 
 #
