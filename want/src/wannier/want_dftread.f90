@@ -194,7 +194,7 @@ CONTAINS
     
 
 !
-! ... read pseudopotentials (according to Espresso fmts)
+! ... read pseudopotentials (according to Quantum ESPRESSO fmts)
 !
     IF ( read_pseudo_  ) THEN
         !
