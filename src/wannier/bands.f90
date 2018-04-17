@@ -586,6 +586,13 @@ END PROGRAM bands
           CALL compute_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rham_nn,  &
                              vkpt_int(:,ik), kham)
 
+!          CALL compute_grad_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rham_nn,  &
+!                             vkpt_int(:,ik_g), gradkham)
+!                  
+!          CALL compute_hessian_kham( dimwann, nrtot_nn, vr_nn, wr_nn, rham_nn,  &
+!                             vkpt_int(:,ik_g), hessiankham)
+ 
+
           IF ( .NOT. mat_is_herm(dimwann, kham, TOLL=EPS_m8) ) &
                CALL errore(subname,'kham not herm',ik)
           !
