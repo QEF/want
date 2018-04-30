@@ -1,11 +1,33 @@
 
 make.sys
 config.log
+config.status
+config/configure.msg
 
 bin/*.x
 bin/iotk
 bin/sumpdos
+bin/sax2qexml
 
 include/f_defs.h
+include/c_defs.h
+include/configure.h
+include/fftx_defs.h
+include/build_date.h
 
 extlibs/install/make_*.inc
+extlibs/*/configure-stamp
+extlibs/*/package-ready-stamp
+extlibs/*/uncompress-stamp
+extlibs/*/bin
+extlibs/*/include
+extlibs/*/lib
+extlibs/iotk/iotk
+
+src/*/*.o
+src/*/*.a
+src/*/*.mod
+src/*/*.MOD
+src/*/*.x
+src/tools/sumpdos
+
