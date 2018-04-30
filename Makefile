@@ -116,6 +116,6 @@ clean_all : clean_all_extlibs clean_all_plugins clean
 		./config/*.lineno \
 		./include/configure.h ./include/fftx_defs.h \
 	        ./include/c_defs.h ./include/iotk_config.h \
-		*/dum1 */dum2 
+		./include/f_defs.h */dum1 */dum2 
 	- touch make.sys
 

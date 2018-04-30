@@ -4,6 +4,10 @@
 =======================================================
 
 
+-------------------------------------------------
+Date: 31 Aug 2017    Version: want-2.6.0-beta1
+-------------------------------------------------
+
 31 Aug 2017     interface to CRYSTAL17 fixed, courtesy of G. Mallia. (AF)
 
 28 Aug 2017     parallel bug fixed in pp + atmproj. (AF)

@@ -1,0 +1,11 @@
+
+make.sys
+config.log
+
+bin/*.x
+bin/iotk
+bin/sumpdos
+
+include/f_defs.h
+
+extlibs/install/make_*.inc
