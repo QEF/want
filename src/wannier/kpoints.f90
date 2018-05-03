@@ -28,6 +28,7 @@
    USE symmetry_module,   ONLY : symm_alloc => alloc
    !
    USE qexml_module
+   USE qexsd_module
    USE qexpt_module
    USE crystal_io_module
    USE wannier90_tools_module
@@ -471,6 +472,19 @@ CONTAINS
             kgrid_from_file = .FALSE.
             rgrid_from_file = .FALSE.
             !
+       CASE ( 'qexsd', 'qexsd-hdf5' )
+            !
+            IF (ionode) CALL qexsd_read_band_structure( NUM_K_POINTS=nkpts_g, IERR=ierr )
+            CALL mp_bcast( nkpts_g,   ionode_id )
+            CALL mp_bcast( ierr,      ionode_id )
+            IF ( ierr/=0 )   CALL errore(subname,'QEXSD: getting bz dimensions',ABS(ierr))
+            !
+            ! assuming k_units are not crystal
+            lbvec = 0.0
+            !
+            kgrid_from_file = .FALSE.
+            rgrid_from_file = .FALSE.
+            !
        CASE ( 'pw_export' )
             !
             IF (ionode) CALL qexpt_read_bz( NUM_K_POINTS=nkpts_g, IERR=ierr )
@@ -602,6 +616,16 @@ CONTAINS
             CALL mp_bcast( k_units,   ionode_id )
             CALL mp_bcast( ierr,      ionode_id )
             IF ( ierr/=0 )   CALL errore(subname,'QEXML: reading bz',ABS(ierr))
+            !
+       CASE ( 'qexsd', 'qexsd-hdf5' )
+            !
+            IF (ionode) CALL qexsd_read_band_structure( VKPT=vkpt_g, WK=wk_g, IERR=ierr )
+            CALL mp_bcast( vkpt_g,    ionode_id )
+            CALL mp_bcast( wk_g,      ionode_id )
+            CALL mp_bcast( ierr,      ionode_id )
+            IF ( ierr/=0 )   CALL errore(subname,'QEXSD: reading bz',ABS(ierr))
+            !
+            k_units="2 pi / alat"
             !
        CASE ( 'pw_export' )
             !

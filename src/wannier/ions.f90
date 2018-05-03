@@ -24,6 +24,7 @@
    USE converters_module, ONLY : cry2cart
    USE mp,                ONLY : mp_bcast
    USE qexml_module
+   USE qexsd_module
    USE qexpt_module
    USE crystal_io_module
    !
@@ -262,6 +263,17 @@ CONTAINS
             !
             IF ( ierr/=0) CALL errore(subname,'QEXML: getting ion dimensions',ABS(ierr))
             !
+       CASE ( 'qexsd', 'qexsd-hdf5' )
+            !
+            IF (ionode) CALL qexsd_read_ions( NAT=nat, NSP=nsp, IERR=ierr )
+            IF (lpara_) THEN
+                CALL mp_bcast( nat,   ionode_id )
+                CALL mp_bcast( nsp,   ionode_id )
+                CALL mp_bcast( ierr,  ionode_id )
+            ENDIF
+            !
+            IF ( ierr/=0) CALL errore(subname,'QEXSD: getting ion dimensions',ABS(ierr))
+            !
        CASE ( 'pw_export' )
             !
             IF (ionode) CALL qexpt_read_ions( NAT=nat, NSP=nsp, IERR=ierr )
@@ -376,6 +388,37 @@ CONTAINS
             ENDIF
             !
             IF (ierr/=0) CALL errore(subname,'QEXML: reading data' , ABS(ierr))
+            !
+            ! pseudo pot are in the .save directory
+            !
+            pseudo_dir = TRIM(work_dir)// "/" // TRIM(prefix) // ".save/" 
+            !
+            ! conversions
+            DO i = 1, nat
+                 symb( i ) = atm_symb( ityp_tmp (i) )
+            ENDDO
+            !
+            DEALLOCATE( ityp_tmp, STAT=ierr )
+            IF ( ierr/=0) CALL errore(subname,'deallocating ityp_tmp', ABS(ierr))
+            !
+       CASE ( 'qexsd', 'qexsd-hdf5' )
+            !
+            ALLOCATE( ityp_tmp(nat), STAT=ierr )
+            IF ( ierr/=0) CALL errore(subname,'allocating ityp_tmp', ABS(ierr))
+            !
+            IF ( ionode ) &
+            CALL qexsd_read_ions( ATM=atm_symb, ITYP=ityp_tmp, &
+                                  PSFILE=psfile, TAU=tau,  IERR=ierr )
+            !
+            IF (lpara_) THEN
+                CALL mp_bcast( atm_symb,   ionode_id )
+                CALL mp_bcast( ityp_tmp,   ionode_id )
+                CALL mp_bcast( psfile,     ionode_id )
+                CALL mp_bcast( tau,        ionode_id )
+                CALL mp_bcast( ierr,       ionode_id )
+            ENDIF
+            !
+            IF (ierr/=0) CALL errore(subname,'QEXSD: reading data' , ABS(ierr))
             !
             ! pseudo pot are in the .save directory
             !

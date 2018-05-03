@@ -22,6 +22,7 @@
    USE mp,                ONLY : mp_bcast
    !
    USE qexml_module
+   USE qexsd_module
    USE qexpt_module
    !
 #ifdef __ETSF_IO
@@ -213,6 +214,24 @@ CONTAINS
             CALL mp_bcast( npws_rho,   ionode_id )
             CALL mp_bcast( ierr,       ionode_id )
             !
+       CASE ( 'qexsd', 'qexsd-hdf5' )
+            !
+            IF ( ionode ) &
+            CALL qexsd_read_planewaves( ECUTWFC=ecutwfc, ECUTRHO=ecutrho,             &
+                                        GAMMA_ONLY=gamma_only,                        &
+                                        NR1=nfft(1),   NR2=nfft(2),   NR3=nfft(3),    &
+                                        NR1S=nffts(1), NR2S=nffts(2), NR3S=nffts(3),  &
+                                        NGM=npw_rho,   NGMS=npws_rho, IERR=ierr )
+            !
+            CALL mp_bcast( ecutwfc,    ionode_id )
+            CALL mp_bcast( ecutrho,    ionode_id )
+            CALL mp_bcast( nfft,       ionode_id )
+            CALL mp_bcast( nffts,      ionode_id )
+            CALL mp_bcast( npw_rho,    ionode_id )
+            CALL mp_bcast( npws_rho,   ionode_id )
+            CALL mp_bcast( ierr,       ionode_id )
+            units="Hartree"
+            !
        CASE ( 'pw_export' )
             !
             gamma_only = .FALSE.
@@ -325,6 +344,13 @@ CONTAINS
        CASE ( 'qexml' )
             !
             IF ( ionode ) CALL qexml_read_planewaves( IGV = igv, IERR = ierr )
+            !
+            CALL mp_bcast( igv,        ionode_id )
+            CALL mp_bcast( ierr,       ionode_id )
+            !
+       CASE ( 'qexsd', 'qexsd-hdf5' )
+            !
+            IF ( ionode ) CALL qexsd_read_planewaves( IGV = igv, IERR = ierr )
             !
             CALL mp_bcast( igv,        ionode_id )
             CALL mp_bcast( ierr,       ionode_id )

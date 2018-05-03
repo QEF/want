@@ -39,6 +39,8 @@ parser.o \
 ptoolkit.o \
 qexml.o \
 qexpt.o \
+qexsd.o \
+qeh5_module.o \
 random_numbers.o \
 shmem_include.o \
 simpsn.o \

@@ -26,6 +26,7 @@
    USE internal_tools_module,   ONLY : file_is_internal
    USE qexml_module
    USE qexpt_module
+   USE qexsd_module
    !
 #ifdef __ETSF_IO
    USE etsf_io
@@ -66,6 +67,7 @@
       !
       dirname = TRIM(work_dir) // '/' // TRIM(prefix) // '.save/'
       CALL qexml_init( dft_unit, DIR=dirname )
+      CALL qexsd_init( dft_unit, DIR=dirname )
       !
       dirname  = TRIM(work_dir) // '/' // TRIM(prefix) // '.export/'
       CALL qexpt_init( dft_unit, dirname )
@@ -101,6 +103,25 @@
            !
            CALL qexml_closefile ( "read", IERR=ierr )
            IF ( ierr/=0) CALL errore(subname,'closing dftdata file',ABS(ierr))
+           !
+      CASE ( 'qexsd', 'qexsd-hdf5' )
+           !
+           suffix_qe_data = ".save/data-file-schema.xml"
+           dirname = TRIM(work_dir) // '/' // TRIM(prefix) // '.save/'
+           filename = TRIM( dirname) // "data-file-schema.xml"
+           !
+           CALL qexsd_openfile( filename, "read", IERR=ierr )
+           IF ( ierr/=0) CALL errore(subname,'opening dftdata file',ABS(ierr))
+           !
+           CALL qexsd_open_output(ierr) 
+           IF ( ierr/=0) CALL errore(subname,'opening Output section in dftdata file',1)
+           CALL qexsd_close_output(ierr) 
+           IF ( ierr/=0) CALL errore(subname,'closing Output section in dftdata file',1)
+           !
+           CALL qexsd_closefile ( "read", IERR=ierr )
+           IF ( ierr/=0) CALL errore(subname,'closing dftdata file',ABS(ierr))
+           !
+           dftdata_fmt_version=trim(qexsd_current_version)
            !
       CASE ( 'pw_export' )
            !
@@ -199,14 +220,15 @@
    !
    ! get the fmt of the dftdata file (use the names)
    !
-   USE io_module,               ONLY : dft_unit, ionode, ionode_id, stdout
    USE parameters,              ONLY : nstrx
+   USE io_module,               ONLY : dft_unit, ionode, ionode_id, stdout
+   USE mp,                      ONLY : mp_bcast
    USE crystal_tools_module,    ONLY : file_is_crystal
    USE wannier90_tools_module,  ONLY : file_is_wannier90
    USE internal_tools_module,   ONLY : file_is_internal
    USE qexml_module
    USE qexpt_module
-   USE mp,                      ONLY : mp_bcast
+   USE qexsd_module
    !
 #ifdef __ETSF_IO
    USE etsf_io
@@ -222,9 +244,10 @@
       CHARACTER(18)    :: subname='io_get_dftdata_fmt'  
       !
       CHARACTER(nstrx) :: filename, version
-      CHARACTER(nstrx) :: fmt_searched(6)
-      CHARACTER(nstrx) :: fmt_filename(6)
+      CHARACTER(nstrx) :: fmt_searched(7)
+      CHARACTER(nstrx) :: fmt_filename(7)
       LOGICAL          :: lfound, lfound1
+      LOGICAL          :: lfound_hd5, lfound1_hd5, lhave_hd5
       INTEGER          :: i, ierr
 
       !
@@ -234,19 +257,22 @@
       fmt_searched(2) = 'wannier90'
       fmt_searched(3) = 'crystal'
       fmt_searched(4) = 'qexml'
-      fmt_searched(5) = 'pw_export'
-      fmt_searched(6) = 'etsf_io'
+      fmt_searched(5) = 'qexsd'
+      fmt_searched(6) = 'pw_export'
+      fmt_searched(7) = 'etsf_io'
       !
       fmt_filename(1) = TRIM(dftdata_file_)
       fmt_filename(2) = TRIM(dftdata_file_)
       fmt_filename(3) = TRIM(dftdata_file_)
       fmt_filename(4) = '.save/data-file.xml'
-      fmt_filename(5) = '.export/index.xml'
-      fmt_filename(6) = '_WFK-etsf.nc'
+      fmt_filename(5) = '.save/data-file-schema.xml'
+      fmt_filename(6) = '.export/index.xml'
+      fmt_filename(7) = '_WFK-etsf.nc'
 
       !
       ! init
       lfound    = .FALSE.
+      lhave_hd5 = .FALSE.
       !
       !
       DO i = 1, SIZE( fmt_searched )
@@ -318,6 +344,32 @@
                !
            ENDIF
            !
+           IF ( lfound .AND. lneed_wfc .AND. TRIM( fmt_searched(i) ) == 'qexsd'  )  THEN
+               !
+               ! check also the existence of evc.dat or evc1.dat
+               ! this means that file produced by espresso are fine for WanT
+               !
+               filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // ".save/wfc1.dat"
+               IF (ionode) INQUIRE ( FILE=TRIM(filename), EXIST=lfound )
+               CALL mp_bcast( lfound,   ionode_id )
+               !
+               filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // ".save/wfcup1.dat"
+               IF (ionode) INQUIRE ( FILE=TRIM(filename), EXIST=lfound1 )
+               CALL mp_bcast( lfound1,   ionode_id )
+               !            
+               filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // ".save/wfc1.hd5"
+               IF (ionode) INQUIRE ( FILE=TRIM(filename), EXIST=lfound_hd5 )
+               CALL mp_bcast( lfound_hd5,   ionode_id )
+               !
+               filename = TRIM( work_dir_ ) //'/'// TRIM(prefix_) // ".save/wfcup1.hd5"
+               IF (ionode) INQUIRE ( FILE=TRIM(filename), EXIST=lfound1_hd5 )
+               CALL mp_bcast( lfound1_hd5,   ionode_id )
+               !            
+               lfound = lfound .OR. lfound1 .OR. lfound_hd5 .OR. lfound1_hd5
+               lhave_hd5 = lfound_hd5 .OR. lfound1_hd5
+               !
+           ENDIF
+           !
            IF ( lfound .AND. TRIM( fmt_searched(i) ) == 'internal'  )  THEN
                !
                lfound = file_is_internal( filename )
@@ -379,6 +431,7 @@
            dftdata_fmt_ = ""
       ELSE
            dftdata_fmt_ = TRIM( fmt_searched( i ) )
+           IF (TRIM(dftdata_fmt_)=="qexsd" .AND. lhave_hd5) dftdata_fmt_ = "qexsd-hdf5"
            !
            IF (ionode) WRITE( stdout , "(/,2x, 'DFT-data fmt automaticaly detected: ',a )" ) &
                   TRIM( dftdata_fmt_)
@@ -399,6 +452,7 @@
    USE crystal_io_module,       ONLY : crio_open_file
    USE files_module,            ONLY : file_open, file_close
    USE log_module,              ONLY : log_push, log_pop
+   USE qexsd_module
    !
 #ifdef __ETSF_IO
    USE etsf_io
@@ -427,6 +481,14 @@
           !
           CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr )
           IF ( ierr/=0 ) CALL errore(subname, 'QEXML-PWEXP: opening '//TRIM(filename), ABS(ierr)) 
+          !
+      CASE ( "qexsd", 'qexsd-hdf5' )
+          !
+          CALL file_open(dft_unit,TRIM(filename),PATH="/",ACTION="read", IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname, 'QEXSD: opening '//TRIM(filename), ABS(ierr)) 
+          !
+          CALL qexsd_open_output(ierr)
+          IF ( ierr/=0 ) CALL errore(subname, 'QEXSD: opening output section', ABS(ierr)) 
           !
       CASE ( 'etsf_io' )
           !
@@ -470,6 +532,7 @@
    USE crystal_io_module,       ONLY : crio_close_file
    USE files_module,            ONLY : file_open, file_close
    USE log_module,              ONLY : log_push, log_pop
+   USE qexsd_module
    !
 #ifdef __ETSF_IO
    USE etsf_io
@@ -495,6 +558,14 @@
           !
           CALL file_close(dft_unit,PATH="/",ACTION="read", IERR=ierr )
           IF ( ierr/=0 ) CALL errore(subname, 'QEXML-PWEXP: closing DFT datafile', ABS(ierr)) 
+          !
+      CASE ( 'qexsd', 'qexsd-hdf5' )
+          !
+          CALL qexsd_close_output(ierr)
+          IF ( ierr/=0 ) CALL errore(subname, 'QEXSD: closing output section', ABS(ierr)) 
+          !
+          CALL file_close(dft_unit,PATH="/",ACTION="read", IERR=ierr )
+          IF ( ierr/=0 ) CALL errore(subname, 'QEXSD: closing DFT datafile', ABS(ierr)) 
           !
       CASE ( 'etsf_io' )
           !

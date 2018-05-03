@@ -30,6 +30,7 @@
    USE ions_module,         ONLY : ions_read_ext, ions_init, ions_deallocate
    USE iotk_module
    USE qexml_module
+   USE qexsd_module
    !
    IMPLICIT NONE 
    PRIVATE

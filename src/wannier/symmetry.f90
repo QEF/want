@@ -21,6 +21,7 @@
    USE converters_module, ONLY : cry2cart, cart2cry
    USE util_module
    USE qexml_module
+   USE qexsd_module
    USE qexpt_module
    !
 #ifdef __ETSF_IO
@@ -237,7 +238,7 @@ CONTAINS
        !
        CHARACTER(17)  :: subname="symmetry_read_ext"
        INTEGER        :: ierr, is, ia, iaeq
-       REAL(dbl)      :: rvec(3)
+       REAL(dbl)      :: rvec(3), rsym_(3,3,48)
        LOGICAL        :: lpara_
        REAL(dbl), ALLOCATABLE :: tau_cry(:,:)
        !
@@ -257,6 +258,15 @@ CONTAINS
        CASE ( 'qexml' )
             !
             IF (ionode) CALL qexml_read_symmetry( NSYM=nsym, NAT=nat, IERR=ierr )
+            IF ( lpara_ ) THEN
+                CALL mp_bcast( nsym, ionode_id)
+                CALL mp_bcast( nat,  ionode_id)
+                CALL mp_bcast( ierr, ionode_id)
+            ENDIF
+            !
+       CASE ( 'qexsd', 'qexsd-hdf5' )
+            !
+            IF (ionode) CALL qexsd_read_symmetry( NSYM=nsym, NAT=nat, IERR=ierr )
             IF ( lpara_ ) THEN
                 CALL mp_bcast( nsym, ionode_id)
                 CALL mp_bcast( nat,  ionode_id)
@@ -321,6 +331,25 @@ CONTAINS
                 CALL mp_bcast( ierr,    ionode_id)
             ENDIF
             !
+            IF (nat > 0 .and. lpara_ ) CALL mp_bcast( irt,     ionode_id)
+            !
+       CASE ( 'qexsd', 'qexsd-hdf5' )
+            !
+            IF (ionode) THEN 
+               IF (nat > 0  ) CALL qexsd_read_symmetry( S=rsym_(:,:,1:nsym), TRASL=strasl, SNAME=sname, IRT=irt, IERR=ierr )
+               IF (nat <= 0 ) CALL qexsd_read_symmetry( S=rsym_(:,:,1:nsym), TRASL=strasl, SNAME=sname, IERR=ierr )
+            ENDIF
+            !
+            IF ( lpara_ ) THEN
+                CALL mp_bcast( rsym_,   ionode_id)
+                CALL mp_bcast( strasl,  ionode_id)
+                CALL mp_bcast( sname,   ionode_id)
+                CALL mp_bcast( ierr,    ionode_id)
+            ENDIF
+            !
+            do is = 1, nsym
+              srot(:,:,is)=nint(rsym_(:,:,is))
+            enddo
             IF (nat > 0 .and. lpara_ ) CALL mp_bcast( irt,     ionode_id)
             !
        CASE ( 'pw_export' )

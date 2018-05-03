@@ -26,6 +26,7 @@
    !
    USE iotk_module
    USE qexml_module 
+   USE qexsd_module 
    USE qexpt_module 
    !
 #ifdef __ETSF_IO
@@ -658,7 +659,7 @@ CONTAINS
        CHARACTER(16)      :: subname="windows_read_ext"
        CHARACTER(nstrx)   :: str
        INTEGER            :: lnkpts, ierr, ik
-       REAL(dbl)          :: lefermi(2)
+       REAL(dbl)          :: lefermi(2), lefermi1
        REAL(dbl), ALLOCATABLE :: leig(:,:,:)
        !
 #ifdef __ETSF_IO
@@ -691,6 +692,28 @@ CONTAINS
             CALL mp_bcast( lefermi, ionode_id )
             CALL mp_bcast( nelec,   ionode_id )
             CALL mp_bcast( ierr,    ionode_id )
+            !
+       CASE ( 'qexsd', 'qexsd-hdf5' )
+            !
+            IF ( ionode ) THEN
+                !
+                CALL qexsd_read_band_structure( NBND=nbnd, NUM_K_POINTS=lnkpts, &
+                                            NSPIN=nspin, FERMI_ENERGY=lefermi1, &
+                                            FERMI_ENERGY_UPDW=lefermi, &
+                                            NELEC=nelec, IERR=ierr )
+                !
+            ENDIF
+            !
+            CALL mp_bcast( nbnd,    ionode_id )
+            CALL mp_bcast( lnkpts,  ionode_id )
+            CALL mp_bcast( nspin,   ionode_id )
+            CALL mp_bcast( lefermi, ionode_id )
+            CALL mp_bcast( lefermi1,ionode_id )
+            CALL mp_bcast( nelec,   ionode_id )
+            CALL mp_bcast( ierr,    ionode_id )
+            !
+            IF (any(lefermi<-10000)) lefermi=lefermi1
+            IF (any(lefermi<-10000)) CALL errore(subname,"QEXSD: unable to read Fermi energy",10)
             !
        CASE ( 'pw_export' )
             !
@@ -759,7 +782,6 @@ CONTAINS
        !
        CASE ( 'qexml' )
             !
-            !
             IF ( nspin == 1 ) THEN
                 !
                 DO ik = 1, nkpts_g
@@ -794,6 +816,16 @@ CONTAINS
                 !
             ENDIF
             !
+       CASE ( 'qexsd', 'qexsd-hdf5' )
+            !
+            IF ( ionode ) &
+            CALL qexsd_read_band_structure( EIG=leig(1:nbnd, :, :), IERR=ierr )
+            !
+            CALL mp_bcast( leig(1:nbnd, :,:),  ionode_id )
+            CALL mp_bcast( ierr,   ionode_id )
+            IF ( ierr/=0 ) CALL errore(subname,'QEXML reading bands I',ik)
+            !
+            str="Hartree"
             !
        CASE ( 'pw_export' )
             !

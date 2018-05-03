@@ -201,7 +201,7 @@
       CASE ( "dft_data" ) 
            !
            SELECT CASE ( TRIM(dftdata_fmt) ) 
-           CASE ( 'qexml', 'pw_export' )
+           CASE ( 'qexml', 'pw_export', 'qexsd', 'qexsd-hdf5' )
                !
                suffix_  = TRIM(suffix_qe_data)
                postfix_ = " "

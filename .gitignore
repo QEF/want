@@ -1,20 +1,41 @@
-
+#
+# config
+#
 make.sys
 config.log
 config.status
 config/configure.msg
 
+#
+# bin
+#
 bin/*.x
 bin/iotk
 bin/sumpdos
 bin/sax2qexml
 
+#
+# include
+#
 include/f_defs.h
 include/c_defs.h
 include/configure.h
 include/fftx_defs.h
 include/build_date.h
 
+#
+# src
+#
+src/*/*.o
+src/*/*.a
+src/*/*.mod
+src/*/*.MOD
+src/*/*.x
+src/tools/sumpdos
+
+#
+# extlibs
+#
 extlibs/install/make_*.inc
 extlibs/*/configure-stamp
 extlibs/*/package-ready-stamp
@@ -24,10 +45,10 @@ extlibs/*/include
 extlibs/*/lib
 extlibs/iotk/iotk
 
-src/*/*.o
-src/*/*.a
-src/*/*.mod
-src/*/*.MOD
-src/*/*.x
-src/tools/sumpdos
-
+#
+# tests
+#
+tests/test*/*out
+tests/test*/*dat
+tests/test*/CRASH
+tests/test*/SCRATCH

@@ -19,6 +19,7 @@
    USE io_global_module,         ONLY : ionode, ionode_id
    USE mp,                       ONLY : mp_bcast
    USE qexml_module
+   USE qexsd_module
    USE qexpt_module
    USE crystal_io_module
    USE wannier90_tools_module
@@ -129,6 +130,20 @@ CONTAINS
            ENDIF
            !
            IF (ierr/=0) CALL errore(subname,'QEXML: reading lattice',ABS(ierr))
+           !
+       CASE ( 'qexsd', 'qexsd-hdf5' )
+           !
+           IF ( ionode ) &
+           CALL qexsd_read_cell( ALAT=alat, A1=avec(:,1), A2=avec(:,2),  &
+                                            A3=avec(:,3), IERR=ierr)
+           !
+           IF (lpara_ ) THEN
+               CALL mp_bcast( avec,  ionode_id )
+               CALL mp_bcast( alat,  ionode_id )
+               CALL mp_bcast( ierr,  ionode_id )
+           ENDIF
+           !
+           IF (ierr/=0) CALL errore(subname,'QEXSD: reading lattice',ABS(ierr))
            !
        CASE ( 'pw_export' )
            !

@@ -20,11 +20,13 @@
    USE timing_module,     ONLY : timing
    USE log_module,        ONLY : log_push, log_pop
    USE io_global_module,  ONLY : ionode, ionode_id
-   USE ggrids_module,     ONLY : ggrids_alloc => alloc, ecutwfc, ecutrho, gamma_only
+   USE ggrids_module,     ONLY : ggrids_alloc => alloc, ecutwfc, ecutrho, gamma_only, &
+                                 ngm=> npw_rho, igv
    USE mp,                ONLY : mp_bcast
    USE wfc_info_module
    !
    USE qexml_module
+   USE qexsd_module
    USE qexpt_module
    !
 #ifdef __ETSF_IO
@@ -101,9 +103,12 @@ CONTAINS
        !
        CHARACTER(19)        :: subname="wfc_data_grids_read"
        INTEGER              :: ik_g, ierr 
+       INTEGER              :: nfft(3)
+       INTEGER, ALLOCATABLE :: index_(:), igkv_(:,:)
+       INTEGER, ALLOCATABLE :: fft2igv_(:)
        !
 #ifdef __ETSF_IO
-       INTEGER              :: nfft(3), ig, npw_rho
+       INTEGER              :: ig, npw_rho
        REAL(dbl)            :: gcutm, b1(3), b2(3), b3(3)
        INTEGER, ALLOCATABLE :: gvectors_aux(:,:)
        INTEGER, ALLOCATABLE :: gmap(:,:,:)
@@ -150,6 +155,15 @@ CONTAINS
                     !
                     CALL qexml_read_gk( ik_g, NPWK=npwk(ik_g), IERR=ierr )
                     IF ( ierr/=0) CALL errore(subname,'QEXML: getting npwk',ik_g)
+                    !
+                ENDDO
+                !
+           CASE ( 'qexsd', 'qexsd-hdf5' )
+                !
+                DO ik_g = 1, nkpts_g
+                    !
+                    CALL qexsd_read_gk( ik_g, nspin, NPWK=npwk(ik_g), IERR=ierr )
+                    IF ( ierr/=0) CALL errore(subname,'QEXSD: getting npwk',ik_g)
                     !
                 ENDDO
                 !
@@ -229,16 +243,41 @@ CONTAINS
                 DO ik_g = 1, nkpts_g
                     !
                     CALL qexml_read_gk( ik_g, INDEX=igsort( 1:npwk(ik_g), ik_g), IERR=ierr )
-                    IF ( ierr/=0) CALL errore(subname,'getting igsort',ik_g )
+                    IF ( ierr/=0) CALL errore(subname,'QEXML: getting igsort',ik_g )
                     !
                 ENDDO
+                !
+           CASE ( 'qexsd', 'qexsd-hdf5' )
+                !
+                IF (.NOT. ggrids_alloc) CALL errore(subname,"QEXSD: ggrids not alloc",10)
+                !
+                ALLOCATE(igkv_(3,npwkx))
+                ALLOCATE(index_(npwkx))
+                !
+                call qexsd_fft2igv_map(ngm, igv, nfft, dims_only=.TRUE.)
+                ALLOCATE(fft2igv_(product(nfft)))
+                call qexsd_fft2igv_map(ngm, igv, nfft, fft2igv_)
+                !
+                DO ik_g = 1, nkpts_g
+                    !
+                    CALL qexsd_read_gk( ik_g, nspin, IGKV=igkv_, IERR=ierr )
+                    IF ( ierr/=0) CALL errore(subname,'QEXSD: getting igsort',ik_g )
+                    !
+                    call qexsd_igk_map( nfft, fft2igv_, npwk(ik_g), igkv_, index_ )
+                    !
+                    igsort(1:npwk(ik_g), ik_g)= index_(1:npwk(ik_g))
+                    !
+                ENDDO
+                !
+                DEALLOCATE(igkv_, index_)
+                DEALLOCATE(fft2igv_)
                 !
            CASE ( 'pw_export' )
                 !
                 DO ik_g = 1, nkpts_g
                     !
                     CALL qexpt_read_gk( ik_g, INDEX=igsort( 1:npwk(ik_g), ik_g), IERR=ierr )
-                    IF ( ierr/=0) CALL errore(subname,'getting igsort',ik_g)
+                    IF ( ierr/=0) CALL errore(subname,'PWXPT: getting igsort',ik_g)
                     !
                 ENDDO
                 !
@@ -452,6 +491,18 @@ CONTAINS
                !
                CALL qexml_read_wfc( ibs, ibe, ik_g, IGK=igsort(:,ik_g), &
                                     WF=wfc(:, lindex: ), IERR=ierr )
+               !
+            ENDIF
+            !
+       CASE ( 'qexsd', 'qexsd-hdf5' )
+            !
+            IF ( nspin == 2 ) THEN
+               !
+               CALL qexsd_read_wfc( ibs, ibe, ik_g, ISPIN= ispin, NSPIN=2, WFC=wfc(:, lindex: ), IERR=ierr )
+               !
+            ELSE
+               !
+               CALL qexsd_read_wfc( ibs, ibe, ik_g, ISPIN=1, NSPIN=1, WFC=wfc(:, lindex: ), IERR=ierr )
                !
             ENDIF
             !
