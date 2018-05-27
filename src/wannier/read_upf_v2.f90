@@ -281,8 +281,8 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
       ! Read the augmentation charge section
       augmentation : &
       IF(upf%tvanp .or. upf%tpawp) THEN
-      !
-      CALL iotk_scan_begin(u, 'PP_AUGMENTATION', attr=attr)
+         !
+         CALL iotk_scan_begin(u, 'PP_AUGMENTATION', attr=attr)
          CALL iotk_scan_attr(attr, 'q_with_l', upf%q_with_l)
          CALL iotk_scan_attr(attr, 'nqf',      upf%nqf)
          CALL iotk_scan_attr(attr, 'nqlc',     upf%nqlc, default=2*upf%lmax+1)
@@ -294,7 +294,7 @@ SUBROUTINE read_upf_v2(u, upf, grid, ierr)             !
          ENDIF
          ! a negative number means that all qfunc are stored
          CALL iotk_scan_attr(attr,'augmentation_epsilon',upf%qqq_eps, default=-1._dp)
-      !
+         !
       ALLOCATE( upf%rinner( upf%nqlc ) )
       ALLOCATE( upf%qqq   ( upf%nbeta, upf%nbeta ) )
       IF ( upf%q_with_l ) THEN
