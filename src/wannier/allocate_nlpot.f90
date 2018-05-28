@@ -125,11 +125,11 @@ subroutine allocate_nlpot
   !     coming from cell contraction during variable cell relaxation/MD)
   !
   nqx = INT (SQRT (ecutwfc) / dq ) + 4
-
+  !
   ALLOCATE (tab( nqx , nbrx , nsp), STAT=ierr)    
-      IF (ierr/=0) CALL errore('allocate_nlpot','allocating tab',ABS(ierr))
+  IF (ierr/=0) CALL errore('allocate_nlpot','allocating tab',ABS(ierr))
   ALLOCATE (tab_at( nqx , nchix , nsp), STAT=ierr)
-      IF (ierr/=0) CALL errore('allocate_nlpot','allocating tab_at',ABS(ierr))
+  IF (ierr/=0) CALL errore('allocate_nlpot','allocating tab_at',ABS(ierr))
 
   CALL log_pop ( 'allocate_nlpot' )
   !  
