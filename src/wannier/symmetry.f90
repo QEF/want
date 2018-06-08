@@ -51,9 +51,9 @@
    !
    INTEGER                       :: nsym          ! number of allowed symm operations
    INTEGER,          ALLOCATABLE :: srot(:,:,:)   ! operations, 3x3xNsym, cryst. units 
-   REAL(dbl),        ALLOCATABLE :: srrot(:,:,:)  ! operations, 3x3xNsym, cart. units 
+   REAL(dbl),        ALLOCATABLE :: srrot(:,:,:)  ! operations, 3x3xNsym,  cart. units 
    REAL(dbl),        ALLOCATABLE :: strasl(:,:)   ! frac. traslations, 3xNym, cryst. units
-   REAL(dbl),        ALLOCATABLE :: srtrasl(:,:)  ! frac. traslations, 3xNym, cryst. units
+   REAL(dbl),        ALLOCATABLE :: srtrasl(:,:)  ! frac. traslations, 3xNym,  cart. units
    !
    CHARACTER(nstrx), ALLOCATABLE :: sname(:)      ! symmetry names
    INTEGER                       :: nat=0         ! natoms
