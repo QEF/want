@@ -473,7 +473,6 @@
                                                        ib, aux )
                              
                                  Mkb( ibs:ibe, jbs:jbe, inn, ik ) = &
-                                        !
                                         Mkb( ibs:ibe, jbs:jbe, inn, ik ) + &
                                         aux(1:ibe-ibs+1, 1:jbe-jbs+1)
                                  !
