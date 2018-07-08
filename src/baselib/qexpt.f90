@@ -383,7 +383,7 @@ CONTAINS
       CHARACTER(*),     OPTIONAL, INTENT(OUT) :: sname(:)
       INTEGER,                    INTENT(OUT) :: ierr
       !
-      INTEGER        :: nsym_
+      INTEGER        :: nsym_,is
       LOGICAL        :: invsym_
       INTEGER        :: s_(3,3,48)
       REAL(dbl)      :: trasl_(3, 48)
@@ -429,7 +429,11 @@ CONTAINS
       !
       IF ( PRESENT( nsym ) )       nsym      = nsym_
       IF ( PRESENT( invsym ) )     invsym    = invsym_
-      IF ( PRESENT( sname ) )      sname( 1:nsym_)        = sname_ ( 1:nsym)
+      IF ( PRESENT( sname ) ) THEN
+         DO is = 1, nsym_
+            sname(is) = TRIM(sname_(is))
+         ENDDO
+      ENDIF
       IF ( PRESENT( s ) )          s( 1:3, 1:3, 1:nsym_)  = s_ ( :, :, 1:nsym_)
       IF ( PRESENT( trasl ) )      trasl(  1:3, 1:nsym_)  = trasl_( :, 1:nsym_)
       !
