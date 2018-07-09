@@ -4,7 +4,7 @@
     prefix      = 'silicon'
     postfix     = '_WanT'
     work_dir    = './SCRATCH'
-    dftdata_fmt = 'pw_export'
+!    dftdata_fmt = 'pw_export'
 /
 
 &SUBSPACE

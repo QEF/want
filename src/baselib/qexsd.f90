@@ -1924,7 +1924,7 @@ CONTAINS
       endif
 
       !
-      ! wfc readin
+      ! wfc reading
       !
       if ( present(wfc) ) then
          !
@@ -1951,11 +1951,20 @@ CONTAINS
             ierr=80 ; return
          endif
          !
+         ! skip initial wfcs if needed
+         !
+         if (file_is_forbin) then
+            do jj = 1, ibnds-1
+               read (iuni,iostat=ierr)
+               if (ierr/=0) return
+            enddo
+         endif
+         !
          ! actual read
          !
          do jj = ibnds, ibnde
             !
-            j = jj-ibnds+1 
+            j = jj-ibnds+1
             !
 #if defined(_QE_HDF5)
             if (file_is_hdf5) then

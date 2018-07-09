@@ -1,5 +1,5 @@
 ! 
-! Copyright (C) 2004-2017 WanT Group
+! Copyright (C) 2004-2018 WanT Group
 ! 
 ! This file is distributed under the terms of the 
 ! GNU General Public License. See the file `License' 
@@ -10,7 +10,7 @@
 #define  __VERSION_MAJOR   "2"
 #define  __VERSION_MINOR   "6"
 #define  __VERSION_PATCH   "0"
-#define  __VERSION_LABEL   "beta"
+#define  __VERSION_LABEL   ""
 #define  __VERSION_SVN_REV "unknown"
 
 
