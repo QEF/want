@@ -98,7 +98,8 @@ case $INPUT in
    (proj_bulk)      PROJ_BULK=yes ;;
 
    (dft)            SCF=yes ; NSCF=yes ; 
-                    SCF_BULK=yes ; NSCF_BULK=yes ;;
+                    SCF_BULK=yes ; NSCF_BULK=yes ; 
+                    PROJ=yes ; PROJ_BULK=yes ;;
 
    (disentangle)    DISENTANGLE=yes ;;
    (wannier)        WANNIER=yes ;;
@@ -123,6 +124,7 @@ case $INPUT in
 
    (all)            SCF=yes ; NSCF=yes ; 
                     SCF_BULK=yes ; NSCF_BULK=yes ;
+                    PROJ=yes ; PROJ_BULK=yes ;
                     DISENTANGLE=yes ; WANNIER=yes ; DOS=yes ;
                     DISENTANGLE_BULK=yes ; WANNIER_BULK=yes ; 
                     DOS_BULK=yes ; 
