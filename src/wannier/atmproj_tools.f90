@@ -42,6 +42,7 @@
    CHARACTER(nstrx)   :: savedir
    CHARACTER(nstrx)   :: file_proj
    CHARACTER(nstrx)   :: file_data
+   CHARACTER(nstrx)   :: file_fmt
    !
    LOGICAL            :: init = .FALSE.
    !
@@ -103,7 +104,6 @@ CONTAINS
    !
    ilen = LEN_TRIM( file_proj_ )
    IF ( ilen <= 14 ) RETURN
-   
    !
    IF ( file_proj_(ilen-14:ilen) == "atomic_proj.xml" .OR. &
         file_proj_(ilen-14:ilen) == "atomic_proj.dat" ) THEN
@@ -115,8 +115,15 @@ CONTAINS
    IF ( LEN_TRIM(savedir) == 0 ) RETURN
    !
    file_data = TRIM(savedir) // "/data-file.xml"
-   !
-   IF ( .NOT. file_exist( file_data ) ) RETURN
+   IF ( file_exist( file_data ) ) THEN
+       file_fmt="qexml"
+   ELSE
+       !
+       file_data = TRIM(savedir) // "/data-file-schema.xml"
+       file_fmt="qexsd"
+       IF ( .NOT. file_exist( file_data ) ) RETURN
+       !
+   ENDIF
    !
    ierr     =  0
    init     = .TRUE.
@@ -259,28 +266,42 @@ END SUBROUTINE atmproj_tools_init
  
    !
    ! get DFT data
-   ! qexml fmt is assumed (otherwise one should use the var "dftdata_fmt")
+   ! qexml and qexsd are supported.
    ! note that the parallelism inside *_read_ext routines may be harmful
    ! and needs to be handled
    !
    lpara = .TRUE.
    !
-   IF ( ionode ) THEN
+   IF ( ionode .AND. TRIM(file_fmt)=="qexml") THEN
       CALL qexml_openfile( file_data, "read", IERR=ierr )
-      IF ( ierr/=0 ) CALL errore(subname,"opening "//TRIM(file_data), ABS(ierr) )
+      IF ( ierr/=0 ) CALL errore(subname,"opening qexml "//TRIM(file_data), ABS(ierr) )
+   ENDIF
+   !
+   IF ( ionode .AND. TRIM(file_fmt)=="qexsd") THEN
+      CALL qexsd_openfile( file_data, "read", IERR=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,"opening qexsd "//TRIM(file_data), ABS(ierr) )
+      CALL qexsd_open_output(ierr)
+      IF ( ierr/=0) CALL errore(subname,'opening Output section in dftdata file',1)
    ENDIF
    ! 
-   CALL lattice_read_ext( "qexml", LPARA=lpara )
+   CALL lattice_read_ext( trim(file_fmt), LPARA=lpara )
    CALL lattice_init( )
    !
-   CALL ions_read_ext( "qexml", LPARA=lpara )
+   CALL ions_read_ext( trim(file_fmt), LPARA=lpara )
    CALL ions_init()
    !
-   CALL symmetry_read_ext( "qexml", LPARA=lpara )
+   CALL symmetry_read_ext( trim(file_fmt), LPARA=lpara )
    !
-   IF ( ionode ) THEN
+   IF ( ionode .AND. TRIM(file_fmt)=="qexml") THEN
       CALL qexml_closefile( "read", IERR=ierr )
-      IF ( ierr/=0 ) CALL errore(subname,"closing "//TRIM(file_data), ABS(ierr) )
+      IF ( ierr/=0 ) CALL errore(subname,"closing qexml "//TRIM(file_data), ABS(ierr) )
+   ENDIF
+   !
+   IF ( ionode .AND. TRIM(file_fmt)=="qexsd") THEN
+      CALL qexsd_close_output(ierr)
+      IF ( ierr/=0) CALL errore(subname,'closing Output section in dftdata file',1)
+      CALL qexsd_closefile( "read", IERR=ierr )
+      IF ( ierr/=0 ) CALL errore(subname,"closing qexsd "//TRIM(file_data), ABS(ierr) )
    ENDIF
 
    !
