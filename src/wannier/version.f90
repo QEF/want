@@ -7,7 +7,7 @@
 ! or http://www.gnu.org/copyleft/gpl.txt . 
 ! 
    MODULE version_module
-#    include "version.h"
+#    include "want_version.h"
      character(LEN=4), PARAMETER   :: version_name=  __VERSION_NAME 
      character(LEN=1), PARAMETER   :: version_major= __VERSION_MAJOR
      character(LEN=1), PARAMETER   :: version_minor= __VERSION_MINOR

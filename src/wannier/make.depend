@@ -1039,4 +1039,4 @@ memusage.o : ../../include/f_defs.h
 qvan2.o : ../../include/f_defs.h
 startup.o : ../../include/build_date.h
 startup.o : ../../include/configure.h
-version.o : ../../include/version.h
+version.o : ../../include/want_version.h
